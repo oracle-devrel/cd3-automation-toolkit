@@ -10,9 +10,10 @@ from commonTools import *
 
 
 def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip, mnt_p_hostname, bytes, files, fs_name,
-                    einfo_path, sourceCIDR, Access, GID, UID, IDSquash, require_ps_port, fsinfo, values_for_column_fss,
+                    einfo_path, fs_source_snapshot_id, fs_snapshot_policy_id, fss_replication, is_ldap_groups_enabled,
+                    sourceCIDR, Access, GID, UID, IDSquash, require_ps_port, allowed_auth, is_anonymous_access_allowed,
+                    fsinfo, values_for_column_fss,
                     mnt_info1, nsg_n):
-
     for col_header in values_for_column_fss.keys():
         if (col_header == "Region"):
             values_for_column_fss[col_header].append(reg.capitalize())
@@ -30,6 +31,16 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
             values_for_column_fss[col_header].append(mnt_p_hostname)
         elif (col_header == "FSS Name"):
             values_for_column_fss[col_header].append(fs_name)
+        elif (col_header == "Source Snapshot"):
+            if fs_source_snapshot_id != None:
+                values_for_column_fss[col_header].append(fs_source_snapshot_id)
+            else:
+                values_for_column_fss[col_header].append('')
+        elif (col_header == "Replication Information"):
+            if fss_replication != '':
+                values_for_column_fss[col_header].append(fss_replication)
+            else:
+                values_for_column_fss[col_header].append('')
         elif (col_header == "Path"):
             values_for_column_fss[col_header].append(einfo_path)
         elif (col_header == "Source CIDR"):
@@ -46,31 +57,67 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
             values_for_column_fss[col_header].append(IDSquash)
         elif (col_header == "Require PS Port (true|false)"):
             values_for_column_fss[col_header].append(require_ps_port)
+        elif (commonTools.check_tf_variable(col_header) == "is_anonymous_access_allowed"):
+            values_for_column_fss[col_header].append(is_anonymous_access_allowed)
+        elif (commonTools.check_tf_variable(col_header) == "is_idmap_groups_for_sys_auth"):
+            values_for_column_fss[col_header].append(is_ldap_groups_enabled)
+        elif (col_header == "Allowed Auth"):
+            if len(allowed_auth) == 1:
+                allowed_auth = allowed_auth[0].strip()
+                values_for_column_fss[col_header].append(allowed_auth)
+            elif len(allowed_auth) > 1:
+                tmp_auth = ""
+                for auth in allowed_auth:
+                    tmp_auth = tmp_auth + auth.strip() + ','
+                tmp_auth = tmp_auth.removesuffix(',')
+                values_for_column_fss[col_header].append(tmp_auth)
+            else:
+                values_for_column_fss[col_header].append('')
         elif str(col_header).lower() in commonTools.tagColumns:
             values_for_column_fss = commonTools.export_tags(fsinfo.data, col_header, values_for_column_fss)
         else:
-            oci_objs = [fsinfo.data, mnt_info1]
+            oci_objs = [fsinfo.data, mnt_info1,einfo_path]
             values_for_column_fss = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_instances,
                                                                      values_for_column_fss)
 
 
-def __get_mount_info(cname, compartment_id, reg, availability_domain_name,signer):
-    file_system = oci.file_storage.FileStorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-    network = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-    vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signer):
+    file_system = oci.file_storage.FileStorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                     signer=signer)
+    network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+    vnc_info = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
     global exports_ids
     AD_name = AD(availability_domain_name)
+
     try:
         mount_info = oci.pagination.list_call_get_all_results(file_system.list_mount_targets,
                                                               compartment_id=compartment_id,
                                                               availability_domain=availability_domain_name)
+        list_replications = oci.pagination.list_call_get_all_results(file_system.list_replications,
+                                                                     compartment_id=compartment_id,
+                                                                     availability_domain=availability_domain_name)
+        list_fss = oci.pagination.list_call_get_all_results(file_system.list_file_systems,
+                                                            compartment_id=compartment_id,
+                                                            availability_domain=availability_domain_name)
+        replications_dict = {}
+        for rep_data in list_replications.data:
+            rep_info = file_system.get_replication(replication_id=rep_data.id)
+            tmp_dict = {}
+            tmp_dict[rep_info.data.id] = {'sourceid': rep_info.data.source_id, 'targetid': rep_info.data.target_id,
+                                          'interval': rep_info.data.replication_interval,
+                                          'displayname': rep_info.data.display_name}
+            replications_dict.update(tmp_dict)
         fss = []
+        mnt_fss_ids = []
+        rep_ids = []
         for mnt in mount_info.data:
             mnt_id = mnt.id
             export_set_id = mnt.export_set_id  # Export Set Id
             mt_display_name = mnt.display_name  # Mount Target Name
             tf_name = commonTools.check_tf_variable(mt_display_name)
-            importCommands[reg].write("\nterraform import \"module.mts[\\\"" + tf_name + "\\\"].oci_file_storage_mount_target.mount_target\" " + str(mnt_id))
+            importCommands[reg].write(
+                "\nterraform import \"module.mts[\\\"" + tf_name + "\\\"].oci_file_storage_mount_target.mount_target\" " + str(
+                    mnt_id))
             subnet_id = mnt.subnet_id
             private_ip_ids = mnt.private_ip_ids
             nsg_id = mnt.nsg_ids
@@ -104,55 +151,123 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name,signer
                 einfo_export_data = einfo_export.data  # exports info
                 # print("Export_Path:",einfo_path)
                 fs_id = einfo.file_system_id
+                mnt_fss_ids.append(fs_id)
                 file_system_info = file_system.get_file_system(file_system_id=fs_id)
                 # print(file_system_info.data)
                 fs_name = file_system_info.data.display_name  # FileSystemName
+                fs_source_snapshot_id = file_system_info.data.source_details.source_snapshot_id
+                fs_snapshot_policy_id = file_system_info.data.filesystem_snapshot_policy_id
+                is_ldap_groups_enabled = einfo.is_idmap_groups_for_sys_auth
+                fss_replication = ""
+                if len(replications_dict) > 0:
+                    for k, v in replications_dict.items():
+                        if v['sourceid'] == fs_id:
+                            rep_format = v['targetid'] + "::" + str(v['interval']) + "::" + v['displayname']
+                            fss_replication = fss_replication + rep_format + '\n'
                 tf_name = commonTools.check_tf_variable(fs_name)
                 if (str(fs_id) not in fss):
                     # print(mt_display_name,"-",str(fs_name))
                     tf_name = commonTools.check_tf_variable(fs_name)
                     importCommands[reg].write(
-                        "\nterraform import \"module.fss[\\\"" + tf_name + "\\\"].oci_file_storage_file_system.file_system\" " + str(fs_id))
+                        "\nterraform import \"module.fss[\\\"" + tf_name + "\\\"].oci_file_storage_file_system.file_system\" " + str(
+                            fs_id))
                     fss.append(str(fs_id))
+                if len(replications_dict) > 0:
+                    for k, v in replications_dict.items():
+                        if v['sourceid'] == fs_id:
+                            if (str(k) not in rep_ids):
+                                tf_rep_name = commonTools.check_tf_variable(v['displayname'].strip())
+                                importCommands[reg].write(
+                                    "\nterraform import \"module.fss-replication[\\\"" + tf_rep_name + "\\\"].oci_file_storage_replication.file_system_replication\" " + str(
+                                        k))
+                                rep_ids.append(str(k))
+
                 elen = (len(einfo_export_data.export_options))
                 if (elen == 0):
                     # new_row=(reg,cname,AD_name,mt_display_name,vplussubnet,mnt_p_ip,mnt_p_hostname,fs_name,einfo_path,"","","","","","")
                     add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip, mnt_p_hostname, bytes,
-                                    files, fs_name, einfo_path, sourceCIDR="", Access="", GID="", UID="", IDSquash="",
-                                    require_ps_port="", fsinfo=file_system_info,
+                                    files, fs_name, einfo_path, fs_source_snapshot_id, fs_snapshot_policy_id,
+                                    fss_replication, is_ldap_groups_enabled, sourceCIDR="", Access="", GID="", UID="",
+                                    IDSquash="",
+                                    require_ps_port="", allowed_auth="", is_anonymous_access_allowed="",
+                                    fsinfo=file_system_info,
                                     values_for_column_fss=values_for_column_fss, mnt_info1=mnt, nsg_n=nsg_names)
                     # new_row=(reg,cname,AD_name,mt_display_name,vplussubnet,mnt_p_ip,mnt_p_hostname,bytes,files,fs_name,einfo_path,"","","","","","")
                     # rows.append(new_row)
                 if (elen == 1 or elen > 1):
                     # new_row=(reg,cname,AD_name,mt_display_name,vplussubnet,mnt_p_ip,mnt_p_hostname,fs_name,einfo_path,einfo_export_data.export_options[0].source,einfo_export_data.export_options[0].access,einfo_export_data.export_options[0].anonymous_gid,einfo_export_data.export_options[0].anonymous_uid,einfo_export_data.export_options[0].identity_squash,einfo_export_data.export_options[0].require_privileged_source_port)
                     add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip, mnt_p_hostname, bytes,
-                                    files, fs_name, einfo_path, einfo_export_data.export_options[0].source,
+                                    files, fs_name, einfo_path, fs_source_snapshot_id, fs_snapshot_policy_id,
+                                    fss_replication, is_ldap_groups_enabled, einfo_export_data.export_options[0].source,
                                     einfo_export_data.export_options[0].access,
                                     einfo_export_data.export_options[0].anonymous_gid,
                                     einfo_export_data.export_options[0].anonymous_uid,
                                     einfo_export_data.export_options[0].identity_squash,
                                     einfo_export_data.export_options[0].require_privileged_source_port,
+                                    einfo_export_data.export_options[0].allowed_auth,
+                                    einfo_export_data.export_options[0].is_anonymous_access_allowed,
                                     fsinfo=file_system_info, values_for_column_fss=values_for_column_fss, mnt_info1=mnt,
                                     nsg_n=nsg_names)
                     # new_row=(reg,cname,AD_name,mt_display_name,vplussubnet,mnt_p_ip,mnt_p_hostname,bytes,files,fs_name,einfo_path,einfo_export_data.export_options[0].source,einfo_export_data.export_options[0].access,einfo_export_data.export_options[0].anonymous_gid,einfo_export_data.export_options[0].anonymous_uid,einfo_export_data.export_options[0].identity_squash,einfo_export_data.export_options[0].require_privileged_source_port)
                     # rows.append(new_row)
                 if (elen > 1):
                     for rw in range(1, elen):
-                        add_column_data("", "", "", "", "", "", "", "", "", "", einfo_path,
+                        add_column_data("", "", "", "", "", "", "", "", "", "", einfo_path, "", "", "", "",
                                         einfo_export_data.export_options[rw].source,
                                         einfo_export_data.export_options[rw].access,
                                         einfo_export_data.export_options[rw].anonymous_gid,
                                         einfo_export_data.export_options[rw].anonymous_uid,
                                         einfo_export_data.export_options[rw].identity_squash,
                                         einfo_export_data.export_options[rw].require_privileged_source_port,
+                                        einfo_export_data.export_options[rw].allowed_auth,
+                                        einfo_export_data.export_options[rw].is_anonymous_access_allowed,
                                         fsinfo=file_system_info, values_for_column_fss=values_for_column_fss,
                                         mnt_info1=mnt, nsg_n=nsg_names)
                         # new_row=("","","","","","","","","","",einfo_path,einfo_export_data.export_options[rw].source,einfo_export_data.export_options[rw].access,einfo_export_data.export_options[rw].anonymous_gid,einfo_export_data.export_options[rw].anonymous_uid,einfo_export_data.export_options[rw].identity_squash,einfo_export_data.export_options[rw].require_privileged_source_port)
                         # rows.append(new_row)
-                tf_name = commonTools.check_tf_variable("FSE-" + commonTools.check_tf_variable(mt_display_name) + "-" + commonTools.check_tf_variable(fs_name) + "-" + einfo_path[1:])
-                importCommands[reg].write("\nterraform import \"module.fss-export-options[\\\"" + tf_name + "\\\"].oci_file_storage_export.export\" " + str(einfo.id))  # exports import
+                tf_name = commonTools.check_tf_variable(
+                    "FSE-" + commonTools.check_tf_variable(mt_display_name) + "-" + commonTools.check_tf_variable(
+                        fs_name) + "-" + einfo_path[1:])
+                importCommands[reg].write(
+                    "\nterraform import \"module.fss-export-options[\\\"" + tf_name + "\\\"].oci_file_storage_export.export\" " + str(
+                        einfo.id))  # exports import
+        ###### code to fetch FSS without any exports #####
+        fss_all_ids = []
+        for fss_all in list_fss.data:
+            fss_all_ids.append(fss_all.id)
+        if len(mnt_fss_ids) > 0:
+            for mnt_fss_id in mnt_fss_ids:
+                fss_all_ids.remove(mnt_fss_id)
+        if len(fss_all_ids) > 0:
+            for fss_id in fss_all_ids:
+                file_system_info_1 = file_system.get_file_system(file_system_id=fss_id)
+                fs_name = file_system_info_1.data.display_name
+                fs_source_snapshot_id = file_system_info_1.data.source_details.source_snapshot_id
+                fs_snapshot_policy_id = file_system_info_1.data.filesystem_snapshot_policy_id
+                fss_replication = ""
+                if len(replications_dict) > 0:
+                    for k, v in replications_dict.items():
+                        if v['sourceid'] == fss_id:
+                            rep_format = v['targetid'] + "::" + str(v['interval']) + "::" + v['displayname']
+                            fss_replication = fss_replication + rep_format + '\n'
+
+                add_column_data(reg, cname, AD_name, "", "", "", "", "",
+                                "", fs_name, "", fs_source_snapshot_id, fs_snapshot_policy_id, fss_replication,
+                                "", "", "", "", "", "",
+                                "", "", "",
+                                fsinfo=file_system_info_1,
+                                values_for_column_fss=values_for_column_fss, mnt_info1=None, nsg_n="")
+                if (str(fss_id) not in fss):
+                    # print(mt_display_name,"-",str(fs_name))
+                    tf_name = commonTools.check_tf_variable(fs_name)
+                    importCommands[reg].write(
+                        "\nterraform import \"module.fss[\\\"" + tf_name + "\\\"].oci_file_storage_file_system.file_system\" " + str(
+                            fss_id))
+                    fss.append(str(fss_id))
+
     except Exception as e:
         pass
+
 
 # Execution of the code begins here
 def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_compartments=[], export_regions=[]):
@@ -165,21 +280,24 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
 
     sheetName = "FSS"
 
-    global file_system, vnc_info, importCommands, rows,  all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances, config, signer
-    config=config1
-    signer=signer1
-    file_system = oci.file_storage.FileStorageClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+    global file_system, vnc_info, importCommands, rows, all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances, config, signer
+    config = config1
+    signer = signer1
+    file_system = oci.file_storage.FileStorageClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                     signer=signer)
 
-    vnc_info = oci.core.VirtualNetworkClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+    vnc_info = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                             signer=signer)
     importCommands = {}
     rows = []
     all_ads = []
-    
+
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs FSS will be overwritten during this export process!!!\n")
 
     AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else (
-        "AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else "NULL"))  # Get shortend AD
+        "AD2" if ("AD-2" in ad or "ad-2" in ad) else (
+            "AD3" if ("AD-3" in ad or "ad-3" in ad) else "NULL"))  # Get shortend AD
 
     df, values_for_column_fss = commonTools.read_cd3(cd3file, sheetName)
     sheet_dict_instances = ct.sheet_dict[sheetName]
@@ -187,7 +305,7 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
     # Fetch all ADs in all Subscribed Regions
     for reg in export_regions:
         config.__setitem__("region", ct.region_dict[reg])
-        ads = oci.identity.IdentityClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        ads = oci.identity.IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
             all_ads.append(aval.name)
 
@@ -206,14 +324,14 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
     for reg in export_regions:
         config.__setitem__("region", ct.region_dict[reg])
         for ntk_compartment_name in export_compartments:
-            ads = oci.identity.IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+            ads = oci.identity.IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                              signer=signer)
             for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
-                __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name,signer)
-
+                __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name,
+                                 signer)
 
     commonTools.write_to_cd3(values_for_column_fss, cd3file, sheetName)
     print("{0} FSS objects exported into CD3.\n".format(len(values_for_column_fss["Region"])))
-
 
     # writing data
     for reg in export_regions:

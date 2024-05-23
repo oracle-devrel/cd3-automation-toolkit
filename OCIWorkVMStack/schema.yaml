@@ -67,6 +67,8 @@ variableGroups:
   - mp_listing_id
   - mp_listing_resource_id
   - mp_listing_resource_version
+  - current_user_ocid
+  - region
 
 ###########
 # VARIABLES

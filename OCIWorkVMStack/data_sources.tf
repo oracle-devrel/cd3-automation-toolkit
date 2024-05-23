@@ -5,6 +5,11 @@ data "oci_identity_availability_domain" "ad" {
 }
 */
 
+data "oci_identity_tenancy" "tenancy" {
+    #Required
+    tenancy_id = var.tenancy_ocid
+}
+
 data "oci_core_subnet" "subnet" {
   #Required
   count     = var.vcn_strategy == "Use Existing VCN" ? 1 : 0

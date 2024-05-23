@@ -128,7 +128,7 @@ def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,impor
                 importCommands_drg[region.lower()].write("\nterraform import \"module.drg-route-rules[\\\"" + drg_rt_tf_name+ "_route_rule" + str(i) + "\\\"].oci_core_drg_route_table_route_rule.drg_route_rule\" drgRouteTables/"+str(drg_rt_info.id)+"/routeRules/"+str(rule.id))
         i=i+1
 
-def print_routetables(routetables,region,vcn_name,comp_name):
+def print_routetables(routetables,region,vcn_name,comp_name,gw_route_table_ids):
     for routetable in routetables.data:
         rules = routetable.route_rules
         display_name = routetable.display_name
@@ -137,10 +137,16 @@ def print_routetables(routetables,region,vcn_name,comp_name):
             tf_name = vcn_name + "_" + dn
             tf_name = commonTools.check_tf_variable(tf_name)
 
-            if ("Default Route Table for " in dn):
-                importCommands[region.lower()].write("\nterraform import \"module.default-route-tables[\\\"" + tf_name + "\\\"].oci_core_default_route_table.default_route_table\" " + str(routetable.id))
+            if routetable.id in gw_route_table_ids:
+                if ("Default Route Table for " in dn):
+                    importCommands[region.lower()].write("\nterraform import \"module.gateway-route-tables[\\\"" + tf_name + "\\\"].oci_core_default_route_table.default_route_table[0]\" " + str(routetable.id))
+                else:
+                    importCommands[region.lower()].write("\nterraform import \"module.gateway-route-tables[\\\"" + tf_name + "\\\"].oci_core_route_table.route_table[0]\" " + str(routetable.id))
             else:
-                importCommands[region.lower()].write("\nterraform import \"module.route-tables[\\\"" + tf_name + "\\\"].oci_core_route_table.route_table\" " + str(routetable.id))
+                if ("Default Route Table for " in dn):
+                    importCommands[region.lower()].write("\nterraform import \"module.route-tables[\\\"" + tf_name + "\\\"].oci_core_default_route_table.default_route_table[0]\" " + str(routetable.id))
+                else:
+                    importCommands[region.lower()].write("\nterraform import \"module.route-tables[\\\"" + tf_name + "\\\"].oci_core_route_table.route_table[0]\" " + str(routetable.id))
 
         if(not rules):
             insert_values(routetable, values_for_column, region, comp_name, vcn_name,None)
@@ -301,13 +307,36 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
         #comp_ocid_done = []
 
         for ntk_compartment_name in export_compartments:
+                gw_route_table_ids = []
                 vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 for v in vcns.data:
                     vcn_id = v.id
                     vcn_name=v.display_name
+                    IGWs = oci.pagination.list_call_get_all_results(vcn.list_internet_gateways,
+                                                                    compartment_id=ct.ntk_compartment_ids[
+                                                                        ntk_compartment_name],
+                                                                    vcn_id=vcn_id, lifecycle_state="AVAILABLE")
+                    NGWs = oci.pagination.list_call_get_all_results(vcn.list_nat_gateways,
+                                                                    compartment_id=ct.ntk_compartment_ids[
+                                                                        ntk_compartment_name],
+                                                                    vcn_id=vcn_id, lifecycle_state="AVAILABLE")
+                    SGWs = oci.pagination.list_call_get_all_results(vcn.list_service_gateways,
+                                                                    compartment_id=ct.ntk_compartment_ids[
+                                                                        ntk_compartment_name],
+                                                                    vcn_id=vcn_id, lifecycle_state="AVAILABLE")
+                    for igw in IGWs.data:
+                        if igw.route_table_id not in gw_route_table_ids:
+                            gw_route_table_ids.append(igw.route_table_id)
+                    for ngw in NGWs.data:
+                        if ngw.route_table_id not in gw_route_table_ids:
+                            gw_route_table_ids.append(ngw.route_table_id)
+                    for sgw in SGWs.data:
+                        if sgw.route_table_id not in gw_route_table_ids:
+                            gw_route_table_ids.append(sgw.route_table_id)
+
                     for ntk_compartment_name_again in export_compartments:
                             routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-                            print_routetables(routetables,region,vcn_name,ntk_compartment_name_again)
+                            print_routetables(routetables,region,vcn_name,ntk_compartment_name_again,gw_route_table_ids)
     commonTools.write_to_cd3(values_for_column,cd3file,"RouteRulesinOCI")
     print("RouteRules exported to CD3\n")
 

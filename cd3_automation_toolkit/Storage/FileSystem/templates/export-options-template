@@ -5,8 +5,10 @@
 
             #Optional
             access = "{{ access }}"
+            allowed_auth = [{{ allowed_auth }}]
             anonymous_gid = "{{ gid }}"
             anonymous_uid = "{{ uid }}"
             identity_squash = "{{ idsquash }}"
+            is_anonymous_access_allowed = "{{ is_anonymous_access_allowed }}"
             require_privileged_source_port = "{{ require_ps_port }}"
         },{% endif %}

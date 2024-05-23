@@ -2,7 +2,8 @@ if (Workflow.toLowerCase().contains("create")){
 return[
 "Validate CD3",
 "Identity",
-"Tags",
+"Governance",
+"Cost Management",
 "Network",
 "OCI Firewall",
 "DNS Management",
@@ -22,7 +23,8 @@ return[
 else if(Workflow.toLowerCase().contains("export")) {
 return[
 "Export Identity",
-"Export Tags",
+"Export Governance",
+"Export Cost Management",
 "Export Network",
 "Export OCI Firewall",
 "Export DNS Management",

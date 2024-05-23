@@ -186,3 +186,13 @@ variable "ingress_security_rules_udp_options_source_port_range_min" {
   type    = number
   default = null
 }
+
+variable "default_seclist" {
+  type    = bool
+  default = false
+}
+
+variable "manage_default_resource_id" {
+  type    = string
+  default = null
+}

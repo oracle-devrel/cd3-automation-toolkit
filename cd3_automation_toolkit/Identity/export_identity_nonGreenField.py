@@ -5,7 +5,7 @@
 # Compartments, Groups, Policies
 
 # Author: Suruchi
-# Updated by Shruthi Subramanian
+# Updated by Ranjini Rajendran
 # Users export code updated by Gaurav Goyal
 # Oracle Consulting
 #
@@ -137,48 +137,234 @@ def export_identity(inputfile, outdir, service_dir, config, signer, ct, export_c
     #Fetch Groups
     print("\nFetching Groups...")
     importCommands[ct.home_region].write("\n######### Writing import for Groups #########\n")
-    groups = oci.pagination.list_call_get_all_results(idc.list_groups,compartment_id=config['tenancy'])
-    dyngroups=oci.pagination.list_call_get_all_results(idc.list_dynamic_groups,compartment_id=config['tenancy'])
-    index = 0
-    groupsDict = {}
+    default_domain_url = None
+    try:
+        domain = idc.list_domains(config["tenancy"])
+        domain = domain.data
+        default_domain_url = None
+        domain_name_to_url = {}  # A dictionary to map domain display names to URLs
+        src_domain_data = {}
 
-    for group in groups.data:
-        grp_info=group
-        if(grp_info.lifecycle_state == "ACTIVE"):
-            groupsDict[grp_info.id] = grp_info.name
-            grp_display_name=grp_info.name
-            tf_name=commonTools.check_tf_variable(grp_display_name)
-            importCommands[ct.home_region].write("\nterraform import \"module.iam-groups[\\\""+str(tf_name)+"\\\"].oci_identity_group.group[0]\" "+grp_info.id)
-            index = index + 1
-            for col_header in values_for_column_groups.keys():
-                if (col_header == "Region"):
-                    values_for_column_groups[col_header].append(ct.home_region.capitalize())
-                elif col_header.lower() in commonTools.tagColumns:
-                    values_for_column_groups = commonTools.export_tags(grp_info, col_header, values_for_column_groups)
-                else:
-                    oci_objs=[grp_info]
-                    values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_groups,values_for_column_groups)
+        for d in domain:
+            if d.type == "DEFAULT":
+                default_domain_url = d.url
+            src_domain_data[d.display_name] = d.url
 
-    for group in dyngroups.data:
-        grp_info=group
-        if(grp_info.lifecycle_state == "ACTIVE"):
-            groupsDict[grp_info.id] = grp_info.name
-            grp_display_name=grp_info.name
-            tf_name=commonTools.check_tf_variable(grp_display_name)
-            importCommands[ct.home_region].write("\nterraform import \"module.iam-groups[\\\""+str(tf_name)+"\\\"].oci_identity_dynamic_group.dynamic_group[0]\" "+grp_info.id)
-            index = index + 1
-            for col_header in values_for_column_groups.keys():
-                if (col_header == "Region"):
-                    values_for_column_groups[col_header].append(ct.home_region.capitalize())
-                elif col_header.lower() in commonTools.tagColumns:
-                    values_for_column_groups = commonTools.export_tags(grp_info, col_header, values_for_column_groups)
-                else:
-                    oci_objs=[grp_info]
-                    values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_groups,values_for_column_groups)
+    except oci.exceptions.ServiceError as e:
+        pass
 
+    if default_domain_url is not None:
+        # Get the idcs_endpoint from user input
+        domain_display_name = input("Enter the ',' separated Domain names to export the groups OR Enter 'all' to export from all domains OR leave it Blank to export from default domain : ")
+        if domain_display_name.lower() == 'all':
+            domain_name_to_url = src_domain_data
+        elif not domain_display_name:
+            domain_name_to_url = {'Default': default_domain_url}
+        else:
+            input_domains = {}
+            try:
+                for item in domain_display_name.split(','):
+                    domain_url = src_domain_data.get(item)
+                    domain_name = item
+                    input_domains[domain_name] = domain_url
+                domain_name_to_url = input_domains
+            except Exception as e:
+                print("Invalid domain display name entered.")
+                exit()
 
-    commonTools.write_to_cd3(values_for_column_groups,cd3file,sheetName_groups)
-    print("{0} Groups exported into CD3.\n".format(len(values_for_column_groups["Region"])))
+        for domain_name, idcs_endpoint in domain_name_to_url.items():
+            domain_client = oci.identity_domains.IdentityDomainsClient(config, idcs_endpoint)
+            groups = domain_client.list_groups(attributes=['members'],attribute_sets=['all'])
+            dyngroups = domain_client.list_dynamic_resource_groups(attributes=['matching_rule'],attribute_sets=['all'])
+            index = 0
+
+            for grp_info in groups.data.resources:
+                defined_tags_info = grp_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags
+
+                grp_defined_tags = []
+                if defined_tags_info is not None:
+                    defined_tags = defined_tags_info.defined_tags
+                    for tag in defined_tags:
+                        namespace = tag.namespace
+                        key = tag.key
+                        value = tag.value
+                        if namespace is not None and key is not None and value is not None:
+                            grp_defined_tags.append(f"{namespace}.{key}={value}")
+
+                    grp_defined_tags = ";".join(grp_defined_tags)
+                # Initialize an empty list to store member names
+                member_names = []
+                if grp_info.members is not None:
+                    for section in grp_info.members:
+                        if section:
+                            name = section.name
+                            if name:
+                              member_names.append(name)
+                members_str = member_names
+                grp_display_name = grp_info.display_name
+                tf_name = commonTools.check_tf_variable(grp_display_name)
+                tf_name = domain_name + "_" + tf_name
+                import_group_id = "idcsEndpoint/" + str(idcs_endpoint) + "/groups/" + str(grp_info.id)
+                importCommands[ct.home_region].write("\nterraform import \"module.groups[\\\"" + str(
+                    tf_name) + "\\\"].oci_identity_domains_group.group[0]\" \"" + import_group_id + "\"")
+
+                index = index + 1
+                for col_header in values_for_column_groups.keys():
+                    if (col_header == "Region"):
+                        values_for_column_groups[col_header].append(ct.home_region.capitalize())
+                    elif (col_header == "Name"):
+                        values_for_column_groups[col_header].append(grp_display_name)
+                    elif col_header == "Members":
+                        members_string = ', '.join(members_str)
+                        # Append the comma-separated string to the column header
+                        values_for_column_groups[col_header].append(members_string)
+
+                    elif (col_header == "Description"):
+                        if hasattr(grp_info, 'urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group'):
+                            description = getattr(grp_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group,'description', "")
+                        values_for_column_groups[col_header].append(description)
+                    elif (col_header == "Domain Name"):
+                        domain_name = domain_name.strip()
+
+                        # Convert to uppercase if domain_name is "Default," "DEFAULT," or "default"
+                        if domain_name.lower() == 'default':
+                            domain_name = 'DEFAULT'
+
+                        values_for_column_groups[col_header].append(domain_name)
+
+                    elif (col_header == "Matching Rule"):
+                        matching_rule = ""
+                        values_for_column_groups[col_header].append(matching_rule)
+                    elif (col_header == "Defined Tags") and len(grp_defined_tags) != 0:
+                        values_for_column_groups[col_header].append(str(grp_defined_tags))
+                    else:
+                        oci_objs = [grp_info]
+                        values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_groups,
+                                                                                    values_for_column_groups)
+
+            for dg in dyngroups.data.resources:
+                dg_defined_tags = []
+                defined_tags_info = dg.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags
+                if defined_tags_info is not None:
+                    defined_tags = defined_tags_info.defined_tags
+                    for tag in defined_tags:
+                        namespace = tag.namespace
+                        key = tag.key
+                        value = tag.value
+                        if namespace is not None and key is not None and value is not None:
+                            dg_defined_tags.append(f"{namespace}.{key}={value}")
+
+                    dg_defined_tags = ";".join(dg_defined_tags)
+                dgrp_display_name = dg.display_name
+                tf_name = commonTools.check_tf_variable(dgrp_display_name)
+                tf_name = domain_name + "_" + tf_name
+                import_dg_id = "idcsEndpoint/"+str(idcs_endpoint)+"/dynamicResourceGroups/"+str(dg.id)
+                importCommands[ct.home_region].write("\nterraform import \"module.groups[\\\"" + str(
+                    tf_name) + "\\\"].oci_identity_domains_dynamic_resource_group.dynamic_group[0]\" \"" + import_dg_id +"\"")
+                index = index + 1
+                for col_header in values_for_column_groups.keys():
+                    if (col_header == "Region"):
+                        values_for_column_groups[col_header].append(ct.home_region.capitalize())
+                    elif (col_header == "Name"):
+                        values_for_column_groups[col_header].append(dgrp_display_name)
+                    elif (col_header == "Description"):
+                        values_for_column_groups[col_header].append(dg.description)
+                    elif (col_header == "Members"):
+                        members = ""
+                        values_for_column_groups[col_header].append(members)
+                    elif (col_header == "Domain Name"):
+                        domain_name = domain_name.strip()
+
+                        # Convert to uppercase if domain_name is "Default," "DEFAULT," or "default"
+                        if domain_name.lower() == 'default':
+                            domain_name = 'DEFAULT'
+
+                        values_for_column_groups[col_header].append(domain_name)
+
+                    elif (col_header == "Matching Rule"):
+                        values_for_column_groups[col_header].append(dg.matching_rule)
+                    elif (col_header == "Defined Tags") and len(dg_defined_tags) != 0:
+                        values_for_column_groups[col_header].append(str(dg_defined_tags))
+                    else:
+                        oci_objs = [dg]
+                        values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header,
+                                                                                    sheet_dict_groups,
+                                                                                    values_for_column_groups)
+
+            max_list_length = max(len(lst) for lst in values_for_column_groups.values())
+            for col_name in values_for_column_groups:
+                lst = values_for_column_groups[col_name]
+                lst.extend([""] * (max_list_length - len(lst)))
+
+            commonTools.write_to_cd3(values_for_column_groups, cd3file, sheetName_groups)
+
+        print("Groups exported to CD3\n")
+    else:
+        groups = oci.pagination.list_call_get_all_results(idc.list_groups, compartment_id = config['tenancy'])
+        dyngroups = oci.pagination.list_call_get_all_results(idc.list_dynamic_groups,
+                                                             compartment_id = config['tenancy'])
+        index = 0
+        groupsDict = {}
+
+        for group in groups.data:
+            grp_info = group
+            members = []
+            group_id = group.id
+            group_membership = oci.pagination.list_call_get_all_results(idc.list_user_group_memberships,
+                                                                        compartment_id = config['tenancy'],group_id = group_id)
+            for user in group_membership.data:
+                user_id = user.user_id
+                user_data = idc.get_user(user_id).data
+                user_name = user_data.name
+                members.append(user_name)
+            members_str = members
+            if (grp_info.lifecycle_state == "ACTIVE"):
+                groupsDict[grp_info.id] = grp_info.name
+                grp_display_name = grp_info.name
+                tf_name = commonTools.check_tf_variable(grp_display_name)
+                importCommands[ct.home_region].write("\nterraform import \"module.iam-groups[\\\"" + str(
+                    tf_name) + "\\\"].oci_identity_group.group[0]\" " + grp_info.id)
+                index = index + 1
+                for col_header in values_for_column_groups.keys():
+                    if (col_header == "Region"):
+                        values_for_column_groups[col_header].append(ct.home_region.capitalize())
+                    elif col_header == "Members":
+                        members_string = ', '.join(members_str)
+                        # Append the comma-separated string to the column header
+                        values_for_column_groups[col_header].append(members_string)
+                    elif col_header.lower() in commonTools.tagColumns:
+                        values_for_column_groups = commonTools.export_tags(grp_info, col_header,
+                                                                           values_for_column_groups)
+                    else:
+                        oci_objs = [grp_info]
+                        values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header,
+                                                                                    sheet_dict_groups,
+                                                                                    values_for_column_groups)
+
+        for group in dyngroups.data:
+            grp_info = group
+            if (grp_info.lifecycle_state == "ACTIVE"):
+                groupsDict[grp_info.id] = grp_info.name
+                grp_display_name = grp_info.name
+                tf_name = commonTools.check_tf_variable(grp_display_name)
+                importCommands[ct.home_region].write("\nterraform import \"module.iam-groups[\\\"" + str(
+                    tf_name) + "\\\"].oci_identity_dynamic_group.dynamic_group[0]\" " + grp_info.id)
+                index = index + 1
+                for col_header in values_for_column_groups.keys():
+                    if (col_header == "Region"):
+                        values_for_column_groups[col_header].append(ct.home_region.capitalize())
+                    elif col_header.lower() in commonTools.tagColumns:
+                        values_for_column_groups = commonTools.export_tags(grp_info, col_header,
+                                                                           values_for_column_groups)
+                    else:
+                        oci_objs = [grp_info]
+                        values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header,
+                                                                                    sheet_dict_groups,
+                                                                                    values_for_column_groups)
+
+        commonTools.write_to_cd3(values_for_column_groups, cd3file, sheetName_groups)
+        print("Groups exported to CD3\n")
+
 
 
     # Fetch Policies

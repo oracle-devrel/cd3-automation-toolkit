@@ -84,6 +84,12 @@ variable "cni_type" {
   default     = null
 }
 
+variable "fault_domains" {
+  type        = list(any)
+  description = "fault domain"
+  default     = null
+}
+
 variable "max_pods_per_node" {
   type        = number
   description = "The maximum nuber of pods in a node"

@@ -73,9 +73,8 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
         if str(df.loc[i, 'Region']).lower() == 'nan' or \
                 str(df.loc[i, 'Compartment Name']).lower() == 'nan' or \
                 str(df.loc[i, 'CPU Core Count']).lower() == 'nan' or \
-                str(df.loc[i, 'Data Storage Size in TB']).lower() == 'nan' or \
                 str(df.loc[i, 'DB Name']).lower() == 'nan':
-            print("\nRegion, Compartment Name, CPU Core Count, Data Storage Size in TB and DB Name fields are mandatory. Please enter a value and try again !!")
+            print("\nRegion, Compartment Name, CPU Core Count and DB Name fields are mandatory. Please enter a value and try again !!")
             print("\n** Exiting **")
             exit(1)
 

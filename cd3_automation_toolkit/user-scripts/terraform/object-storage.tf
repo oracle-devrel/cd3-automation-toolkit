@@ -65,7 +65,7 @@ module "oss-buckets" {
 }
 
 #############################
-# Module Block - Management Services for Object Storage
+# Module Block - OSS Logging
 # Create Object Storage Log Groups and Logs
 #############################
 
@@ -101,7 +101,6 @@ output "oss_log_group_map" {
 
 module "oss-logs" {
   source     = "./modules/managementservices/log"
-  depends_on = [module.oss-log-groups]
   for_each   = var.oss_logs != null ? var.oss_logs : {}
 
   # Logs

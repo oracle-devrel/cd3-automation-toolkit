@@ -109,7 +109,7 @@ def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix,
                 if columnvalue == '':
                     columnvalue = "FIVE_TUPLE"
 
-            if columnname == "Backend HealthCheck Protocol(HTTP|HTTPS|TCP|UDP)":
+            if columnname == "Backend HealthCheck Protocol(HTTP|HTTPS|TCP|UDP|DNS)":
                 columnname = "backend_healthcheck_protocol"
                 if columnvalue == '':
                     columnvalue = "HTTP"

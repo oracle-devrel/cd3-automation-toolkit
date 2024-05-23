@@ -14,11 +14,8 @@ users = {
         name        = "{{ name }}"
         description = "{{ description }}"
         email = "{{ email }}"
-        {% if groups_names %}
-        group_membership = [{{ groups_names }}]
-        {% endif %}
-        {% if capabilities_to_disable %}
-        disable_capabilities = [{{ capabilities_to_disable }}]
+        {% if capabilities %}
+        disable_capabilities = [{{ capabilities }}]
         {% endif %}
 
     {#  ##Do not modify below this line##  #}

@@ -23,6 +23,13 @@ groups = {
                 EOF
             {% endif %}
         {% endif %}
+        {% if members %}
+        members           = [
+          {% for member in members.split(',') %}
+            "{{ member }}",
+          {% endfor %}
+        ]
+        {% endif %}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}

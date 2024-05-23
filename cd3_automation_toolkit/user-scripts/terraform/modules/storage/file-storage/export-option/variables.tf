@@ -28,3 +28,7 @@ variable "key_name" {
 variable "nfs_export_options" {
   type = map(any)
 }
+variable "is_idmap_groups_for_sys_auth" {
+  type    = bool
+  default = null
+}

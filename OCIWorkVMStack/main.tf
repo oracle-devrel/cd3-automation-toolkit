@@ -43,6 +43,10 @@ module "instance" {
   ssh_public_key            = var.ssh_public_key
   assign_public_ip          = local.assignPublicIP
   cloud_init_script         = var.cloud_init_script
+  tenancy_ocid              = var.tenancy_ocid
+  current_user_ocid         = var.current_user_ocid
+  config_region             = var.region 
+  tenancy_name              = local.tenancy_name
 }
 
 # This resource will wait for ~ 15 min to cloud init script to completed cd3 related steps

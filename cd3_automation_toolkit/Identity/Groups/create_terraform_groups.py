@@ -6,7 +6,7 @@
 #
 # Author: Suruchi Singla
 # Oracle Consulting
-# Modified (TF Upgrade): Shruthi Subramanian
+# Modified by: Ranjini Rajendran
 #
 import os
 from pathlib import Path
@@ -33,6 +33,7 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     groups_template = env.get_template('groups-template')
+    identity_domain_groups_template = env.get_template('identity-domain-groups-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -79,7 +80,7 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
         for columnname in dfcolumns:
 
             # Column value
-            if 'description' in columnname.lower():
+            if 'Description' in columnname.lower():
                 columnvalue = str(df[columnname][i])
                 tempdict = {'description': columnvalue}
             else:
@@ -94,17 +95,56 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == 'Name':
                 columnvalue = columnvalue.strip()
-                group_tf_name = commonTools.check_tf_variable(columnvalue)
+                domain = df.loc[i, 'Domain Name']
+                # Convert to uppercase if domain is "Default," "DEFAULT," or "default"
+                if domain == 'default':
+                    domain = 'DEFAULT'
+                elif pd.isna(domain):
+                    domain = ''
+                group_tf_name = f"{domain}_{commonTools.check_tf_variable(columnvalue)}"
+                if group_tf_name.startswith('_'):
+                    group_tf_name = group_tf_name[1:]
                 tempdict = {'group_tf_name': group_tf_name}
 
-            # If description field is empty; put name as description
-            if columnname == 'Description':
-                if columnvalue == "" or columnvalue == 'nan':
-                    columnvalue = df.loc[i,'Name']
-                    tempdict = {'description': columnvalue }
+            # Check for members column in the DataFrame
+            if 'Members' in df.columns:
+                members = str(df.loc[i, 'Members']).strip()
+            else:
+                members = ""  # Default value if 'Members' column is not found
+
+                tempdict = {'members': members}
+
+            if columnname == 'Domain Name':
+                columnvalue = columnvalue.strip()
+                domain = columnvalue.strip()
+                # Convert to uppercase if columnvalue is "Default," "DEFAULT," or "default"
+                if columnvalue.lower() == 'default':
+                    domain = 'DEFAULT'
+                tempdict = {'domain': domain}
+
+                # Initialize the template variable
+                selected_template = groups_template if domain == 'nan' else identity_domain_groups_template
+
+            # Process Defined and Freeform Tags based on columnname and 'Domain Name'
+            if columnname.lower() in commonTools.tagColumns:
+                if domain == 'nan':
+                    # Process tags using the existing code
+                    tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
                 else:
-                    columnvalue = commonTools.check_columnvalue(columnvalue)
-                    tempdict = {'description': columnvalue}
+                    # When 'Domain Name' is not 'nan', process 'Defined Tags' differently
+                    if columnname == 'Defined Tags':
+                        defined_tags = columnvalue.strip()
+                        tag_strings = defined_tags.split(';')
+
+                        defined_tags_list = []
+                        for tag_string in tag_strings:
+                            parts = tag_string.split('=')
+                            if len(parts) == 2:
+                                namespace_key = parts[0]
+                                value = parts[1]
+                                namespace, key = namespace_key.split('.')
+                                tempdict = {'namespace': namespace, 'key': key, 'value': value}
+                                defined_tags_list.append(tempdict)
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -114,7 +154,7 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
             tempStr.update(tempdict)
 
         # Write all info to TF string
-        tfStr[region]= tfStr[region][:-1] + groups_template.render(tempStr)
+        tfStr[region]= tfStr[region][:-1] + selected_template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     reg=ct.home_region

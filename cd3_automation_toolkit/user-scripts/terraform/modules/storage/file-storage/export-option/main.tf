@@ -21,10 +21,13 @@ resource "oci_file_storage_export" "export" {
 
       #Optional
       access                         = export_options.value.access
+      allowed_auth                   = export_options.value.allowed_auth
       anonymous_gid                  = export_options.value.anonymous_gid
       anonymous_uid                  = export_options.value.anonymous_uid
       identity_squash                = export_options.value.identity_squash
+      is_anonymous_access_allowed    = export_options.value.is_anonymous_access_allowed
       require_privileged_source_port = export_options.value.require_privileged_source_port
     }
   }
+  is_idmap_groups_for_sys_auth  = var.is_idmap_groups_for_sys_auth
 }

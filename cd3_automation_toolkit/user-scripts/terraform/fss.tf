@@ -23,7 +23,7 @@ data "oci_core_vcns" "oci_vcns_fss" {
 module "mts" {
   # depends_on = [module.nsgs] # Uncomment to execute NSG and Mount Target together
   #Required
-  source   = "./modules/storage/file-storage/mount-target"
+  source   = "../modules/storage/file-storage/mount-target"
   for_each = (var.mount_targets != null || var.mount_targets != {}) ? var.mount_targets : {}
   #Required
   availability_domain    = each.value.availability_domain != null && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : null
@@ -41,12 +41,11 @@ module "mts" {
   #nsg_ids = [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]]
   #nsg_ids = each.value.nsg_ids == [] ? null : ([for nsg in each.value.nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc*",nsg)) > 0 ? nsg : data.oci_core_network_security_groups.network_security_groups[nsg].network_security_groups[*].id)])
   network_security_group_ids = each.value.nsg_ids
-
 }
 
 module "fss" {
   #Required
-  source   = "./modules/storage/file-storage/fss"
+  source   = "../modules/storage/file-storage/fss"
   for_each = (var.fss != null || var.fss != {}) ? var.fss : {}
 
   #Required
@@ -57,13 +56,14 @@ module "fss" {
   defined_tags       = each.value.defined_tags
   display_name       = each.value.display_name
   freeform_tags      = each.value.freeform_tags
-  kms_key_id         = each.value.kms_key_name
-  source_snapshot_id = each.value.source_snapshot_name
+  kms_key_id         = each.value.kms_key_id
+  source_snapshot_id = each.value.source_snapshot
+  filesystem_snapshot_policy_id = each.value.snapshot_policy
 }
 
 module "fss-export-options" {
   #Required
-  source   = "./modules/storage/file-storage/export-option"
+  source   = "../modules/storage/file-storage/export-option"
   for_each = (var.nfs_export_options != null || var.nfs_export_options != {}) ? var.nfs_export_options : {}
 
   #Required
@@ -73,3 +73,76 @@ module "fss-export-options" {
   nfs_export_options = var.nfs_export_options
   key_name           = each.key
 }
+
+module "fss-replication" {
+  #Required
+  source   = "../modules/storage/file-storage/fss-replication"
+  for_each = (var.fss_replication != null || var.fss_replication != {}) ? var.fss_replication : {}
+
+  #Required
+  compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  source_id = length(regexall("ocid1.filesystem.oc1*", each.value.source_id)) > 0 ? each.value.source_id : merge(module.fss.*...)[each.value.source_id]["fss_tf_id"]
+  target_id = each.value.target_id
+  #Optional
+  defined_tags       = each.value.defined_tags
+  display_name       = each.value.display_name
+  freeform_tags      = each.value.freeform_tags
+  replication_interval = each.value.replication_interval
+
+}
+
+#############################
+# Module Block - FSS Logging
+# Create Log Groups and Logs
+#############################
+
+module "nfs-log-groups" {
+  source   = "../modules/managementservices/log-group"
+  for_each = (var.nfs_log_groups != null || var.nfs_log_groups != {}) ? var.nfs_log_groups : {}
+
+  # Log Groups
+  #Required
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+
+  display_name = each.value.display_name
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  description   = each.value.description
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "log_group_map" {
+  value = [ for k,v in merge(module.loadbalancer-log-groups.*...) : v.log_group_tf_id ]
+}
+*/
+
+module "nfs-logs" {
+  source     = "../modules/managementservices/log"
+  for_each   = (var.nfs_logs != null || var.nfs_logs != {}) ? var.nfs_logs : {}
+
+  # Logs
+  #Required
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  display_name   = each.value.display_name
+  log_group_id   = length(regexall("ocid1.loggroup.oc*", each.value.log_group_id)) > 0 ? each.value.log_group_id : merge(module.nfs-log-groups.*...)[each.value.log_group_id]["log_group_tf_id"]
+
+  log_type = each.value.log_type
+  #Required
+  source_category        = each.value.category
+  source_resource        = length(regexall("ocid1.*", each.value.resource)) > 0 ? each.value.resource : merge(module.mts.*...)[each.value.resource]["mt_tf_id"]
+  source_service         = each.value.service
+  source_type            = each.value.source_type
+  defined_tags           = each.value.defined_tags
+  freeform_tags          = each.value.freeform_tags
+  log_is_enabled         = (each.value.is_enabled == "" || each.value.is_enabled == null) ? true : each.value.is_enabled
+  log_retention_duration = (each.value.retention_duration == "" || each.value.retention_duration == null) ? 30 : each.value.retention_duration
+
+}
+
+/*
+output "logs_id" {
+  value = [ for k,v in merge(module.loadbalancer-logs.*...) : v.log_tf_id]
+}
+*/

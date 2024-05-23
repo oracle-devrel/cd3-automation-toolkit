@@ -16,4 +16,8 @@ resource "oci_file_storage_file_system" "file_system" {
   freeform_tags      = var.freeform_tags
   kms_key_id         = var.kms_key_id
   source_snapshot_id = var.source_snapshot_id
+  filesystem_snapshot_policy_id = var.filesystem_snapshot_policy_id
+  lifecycle {
+    ignore_changes = [source_snapshot_id]
+  }
 }

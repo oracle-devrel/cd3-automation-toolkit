@@ -10,6 +10,7 @@ resource "oci_containerengine_cluster" "cluster" {
   defined_tags       = var.defined_tags
   freeform_tags      = var.freeform_tags
   kms_key_id         = var.kms_key_id
+  type               = var.type
 
   cluster_pod_network_options {
     #Required
@@ -21,6 +22,18 @@ resource "oci_containerengine_cluster" "cluster" {
     nsg_ids              = var.nsg_ids != null ? (local.endpoint_nsg_ids == [] ? ["INVALID ENDPOINT NSG Name"] : local.endpoint_nsg_ids) : null
     subnet_id            = var.endpoint_subnet_id
   }
+
+  image_policy_config {
+        #Optional
+        is_policy_enabled = var.is_policy_enabled
+        dynamic "key_details" {
+            for_each = var.policy_kms_key_id != null ? [1] : []
+            content{
+            #Optional
+            kms_key_id = var.policy_kms_key_id
+            }
+        }
+    }
 
   options {
     add_ons {
@@ -37,9 +50,18 @@ resource "oci_containerengine_cluster" "cluster" {
       services_cidr = var.services_cidr
     }
     service_lb_subnet_ids = flatten(tolist([for subnet in var.service_lb_subnet_ids : (length(regexall("ocid1.subnet.oc*", subnet)) > 0 ? [subnet] : data.oci_core_subnets.oci_subnets_cluster_lbs[subnet].subnets[*].id)]))
-  }
-
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
+    persistent_volume_config {
+     #Optional
+     defined_tags = var.volume_defined_tags
+     freeform_tags = var.volume_freeform_tags
+    }
+    service_lb_config {
+     #Optional
+     defined_tags = var.lb_defined_tags
+     freeform_tags = var.lb_freeform_tags
+   }
+ }
+ lifecycle {
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"],timeouts]
   }
 }

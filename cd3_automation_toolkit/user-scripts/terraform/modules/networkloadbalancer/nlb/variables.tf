@@ -53,6 +53,13 @@ variable "nlb_ip_version" {
   default = null
 }
 
+
+variable "assigned_private_ipv4" {
+  type    = string
+  default = null
+}
+
+
 variable "reserved_ips_id" {
   type    = list(any)
   default = []

@@ -38,6 +38,39 @@ blockvolumes = {
             kms_key_id           = "{{ kms_key_id }}"
             {% endif %}
 
+            {% if source_details and source_details != '' %}
+            source_details = [{
+                id = "{{ source_details[1] }}"
+                type = "{{ source_details[0] }}"
+            }]
+           {% endif %}
+
+           {% if block_volume_replicas and block_volume_replicas != '' %}
+            block_volume_replicas = [{
+                availability_domain = "{{ block_volume_replicas[0] }}"
+                display_name = "{{ block_volume_replicas[1] }}"
+            }]
+           {% endif %}
+
+           {% if block_volume_replicas_deletion %}
+            block_volume_replicas_deletion  = {{ block_volume_replicas_deletion }}
+           {% endif %}
+
+           {% if autotune_type and autotune_type != '' %}
+            autotune_policies = [
+               {% for autotune_item in autotune_policies %}
+                  {
+                    autotune_type = "{{ autotune_item['autotune_type'] }}"
+                    {% if autotune_item['autotune_type'] == "DETACHED_VOLUME" %}
+                    max_vpus_per_gb = {{ autotune_item['max_vpus_per_gb'] }}
+                    {% else %}
+                    max_vpus_per_gb = "{{ autotune_item['max_vpus_per_gb'] }}"
+                    {% endif %}
+                  },
+               {% endfor %}
+             ]
+           {% endif %}
+
             {% if attached_to_instance %}
             attach_to_instance = "{{ attached_to_instance }}"
             {% endif %}
@@ -67,7 +100,7 @@ blockvolumes = {
             {% endif %}
 
             {% if is_read_only %}
-            is_read_only = "{{ is_read_only }}"
+            is_read_only = {{ is_read_only }}
             {% endif %}
 
             {% if is_pv_encryption_in_transit_enabled %}
@@ -75,11 +108,15 @@ blockvolumes = {
             {% endif %}
 
             {% if is_shareable %}
-            is_shareable = "{{ is_shareable }}"
+            is_shareable = {{ is_shareable }}
             {% endif %}
 
             {% if use_chap %}
-            use_chap = "{{ use_chap }}"
+            use_chap = {{ use_chap }}
+            {% endif %}
+
+            {% if is_agent_auto_iscsi_login_enabled %}
+            is_agent_auto_iscsi_login_enabled = {{ is_agent_auto_iscsi_login_enabled }}
             {% endif %}
 
         {#  ##Do not modify below this line##  #}

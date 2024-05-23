@@ -165,6 +165,7 @@ module "iam-groups" {
   group_name        = each.value.group_name
   group_description = each.value.group_description
   matching_rule     = each.value.matching_rule
+  members           = lookup(each.value, "members", [])
 
   #Optional
   defined_tags  = each.value.defined_tags
@@ -222,8 +223,6 @@ module "iam-users" {
   user_name        = each.value.name
   user_description = each.value.description
   user_email       = each.value.email
-  group_membership = each.value.group_membership != null ? each.value.group_membership : null
-  #group_membership    = each.value.group_membership != null ? length(regexall("ocid1.groupmembership.oc*", each.value.group_membership.0)) > 0 ? each.value.group_membership.0 : merge(module.iam-groups.*...)[each.value.group_membership.0]["group_tf_id"] : null
   tenancy_ocid         = var.tenancy_ocid
   disable_capabilities = each.value.disable_capabilities != null ? each.value.disable_capabilities : null
 
@@ -232,7 +231,6 @@ module "iam-users" {
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
 }
-
 
 
 ############################
@@ -277,4 +275,57 @@ module "iam-network-sources" {
   #vcn_comp_map = each.value.vcn_comp_map != null ? each.value.vcn_comp_map : null
   defined_tags  = try(each.value.defined_tags, null)
   freeform_tags = try(each.value.freeform_tags, null)
+}
+############################
+# Module Block - Identity
+# Create Identity Domain Groups
+############################
+module "groups" {
+
+  depends_on = [module.users]
+
+  source   = "./modules/identity/identity-domain-group"
+  for_each = var.identity_domain_groups
+
+  group_name               = each.value.group_name
+  group_description        = each.value.group_description
+  matching_rule            = each.value.matching_rule
+  idcs_endpoint            = each.value.idcs_endpoint
+  tenancy_ocid             = var.tenancy_ocid
+  #emails                  = [for member in each.value.members : member.value]
+  emails                   = can(lookup(each.value, "members", null)) && each.value.members != null ? [for member in each.value.members : member.value] : []
+
+
+  #Optional
+  defined_tags             = each.value.defined_tags
+  freeform_tags_key        = each.value.freeform_tags != null ? each.value.freeform_tags.key : null
+  freeform_tags_value      = each.value.freeform_tags != null ? each.value.freeform_tags.value : null
+
+}
+
+############################
+# Module Block - Identity
+# Create Identity Domain Users
+############################
+
+module "users" {
+  source           = "./modules/identity/identity-domain-user"
+  depends_on       = [module.iam-groups]
+  for_each         = var.identity_domain_users
+  user_name        = each.value.user_name
+  family_name      = each.value.name.family_name
+  idcs_endpoint    = each.value.idcs_endpoint
+  description      = each.value.description
+  email            = each.value.emails.value
+  tenancy_ocid     = var.tenancy_ocid
+  groups           = each.value.groups != null ? each.value.groups : null
+
+  # Pass the capabilities_to_disable variable to the module
+  urnietfparamsscimschemasoracleidcsextensioncapabilities_user = each.value.urnietfparamsscimschemasoracleidcsextensioncapabilities_user
+
+  #Optional
+  defined_tags             = each.value.defined_tags
+  freeform_tags_key        = each.value.freeform_tags != null ? each.value.freeform_tags.key : null
+  freeform_tags_value      = each.value.freeform_tags != null ? each.value.freeform_tags.value : null
+
 }

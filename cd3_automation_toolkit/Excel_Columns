@@ -92,6 +92,7 @@
 	},
 	"FSS" :
 	{
+	    "Snapshot Policy" : "filesystem_snapshot_policy_id"
 	},
 	"BlockVolumes" :
 	{
@@ -164,7 +165,8 @@
         "Service CIDR Block" : "services_cidr",
         "Pod CIDR Block" : "pods_cidr",
         "API Endpoint NSGs" : "nsg_ids",
-        "CompartmentName&Node Pool Name" : "nodepool_display_name"
+        "CompartmentName&Node Pool Name" : "nodepool_display_name",
+        "Policy KMS Key ID" : "image_policy_config.key_details.kms_key_id"
     },
 
     "DBSystems-VM-BM" :
@@ -237,7 +239,7 @@
         "Backend ServerComp&ServerName:Port" : "backend_server_name:port",
         "Backend Set Name" : "backend_set_name",
         "Backend Policy(FIVE_TUPLE|THREE_TUPLE|TWO_TUPLE)" : "policy",
-        "Backend HealthCheck Protocol(HTTP|HTTPS|TCP|UDP)" : "protocol",
+        "Backend HealthCheck Protocol(HTTP|HTTPS|TCP|UDP|DNS)" : "protocol",
         "Backend HealthCheck Port" : "port",
         "Backend HealthCheck URL" : "url_path",
         "Backend HealthCheck Return Code" : "return_code",
@@ -262,6 +264,8 @@
     },
     "Buckets" : {},
     "DNS-Views-Zones-Records" : {},
-    "DNS-Resolvers" : {}
+    "DNS-Resolvers" : {},
+    "Quotas" : {},
+    "Budgets" : {}
 
 }

@@ -28,6 +28,7 @@ resource "oci_core_service_gateway" "service_gateway" {
   defined_tags  = var.defined_tags
   display_name  = var.display_name
   freeform_tags = var.freeform_tags
+  route_table_id = var.route_table_id
   #route_table_id = (var.route_table_id != "" && var.route_table_id != null) ? var.route_table_id : null
 
 }
