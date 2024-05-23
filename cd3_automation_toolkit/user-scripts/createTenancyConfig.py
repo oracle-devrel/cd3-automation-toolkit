@@ -23,6 +23,7 @@ import glob
 import yaml
 import subprocess
 sys.path.append(os.getcwd()+"/..")
+from os import environ
 from commonTools import *
 from copy import deepcopy
 from subprocess import DEVNULL
@@ -312,7 +313,8 @@ variables_example_file = modules_dir + "/variables_example.tf"
 setupoci_props_toolkit_file_path = toolkit_dir + "/setUpOCI.properties"
 
 jenkins_dir = ''
-if hasattr(os.environ,'JENKINS_INSTALL'):
+#if hasattr(os.environ,'JENKINS_INSTALL'):
+if environ.get('JENKINS_INSTALL') is not None:
     jenkins_dir = os.environ['JENKINS_INSTALL']
 
 prefix = config.get('Default', 'customer_name').strip()
@@ -966,7 +968,8 @@ if use_devops == 'yes':
     devops_dir = terraform_files
 
     jenkins_home = user_dir+"/tenancies/jenkins_home"
-    if hasattr(os.environ, 'JENKINS_HOME'):
+    #if hasattr(os.environ, 'JENKINS_HOME'):
+    if environ.get('JENKINS_HOME') is not None:
         jenkins_home = os.environ['JENKINS_HOME']
 
     git_config_file = config_files + "/" + prefix + "_git_config"

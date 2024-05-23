@@ -67,7 +67,7 @@ echo "********************************************************" >> $logfile 2>&1
 echo "########################################################" >> $logfile 2>&1
 echo "Downloading CD3 Automation Toolkit Code from Github " >> $logfile 2>&1
 echo "########################################################" >> $logfile 2>&1
-sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git $toolkit_dir >> $logfile 2>&1
+sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b develop $toolkit_dir >> $logfile 2>&1
 stop_exec
 sudo ls -la /tmp/githubCode >> $logfile 2>&1
 echo "Downloading CD3 Automation Toolkit Code from Github completed successfully" >> $logfile 2>&1

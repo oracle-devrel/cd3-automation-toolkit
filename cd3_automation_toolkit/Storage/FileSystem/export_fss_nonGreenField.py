@@ -57,9 +57,9 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
             values_for_column_fss[col_header].append(IDSquash)
         elif (col_header == "Require PS Port (true|false)"):
             values_for_column_fss[col_header].append(require_ps_port)
-        elif (commonTools.check_tf_variable(col_header) == "is_anonymous_access_allowed"):
+        elif (commonTools.check_column_headers(col_header) == "is_anonymous_access_allowed"):
             values_for_column_fss[col_header].append(is_anonymous_access_allowed)
-        elif (commonTools.check_tf_variable(col_header) == "is_idmap_groups_for_sys_auth"):
+        elif (commonTools.check_column_headers(col_header) == "is_idmap_groups_for_sys_auth"):
             values_for_column_fss[col_header].append(is_ldap_groups_enabled)
         elif (col_header == "Allowed Auth"):
             if len(allowed_auth) == 1:
