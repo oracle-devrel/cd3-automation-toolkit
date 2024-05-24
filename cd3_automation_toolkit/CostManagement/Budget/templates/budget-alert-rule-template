@@ -5,6 +5,12 @@
 ############################
 # Governance
 # Create Budget Alert Rules
+# Allowed Values:
+# budget_id = <budget name or ocid>
+# type = <ACTUAL/FORECAST>
+# threshold = <threshold value>
+# threshold_type = <ABSOLUTE/PERCENTAGE>
+
 # Sample import command :
 # terraform import "module.budget-alert-rules[\"<< budget alert rule terraform variable name>>\"].oci_budget_alert_rule.alert_rule" budgets/<budget ocid>/alertRules/<budget alert rule ocid>
 ############################
