@@ -4,6 +4,13 @@
 ############################
 # Governance
 # Create Budgets
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# budget_end_date and budget_start_date are mandatory for budgets of "SINGLE USE" type
+# budget_processing_period_start_offset is mandatory for budgets of "MONTH" type
+# target_type - supported values are "TAG"/"COMPARTMENT"
+# for COMPARTMENT type target, targets value should be list of compartment ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# for TAG type target, targets value should be list of  <tag-namespace.tag-key.tag-value>
 # Sample import command :
 # terraform import "module.budgets[\"<<budget terraform variable name>>\"].oci_budget_budget.budget" <budget ocid>
 ############################
