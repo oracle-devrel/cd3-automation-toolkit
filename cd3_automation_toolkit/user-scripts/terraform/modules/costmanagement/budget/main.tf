@@ -24,5 +24,9 @@ resource "oci_budget_budget" "budget" {
   end_date                              = var.budget_end_date != null ?"${var.budget_end_date}T23:59:59.001-00:00":null
   target_type = var.target_type
   targets     = var.targets
+  lifecycle {
+    ignore_changes = [start_date,end_date]
+  }
+
 
 }
