@@ -397,7 +397,7 @@ output "default_seclist_id_map" {
 ############################
 
 module "security-lists" {
-  source   = "../modules/network/sec-list"
+  source   = "./modules/network/sec-list"
   for_each = (local.all_seclists != null || local.all_seclists != {}) ? local.all_seclists : {}
 
   #Required

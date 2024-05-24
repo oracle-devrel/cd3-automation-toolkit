@@ -74,7 +74,7 @@ data "oci_core_vlans" "sddc_vlan_id" {
 
 module "sddcs" {
   #depends_on = [module.vlans]
-  source                      = "../modules/sddc/sddc"
+  source                      = "./modules/sddc/sddc"
   for_each                    = var.sddcs != null ? var.sddcs : {}
   compartment_id              = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   network_compartment_id      = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
@@ -206,7 +206,7 @@ data "oci_ocvp_sddcs" "oci_sddcs" {
 module "sddc-clusters" {
   #depends_on                   = [module.nsgs, module.vcns, module.route-tables, module.vlans, module.sddcs]
   depends_on                   = [module.sddcs]
-  source                       = "../modules/sddc/sddc-cluster"
+  source                       = "./modules/sddc/sddc-cluster"
   for_each                     = var.sddc-clusters != null ? var.sddc-clusters : {}
   compartment_id               = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   network_compartment_id       = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
