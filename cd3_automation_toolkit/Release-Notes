@@ -1,4 +1,18 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2024.3.0
+Jun 7th, 2024
+-------------------------------------
+1. OCVS upgrade to include multi clusters.
+2. OKE upgrade to include Virtual NodePools.
+3. Enable Logging for OCI Firewall and FSS.
+4. NLB upgrade to include DNS health checks.
+5. Block Volumes upgrade to include cross region replication and cloning.
+6. FSS upgrade to include attaching snapshot policies, cloning, replication.
+7. Network upgrade to allow route table association with gateways - drg, internet gateway, nat gateway
+   and service gateway.
+8. Inclusion of new services - KMS(Key/Vaults), Governance(Budgets/Quota Policies)
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2024.2.2
 Apr 30, 2024
 -------------------------------------
