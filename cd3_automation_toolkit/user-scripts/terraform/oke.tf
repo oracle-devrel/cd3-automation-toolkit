@@ -135,7 +135,7 @@ module "nodepools" {
 }
 
 module "virtual-nodepools" {
-  source                              = "../modules/oke/virtual-nodepool"
+  source                              = "./modules/oke/virtual-nodepool"
   for_each                            = var.virtual-nodepools
   tenancy_ocid                        = var.tenancy_ocid
   display_name                        = each.value.display_name
