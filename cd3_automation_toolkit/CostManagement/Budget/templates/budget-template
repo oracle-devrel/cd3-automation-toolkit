@@ -5,7 +5,7 @@
 # Governance
 # Create Budgets
 # Sample import command :
-# terraform import "module.budgets[\"<<budget terraform variable name>>\"].oci_budget_budget.budget" < budget ocid>
+# terraform import "module.budgets[\"<<budget terraform variable name>>\"].oci_budget_budget.budget" <budget ocid>
 ############################
 
 budgets = {
