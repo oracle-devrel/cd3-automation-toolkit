@@ -220,7 +220,7 @@ def fetch_compartments(outdir, outdir_struct, ct):
     ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
     ct.all_regions.append('global')
     print("\nWriting to variables files...")
-    home_region_services = ['identity', 'tagging', 'budget']
+    home_region_services = ['identity', 'tagging', 'budget','quota']
     for region in ct.all_regions:
         # for global directory
         if region == 'global':
