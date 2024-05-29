@@ -554,6 +554,11 @@ tenancy_id=tenancy
 ## Authenticate
 ct = commonTools()
 config, signer = ct.authenticate(auth_mechanism, config_file_path)
+## Fetch OCI_regions
+cd3service = cd3Services()
+print("")
+cd3service.fetch_regions(config, signer)
+ct = commonTools()
 try:
     ct.get_subscribedregions(config,signer)
 except Exception as e:
@@ -566,10 +571,6 @@ except Exception as e:
 
 home_region = ct.home_region
 
-## Fetch OCI_regions
-cd3service = cd3Services()
-print("")
-cd3service.fetch_regions(config, signer)
 
 ## Check the remote state requirements
 backend_file = open(modules_dir + "/backend.tf", 'r')
