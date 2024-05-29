@@ -5,39 +5,45 @@
 # Security
 # Create KMS Vault and Key
 # Allowed Values:
-# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c"
+# Sample import command:
+# terraform import "module.vaults[\"<<vault terraform variable name>>\"].oci_kms_vault.vault" <vault ocid>
 ############################
 
 vaults = {
     ##Add New Vaults for {{ region|lower }} here##
 }{% else %}
 
-    {{ vault_tf_name }} = {
-            compartment_id = "{{ compartment_tf_name }}"
-            display_name = "{{ vault_name }}"
-            vault_type = "DEFAULT"
+    {{ vault_display_tf_name }} = {
+            compartment_id = "{{ vault_compartment_tf_name }}"
+            display_name = "{{ vault_display_tf_name }}"
+            vault_type = "{{ vault_type }}"
+            {% if replica_region and replica_region!="" and replica_region!="nan" %}
+            replica_region = "{{ replica_region }}"
+            {% endif %}
+
 
             {#  ##Do not modify below this line##  #}
             {#                                     #}
             {#  ###Section for adding Defined and Freeform Tags###  #}
-            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
-          {% if defined_tags[0] %}
+            {% if vault_defined_tags and vault_defined_tags != 'nan' and vault_defined_tags != '' and vault_defined_tags != [['nan']] %}
+          {% if vault_defined_tags[0] %}
             defined_tags = {
-            {% for tags in defined_tags  %}
+            {% for tags in vault_defined_tags  %}
                 {% if not loop.last %}
                     "{{ tags[0]  }}"= "{{ tags[1] }}" ,
                 {% else %}
                     "{{ tags[0]  }}"= "{{ tags[1] }}"
                 {% endif %}
             {% endfor %}
-            }
+                  }
           {% endif %}
           {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
-                    {% if freeform_tags[0] %}
+                {% if vault_freeform_tags and vault_freeform_tags != 'nan' and vault_freeform_tags != '' and vault_freeform_tags != [['nan']] %}
+                    {% if vault_freeform_tags[0] %}
             freeform_tags = {
-                        {% for tags in freeform_tags %}
+                        {% for tags in vault_freeform_tags %}
                             {% if not loop.last  %}
                     "{{ tags[0] }}"="{{ tags[1] }}",
                             {% else %}

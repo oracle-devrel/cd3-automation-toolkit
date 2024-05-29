@@ -45,4 +45,5 @@ module "block-volumes" {
   is_shareable              = each.value.is_shareable
   use_chap                  = each.value.use_chap
   is_agent_auto_iscsi_login_enabled = each.value.is_agent_auto_iscsi_login_enabled # Applicable when attachment_type=iscsi
+  blockvolume_source_ocids       = var.blockvolume_source_ocids
 }

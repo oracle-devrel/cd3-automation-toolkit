@@ -147,6 +147,8 @@ def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,ct):
                         type = "blockVolumeReplica"
                         source_details.append(type)
                         source_details.append(ocid)
+                    elif "::" in columnvalue.strip():
+                        source_details = columnvalue.strip().split("::")
                     tempdict = {'source_details': source_details}
             if columnname == "Block Volume Replica (Region::AD::Name)":
                 columnname = "Block Volume Replicas"

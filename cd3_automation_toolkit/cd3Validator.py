@@ -1026,9 +1026,14 @@ def validate_blockvols(filename,comp_ids):
                         log(f'ROW {i + 3} : Replication Region and AD can not be same as Volume Region and AD. ' + columnname)
                         bvs_invalid_check = True
             if columnname == 'Source Details':
-                if columnvalue.lower() != 'nan' and columnvalue.lower() != '' and not (columnvalue.strip().startswith("ocid1.volume.oc") or columnvalue.strip().startswith("ocid1.volumebackup.oc") or columnvalue.strip().startswith("ocid1.blockvolumereplica.oc")):
-                    log(f'ROW {i + 3} : Source Details not in correct format. ' +columnname)
-                    bvs_invalid_check = True
+                if columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                    if not (columnvalue.strip().startswith("ocid1.volume.oc") or columnvalue.strip().startswith(
+                            "ocid1.volumebackup.oc") or columnvalue.strip().startswith(
+                        "ocid1.blockvolumereplica.oc") or columnvalue.strip().startswith(
+                        "volumeBackup::") or columnvalue.strip().startswith(
+                        "volume::") or columnvalue.strip().startswith("blockVolumeReplica::")):
+                        log(f'ROW {i + 3} : Source Details not in correct format. ' + columnname)
+                        bvs_invalid_check = True
             if columnname == 'Autotune Type':
                 if columnvalue.lower() != 'nan' and columnvalue.lower() != '' and columnvalue.strip().upper() not in ["BOTH","PERFORMANCE_BASED","DETACHED_VOLUME"]:
                     log(f'ROW {i + 3} : Value must be either PERFORMANCE_BASED or DETACHED_VOLUME or BOTH . ' +columnname)
@@ -1609,21 +1614,21 @@ def validate_buckets(filename, comp_ids):
                                         log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "dd-mm-yyyy".')
                                         buckets_invalid_check = True
                                         continue
-                                # Parse the time_rule_locked into a datetime object
-                                try:
-                                    time_rule_locked_datetime = datetime.datetime.strptime(time_rule_locked, "%Y-%m-%dT%H:%M:%SZ")
-                                except ValueError:
-                                    log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "YYYY-MM-DDThh:mm:ssZ".')
-                                    buckets_invalid_check = True
-                                    continue
+                            # Parse the time_rule_locked into a datetime object
+                            try:
+                                time_rule_locked_datetime = datetime.datetime.strptime(time_rule_locked, "%Y-%m-%dT%H:%M:%SZ")
+                            except ValueError:
+                                log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "YYYY-MM-DDThh:mm:ssZ".')
+                                buckets_invalid_check = True
+                                continue
 
-                                # Calculate the difference between current time and time_rule_locked
-                                time_difference = time_rule_locked_datetime - current_time
+                            # Calculate the difference between current time and time_rule_locked
+                            time_difference = time_rule_locked_datetime - current_time
 
-                                # Check if the difference is less than 14 days
-                                if time_difference.days < 14:
-                                    log(f'ROW {i + 3} : "time_rule_locked" of retention rule must be more than 14 days from the current time.')
-                                    buckets_invalid_check = True
+                            # Check if the difference is less than 14 days
+                            if time_difference.days < 14:
+                                log(f'ROW {i + 3} : "time_rule_locked" of retention rule must be more than 14 days from the current time.')
+                                buckets_invalid_check = True
 
             # Check for the Lifecycle Policy Details
             if lifecycle_input == True:

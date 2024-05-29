@@ -158,9 +158,10 @@ output "sub_compartments_level5_map" {
 ############################
 
 module "iam-groups" {
+
   source   = "./modules/identity/iam-group"
   for_each = var.groups
-
+  depends_on       = [module.iam-users]
   tenancy_ocid      = var.tenancy_ocid
   group_name        = each.value.group_name
   group_description = each.value.group_description
@@ -218,7 +219,6 @@ output "policies_id_map" {
 
 module "iam-users" {
   source           = "./modules/identity/iam-user"
-  depends_on       = [module.iam-groups]
   for_each         = var.users
   user_name        = each.value.name
   user_description = each.value.description
@@ -292,7 +292,6 @@ module "groups" {
   matching_rule            = each.value.matching_rule
   idcs_endpoint            = each.value.idcs_endpoint
   tenancy_ocid             = var.tenancy_ocid
-  #emails                  = [for member in each.value.members : member.value]
   emails                   = can(lookup(each.value, "members", null)) && each.value.members != null ? [for member in each.value.members : member.value] : []
 
 

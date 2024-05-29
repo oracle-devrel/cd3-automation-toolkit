@@ -57,7 +57,7 @@ module "fss" {
   display_name       = each.value.display_name
   freeform_tags      = each.value.freeform_tags
   kms_key_id         = each.value.kms_key_id
-  source_snapshot_id = each.value.source_snapshot
+  source_snapshot_id = each.value.source_snapshot != null ? (length(regexall("ocid1.snapshot.oc*", each.value.source_snapshot)) > 0 ? each.value.source_snapshot : lookup(var.fss_source_ocids,each.value.source_snapshot,null)): null
   filesystem_snapshot_policy_id = each.value.snapshot_policy
 }
 
@@ -82,7 +82,7 @@ module "fss-replication" {
   #Required
   compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   source_id = length(regexall("ocid1.filesystem.oc1*", each.value.source_id)) > 0 ? each.value.source_id : merge(module.fss.*...)[each.value.source_id]["fss_tf_id"]
-  target_id = each.value.target_id
+  target_id = length(regexall("ocid1.filesystem.oc1*", each.value.target_id)) > 0 ? each.value.target_id : merge(module.fss.*...)[each.value.target_id]["fss_tf_id"]
   #Optional
   defined_tags       = each.value.defined_tags
   display_name       = each.value.display_name

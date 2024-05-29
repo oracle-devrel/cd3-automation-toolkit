@@ -28,7 +28,7 @@ resource "oci_core_volume" "block_volume" {
     for_each = var.source_details != null ? var.source_details : []
     content {
         #Required
-        id = source_details.value.id
+        id   =  (startswith(source_details.value.id,"ocid1.volume.oc") || startswith(source_details.value.id,"ocid1.volumebackup.oc") || startswith(source_details.value.id,"ocid1.blockvolumereplica.oc")) ? source_details.value.id : lookup(var.blockvolume_source_ocids,source_details.value.id,null)
         type = source_details.value.type
     }
    }
