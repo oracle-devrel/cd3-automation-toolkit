@@ -306,10 +306,10 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
                 columnname = "idsquash"
                 if (columnvalue).lower() == "all":
                     columnvalue = "ALL"
-                elif (columnvalue).lower() == "none":
-                    columnvalue = "NONE"
-                else:
+                elif (columnvalue).lower() == "root":
                     columnvalue = "ROOT"
+                else:
+                    columnvalue = "NONE"
                 idsquash.append(columnvalue)
                 tempdict = {'idsquash': columnvalue}
 

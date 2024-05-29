@@ -15,3 +15,10 @@ resource "oci_kms_vault" "vault" {
   defined_tags  = var.defined_tags
   freeform_tags = var.freeform_tags
 }
+
+resource "oci_kms_vault_replication" "vault_replication" {
+  count           = var.replica_region != null ? 1 : 0
+    #Required
+  vault_id = oci_kms_vault.vault.id
+  replica_region = var.replica_region
+}

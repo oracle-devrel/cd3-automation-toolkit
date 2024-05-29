@@ -556,8 +556,9 @@ ct = commonTools()
 config, signer = ct.authenticate(auth_mechanism, config_file_path)
 ## Fetch OCI_regions
 cd3service = cd3Services()
-print("")
 cd3service.fetch_regions(config, signer)
+
+#This is needed to be initialised again
 ct = commonTools()
 try:
     ct.get_subscribedregions(config,signer)

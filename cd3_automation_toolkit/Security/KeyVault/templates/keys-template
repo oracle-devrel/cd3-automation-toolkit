@@ -5,49 +5,65 @@
 # Security
 # Create KMS Vault and Key
 # Allowed Values:
-# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
 # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 # length : AES: 16, 24, or 32, RSA: 256, 384, or 512, ECDSA: 32, 48, or 66
+# Sample import command:
+# terraform import "module.keys[\"<<key terraform variable name>>\"].oci_kms_key.key" managementEndpoint/<management_endpoint>/keys/<key id>
 ############################
 
 keys = {
     ##Add New Keys for {{ region|lower }} here##
 }{% else %}
 
-    {{ key_tf_name }} = {
-            compartment_id = "{{ compartment_tf_name }}"
-            display_name = "{{ key_name }}"
-            management_endpoint = "{{ management_endpoint }}"
+    {{ key_display_tf_name }} = {
+            compartment_id = "{{ key_compartment_tf_name }}"
+            display_name = "{{ key_display_tf_name }}"
+            vault_name = "{{ vault_name }}"
 
             algorithm = "{{ algorithm }}"
             {% if length and length != "" %}
             length = {{ length }}
             {% endif %}
 
+            {% if curve_id and curve_id != "" %}
+            curve_id = "{{ curve_id }}"
+            {% endif %}
+
             {% if protection_mode and protection_mode != "" %}
             protection_mode = "{{ protection_mode }}"
             {% endif %}
 
+            {% if auto_rotation and auto_rotation != "" %}
+            is_auto_rotation_enabled = "{{ auto_rotation }}"
+            {% endif %}
+
+
+            {% if rotation_interval and rotation_interval != "" %}
+            rotation_interval_in_days = {{ rotation_interval }}
+            {% endif %}
+
+
             {#  ##Do not modify below this line##  #}
             {#                                     #}
             {#  ###Section for adding Defined and Freeform Tags###  #}
-            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
-          {% if defined_tags[0] %}
+            {% if key_defined_tags and key_defined_tags != 'nan' and key_defined_tags != '' and key_defined_tags != [['nan']] %}
+          {% if key_defined_tags[0] %}
             defined_tags = {
-            {% for tags in defined_tags  %}
+            {% for tags in key_defined_tags  %}
                 {% if not loop.last %}
                     "{{ tags[0]  }}"= "{{ tags[1] }}" ,
                 {% else %}
                     "{{ tags[0]  }}"= "{{ tags[1] }}"
                 {% endif %}
             {% endfor %}
-            }
+                  }
           {% endif %}
           {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
-                    {% if freeform_tags[0] %}
+                {% if key_freeform_tags and key_freeform_tags != 'nan' and key_freeform_tags != '' and key_freeform_tags != [['nan']] %}
+                    {% if key_freeform_tags[0] %}
             freeform_tags = {
-                        {% for tags in freeform_tags %}
+                        {% for tags in key_freeform_tags %}
                             {% if not loop.last  %}
                     "{{ tags[0] }}"="{{ tags[1] }}",
                             {% else %}

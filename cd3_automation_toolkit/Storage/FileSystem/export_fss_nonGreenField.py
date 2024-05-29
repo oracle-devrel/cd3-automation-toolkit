@@ -5,10 +5,11 @@
 
 import oci
 import os
+import re
 from oci.config import DEFAULT_LOCATION
 from commonTools import *
 
-
+fs_source_snapshots = {}
 def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip, mnt_p_hostname, bytes, files, fs_name,
                     einfo_path, fs_source_snapshot_id, fs_snapshot_policy_id, fss_replication, is_ldap_groups_enabled,
                     sourceCIDR, Access, GID, UID, IDSquash, require_ps_port, allowed_auth, is_anonymous_access_allowed,
@@ -155,7 +156,13 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
                 file_system_info = file_system.get_file_system(file_system_id=fs_id)
                 # print(file_system_info.data)
                 fs_name = file_system_info.data.display_name  # FileSystemName
-                fs_source_snapshot_id = file_system_info.data.source_details.source_snapshot_id
+                snapshot_id = file_system_info.data.source_details.source_snapshot_id
+                if snapshot_id == '':
+                    fs_source_snapshot_id = ''
+                else:
+                    tmp_source = reg + "--" + fs_name + "--" + snapshot_id
+                    fs_source_snapshots[tmp_source] = snapshot_id
+                    fs_source_snapshot_id = fs_name
                 fs_snapshot_policy_id = file_system_info.data.filesystem_snapshot_policy_id
                 is_ldap_groups_enabled = einfo.is_idmap_groups_for_sys_auth
                 fss_replication = ""
@@ -242,7 +249,13 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
             for fss_id in fss_all_ids:
                 file_system_info_1 = file_system.get_file_system(file_system_id=fss_id)
                 fs_name = file_system_info_1.data.display_name
-                fs_source_snapshot_id = file_system_info_1.data.source_details.source_snapshot_id
+                snapshot_id = file_system_info_1.data.source_details.source_snapshot_id
+                if snapshot_id == '':
+                    fs_source_snapshot_id = ''
+                else:
+                    tmp_source = reg + "--" + fs_name + "--" + snapshot_id
+                    fs_source_snapshots[tmp_source] = snapshot_id
+                    fs_source_snapshot_id = fs_name
                 fs_snapshot_policy_id = file_system_info_1.data.filesystem_snapshot_policy_id
                 fss_replication = ""
                 if len(replications_dict) > 0:
@@ -329,6 +342,27 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
             for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
                 __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name,
                                  signer)
+    # writing volume source into variables file
+    var_data = {}
+    for reg in export_regions:
+        file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
+        # Read variables file data
+        with open(file, 'r') as f:
+            var_data[reg] = f.read()
+
+        tempStrOcids = ""
+        for k, v in fs_source_snapshots.items():
+            if k.split("--")[0].lower() == reg:
+                k = k.split("--")[1]
+                v = "\"" + v + "\""
+                tempStrOcids = "\t" + k + " = " + v + "\n" + tempStrOcids
+        tempStrOcids = "\n" + tempStrOcids
+        tempStrOcids = "#START_fss_source_snapshot_ocids#" + tempStrOcids + "\t#fss_source_snapshot_ocids_END#"
+        var_data[reg] = re.sub('#START_fss_source_snapshot_ocids#.*?#fss_source_snapshot_ocids_END#', tempStrOcids, var_data[reg], flags=re.DOTALL)
+        # Write variables file data
+        with open(file, "w") as f:
+            f.write(var_data[reg])
+        f.close()
 
     commonTools.write_to_cd3(values_for_column_fss, cd3file, sheetName)
     print("{0} FSS objects exported into CD3.\n".format(len(values_for_column_fss["Region"])))

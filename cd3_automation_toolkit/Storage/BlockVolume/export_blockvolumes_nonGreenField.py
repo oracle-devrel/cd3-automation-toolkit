@@ -8,6 +8,7 @@
 # Oracle Consulting
 #
 
+import re
 import oci
 import os
 from oci.core.blockstorage_client import BlockstorageClient
@@ -16,7 +17,7 @@ from commonTools import *
 
 importCommands = {}
 oci_obj_names = {}
-
+source_ocids = {}
 
 def policy_info(bvol,volume_id,ct):
     asset_policy_name = ''
@@ -114,7 +115,10 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
         if blockvols.source_details is None:
             source_details = ''
         else:
-            source_details = blockvols.source_details.id
+            source_id = blockvols.source_details.id
+            source_details = blockvols.source_details.type.strip() + "::" + blockvols.display_name.strip()
+            tmp_key = region + "--" + source_id
+            source_ocids[tmp_key] = blockvols.display_name.strip()
         autotune_type = ''
         max_vpus_per_gb = ''
         if len(blockvols.autotune_policies) == 0:
@@ -237,6 +241,29 @@ def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, expo
         for ntk_compartment_name in export_compartments:
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names, export_compartments)
+
+        # writing volume source into variables file
+        var_data = {}
+        for reg in export_regions:
+            file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
+            # Read variables file data
+            with open(file, 'r') as f:
+                var_data[reg] = f.read()
+
+            tempStrOcids = ""
+            for k, v in source_ocids.items():
+                if k.split("--")[0].lower() == reg:
+                    k = "\"" + k.split("--")[1] + "\""
+                    tempStrOcids = "\t" + v + " = " + k + "\n" + tempStrOcids
+            tempStrOcids = "\n" + tempStrOcids
+            tempStrOcids = "#START_blockvolume_source_ocids#" + tempStrOcids + "\t#blockvolume_source_ocids_END#"
+            var_data[reg] = re.sub('#START_blockvolume_source_ocids#.*?#blockvolume_source_ocids_END#', tempStrOcids,
+                                   var_data[reg],
+                                   flags=re.DOTALL)
+            # Write variables file data
+            with open(file, "w") as f:
+                f.write(var_data[reg])
+            f.close()
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print("{0} Block Volumes exported into CD3.\n".format(len(values_for_column["Region"])))

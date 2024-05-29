@@ -141,7 +141,7 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct):
                             values_for_column_users[col_header].append(username)
                         elif (col_header == "Family Name"):
                             values_for_column_users[col_header].append(family_name)
-                        elif (col_header == "User Description"):
+                        elif (col_header == "Description"):
                             values_for_column_users[col_header].append(description)
                         elif (col_header == "User Email"):
                             values_for_column_users[col_header].append(email)

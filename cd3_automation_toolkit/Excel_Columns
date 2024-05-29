@@ -265,6 +265,7 @@
     "Buckets" : {},
     "DNS-Views-Zones-Records" : {},
     "DNS-Resolvers" : {},
+    "KMS" :{},
     "Quotas" : {},
     "Budgets" : {}
 

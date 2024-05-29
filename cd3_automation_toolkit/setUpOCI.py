@@ -220,7 +220,7 @@ def fetch_compartments(outdir, outdir_struct, ct):
     ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
     ct.all_regions.append('global')
     print("\nWriting to variables files...")
-    home_region_services = ['identity', 'tagging', 'budget','quota']
+    home_region_services = ['identity', 'tagging', 'budget', 'quota']
     for region in ct.all_regions:
         # for global directory
         if region == 'global':
@@ -680,6 +680,23 @@ def export_loadbalancer(prim_options=[]):
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+
+
+def export_security(prim_options=[]):
+    options = [Option("Export KMS (Keys/Vaults)", export_kms,'Exporting KMS Objects (Keys/Vaults)')]
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+
+def export_kms(inputfile, outdir, config, signer, ct, export_regions):
+    compartments = ct.get_compartment_map(var_file, 'KMS')
+    Security.export_keyvaults(inputfile, outdir, service_dir_kms, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+    Security.create_terraform_keyvaults(inputfile, outdir, service_dir_kms, prefix, ct)
+    print("\n\nExecute tf_import_commands_kms_nonGF.sh script created under each region directory to synch TF with OCI Key Vaults\n")
+    # Update modified path list
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_kms])
 
 def export_lbr(inputfile, outdir,config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'LBR objects')
@@ -1264,7 +1281,10 @@ def create_logging(prim_options=[]):
 
     for option in options:
         options1=[]
-        if option.name == 'Enable VCN Flow Logs':
+        if option == "m" or option == 'q':
+            options1.append(option)
+            service_dir=''
+        elif option.name == 'Enable VCN Flow Logs':
             service_dir=service_dir_network
         elif option.name == 'Enable LBaaS Logs':
             service_dir = service_dir_loadbalancer
@@ -1275,19 +1295,19 @@ def create_logging(prim_options=[]):
         elif option.name == 'Enable Network Firewall Logs':
             service_dir = service_dir_firewall
 
-        options1.append(option)
+
         execute_options(options1, inputfile, outdir, prefix, ct, service_dir)
         update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir])
 
-def create_cis_features(prim_options=[]):
-    options = [Option("Create Key/Vault", create_cis_keyvault, 'Creating CIS Key/Vault and enable Logging for write events to bucket'),
-               Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard'),]
+def create_security_services(prim_options=[]):
+    options = [Option("Add/Modify/Delete KMS (Keys/Vaults)", Security.create_terraform_keyvaults, 'Creating Keys/Vaults'),
+               Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard')]
 
     if prim_options:
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, outdir, prefix, config_file_path)
+    execute_options(options, inputfile, outdir, service_dir_kms, prefix, ct)
 
 def run_utility(prim_options=[]):
     options = [Option('CIS Compliance Check Script', initiate_cis_scan, 'CIS Compliance Check Script'),
@@ -1301,17 +1321,12 @@ def run_utility(prim_options=[]):
         options = show_options(options, quit=True, menu=True, index=1)
         execute_options(options, outdir, prefix, config_file_path)
 
-def create_cis_keyvault(*args,**kwargs):
-    if not devops:
-        region_name = input("Enter region name eg ashburn where you want to create Key/Vault: ")
-        comp_name = input("Enter name of compartment as it appears in OCI Console: ")
-    else:
-        region_name = ct.vault_region
-        comp_name = ct.vault_comp
+"""def create_cis_keyvault(*args,**kwargs):
+
     options = [Option(None, Security.create_cis_keyvault, 'Creating KeyVault')]
     execute_options(options, outdir, service_dir_kms, service_dir_identity,prefix, ct, region_name, comp_name)
     # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])"""
 
 
 def enable_cis_cloudguard(*args,**kwargs):
@@ -1759,6 +1774,7 @@ if non_gf_tenancy:
         Option('Export Load Balancers', export_loadbalancer, 'Load Balancers'),
         Option('Export Management Services', export_management_services, 'Management Services'),
         Option('Export Developer Services', export_developer_services, 'Development Services'),
+        Option('Export Security', export_security, 'Security'),
         Option('Export Software-Defined Data Centers - OCVS', export_sddc, 'OCVS'),
         Option('CD3 Services', cd3_services, 'CD3 Services')
 
@@ -1779,9 +1795,9 @@ else:
         Option('Load Balancers', create_loadbalancer, 'Load Balancers'),
         Option('Management Services', create_management_services, 'Management Services'),
         Option('Developer Services', create_developer_services, 'Developer Services'),
+        Option('Security', create_security_services, 'OCI security services'),
         Option('Logging Services', create_logging, 'Logging Services'),
         Option('Software-Defined Data Centers - OCVS', create_sddc, 'Processing SDDC Tabs'),
-        Option('CIS Compliance Features', create_cis_features, 'CIS Compliance Features'),
         Option('CD3 Services', cd3_services, 'CD3 Services'),
         Option('3rd Party Services', run_utility,'3rd Party Services')
     ]

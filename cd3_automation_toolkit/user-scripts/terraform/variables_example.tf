@@ -110,6 +110,28 @@ variable "instance_source_ocids" {
   }
 }
 
+variable "blockvolume_source_ocids" {
+  type = map(any)
+  default = {
+    block1 = "<Source OCID here>"
+    #blockvolume_source_ocid    = "<VOLUME SOURCE OCID HERE>"
+    #START_blockvolume_source_ocids#
+    # exported block volume source ocids
+    #blockvolume_source_ocids_END#
+  }
+}
+
+variable "fss_source_ocids" {
+  type = map(any)
+  default = {
+    snapshot1 = "<Source Snapshot OCID here>"
+    #fss_source_snapshot_ocid    = "<SOURCE SNAPSHOT OCID HERE>"
+    #START_fss_source_snapshot_ocids#
+    # exported fss source snapshot ocids
+    #fss_source_snapshot_ocids_END#
+  }
+}
+
 variable "oke_source_ocids" {
   type = map(any)
   default = {
@@ -1788,6 +1810,7 @@ variable "vaults" {
     vault_type     = string
     freeform_tags  = optional(map(any))
     defined_tags   = optional(map(any))
+    replica_region = optional(string)
   }))
   default = {}
 }
@@ -1796,12 +1819,16 @@ variable "keys" {
   type = map(object({
     compartment_id      = string
     display_name        = string
-    management_endpoint = string
+    vault_name          = string
     algorithm           = optional(string)
     length              = optional(string)
+    curve_id            = optional(string)
     protection_mode     = optional(string)
     freeform_tags       = optional(map(any))
     defined_tags        = optional(map(any))
+    is_auto_rotation_enabled = optional(bool)
+    rotation_interval_in_days = optional(string)
+
   }))
   default = {}
 }

@@ -1,7 +1,7 @@
 def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFilters){
     valid_params = "Passed"
     def gf_options_map = [
-    "Validate CD3":["Validate Compartments","Validate Groups","Validate Policies","Validate Tags","Validate Networks","Validate DNS","Validate Instances","Validate Block Volumes","Validate FSS","Validate Buckets"],
+    "Validate CD3":["Validate Compartments","Validate Groups","Validate Policies","Validate Tags","Validate Budgets","Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)","Validate DNS","Validate Instances","Validate Block Volumes","Validate FSS","Validate Buckets"],
     "Identity":["Add/Modify/Delete Compartments", "Add/Modify/Delete Groups","Add/Modify/Delete Policies", "Add/Modify/Delete Users", "Add/Modify/Delete Network Sources"],
     "Governance":["Tags", "Quota"],
 	"Cost Management":["Budget"],
@@ -14,8 +14,8 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
     "Load Balancers":["Add/Modify/Delete Load Balancers", "Add/Modify/Delete Network Load Balancers"],
     "Management Services":["Add/Modify/Delete Notifications", "Add/Modify/Delete Events", "Add/Modify/Delete Alarms", "Add/Modify/Delete ServiceConnectors"],
     "Developer Services":["Upload current terraform files/state to Resource Manager", "Add/Modify/Delete OKE Cluster and Nodepools"],
+	"Security":["Add/Modify/Delete KMS (Keys/Vaults)", "Enable Cloud Guard"],
     "Logging Services":["Enable VCN Flow Logs", "Enable LBaaS Logs", "Enable Object Storage Buckets Write Logs"],
-    "CIS Compliance Features":["Create Key/Vault", "Create Default Budget", "Enable Cloud Guard"],
     "CD3 Services":["Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"],
     "3rd Party Services":["CIS Compliance Check Script", "ShowOCI Report"]
     ]
@@ -32,6 +32,7 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
     "Export Load Balancers":["Export Load Balancers", "Export Network Load Balancers"],
     "Export Management Services":["Export Notifications", "Export Events", "Export Alarms", "Export Service Connectors"],
     "Export Developer Services":["Export OKE cluster and Nodepools"],
+	"Export Security":["Export KMS (Keys/Vaults)"],
     "CD3 Services":["Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"]
     ]
     mainoptions_list = MainOptions.split(",")

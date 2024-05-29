@@ -15,7 +15,7 @@ resource "oci_kms_key" "key" {
     length    = var.length
 
     #Optional
-    #curve_id = oci_kms_curve.test_curve.id
+    curve_id = var.curve_id
   }
   management_endpoint = var.management_endpoint
 
@@ -23,4 +23,11 @@ resource "oci_kms_key" "key" {
   defined_tags    = var.defined_tags
   freeform_tags   = var.freeform_tags
   protection_mode = var.protection_mode != "" ? var.protection_mode : null
+  is_auto_rotation_enabled = var.is_auto_rotation_enabled
+  dynamic "auto_key_rotation_details" {
+    for_each = coalesce(var.is_auto_rotation_enabled, false) ? [1] : []
+    content {
+      rotation_interval_in_days = var.rotation_interval_in_days
+    }
+  }
 }

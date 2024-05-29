@@ -137,3 +137,7 @@ variable "is_agent_auto_iscsi_login_enabled" {
   type    = bool
   default = null
 }
+variable "blockvolume_source_ocids" {
+  type = map(any)
+  default = {}
+}
