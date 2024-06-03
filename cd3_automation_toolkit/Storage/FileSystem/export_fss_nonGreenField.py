@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # Author: Tharun Karam
 # Exporting Filesystems into cd3
+# Updated by: Mukesh Patel
 # Oracle Consulting.
 
 import oci
@@ -10,11 +11,13 @@ from oci.config import DEFAULT_LOCATION
 from commonTools import *
 
 fs_source_snapshots = {}
+fss_all_dict = {}
 def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip, mnt_p_hostname, bytes, files, fs_name,
                     einfo_path, fs_source_snapshot_id, fs_snapshot_policy_id, fss_replication, is_ldap_groups_enabled,
                     sourceCIDR, Access, GID, UID, IDSquash, require_ps_port, allowed_auth, is_anonymous_access_allowed,
                     fsinfo, values_for_column_fss,
                     mnt_info1, nsg_n):
+
     for col_header in values_for_column_fss.keys():
         if (col_header == "Region"):
             values_for_column_fss[col_header].append(reg.capitalize())
@@ -35,6 +38,11 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
         elif (col_header == "Source Snapshot"):
             if fs_source_snapshot_id != None:
                 values_for_column_fss[col_header].append(fs_source_snapshot_id)
+            else:
+                values_for_column_fss[col_header].append('')
+        elif (col_header == "Snapshot Policy"):
+            if fs_snapshot_policy_id != '':
+                values_for_column_fss[col_header].append(fs_snapshot_policy_id)
             else:
                 values_for_column_fss[col_header].append('')
         elif (col_header == "Replication Information"):
@@ -82,7 +90,7 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
                                                                      values_for_column_fss)
 
 
-def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signer):
+def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availability_domain_name, signer):
     file_system = oci.file_storage.FileStorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                      signer=signer)
     network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
@@ -100,6 +108,8 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
         list_fss = oci.pagination.list_call_get_all_results(file_system.list_file_systems,
                                                             compartment_id=compartment_id,
                                                             availability_domain=availability_domain_name)
+        for fss in list_fss.data:
+            fss_all_dict[fss.id] = fss.display_name
         replications_dict = {}
         for rep_data in list_replications.data:
             rep_info = file_system.get_replication(replication_id=rep_data.id)
@@ -111,6 +121,8 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
         fss = []
         mnt_fss_ids = []
         rep_ids = []
+        mnt_info_dict = {}
+        mnt_with_export = []
         for mnt in mount_info.data:
             mnt_id = mnt.id
             export_set_id = mnt.export_set_id  # Export Set Id
@@ -139,6 +151,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
                 mnt_p_hostname = private_address.data.hostname_label
             export_set_info = file_system.get_export_set(export_set_id=export_set_id)
 
+            mnt_info_dict[mnt_id] = {'name': mt_display_name, 'nsg': nsg_names, 'network': vplussubnet, 'ip': mnt_p_ip, 'hostname': mnt_p_hostname}
             es_details = file_system.get_export_set(export_set_id=export_set_id)
             bytes = (str(es_details.data.max_fs_stat_bytes))
             files = (str(es_details.data.max_fs_stat_files))
@@ -153,8 +166,8 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
                 # print("Export_Path:",einfo_path)
                 fs_id = einfo.file_system_id
                 mnt_fss_ids.append(fs_id)
+                mnt_with_export.append(mnt_id)
                 file_system_info = file_system.get_file_system(file_system_id=fs_id)
-                # print(file_system_info.data)
                 fs_name = file_system_info.data.display_name  # FileSystemName
                 snapshot_id = file_system_info.data.source_details.source_snapshot_id
                 if snapshot_id == '':
@@ -164,12 +177,25 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
                     fs_source_snapshots[tmp_source] = snapshot_id
                     fs_source_snapshot_id = fs_name
                 fs_snapshot_policy_id = file_system_info.data.filesystem_snapshot_policy_id
+                if fs_snapshot_policy_id != '':
+                    snapshot_policy_info = file_system.get_filesystem_snapshot_policy(filesystem_snapshot_policy_id=fs_snapshot_policy_id)
+                    policy_name = snapshot_policy_info.data.display_name
+                    policy_comp_id = snapshot_policy_info.data.compartment_id
+                    for comp_name, comp_id in ntk_compartment_ids.items():
+                        if comp_id == policy_comp_id:
+                            policy_comp_name = comp_name
+                    fs_snapshot_policy_id = policy_comp_name + "@" + policy_name
                 is_ldap_groups_enabled = einfo.is_idmap_groups_for_sys_auth
                 fss_replication = ""
                 if len(replications_dict) > 0:
                     for k, v in replications_dict.items():
                         if v['sourceid'] == fs_id:
-                            rep_format = v['targetid'] + "::" + str(v['interval']) + "::" + v['displayname']
+                            targetid = v['targetid']
+                            for id,name in fss_all_dict.items():
+                                if id == v['targetid']:
+                                    targetid = name
+
+                            rep_format = targetid + "::" + str(v['interval']) + "::" + v['displayname']
                             fss_replication = fss_replication + rep_format + '\n'
                 tf_name = commonTools.check_tf_variable(fs_name)
                 if (str(fs_id) not in fss):
@@ -238,6 +264,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
                 importCommands[reg].write(
                     "\nterraform import \"module.fss-export-options[\\\"" + tf_name + "\\\"].oci_file_storage_export.export\" " + str(
                         einfo.id))  # exports import
+
         ###### code to fetch FSS without any exports #####
         fss_all_ids = []
         for fss_all in list_fss.data:
@@ -257,11 +284,23 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
                     fs_source_snapshots[tmp_source] = snapshot_id
                     fs_source_snapshot_id = fs_name
                 fs_snapshot_policy_id = file_system_info_1.data.filesystem_snapshot_policy_id
+                if fs_snapshot_policy_id != '':
+                    snapshot_policy_info = file_system.get_filesystem_snapshot_policy(filesystem_snapshot_policy_id=fs_snapshot_policy_id)
+                    policy_name = snapshot_policy_info.data.display_name
+                    policy_comp_id = snapshot_policy_info.data.compartment_id
+                    for comp_name, comp_id in ntk_compartment_ids.items():
+                        if comp_id == policy_comp_id:
+                            policy_comp_name = comp_name
+                    fs_snapshot_policy_id = policy_comp_name + "@" + policy_name
                 fss_replication = ""
                 if len(replications_dict) > 0:
                     for k, v in replications_dict.items():
                         if v['sourceid'] == fss_id:
-                            rep_format = v['targetid'] + "::" + str(v['interval']) + "::" + v['displayname']
+                            targetid = v['targetid']
+                            for id, name in fss_all_dict.items():
+                                if id == v['targetid']:
+                                    targetid = name
+                            rep_format = targetid + "::" + str(v['interval']) + "::" + v['displayname']
                             fss_replication = fss_replication + rep_format + '\n'
 
                 add_column_data(reg, cname, AD_name, "", "", "", "", "",
@@ -277,6 +316,24 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, signe
                         "\nterraform import \"module.fss[\\\"" + tf_name + "\\\"].oci_file_storage_file_system.file_system\" " + str(
                             fss_id))
                     fss.append(str(fss_id))
+
+        ###### code to fetch MT without any exports #####
+        mnt_all_ids = []
+        for mnt_all in mount_info.data:
+            mnt_all_ids.append(mnt_all.id)
+        if len(mnt_all_ids) > 0:
+            for mnt_id in mnt_with_export:
+                mnt_all_ids.remove(mnt_id)
+        if len(mnt_all_ids) > 0:
+            for k,v in mnt_info_dict.items():
+                for mnt_id in mnt_all_ids:
+                    if k == mnt_id:
+                        mt_display_name = v['name']
+                        vplussubnet = v['network']
+                        mnt_p_ip = v['ip']
+                        mnt_p_hostname = v['hostname']
+                        nsg_names = v['nsg']
+                        add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip, mnt_p_hostname, "","", "", "", "", "", "","", "", "", "", "", "","", "", "", fsinfo=file_system_info_1, values_for_column_fss=values_for_column_fss, mnt_info1=None, nsg_n=nsg_names)
 
     except Exception as e:
         pass
@@ -301,6 +358,7 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
 
     vnc_info = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                              signer=signer)
+
     importCommands = {}
     rows = []
     all_ads = []
@@ -340,8 +398,9 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
             ads = oci.identity.IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                               signer=signer)
             for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
-                __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name,
+                __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name,
                                  signer)
+
     # writing volume source into variables file
     var_data = {}
     for reg in export_regions:

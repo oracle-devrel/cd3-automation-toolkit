@@ -99,9 +99,7 @@ def create_terraform_keyvaults(inputfile, outdir, service_dir, prefix, ct):
                     flag = 0
                     prev_flag = flag
             else:
-                print(vault_tf_name)
-                print(
-                    "ROW "+str(i+3)+": Invalid Vault_type!!. Vault type should be either 'DEFAULT or 'VIRTUAL_PRIVATE'. Try Again.  Exiting... ")
+                print("ROW "+str(i+3)+": Invalid Vault_type!!. Vault type should be either 'DEFAULT or 'VIRTUAL_PRIVATE'. Try Again.  Exiting... ")
                 exit(1)
             prev_vault_type = vault_type
 

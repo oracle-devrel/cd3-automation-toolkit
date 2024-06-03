@@ -104,6 +104,12 @@ variable "nsx_edge_uplink1vlan_id" {
 
 }
 
+variable "nsx_edge_uplink2vlan_id" {
+  description = "The OCID of the VLAN to use for the NSX Edge Uplink 2 component of the VMware environment"
+  type        = string
+  default     = null
+
+}
 
 variable "nsx_vtep_vlan_id" {
   description = " The OCID of the VLAN to use for the NSX VTEP component of the VMware environment"

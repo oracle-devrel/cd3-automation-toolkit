@@ -6,7 +6,7 @@
 #
 # Author: Suruchi Singla
 # Oracle Consulting
-# Modified (TF Upgrade): Shruthi Subramanian
+# Modified (TF Upgrade): Shruthi Subramanian, Mukesh Patel
 #
 
 import sys
@@ -54,8 +54,7 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
     FSS_names = {}
     FSS_Replication_names = {}
     MT_names = {}
-    mount_target_tf_name = ''
-    fss_name = ''
+
     tempdict = {}
     tempStr_mt = {}
     tempStr_fse = {}
@@ -182,6 +181,8 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
         is_anonymous_access_allowed = []
         path = ''
         nsg_id = ''
+        mount_target_tf_name = ''
+        fss_name = ''
 
         region = str(df.loc[i, 'Region']).strip()
 
@@ -229,6 +230,8 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
                     columnvalue = str(ad)
                 tempdict = {'availability_domain': columnvalue}
             subnet_id = ''
+            network_compartment_id=''
+            vcn_name=''
             if columnname == 'MountTarget SubnetName':
                 subnet_tf_name = columnvalue.strip()
                 if ("ocid1.subnet.oc1" in subnet_tf_name):
@@ -361,8 +364,25 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
                     mount_target_tf_name = commonTools.check_tf_variable(str(columnvalue).strip())
                 tempdict = {'mount_target_tf_name': mount_target_tf_name}
                 tempStr.update(tempdict)
+            if columnname == "Snapshot Policy":
+                if columnvalue != '':
+                    if "@" in columnvalue:
+                        if len(columnvalue.split("@")) == 2:
+                            snapshot_policy_comp = columnvalue.split("@")[0].strip()
+                            snapshot_policy_comp = commonTools.check_tf_variable(snapshot_policy_comp)
+                            snapshot_policy_name = columnvalue.split("@")[1].strip()
+                        else:
+                            snapshot_policy_comp = ''
+                            snapshot_policy_name = ''
+                    else:
+                        snapshot_policy_comp = ''
+                        snapshot_policy_name = columnvalue.strip()
+                else:
+                    snapshot_policy_comp = ''
+                    snapshot_policy_name = ''
+                tempdict = {'policy_compartment_id': snapshot_policy_comp, 'snapshot_policy': snapshot_policy_name}
+                tempStr.update(tempdict)
             if columnname == "Replication Information":
-
                 replication = {}
                 target_id = ''
                 interval = ''
@@ -430,10 +450,10 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
             export_set_info = export_set_info + export.render(tempStr)
         tempdict = {'export_set_info': export_set_info}
         tempStr.update(tempdict)
-        if region!= 'nan' and str(mount_target_tf_name).strip() not in MT_names[region]:
+        if region!= 'nan' and str(mount_target_tf_name).strip()!='' and str(mount_target_tf_name).strip() not in MT_names[region]:
             MT_names[region].append(str(mount_target_tf_name).strip())
             tempStr_mt[region] = tempStr_mt[region] + mounttarget.render(tempStr)
-        if (region!='nan' and fss_name.strip() not in FSS_names[region]):
+        if (region!='nan' and fss_name.strip()!='' and fss_name.strip() not in FSS_names[region]):
             FSS_names[region].append(fss_name.strip())
             tempStr_fss[region] = tempStr_fss[region] + fss.render(tempStr)
         if region != 'nan' and replication != '' and replication_name.strip() not in FSS_Replication_names[region]:

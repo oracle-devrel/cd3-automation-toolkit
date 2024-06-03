@@ -121,7 +121,7 @@ module "sddcs" {
 ############################################
 
 locals {
-  vlan_ids_sddc_cluster = ["nsx_edge_uplink1vlan_id", "nsx_edge_vtep_vlan_id", "nsx_vtep_vlan_id", "vmotion_vlan_id", "vsan_vlan_id", "vsphere_vlan_id", "replication_vlan_id", "provisioning_vlan_id", "hcx_vlan_id"]
+  vlan_ids_sddc_cluster = ["nsx_edge_uplink1vlan_id", "nsx_edge_uplink2vlan_id","nsx_edge_vtep_vlan_id", "nsx_vtep_vlan_id", "vmotion_vlan_id", "vsan_vlan_id", "vsphere_vlan_id", "replication_vlan_id", "provisioning_vlan_id", "hcx_vlan_id"]
   vlan_config_sddc_cluster = flatten([for index in local.vlan_ids_sddc_cluster : [
     for key, val in var.sddc-clusters : {
       #(index) = lookup(val, index, 0)
@@ -220,6 +220,7 @@ module "sddc-clusters" {
   instance_display_name_prefix = each.value.instance_display_name_prefix != "" ? each.value.instance_display_name_prefix : null
   is_shielded_instance_enabled = each.value.is_shielded_instance_enabled != "" ? each.value.is_shielded_instance_enabled : null
   nsx_edge_uplink1vlan_id      = each.value.nsx_edge_uplink1vlan_id != null ? (length(regexall("ocid1.vlan.oc1*", each.value.nsx_edge_uplink1vlan_id)) > 0 ? each.value.nsx_edge_uplink1vlan_id : data.oci_core_vlans.sddc_cluster_vlan_id[each.value.nsx_edge_uplink1vlan_id].vlans[0].id) : null
+  nsx_edge_uplink2vlan_id      = each.value.nsx_edge_uplink2vlan_id != null ? (length(regexall("ocid1.vlan.oc1*", each.value.nsx_edge_uplink2vlan_id)) > 0 ? each.value.nsx_edge_uplink2vlan_id : data.oci_core_vlans.sddc_vlan_id[each.value.nsx_edge_uplink2vlan_id].vlans[0].id) : null
   nsx_edge_vtep_vlan_id        = each.value.nsx_edge_vtep_vlan_id != null ? (length(regexall("ocid1.vlan.oc1*", each.value.nsx_edge_vtep_vlan_id)) > 0 ? each.value.nsx_edge_vtep_vlan_id : data.oci_core_vlans.sddc_cluster_vlan_id[each.value.nsx_edge_vtep_vlan_id].vlans[0].id) : null
   nsx_vtep_vlan_id             = each.value.nsx_vtep_vlan_id != null ? (length(regexall("ocid1.vlan.oc1*", each.value.nsx_vtep_vlan_id)) > 0 ? each.value.nsx_vtep_vlan_id : data.oci_core_vlans.sddc_cluster_vlan_id[each.value.nsx_vtep_vlan_id].vlans[0].id) : null
   provisioning_subnet_id       = each.value.provisioning_subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.provisioning_subnet_id)) > 0 ? each.value.provisioning_subnet_id : data.oci_core_subnets.oci_subnets_sddc_cluster[each.key].subnets.*.id[0]) : null

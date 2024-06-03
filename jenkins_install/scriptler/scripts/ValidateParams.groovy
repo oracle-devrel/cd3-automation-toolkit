@@ -1,10 +1,10 @@
 def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFilters){
     valid_params = "Passed"
     def gf_options_map = [
-    "Validate CD3":["Validate Compartments","Validate Groups","Validate Policies","Validate Tags","Validate Budgets","Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)","Validate DNS","Validate Instances","Validate Block Volumes","Validate FSS","Validate Buckets"],
+    "Validate CD3":["Validate Compartments","Validate Groups","Validate Policies","Validate Tags","Validate Budgets","Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)","Validate DNS","Validate Instances","Validate Block Volumes","Validate FSS","Validate Buckets","Validate KMS"],
     "Identity":["Add/Modify/Delete Compartments", "Add/Modify/Delete Groups","Add/Modify/Delete Policies", "Add/Modify/Delete Users", "Add/Modify/Delete Network Sources"],
-    "Governance":["Tags", "Quota"],
-	"Cost Management":["Budget"],
+    "Governance":["Tags", "Quotas"],
+	"Cost Management":["Budgets"],
 	"Network":["Create Network", "Modify Network","Security Rules", "Route Rules", "DRG Route Rules", "Network Security Groups", "Add/Modify/Delete VLANs", "Customer Connectivity"],
     "OCI Firewall":["Validate Firewall CD3 Excel", "Add/Modify/Delete Firewall Policy","Add/Modify/Delete Firewall", "Clone Firewall Policy"],
     "DNS Management":["Add/Modify/Delete DNS Views/Zones/Records", "Add/Modify/Delete DNS Resolvers"],
@@ -20,9 +20,9 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
     "3rd Party Services":["CIS Compliance Check Script", "ShowOCI Report"]
     ]
     def non_gf_options_map = [
-    "Export Identity":["Export Compartments/Groups/Policies", "Export Users", "Export Network Sources"],
-    "Export Governance":["Expot Tags", "Export Quota"],
-	"Export Cost Management":["Export Budget"],
+    "Export Identity":["Export Compartments", "Export Groups", "Export Policies", "Export Users", "Export Network Sources"],
+    "Export Governance":["Expot Tags", "Export Quotas"],
+	"Export Cost Management":["Export Budgets"],
 	"Export Network":["Export all Network Components", "Export Network components for VCNs/DRGs/DRGRouteRulesinOCI Tabs", "Export Network components for DHCP Tab", "Export Network components for SecRulesinOCI Tab", "Export Network components for RouteRulesinOCI Tab", "Export Network components for SubnetsVLANs Tab", "Export Network components for NSGs Tab"],
     "Export OCI Firewall":["Export Firewall Policy", "Export Firewall"],  
     "Export DNS Management":["Export DNS Views/Zones/Records", "Export DNS Resolvers"],

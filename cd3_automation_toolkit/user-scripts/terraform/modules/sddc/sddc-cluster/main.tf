@@ -19,6 +19,7 @@ resource "oci_ocvp_cluster" "sddc_cluster" {
         #Optional
         hcx_vlan_id = var.hcx_vlan_id
         nsx_edge_uplink1vlan_id = var.nsx_edge_uplink1vlan_id
+        nsx_edge_uplink2vlan_id = var.nsx_edge_uplink2vlan_id
         provisioning_vlan_id = var.provisioning_vlan_id
         replication_vlan_id = var.replication_vlan_id
         vsphere_vlan_id = var.vsphere_vlan_id

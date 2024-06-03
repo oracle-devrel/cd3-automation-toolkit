@@ -4,12 +4,6 @@
 # Resource Block - Identity
 # Create Groups
 ############################
-locals {
-  user_ids = {
-    for user in data.oci_identity_users.users.users :
-      user.name => user.id
-  }
-}
 
 resource "oci_identity_group" "group" {
   count = (var.matching_rule != "" && var.matching_rule != null) ? 0 : 1
@@ -24,15 +18,6 @@ resource "oci_identity_group" "group" {
   freeform_tags = var.freeform_tags
 
 }
-resource "oci_identity_user_group_membership" "user_group_membership" {
-  for_each = {
-    for member in var.members : member => member
-  }
-
-  group_id = oci_identity_group.group[0].id
-  user_id  = local.user_ids[each.key]
-}
-
 
 ############################
 # Resource Block - Identity

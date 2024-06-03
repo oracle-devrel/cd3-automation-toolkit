@@ -1684,6 +1684,167 @@ def validate_buckets(filename, comp_ids):
     else:
         return False
 
+
+#validate_kms
+def validate_kms(filename,comp_ids):
+
+    dfkms = data_frame(filename, 'KMS')
+    kms_invalid_check = False
+    prev_vault_type = ""
+
+    for i in dfkms.index:
+        region = str(dfkms.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        if region == 'nan':
+            pass
+        elif region != 'nan' and region not in ct.all_regions:
+            log("\nROW " + str(i + 3) + ": ERROR!!! Invalid Region; It should be a valid region.")
+            kms_invalid_check = True
+
+        vault_compartment_name = str(dfkms.loc[i, 'Vault Compartment Name']).strip()
+        vault_display_name = str(dfkms.loc[i, 'Vault Display Name']).strip()
+        replica_region = str(dfkms.loc[i, 'Replica Region']).strip()
+        key_compartment_name = str(dfkms.loc[i, 'Key Compartment Name']).strip()
+        key_display_name = str(dfkms.loc[i, 'Key Display Name']).strip()
+        protection_mode = str(dfkms.loc[i, 'Protection mode']).strip()
+        algorithm = str(dfkms.loc[i, 'Algorithm']).strip()
+        length_in_bits = dfkms.loc[i,'Length in bits']
+        curve_id = str(dfkms.loc[i, 'Curve Id']).strip()
+        auto_rotation = dfkms.loc[i, 'Auto rotation']
+        rotation_interval_in_days = dfkms.loc[i, 'Rotation interval in days']
+
+        current_vault_type = str(dfkms.loc[i, 'Vault type'])
+        if current_vault_type != 'nan':
+            vault_type = current_vault_type
+            if vault_type.lower() not in ['default', 'virtual_private']:
+                log(f'ROW {i + 3}: Invalid Vault_type!!. Vault type should be either "DEFAULT" or "VIRTUAL_PRIVATE". ')
+                kms_invalid_check = True
+            prev_vault_type = vault_type
+
+        else:
+            vault_type = prev_vault_type
+
+        if (str(dfkms.loc[i, 'Vault Compartment Name']).strip() != 'nan' or str(dfkms.loc[i, 'Vault Display Name']).strip()!= 'nan' or str(dfkms.loc[i, 'Vault type']) != 'nan'):
+
+           # Check Vault Compartment name
+            if vault_compartment_name == 'nan' or vault_compartment_name == '':
+                log(f'ROW {i + 3} : Empty value at column "Vault Compartment Name"')
+                pass
+            else:
+                try:
+                    comp_id = comp_ids[vault_compartment_name]
+                except KeyError:
+                    log(f'ROW {i+3} : Compartment {vault_compartment_name} does not exist in OCI.')
+                    kms_invalid_check = True
+
+            # Check Vault display name
+            if vault_display_name == 'nan' or vault_display_name == '':
+                log(f'ROW {i + 3} : Empty value at column "Vault Display Name"')
+                kms_invalid_check = True
+            else:
+                if re.match("^[A-Za-z0-9_-]{1,100}$", vault_display_name.lower()):
+                    pass
+                else:
+                    kms_invalid_check = True
+                    log(f'ROW {i + 3} : "Vault Name" can only contain letters (upper or lower case), numbers, hyphens and underscores.')
+
+           # Check Replica region
+            if replica_region == region:
+                log(f'ROW {i+3}: Replica region cannot be same as the primary Vault region')
+                kms_invalid_check = True
+            elif (replica_region in commonTools.endNames):
+                break
+            elif replica_region == 'nan':
+                pass
+            elif replica_region != 'nan' and replica_region not in ct.all_regions:
+                log(f'ROW {i + 3}: ERROR!!! Invalid Replica Region; It should be a valid region.')
+                kms_invalid_check = True
+
+
+        #Check Keys columns
+        if (key_compartment_name != 'nan' or key_display_name != 'nan'):
+            #Check for empty values
+            if (key_compartment_name == 'nan' or  key_display_name == 'nan' or  protection_mode == 'nan' or algorithm == 'nan' or str(length_in_bits) == 'nan') :
+                log(f'ROW {i + 3} : Empty values found at one or more places in these columns: Key Compartment Name/ Key Display Name/ Protection mode/ Algorithm/ Length in bits')
+                kms_invalid_check = True
+
+            else:
+                # Check Key Compartment name
+                if key_compartment_name != 'nan' or key_compartment_name != '':
+                    try:
+                        comp_id = comp_ids[key_compartment_name]
+                    except KeyError:
+                        log(f'ROW {i + 3} : Compartment {key_compartment_name} does not exist in OCI.')
+                        kms_invalid_check = True
+
+                # Check key display name
+                if key_display_name == 'nan' or key_display_name == '':
+                    log(f'ROW {i + 3} : Empty value at column "Key Display Name"')
+                    kms_invalid_check = True
+                else:
+                    if re.match("^[A-Za-z0-9_-]{1,100}$", key_display_name.lower()):
+                        pass
+                    else:
+                        kms_invalid_check = True
+                        log(f'ROW {i + 3} : "Key Name" can only contain letters (upper or lower case), numbers, hyphens and underscores.')
+
+                # Check Protection mode
+                if protection_mode.lower() not in ['software', 'hsm']:
+                    log(f'ROW {i + 3} : Invalid value for protection mode. It should be either "software" or "hsm"')
+                    kms_invalid_check = True
+
+                # Check Algorithm
+                if algorithm.lower() not in ['aes', 'rsa', 'ecdsa']:
+                    log(f'ROW {i + 3} : Invalid value for Algorithm. It should be either "aes", "rsa" or "ecdsa"')
+                    kms_invalid_check = True
+
+                # Check Length in bits
+                if algorithm.lower() == "aes" and length_in_bits not in [128, 192, 256]:
+                    log(f'ROW {i + 3} : Invalid length for {algorithm}')
+                    kms_invalid_check = True
+                elif algorithm.lower() == "rsa" and length_in_bits not in [2048, 3072, 4096]:
+                    log(f'ROW {i + 3} : Invalid length for {algorithm}')
+                    kms_invalid_check = True
+                elif algorithm.lower() == "ecdsa" and length_in_bits not in [256, 384, 521]:
+                    log(f'ROW {i + 3} : Invalid length for {algorithm}')
+                    kms_invalid_check = True
+
+                # Check Curve Id
+                if (algorithm.lower() == "aes" or algorithm.lower() == "rsa") and curve_id != 'nan':
+                    log(f'ROW {i + 3} : Curve id is only valid for ECDSA keys')
+                    kms_invalid_check = True
+                elif (algorithm.lower() == "ecdsa" and curve_id not in ['NIST_P256', 'NIST_P384', 'NIST_P521']):
+                    log(f'ROW {i + 3} : Invalid curve id. It should be either "NIST_P256", "NIST_P384" or "NIST_P521"')
+                    kms_invalid_check = True
+
+                elif (algorithm.lower() == "ecdsa" and curve_id in ['NIST_P256', 'NIST_P384', 'NIST_P521']):
+                    if int(re.search(r'\d+', curve_id).group()) != int(length_in_bits):
+                        log(f'ROW {i + 3} : Invalid curve id for the length specified')
+                        kms_invalid_check = True
+
+                # Check Auto rotation and rotation interval
+                if (vault_type.lower() == 'default' and auto_rotation is True) or (vault_type.lower() == 'default' and str(rotation_interval_in_days) != 'nan'):
+                    log(f'ROW {i + 3} : Auto rotation or Rotation interval can only be set for virtual_private vaults.')
+                    kms_invalid_check = True
+                elif vault_type.lower() == "virtual_private":
+                    if (auto_rotation is True) and str(rotation_interval_in_days) == 'nan':
+                        log(f'ROW {i + 3} : Rotation interval in days value cannot be empty if auto_rotation is enabled')
+                        kms_invalid_check = True
+                    if ((auto_rotation is False) or str(auto_rotation) == 'nan') and str(rotation_interval_in_days) != 'nan':
+                        log(f'ROW {i + 3} : Rotation interval cannot be specified if auto rotation is not enabled')
+                        kms_invalid_check = True
+                    if str(rotation_interval_in_days) != 'nan' and not (60 <= int(rotation_interval_in_days) <= 365):
+                        log(f'ROW {i + 3} : Invalid Rotation interval. Value should be between 60-365.')
+                        kms_invalid_check = True
+
+    if kms_invalid_check == True:
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
 def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, signer1, ct1):
     CD3_LOG_LEVEL = 60
     logging.addLevelName(CD3_LOG_LEVEL, "custom")
@@ -1727,6 +1888,7 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
     dns_check = False
     buckets_check = False
     budgets_check = False
+    kms_check = False
 
     if not os.path.exists(filename):
         print("\nCD3 excel sheet not found at "+filename +"\nExiting!!")
@@ -1765,11 +1927,15 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
             tags_check = validate_tags(filename,ct.ntk_compartment_ids)
 
         if ('Validate Budgets' in options[0]):
-            log("\n============================= Verifying Tags Tab ==========================================\n")
+            log("\n============================= Verifying Budgets Tab ==========================================\n")
             print("\nProcessing Budgets Tab..")
             budgets_check = validate_budgets(filename,ct.ntk_compartment_ids)
             final_check.append(budgets_check)
 
+        if ('Validate KMS' in options[0]):
+            log("\n============================= Verifying KMS Tab ==========================================\n")
+            print("\nProcessing KMS Tab..")
+            kms_check = validate_kms(filename,ct.ntk_compartment_ids)
 
 
         # CD3 Validation begins here for Network
@@ -1821,7 +1987,7 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
 
 
     # Prints the final result; once the validation is complete
-    if any([comp_check, groups_check, policies_check, tags_check, instances_check, dns_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check,buckets_check]) or False in final_check:
+    if any([comp_check, groups_check, policies_check, tags_check, instances_check, dns_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check,buckets_check, kms_check]) or False in final_check:
         log("=======")
         log("Summary:")
         log("=======")

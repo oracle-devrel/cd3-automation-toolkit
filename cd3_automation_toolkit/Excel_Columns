@@ -92,7 +92,7 @@
 	},
 	"FSS" :
 	{
-	    "Snapshot Policy" : "filesystem_snapshot_policy_id"
+
 	},
 	"BlockVolumes" :
 	{

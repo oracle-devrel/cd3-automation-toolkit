@@ -59,6 +59,7 @@ module "fss" {
   kms_key_id         = each.value.kms_key_id
   source_snapshot_id = each.value.source_snapshot != null ? (length(regexall("ocid1.snapshot.oc*", each.value.source_snapshot)) > 0 ? each.value.source_snapshot : lookup(var.fss_source_ocids,each.value.source_snapshot,null)): null
   filesystem_snapshot_policy_id = each.value.snapshot_policy
+  policy_compartment_id         = each.value.policy_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : var.compartment_ocids[each.value.compartment_id]
 }
 
 module "fss-export-options" {
