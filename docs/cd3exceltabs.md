@@ -95,18 +95,21 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [Instances](tabs.md#instances-tab)
 
 <a href="../terraform/compute">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> 
+
  
 #### Storage
  
  - [BlockVolumes](tabs.md#blockvolumes-tab)
  
- <a href="../terraform/storage">Click here to view sample auto.tfvars for Block Volumes </a> 
+ <a href="../terraform/storage#block-volumes">Click here to view sample auto.tfvars for Block Volumes </a> 
 
  - [FSS](tabs.md#fss-tab)
+
+ <a href="../terraform/storage#fss">Click here to view sample auto.tfvars for Block Volumes </a> 
  
  - [Object Storage Buckets](tabs.md#buckets-tab)
  
- <a href="../terraform/storage.md#2-Buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> 
+ <a href="../terraform/storage#buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> 
  
 
 #### Database
@@ -152,5 +155,24 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [OCVS]( tabs.md#sddcs-tab)
    
 <a href="../terraform/sddc">Click here to view sample auto.tfvars for OCVS </a> 
+
+
+#### Budgets tab
+
+
+<a href="../terraform/budgets#budgets">Click here to view sample auto.tfvars for Budgets </a> 
+   
+<a href="../terraform/budgets#budget-alert-rules">Click here to view sample auto.tfvars for Budget Alert Rules</a>
+
+#### Quotas tab
+
+<a href="../terraform/budgets#quotas">Click here to view sample auto.tfvars for Quotas </a>
+
+#### KMS tab
+
+- [KMS](tabs.md#kms-tab)
+
+<a href="../terraform/kms">Click here to view sample auto.tfvars for KMS </a> 
+
 
 

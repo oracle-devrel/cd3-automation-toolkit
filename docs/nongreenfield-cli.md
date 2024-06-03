@@ -67,7 +67,7 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
 
 !!! example  "Example Execution"
 
-      <img src = "../images/cliNGF-1.png" width=90% height=90%>
+      <img src = "../images/demo_setupocimenu_cli_export.png" width=90% height=90%>
 
 
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.
@@ -87,7 +87,6 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 <br>Execute the tf_import_commands_`<resource>`_nonGF.sh files that are generated in the outdir.
 <br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   
-<img src = "../images/setupocimenu_export_cli.png">
 
 !!! note
     - Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the toolkit to modify these resources or create new ones on top of them.

@@ -25,7 +25,7 @@
 <br>Select the workflow as **Export Existing Resources from OCI (Non-Greenfield Workflow)**. Choose single or multiple MainOptions as required and then corresponding SubOptions.
 <br>Below screenshot shows export of Network and Compute.
 
-<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="../images/setupocimenu_export_jenkins.jpg"><br>
+<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="../images/demo_setupocimenu_jenkins_export.jpg"><br>
 
 
 **Step 5:** 
