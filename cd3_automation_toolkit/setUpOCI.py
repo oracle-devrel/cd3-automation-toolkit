@@ -335,7 +335,7 @@ def export_identityOptions(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-        execute_options(options, inputfile, outdir, config, signer, ct)
+    execute_options(options, inputfile, outdir, config, signer, ct)
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
 
