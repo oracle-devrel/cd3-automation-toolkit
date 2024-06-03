@@ -312,6 +312,9 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                         oci_objs=[grp_info]
                         values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_groups,values_for_column_groups)
 
-
+        importCommands += "\nterraform plan"
+        if importCommands != "":
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(importCommands)
         commonTools.write_to_cd3(values_for_column_groups,cd3file,sheetName_groups)
         print("{0} Groups exported into CD3.\n".format(len(values_for_column_groups["Region"])))
