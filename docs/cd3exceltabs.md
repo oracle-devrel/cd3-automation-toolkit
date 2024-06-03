@@ -25,6 +25,22 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
 <a href="../terraform/governance">Click here to view sample auto.tfvars for Governance components</a> 
 
+ - [Quotas](tabs.md#quotas-tab)
+
+<a href="../terraform/budgets#quotas">Click here to view sample auto.tfvars for Quotas </a>
+
+#### Cost Management
+
+- [Budgets](tabs.md#budgets-tab)
+
+
+<a href="../terraform/budgets#budgets">Click here to view sample auto.tfvars for Budgets </a> 
+   
+<a href="../terraform/budgets#budget-alert-rules">Click here to view sample auto.tfvars for Budget Alert Rules</a>
+
+
+
+
 #### Network
   
  - [VCNs](tabs.md#a-vcns-tab)
@@ -105,7 +121,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
  - [FSS](tabs.md#fss-tab)
 
- <a href="../terraform/storage#fss">Click here to view sample auto.tfvars for Block Volumes </a> 
+ <a href="../terraform/storage#fss">Click here to view sample auto.tfvars for File Systems </a> 
  
  - [Object Storage Buckets](tabs.md#buckets-tab)
  
@@ -157,22 +173,12 @@ Click on the links below to know about the specifics of each tab in the excel sh
 <a href="../terraform/sddc">Click here to view sample auto.tfvars for OCVS </a> 
 
 
-#### Budgets tab
-
-
-<a href="../terraform/budgets#budgets">Click here to view sample auto.tfvars for Budgets </a> 
-   
-<a href="../terraform/budgets#budget-alert-rules">Click here to view sample auto.tfvars for Budget Alert Rules</a>
-
-#### Quotas tab
-
-<a href="../terraform/budgets#quotas">Click here to view sample auto.tfvars for Quotas </a>
-
-#### KMS tab
+#### Security
 
 - [KMS](tabs.md#kms-tab)
 
 <a href="../terraform/kms">Click here to view sample auto.tfvars for KMS </a> 
 
+- [Cloud Guard](tabs.md#cloud-guard)
 
 

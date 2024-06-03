@@ -809,7 +809,7 @@ On re-running the option to create Buckets you will find the previously existing
 
 The KMS tab in CD3 excel sheet can be used to create OCI Vaults and Keys in the OCI tenancy.
 
-Upon executing SetUpOCI.py, choose "Security" from the main menu and "Add/Modify/Delete KMS (Keys/Vaults)" from its sub-options to create Keys/Vaults in OCI Tenancy.
+Upon executing setUpOCI.py, choose "Security" from the main menu and "Add/Modify/Delete KMS (Keys/Vaults)" from its sub-options to create Keys/Vaults in OCI Tenancy.
 
 On completion of execution, you will be able to find the output terraform file generated at :
   
@@ -822,15 +822,17 @@ On re-running the option to create KMS you will find the previously existing fil
 -→ *<outdir\>/<region\>/<kms\>/backup_kms/<Date\>-<Month\>-<Time\>*.
 
 
- **CD3 currently supports:** 
+ **Toolkit currently supports:** 
  
  - Creation of **DEFAULT** or **VIRTUAL PRIVATE** vaults.
+
+ - Replication of Virtual Private Vaults across regions.
 
  - Creation of Master Encryption Keys (MEKs) for all the OCI supported Key shapes: AES, RSA and ECDSA.
 
  - Enabling Auto Rotation for the MEKs in Virtual Private Vaults.
 
- **CD3 currently doesn't support:**
+ **Toolkit currently doesn't support:**
 
   - Dedicated Key Management
   
@@ -840,5 +842,18 @@ On re-running the option to create KMS you will find the previously existing fil
 
   - Secrets 
   
+## Cloud Guard
+
+There is currently no tab for cloud guard in the CD3 excel sheet.
+
+Upon executing setUpOCI.py, choose "Security" from the main menu and "Enable Cloud Guard" from its sub-options will enable Cloud Guard for the tenancy from specified reporting region, clones the Oracle Managed detector and responder recipes. Creates a target for root compartment with the cloned recipes.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|cis-cloudguard.auto.tf |vars TF variables file for enabling cloud guard and creating target for root compartment. |
+
+<a href="../terraform/security">Click here to view sample auto.tfvars for Security components </a> 
 
 

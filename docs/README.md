@@ -70,7 +70,6 @@
     [Grouping generated TF files](group-tf-files.md)<br>
     [OCI Resource Manager Upload](resource-manager-upload.md)<br>
     [Support for Additional Attrs](additional-attributes.md)<br>
-    [CIS Compliance Features](cisfeatures.md)<br>
     [CD3 Validator](cd3validator.md)<br>
     [Migrate jobs to user's Jenkins](jobs-migration.md)<br>
     [Remote Management of Terraform State](remotestate.md)<br>
