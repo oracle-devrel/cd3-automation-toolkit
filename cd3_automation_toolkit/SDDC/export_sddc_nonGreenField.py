@@ -88,24 +88,37 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                 if sddc_cluster.lifecycle_state=='DELETED':
                     continue
 
-                #processing management cluster data
-                if sddc_cluster.vsphere_type == "MANAGEMENT":
+                # Process management and workload cluster data
+                if sddc_cluster.vsphere_type in ["MANAGEMENT", "WORKLOAD"]:
                     sddc = sddc_client.get_sddc(sddc_id=sddc_cluster.sddc_id).data
                     sddc_cluster_data = sddc_cluster_client.get_cluster(cluster_id=sddc_cluster.id).data
-                    sddc_init_config1 = sddc.initial_configuration.initial_cluster_configurations
-                    sddc_init_config=sddc_init_config1[0]
-                    sddc_network = sddc_init_config.network_configuration
-                    sddc_datastores = sddc_init_config.datastores
 
-                    tf_name = commonTools.check_tf_variable(sddc.display_name+"--"+sddc_cluster_data.display_name)
+                    if sddc_cluster.vsphere_type == "MANAGEMENT":
+                        sddc_init_config1 = sddc.initial_configuration.initial_cluster_configurations
+                        sddc_init_config = sddc_init_config1[0]
+                        sddc_network = sddc_init_config.network_configuration
+                        sddc_datastores = sddc_init_config.datastores
 
-                    # Get ssh keys for sddc
-                    key_name = commonTools.check_tf_variable(sddc.display_name)
-                    ssh_key = sddc.ssh_authorized_keys
-                    ssh_key = json.dumps(ssh_key)
-                    sddc_keys[key_name] = ssh_key
-                    importCommands[reg].write("\nterraform import \"module.sddcs[\\\"" + tf_name + "\\\"].oci_ocvp_sddc.sddc\" " + sddc.id)
-                    if 'Standard' in sddc_init_config.initial_host_shape_name:
+                        tf_name = commonTools.check_tf_variable(
+                            sddc.display_name + "--" + sddc_cluster_data.display_name)
+                        key_name = commonTools.check_tf_variable(sddc.display_name)
+                        ssh_key = json.dumps(sddc.ssh_authorized_keys)
+                        sddc_keys[key_name] = ssh_key
+
+                        importCommands[reg].write(
+                            "\nterraform import \"module.sddcs[\\\"" + tf_name + "\\\"].oci_ocvp_sddc.sddc\" " + sddc.id)
+
+                    elif sddc_cluster.vsphere_type == "WORKLOAD":
+                        sddc_network = sddc_cluster_data.network_configuration
+                        sddc_datastores = sddc_cluster_data.datastores
+                        tf_name = commonTools.check_tf_variable(
+                            sddc.display_name + "--" + sddc_cluster_data.display_name)
+
+                        importCommands[reg].write(
+                            "\nterraform import \"module.sddc-clusters[\\\"" + tf_name + "\\\"].oci_ocvp_cluster.sddc_cluster\" " + sddc_cluster.id)
+
+                    if 'Standard' in (
+                    sddc_init_config.initial_host_shape_name if sddc_cluster.vsphere_type == "MANAGEMENT" else sddc_cluster.initial_host_shape_name):
                         for item in sddc_datastores:
                             if item.datastore_type == "MANAGEMENT":
                                 mgmt_vols = item.block_volume_ids
@@ -113,35 +126,35 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                                 wkld_vols = item.block_volume_ids
 
                     for col_header in values_for_column_sddc.keys():
-                        if (col_header == "Region"):
+                        if col_header == "Region":
                             values_for_column_sddc[col_header].append(region)
-                        elif (col_header == "Compartment Name"):
+                        elif col_header == "Compartment Name":
                             values_for_column_sddc[col_header].append(ntk_compartment_name)
-                        elif (col_header == "SDDC Name"):
-                            sddc_name = sddc.display_name+"::"+sddc_cluster.display_name
+                        elif col_header == "SDDC Name":
+                            sddc_name = sddc.display_name + "::" + sddc_cluster.display_name
                             values_for_column_sddc[col_header].append(sddc_name)
-                        elif (col_header == "vsphere type"):
-                            values_for_column_sddc[col_header].append(sddc_init_config.vsphere_type)
-                        elif (col_header == "Enable HCX"):
-                            if sddc.hcx_mode:
-                                values_for_column_sddc[col_header].append("TRUE")
-                            else:
-                                values_for_column_sddc[col_header].append("FALSE")
-                        elif (col_header == "HCX License Type"):
-                            if sddc.hcx_mode:
-                                values_for_column_sddc[col_header].append(sddc.hcx_mode)
-                            else:
-                                values_for_column_sddc[col_header].append("")
-                        elif (col_header == "Pricing Interval"):
-                            values_for_column_sddc[col_header].append(sddc_init_config.initial_commitment)
-                        elif ("Availability Domain" in col_header):
-                            value = sddc_init_config.__getattribute__(sheet_dict_sddc[col_header])
+                        elif col_header == "vsphere type":
+                            values_for_column_sddc[col_header].append(
+                                sddc_init_config.vsphere_type if sddc_cluster.vsphere_type == "MANAGEMENT" else sddc_cluster.vsphere_type)
+                        elif col_header == "Enable HCX":
+                            values_for_column_sddc[col_header].append(
+                                "TRUE" if sddc.hcx_mode else "FALSE" if sddc_cluster.vsphere_type == "MANAGEMENT" else "")
+                        elif col_header == "HCX License Type":
+                            values_for_column_sddc[col_header].append(
+                                sddc.hcx_mode if sddc.hcx_mode else "" if sddc_cluster.vsphere_type == "MANAGEMENT" else "")
+                        elif col_header == "Pricing Interval":
+                            values_for_column_sddc[col_header].append(
+                                sddc_init_config.initial_commitment if sddc_cluster.vsphere_type == "MANAGEMENT" else sddc_cluster_data.initial_commitment)
+                        elif "Availability Domain" in col_header:
+                            value = sddc_init_config.__getattribute__(sheet_dict_sddc[
+                                                                          col_header]) if sddc_cluster.vsphere_type == "MANAGEMENT" else sddc_cluster.__getattribute__(
+                                sheet_dict_sddc[col_header])
                             ad = ""
-                            if ("AD-1" in value or "ad-1" in value):
+                            if "AD-1" in value or "ad-1" in value:
                                 ad = "AD1"
-                            elif ("AD-2" in value or "ad-2" in value):
+                            elif "AD-2" in value or "ad-2" in value:
                                 ad = "AD2"
-                            elif ("AD-3" in value or "ad-3" in value):
+                            elif "AD-3" in value or "ad-3" in value:
                                 ad = "AD3"
                             values_for_column_sddc[col_header].append(ad)
                         elif col_header == 'Management Block Volumes':
@@ -155,158 +168,56 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                                 wkld_vol_data = wkld_vol_data+","+get_volume_data(bvol, volume_id=vol_id, ct=ct)
                             values_for_column_sddc[col_header].append(wkld_vol_data[1:])
                         elif col_header == 'SSH Key Var Name':
-                            values_for_column_sddc[col_header].append(key_name)
-                        elif (col_header == "Provisioning Subnet"):
+                            values_for_column_sddc[col_header].append(
+                                key_name if sddc_cluster.vsphere_type == "MANAGEMENT" else "")
+                        elif col_header == "Provisioning Subnet":
                             subnet_id = sddc_network.provisioning_subnet_id
                             subnet_info = vnc.get_subnet(subnet_id)
-                            sub_name = subnet_info.data.display_name  # Subnet-Name
-                            vcn_name = vnc.get_vcn(subnet_info.data.vcn_id).data.display_name  # vcn-Name
-                            values_for_column_sddc[col_header].append(vcn_name+"_"+sub_name)
-                        elif(col_header == "NSX Edge Uplink1 VLAN"):
+                            sub_name = subnet_info.data.display_name
+                            vcn_name = vnc.get_vcn(subnet_info.data.vcn_id).data.display_name
+                            values_for_column_sddc[col_header].append(vcn_name + "_" + sub_name)
+                        elif col_header == "NSX Edge Uplink1 VLAN":
                             vlan_id = sddc_network.nsx_edge_uplink1_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "NSX Edge Uplink1 VLAN"):
-                            vlan_id = sddc_network.nsx_edge_uplink1_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "NSX Edge Uplink2 VLAN"):
+                        elif col_header == "NSX Edge Uplink2 VLAN":
                             vlan_id = sddc_network.nsx_edge_uplink2_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "NSX Edge VTEP VLAN"):
+                        elif col_header == "NSX Edge VTEP VLAN":
                             vlan_id = sddc_network.nsx_edge_v_tep_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "NSX VTEP VLAN"):
+                        elif col_header == "NSX VTEP VLAN":
                             vlan_id = sddc_network.nsx_v_tep_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "vMotion VLAN"):
+                        elif col_header == "vMotion VLAN":
                             vlan_id = sddc_network.vmotion_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "vSAN VLAN"):
+                        elif col_header == "vSAN VLAN":
                             vlan_id = sddc_network.vsan_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "vSphere VLAN"):
+                        elif col_header == "vSphere VLAN":
                             vlan_id = sddc_network.vsphere_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "HCX VLAN"):
+                        elif col_header == "HCX VLAN":
                             vlan_id = sddc_network.hcx_vlan_id
-                            if vlan_id == None:
-                                values_for_column_sddc[col_header].append("")
-                            else:
-                                values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "Replication Net VLAN"):
+                            values_for_column_sddc[col_header].append(
+                                vnc.get_vlan(vlan_id).data.display_name if vlan_id else "")
+                        elif col_header == "Replication Net VLAN":
                             vlan_id = sddc_network.replication_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "Provisioning Net VLAN"):
+                        elif col_header == "Provisioning Net VLAN":
                             vlan_id = sddc_network.provisioning_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                         elif col_header.lower() in commonTools.tagColumns:
-                            values_for_column_sddc = commonTools.export_tags(sddc, col_header,
-                                                                               values_for_column_sddc)
+                            values_for_column_sddc = commonTools.export_tags(
+                                sddc if sddc_cluster.vsphere_type == "MANAGEMENT" else sddc_cluster, col_header,
+                                values_for_column_sddc)
                         else:
-                            oci_objs = [sddc,sddc_init_config,sddc_network,sddc_datastores]
-                            values_for_column_sddc = commonTools.export_extra_columns(oci_objs, col_header,
-                                                                                        sheet_dict_sddc,
-                                                                                        values_for_column_sddc)
-
-                if sddc_cluster.vsphere_type  == "WORKLOAD":
-                    sddc = sddc_client.get_sddc(sddc_id=sddc_cluster.sddc_id).data
-                    sddc_cluster_data = sddc_cluster_client.get_cluster(cluster_id=sddc_cluster.id).data
-                    sddc_network = sddc_cluster_data.network_configuration
-                    sddc_datastores = sddc_cluster_data.datastores
-
-                    tf_name = commonTools.check_tf_variable(sddc.display_name+"--"+sddc_cluster_data.display_name)
-                    importCommands[reg].write(
-                        "\nterraform import \"module.sddc-clusters[\\\"" + tf_name + "\\\"].oci_ocvp_cluster.sddc_cluster\" " + sddc_cluster.id)
-                    if 'Standard' in sddc_cluster.initial_host_shape_name:
-                        for item in sddc_datastores:
-                            if item.datastore_type == "MANAGEMENT":
-                                mgmt_vols = item.block_volume_ids
-                            if item.datastore_type == "WORKLOAD":
-                                wkld_vols = item.block_volume_ids
-
-                    for col_header in values_for_column_sddc.keys():
-                        if (col_header == "Region"):
-                            values_for_column_sddc[col_header].append(region)
-                        elif (col_header == "Compartment Name"):
-                            values_for_column_sddc[col_header].append(ntk_compartment_name)
-                        elif (col_header == "SDDC Name"):
-                            sddc_name = sddc.display_name + "::"+sddc_cluster.display_name
-                            values_for_column_sddc[col_header].append(sddc_name)
-                        elif (col_header == "vsphere type"):
-                            values_for_column_sddc[col_header].append(sddc_cluster.vsphere_type)
-                        elif (col_header == "Enable HCX"):
-                            values_for_column_sddc[col_header].append("")
-                        elif (col_header == "HCX License Type"):
-                            values_for_column_sddc[col_header].append("")
-                        elif (col_header == "Pricing Interval"):
-                            values_for_column_sddc[col_header].append(sddc_cluster_data.initial_commitment)
-                        elif ("Availability Domain" in col_header):
-                            value = sddc_cluster.__getattribute__(sheet_dict_sddc[col_header])
-                            ad = ""
-                            if ("AD-1" in value or "ad-1" in value):
-                                ad = "AD1"
-                            elif ("AD-2" in value or "ad-2" in value):
-                                ad = "AD2"
-                            elif ("AD-3" in value or "ad-3" in value):
-                                ad = "AD3"
-                            values_for_column_sddc[col_header].append(ad)
-                        elif col_header == 'Management Block Volumes':
-                            mgmt_vol_data = ""
-                            for vol_id in mgmt_vols:
-                                mgmt_vol_data = mgmt_vol_data + "," + get_volume_data(bvol, volume_id=vol_id, ct=ct)
-                            values_for_column_sddc[col_header].append(mgmt_vol_data[1:])
-                        elif col_header == 'Workload Block Volumes':
-                            wkld_vol_data = ""
-                            for vol_id in wkld_vols:
-                                wkld_vol_data = wkld_vol_data + "," + get_volume_data(bvol, volume_id=vol_id, ct=ct)
-                            values_for_column_sddc[col_header].append(wkld_vol_data[1:])
-                        elif col_header == 'SSH Key Var Name':
-                            values_for_column_sddc[col_header].append("")
-                        elif (col_header == "Provisioning Subnet"):
-                            subnet_id = sddc_network.provisioning_subnet_id
-                            subnet_info = vnc.get_subnet(subnet_id)
-                            sub_name = subnet_info.data.display_name  # Subnet-Name
-                            vcn_name = vnc.get_vcn(subnet_info.data.vcn_id).data.display_name  # vcn-Name
-                            values_for_column_sddc[col_header].append(vcn_name + "_" + sub_name)
-                        elif (col_header == "NSX Edge Uplink1 VLAN"):
-                            vlan_id = sddc_network.nsx_edge_uplink1_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "NSX Edge VTEP VLAN"):
-                            vlan_id = sddc_network.nsx_edge_v_tep_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "NSX VTEP VLAN"):
-                            vlan_id = sddc_network.nsx_v_tep_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "vMotion VLAN"):
-                            vlan_id = sddc_network.vmotion_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "vSAN VLAN"):
-                            vlan_id = sddc_network.vsan_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "vSphere VLAN"):
-                            vlan_id = sddc_network.vsphere_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "HCX VLAN"):
-                            vlan_id = sddc_network.hcx_vlan_id
-                            if vlan_id == None:
-                                values_for_column_sddc[col_header].append("")
-                            else:
-                                values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "Replication Net VLAN"):
-                            vlan_id = sddc_network.replication_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif (col_header == "Provisioning Net VLAN"):
-                            vlan_id = sddc_network.provisioning_vlan_id
-                            values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
-                        elif col_header.lower() in commonTools.tagColumns:
-                            values_for_column_sddc = commonTools.export_tags(sddc_cluster, col_header,
-                                                                             values_for_column_sddc)
-                        else:
-                            oci_objs = [sddc_cluster,sddc_cluster_data, sddc_network, sddc_datastores]
+                            oci_objs = [sddc, sddc_init_config, sddc_network,
+                                        sddc_datastores] if sddc_cluster.vsphere_type == "MANAGEMENT" else [
+                                sddc_cluster, sddc_cluster_data, sddc_network, sddc_datastores]
                             values_for_column_sddc = commonTools.export_extra_columns(oci_objs, col_header,
                                                                                       sheet_dict_sddc,
                                                                                       values_for_column_sddc)
-
-
 
         file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
         # Read variables file data

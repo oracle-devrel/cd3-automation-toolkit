@@ -19,6 +19,13 @@ resource "oci_identity_user" "user" {
 
 }
 
+resource "oci_identity_user_group_membership" "user_group_membership" {
+  count      = var.group_membership != null ? length(var.group_membership) : 0
+  depends_on = [oci_identity_user.user]
+  user_id    = oci_identity_user.user.id
+  group_id   = length(regexall("ocid1.group.oc*", var.group_membership[count.index])) > 0 ? var.group_membership[count.index] : data.oci_identity_groups.iam_groups.groups[index(data.oci_identity_groups.iam_groups.groups.*.name, var.group_membership[count.index])].id
+}
+
 resource "oci_identity_user_capabilities_management" "user_capabilities_management" {
   count      = var.disable_capabilities != null ? 1 : 0
   depends_on = [oci_identity_user.user]

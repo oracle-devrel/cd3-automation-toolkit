@@ -250,26 +250,9 @@ variable "groups" {
   type = map(object({
     group_name        = string
     group_description = string
-	members           = optional(list(string), [])
     matching_rule     = optional(string)
     defined_tags      = optional(map(any))
     freeform_tags     = optional(map(any))
-  }))
-  default = {}
-}
-
-variable "identity_domain_groups" {
-  type = map(object({
-    group_name        = string
-    group_description = string
-    idcs_endpoint     = string
-    matching_rule     = optional(string)
-    defined_tags      = optional(list(map(any)))
-    freeform_tags     = optional(list(map(any)))
-    members           = optional(list(object({
-      type  = string
-      value = string
-    })))
   }))
   default = {}
 }
@@ -286,38 +269,6 @@ variable "users" {
   }))
   default = {}
 }
-
-variable "identity_domain_users" {
-  type = map(object({
-    name                 = optional(object({
-        family_name      = string
-    }))
-    idcs_endpoint        = string
-    user_name            = string
-    description          = optional(string)
-    groups               = optional(list(string))
-    emails               = optional(object({
-        primary          = string
-        secondary        = string
-        type             = string
-        value            = string
-        verified         = string
-    }))
-    urnietfparamsscimschemasoracleidcsextensioncapabilities_user = object({
-      can_use_api_keys                 = bool
-      can_use_auth_tokens              = bool
-      can_use_console_password         = bool
-      can_use_customer_secret_keys     = bool
-      can_use_db_credentials           = bool
-      can_use_oauth2client_credentials = bool
-      can_use_smtp_credentials         = bool
-    })
-    defined_tags      = optional(list(map(any)))
-    freeform_tags     = optional(list(map(any)))
-  }))
-  default = {}
-}
-
 
 variable "networkSources" {
   type = map(object({
@@ -1008,14 +959,15 @@ variable "mount_targets" {
 variable "fss" {
   description = "To provision File System Services"
   type = map(object({
-    availability_domain  = string
-    compartment_id       = string
-    display_name         = optional(string)
-    source_snapshot       = optional(string)
-    snapshot_policy      = optional(string)
-    kms_key_id           = optional(string)
-    defined_tags         = optional(map(any))
-    freeform_tags        = optional(map(any))
+    availability_domain         = string
+    compartment_id              = string
+    display_name                = optional(string)
+    source_snapshot             = optional(string)
+    snapshot_policy             = optional(string)
+    policy_compartment_id       = optional(string)
+    kms_key_id                  = optional(string)
+    defined_tags                = optional(map(any))
+    freeform_tags               = optional(map(any))
   }))
   default = {}
 }
@@ -1763,6 +1715,7 @@ variable "sddc-clusters" {
     vcn_name                              = string
     esxi_hosts_count                      = number
     nsx_edge_uplink1vlan_id               = string
+    nsx_edge_uplink2vlan_id               = optional(string)
     nsx_edge_vtep_vlan_id                 = string
     nsx_vtep_vlan_id                      = string
     provisioning_subnet_id                = string

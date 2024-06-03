@@ -124,6 +124,7 @@ class commonTools():
             if 'comp_filter' in i:
                 self.comp_filter = (i.split("=")[1])[2:][:-2]
                 self.comp_filter = self.comp_filter if self.comp_filter else "null"
+
             if 'default_dns' in i:
                 self.default_dns = (i.split("=")[1])[2:][:-2]
 
@@ -145,6 +146,8 @@ class commonTools():
             if 'orm_compartments' in i:
                 self.orm_comp_filter = (i.split("=")[1])[2:][:-2]
                 self.orm_comp_filter = self.orm_comp_filter if self.orm_comp_filter else "null"
+
+
             if 'vault_region' in i:
                 self.vault_region = (i.split("=")[1])[2:][:-2]
 
@@ -318,7 +321,7 @@ class commonTools():
         if resource_name in ntk_only_resources:
             pass
         else:
-            if resource_name == "Identity Objects" or resource_name == "Tagging Objects":
+            if resource_name in ["Compartments","IAM Policies","IAM Groups","IAM Users","Network Sources","Tagging Objects"]:
                 input_compartment_names = None
             elif resource_name == "Clone Firewall Policy":
                 compartment_list_str = "Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be cloned: "
@@ -370,6 +373,37 @@ class commonTools():
                         comp_list_fetch.append(key.replace('--', '::'))
 
             return comp_list_fetch
+
+    def get_identity_domain_data(self,config, signer, resource,var_file):
+
+        config.__setitem__("region",self.region_dict[self.home_region])
+        selected_domains_data = {}
+        idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+        try:
+            domain = idc.list_domains(config["tenancy"]).data
+
+            resource = "Identity Domain Resource"
+            compartments = self.get_compartment_map(var_file, resource)
+            domain_str = "Enter the ',' separated Domain names to export the groups OR Enter 'all' to export from all domains OR leave it Blank to export from default domain : "
+            if self.domain_filter == "null":
+                domains = None
+            else:
+                domains = self.domain_filter if self.domain_filter else input(domain_str)
+            domain_names = list(map(str.lower,domains.split(',') if domains else ['Default']))
+
+            for compartment in compartments:
+                comp_id = self.ntk_compartment_ids[compartment]
+                domain = idc.list_domains(comp_id).data
+                for d in domain:
+                    domain_key = compartment + "@" + d.display_name
+                    if 'all' in domain_names or str(d.display_name).lower() in domain_names:
+                        self.domain_data[domain_key] = d.url
+
+        except Exception as e:
+            print("Tenancy is not Identity Domain Enabled")
+            self.domain_data = {}
+
+        return self.domain_data
 
     #Check value exported
     #If None - replace with ""

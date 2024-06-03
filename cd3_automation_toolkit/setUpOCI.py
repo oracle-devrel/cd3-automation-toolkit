@@ -306,7 +306,8 @@ def validate_cd3(prim_options=[]):
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
         Option("Validate FSS", None, None),
-        Option("Validate Buckets", None, None)
+        Option("Validate Buckets", None, None),
+        Option("Validate KMS", None, None)
     ]
     if prim_options:
         if "Validate Networks" in prim_options:
@@ -324,7 +325,9 @@ def validate_firewall_cd3(execute_all=False):
 
 ################## Export Identity ##########################
 def export_identityOptions(prim_options=[]):
-    options = [Option("Export Compartments/Groups/Policies", export_compartmentPoliciesGroups, 'Exporting Compartments/Groups/Policies'),
+    options = [Option("Export Compartments", export_compartments, 'Exporting Compartments'),
+               Option("Export Groups",export_groups, 'Exporting Groups'),
+               Option("Export Policies", export_policies, 'Exporting Policies'),
                Option("Export Users", export_users, 'Exporting Users'),
                Option("Export Network Sources", export_networkSources, 'Exporting Network Sources')
     ]
@@ -332,34 +335,51 @@ def export_identityOptions(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct)
+        execute_options(options, inputfile, outdir, config, signer, ct)
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
 
 
-def export_compartmentPoliciesGroups(inputfile, outdir,config, signer, ct):
-    compartments = ct.get_compartment_map(var_file, 'Identity Objects')
-    Identity.export_identity(inputfile, outdir, service_dir_identity, config, signer, ct, export_compartments=compartments)
-    create_identity(prim_options=['Add/Modify/Delete Compartments','Add/Modify/Delete Groups','Add/Modify/Delete Policies'])
-    print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+def export_compartments(inputfile, outdir,config, signer, ct):
+    resource = 'Compartments'
+    Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct)
+    create_identity(prim_options=['Add/Modify/Delete Compartments'])
+    print("\n\nExecute tf_import_commands_compartments_nonGF.sh script created under home region directory to synch TF with OCI Identity Compartments\n")
+
+def export_policies(inputfile, outdir,config, signer, ct):
+    resource = 'IAM Policies'
+    compartments = ct.get_compartment_map(var_file, resource)
+    Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_compartments=compartments)
+    create_identity(prim_options=['Add/Modify/Delete Policies'])
+    print("\n\nExecute tf_import_commands_policies_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
+
+def export_groups(inputfile, outdir,config, signer, ct):
+    resource = 'IAM Groups'
+    selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
+    Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_domains=selected_domains_data)
+    create_identity(prim_options=['Add/Modify/Delete Groups'])
+    print("\n\nExecute tf_import_commands_groups_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
 def export_users(inputfile, outdir,config,signer, ct):
+    resource = 'IAM Users'
+    # check if tenancy is identity_domain enabled
+    selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
     Identity.Users.export_users(inputfile, outdir, service_dir_identity, config, signer, ct)
     create_identity(prim_options=['Add/Modify/Delete Users'])
-    print("\n\nExecute tf_import_commands_users_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+    print("\n\nExecute tf_import_commands_users_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
 def export_networkSources(inputfile, outdir, config, signer, ct):
-    compartments = ct.get_compartment_map(var_file, 'Identity Objects')
+    resource = 'Network Sources'
     Identity.NetworkSources.export_networkSources(inputfile, outdir, service_dir_identity, config, signer, ct)
     create_identity(prim_options=['Add/Modify/Delete Network Sources'])
-    print("\n\nExecute tf_import_commands_networkSources_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+    print("\n\nExecute tf_import_commands_networkSources_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 def export_governance(prim_options=[]):
     options = [
     Option('Export Tags', export_tags, 'Tagging'),
-    Option('Export Quota', export_quotas, 'Quota')]
+    Option('Export Quotas', export_quotas, 'Quotas')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -368,7 +388,7 @@ def export_governance(prim_options=[]):
 
 def export_cost_management(prim_options=[]):
     options = [
-    Option('Export Budget', export_budget, 'Budget')]
+    Option('Export Budgets', export_budget, 'Budgets')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -889,7 +909,7 @@ def create_identity(prim_options=[]):
 def create_governance(prim_options=[]):
     options = [
     Option('Tags', create_tags, 'Tagging'),
-    Option('Quota', create_quotas, 'Quota')]
+    Option('Quotas', create_quotas, 'Quotas')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -898,7 +918,7 @@ def create_governance(prim_options=[]):
 
 def create_cost_management(prim_options=[]):
     options = [
-    Option('Budget', create_budgets, 'Budget')]
+    Option('Budgets', create_budgets, 'Budgets')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -1308,6 +1328,10 @@ def create_security_services(prim_options=[]):
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, service_dir_kms, prefix, ct)
+    for option in options:
+        if option.name == 'Add/Modify/Delete KMS (Keys/Vaults)':
+            update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])
+
 
 def run_utility(prim_options=[]):
     options = [Option('CIS Compliance Check Script', initiate_cis_scan, 'CIS Compliance Check Script'),
