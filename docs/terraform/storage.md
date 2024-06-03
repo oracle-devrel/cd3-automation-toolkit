@@ -4,7 +4,7 @@ These are the syntax and sample format for providing inputs to the modules via <
 Comments preceed with <b>##</b>.
 
 
-**1. Block Volumes**
+### Block Volumes
 
 - <b>Syntax</b>
 
@@ -32,7 +32,12 @@ Comments preceed with <b>##</b>.
                     is_read_only              = bool
                     is_pv_encryption_in_transit_enabled = bool
                     is_shareable              = bool
+                    is_agent_auto_iscsi_login_enabled = bool
                     use_chap                  = bool
+                    source_details            = list(map(any))
+                    block_volume_replicas     = list(map(any))
+                    block_volume_replicas_deletion = bool
+                    autotune_policies         = list(map(any))
                     defined_tags              = map
                     freeform_tags             = map
         }
@@ -79,10 +84,25 @@ Comments preceed with <b>##</b>.
     
             # Optional
             size_in_gbs          = 500
-            attach_to_instance = "server01"
+            attach_to_instance   = "server01"
             attachment_type = "iscsi"
-            backup_policy          = "gold"
+            backup_policy        = "gold"
             is_pv_encryption_in_transit_enabled = "false"
+            source_details       = "blockvolume_source"
+            block_volume_replicas = [{
+                availability_domain = "IiKv:US-ASHBURN-AD-3"
+                display_name = "replica-1"
+            }]
+            autotune_policies    = [
+                  {
+                    autotune_type = "DETACHED_VOLUME"
+                    max_vpus_per_gb = null
+                  },
+                  {
+                    autotune_type = "PERFORMANCE_BASED"
+                    max_vpus_per_gb = "50"
+                  }
+               ]
             defined_tags = {
                 "Operations.os"= "Linux" ,
                 "Organization.department"= "Administrators" ,
@@ -93,7 +113,7 @@ Comments preceed with <b>##</b>.
     }
 ```
     
-**2. Buckets**
+### Buckets
 
 - <b>Syntax</b>
 
@@ -209,4 +229,174 @@ Comments preceed with <b>##</b>.
             },
   ##Add New OSS Buckets for phoenix here##
   }
+```
+### FSS
+
+- <b>Syntax</b>
+
+```
+   mount_targets = {
+     mt_key = {
+          availability_domain    = string
+          compartment_id         = string
+          network_compartment_id = string
+          vcn_name               = string
+          subnet_id              = string
+          # Optional
+          display_name           = string
+          ip_address             = string
+          hostname_label         = string
+          nsg_ids                = list
+          defined_tags           = map
+          freeform_tags          = map
+     }
+  
+   }
+
+   fss = {
+      fss_key = {
+          availability_domain         = string
+          compartment_id              = string
+          # optional
+          display_name                = string
+          source_snapshot             = string
+          snapshot_policy             = string
+          snapshot_policy_compartment = string
+          kms_key_id                  = string
+          defined_tags                = map
+          freeform_tags               = map
+      }
+  }
+
+  nfs_export_options =  {
+      export_key = {
+          export_set_id  = string
+          file_system_id = string
+          path           = string
+          export_options = list
+          defined_tags   = map
+          freeform_tags  = map
+          is_idmap_groups_for_sys_auth = bool
+      }
+  }
+
+   fss_replication = {
+       replication_key = {
+            compartment_id       = string
+            source_id            = string
+            target_id            = string
+            # optional
+            display_name         = string
+            replication_interval = number
+            defined_tags         = map
+            freeform_tags        = map
+       }
+  }
+
+```
+- <b>Example</b>
+```
+  // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Storage
+# Mount Target - tfvars
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for Mount Target:
+# terraform import "module.mts[\"<<mount_targets terraform variable name>>\"].oci_file_storage_mount_target.mount_target" <<mount target ocid>>
+############################
+mount_targets = {
+    mnt-iad = {
+        availability_domain = "0"
+        compartment_id = "appdev"
+        network_compartment_id = "network"
+        vcn_name = "vcn-iad"
+        subnet_id = "app-sub-1"
+        #Optional
+        display_name = "mnt-iad"
+        ip_address = "10.255.254.107"
+       
+        },
+}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Storage
+# FSS - tfvars
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for FSS:
+# terraform import "module.fss[\"<<fss terraform variable name>>\"].oci_file_storage_file_system.file_system" <<file system ocid>>
+############################
+fss = {
+    fss-iad = {
+        availability_domain = "0"
+        compartment_id = "storage"
+        #Optional
+        display_name = "fss-iad"
+        snapshot_policy = "SnapshotPolicy-1"
+        policy_compartment_id = "storage"
+    },    
+}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Storage
+# Export Options - tfvars
+# Allowed Values:
+# compartment_id and policy_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# Sample import command for Export Options:
+# terraform import "module.fss-export-options[\"<<nfs_export_options terraform variable name>>\"].oci_file_storage_export.export" <<export option ocid>>
+############################
+nfs_export_options = {
+    fss-iad-export = {
+        export_set_id = "mnt-iad"
+        file_system_id = "fss-iad"
+        is_idmap_groups_for_sys_auth = true
+        path = "/fss-iad"
+        export_options=[{
+            #Required
+            source = "0.0.0.0/0"
+            #Optional
+            access = "READ_WRITE"
+            allowed_auth = ["SYS"]
+            anonymous_gid = "65534"
+            anonymous_uid = "65534"
+            identity_squash = "NONE"
+            is_anonymous_access_allowed = "false"
+            require_privileged_source_port = "false"
+        },]
+       
+        },
+}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Storage
+# FSS REPLICATION - tfvars
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for FSS:
+# terraform import "module.fss-replication[\"<<fss replication terraform variable name>>\"].oci_file_storage_replication.file_system_replication" <<file system ocid>>
+############################
+fss_replication = {
+    Replication-1 = {
+        compartment_id = "storage"
+        source_id    = "fss-iad"
+        target_id    = "ocid1.filesystem.oc1.phx.aaaaaaaaaagd6g6nobuhqllqojxwiotqnb4c2ylefuzaaaaa"
+        #Optional
+        display_name = "Replication-to-phx"
+        replication_interval = 60
+        },
+    Replication-2 = {
+        compartment_id = "sto"
+        source_id    = "fss1"
+        target_id    = "fss3"
+        #Optional
+        display_name = "Replication-20240531-1315-22"
+        replication_interval = 480
+        },
+}
+
 ```

@@ -148,5 +148,6 @@ Terraform ordering changes observed during plan phase for OCI compute plugins.
 
   It changes the order of plugin's in terraform state file and doesn't change anything in OCI console for compute resource.
 
-
+**9.**
+When exporting OCI Replica Vault to terraform, the terraform plan indicates the creation of OCI vault replication resource. As a temporary work-around, from the tfvars remove the *replica_region* parameter from the primary vault to add or modify resources.
 

@@ -30,7 +30,7 @@ Fill the CD3 Excel with appropriate values.
 <br> Check out [this](multiple-services-jenkins.md) while selcting multiple options simultaneously.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags.
 
-<img width="920" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/setupocimenu_create_jenkins.jpg"><br>
+<img width="520" height="200" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/demo_setupocimenu_jenkins_create.jpg"><br>
 
 Click on **Build** at the bottom.
 

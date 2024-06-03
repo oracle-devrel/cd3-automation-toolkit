@@ -805,7 +805,40 @@ On re-running the option to create Buckets you will find the previously existing
   
   
   
+## KMS Tab
+
+The KMS tab in CD3 excel sheet can be used to create OCI Vaults and Keys in the OCI tenancy.
+
+Upon executing SetUpOCI.py, choose "Security" from the main menu and "Add/Modify/Delete KMS (Keys/Vaults)" from its sub-options to create Keys/Vaults in OCI Tenancy.
+
+On completion of execution, you will be able to find the output terraform file generated at :
   
+-→  *<outdir\>/<region\>/<kms\>/<prefix\>_kms.auto.tfvars* 
+
+Once terraform apply is done, you can view the resources under *Identity & Security -> Key Management & Secret Management* in OCI console.
+
+On re-running the option to create KMS you will find the previously existing files being backed up under directory:
+
+-→ *<outdir\>/<region\>/<kms\>/backup_kms/<Date\>-<Month\>-<Time\>*.
+
+
+ **CD3 currently supports:** 
+ 
+ - Creation of **DEFAULT** or **VIRTUAL PRIVATE** vaults.
+
+ - Creation of Master Encryption Keys (MEKs) for all the OCI supported Key shapes: AES, RSA and ECDSA.
+
+ - Enabling Auto Rotation for the MEKs in Virtual Private Vaults.
+
+ **CD3 currently doesn't support:**
+
+  - Dedicated Key Management
+  
+  - External Key Management
+
+  - Private endpoints
+
+  - Secrets 
   
 
 

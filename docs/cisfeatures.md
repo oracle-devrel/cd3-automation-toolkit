@@ -9,24 +9,7 @@ The Automation Toolkit allows for running the CIS compliance checker script agai
 As a best practice, the script should be executed after every deployment in the tenancy. The output report should be analyzed to minimize the reported anomalies according to the design requirements.
 
 
-#### **2. Create Key/Vault:**
-
-Below tf file is created
-    
-| File name | Description|
-|---|---|
-|cis-keyvault.auto.tfvars |TF variables file for creating the key/vault in the specified compartment and region. This is created under the specified region directory.|
-
-
-#### **3. Create Default Budget:**
-
-This option will ask for monthly budget (in US$) and Threshold percentage of Budget and bellow tf files are created:
-
-| File name | Description|
-|---|---|
-|cis-budget.auto.tfvars |TF variables file for crating budget.|
-
-#### **4. Enable Cloud guard**
+#### **2. Enable Cloud guard**
 
 This will enable Cloud Guard for the tenancy from specified reporting region, clones the Oracle Managed detector and responder recipes. Creates a target for root compartment with the cloned recipes.
 
