@@ -61,7 +61,6 @@ nav:
     - Remote Management of Terraform State: remotestate.md
     - OCI Resource Manager Upload: resource-manager-upload.md
     - Support for Additional Attrs: additional-attributes.md
-    - CIS Compliance Features: cisfeatures.md
     - CD3 Validator: cd3validator.md
     - Migrate CD3 Jenkins: jobs-migration.md
 
