@@ -6,9 +6,10 @@
 | **IAM**| |
 | [IAM/Identity](cd3exceltabs.md#iamidentity) | Compartments, Groups, Dynamic Groups, Policies, Users, Network Sources |
 |**Governance**||
-| [Governance](cd3exceltabs.md#governance) | Tags (Namespaces, Tag Keys, Default Tags, Cost Tracking Tags) |
-| [Budgets](cd3exceltabs.md#budgets-tab) | Budgets, Budget Alert Rules |
-| [Quotas](cd3exceltabs.md#quotas-tab) | Quota policies |
+| [Tagging](cd3exceltabs.md#governance) | Tags (Namespaces, Tag Keys, Default Tags, Cost Tracking Tags) |
+| [Quotas](cd3exceltabs.md#governance) | Quota policies |
+|**Cost Management**||
+| [Budgets](cd3exceltabs.md#cost-management) | Budgets, Budget Alert Rules |
 | **Network and Connectivity** ||
 | [Network](cd3exceltabs.md#network) | VCNs, Subnets, VLANs, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Remote Peering Connections, Application Load Balancer, Network Load Balancers |
 | [OCI Network Firewall](cd3exceltabs.md#network-firewall)                                       | OCI Network Firewall and Policy |
@@ -23,9 +24,11 @@
 | [Logging Services](cd3exceltabs.md#logging-Services) | VCN Flow Logs, LBaaS access and error Logs, OSS Buckets write Logs |
 |**Developer Services**||
 | [Developer Services](cd3exceltabs.md#developer-services) | Resource Manager, Oracle Kubernetes Engine (OKE) |
-|**Secure Workloads**||
-| [CIS Landing Zone Compliance](cisfeatures.md#additional-cis-compliance-features) | Download and Execute CIS Compliance Check Script, Cloud Guard, Key Vault, Budget |
+|**Third Party Services**||
+| [CIS Landing Zone Compliance](third-party-services.md#cis-compliance-checker-script) | Download and Execute CIS Compliance Check Script |
+ [Show OCI Report](third-party-services.md#showoci-script) | Download and Execute showOCI Script |
 |**Security**||
 [Policy Enforcement](opa-integration.md) | OPA - Open Policy Agent |
-[KMS](cd3exceltabs.md#kms-tab) | Vaults and Keys |
+[KMS](cd3exceltabs.md#security) | Vaults and Keys |
+[Cloud Guard](cd3exceltabs.md#security) | Cloud Guard |
 
