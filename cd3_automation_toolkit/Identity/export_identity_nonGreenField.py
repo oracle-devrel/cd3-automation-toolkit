@@ -68,7 +68,13 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         sub_comp_l4_index = 0
         sub_comp_l5_index = 0
 
-        for c_name, c_id in ct.ntk_compartment_ids.items():
+        if ct.ntk_compartment_ids:
+            compartments = ct.ntk_compartment_ids.items()
+        else:
+            ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
+            compartments = ct.ntk_compartment_ids.items()
+
+        for c_name, c_id in compartments:
             c_details = idc.get_compartment(c_id).data
 
             # write child comps info
