@@ -33,16 +33,16 @@ nlb_backend_sets = {
         domain_name = "{{ domain_name }}"
         {% endif %}
         {% if query_class and query_class != "" %}
-        query_class = "{{ query_class }}"
+        query_class = "{{ query_class|upper }}"
         {% endif %}
         {% if query_type and query_type != "" %}
-        query_type = "{{ query_type }}"
+        query_type = "{{ query_type|upper }}"
         {% endif %}
         {% if rcodes and rcodes != "" %}
         rcodes = ["{{ rcodes.split(",") | join('","') }}"]
         {% endif %}
         {% if transport_protocol and transport_protocol != "" %}
-        transport_protocol = "{{ transport_protocol }}"
+        transport_protocol = "{{ transport_protocol|upper }}"
         {% endif %}
 
         {% if backend_healthcheck_protocol and backend_healthcheck_protocol != "" %}

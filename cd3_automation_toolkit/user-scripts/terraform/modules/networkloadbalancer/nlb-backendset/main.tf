@@ -11,7 +11,9 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
   health_checker {
     #Required
     protocol = var.protocol
-    dns {
+    dynamic "dns" {
+    for_each = var.domain_name != null ? {1:1} : {}
+    content {
             #Required
             domain_name = var.domain_name
             #Optional
@@ -20,6 +22,7 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
             rcodes = var.rcodes
             transport_protocol = var.transport_protocol
         }
+    }
     #Optional
     interval_in_millis  = var.interval_in_millis
     port                = var.port
