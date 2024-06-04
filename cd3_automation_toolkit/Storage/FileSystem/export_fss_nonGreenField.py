@@ -166,7 +166,8 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                 # print("Export_Path:",einfo_path)
                 fs_id = einfo.file_system_id
                 mnt_fss_ids.append(fs_id)
-                mnt_with_export.append(mnt_id)
+                if mnt_id not in mnt_with_export:
+                    mnt_with_export.append(mnt_id)
                 file_system_info = file_system.get_file_system(file_system_id=fs_id)
                 fs_name = file_system_info.data.display_name  # FileSystemName
                 snapshot_id = file_system_info.data.source_details.source_snapshot_id
@@ -323,7 +324,8 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
             mnt_all_ids.append(mnt_all.id)
         if len(mnt_all_ids) > 0:
             for mnt_id in mnt_with_export:
-                mnt_all_ids.remove(mnt_id)
+                if mnt_id in mnt_all_ids:
+                    mnt_all_ids.remove(mnt_id)
         if len(mnt_all_ids) > 0:
             for k,v in mnt_info_dict.items():
                 for mnt_id in mnt_all_ids:
