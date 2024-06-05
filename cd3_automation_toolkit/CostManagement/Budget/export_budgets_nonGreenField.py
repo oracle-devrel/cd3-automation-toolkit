@@ -106,11 +106,10 @@ def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer,
     global importCommands
     global values_for_column_budgets
     global sheet_dict_budgets
-    global importCommands
     cd3file = inputfile
     total_resources = 0
     budget_done = []
-    importCommands = ""
+
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
@@ -123,15 +122,18 @@ def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer,
 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- budgets would be overwritten during export process!!!\n")
+
+    # Fetch budgets
+    print("\nFetching budgets...")
+
     for reg in [ct.home_region]:
+        importCommands = ""
         region = reg.lower()
         script_file = f'{outdir}/{region}/{service_dir}/tf_import_commands_budgets_nonGF.sh'
         # Create backups
         if os.path.exists(script_file):
             commonTools.backup_file(os.path.dirname(script_file), "tf_import_budgets", os.path.basename(script_file))
 
-        # Fetch budgets
-        print("\nFetching budgets...")
         config.__setitem__("region", ct.region_dict[region])
         tenancy_id = config["tenancy"]
         budgets_client = oci.budget.BudgetClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -164,7 +166,7 @@ def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer,
 
 
                 importCommands += "\nterraform import \"module.budgets[\\\"" + budget_tf_name + "\\\"].oci_budget_budget.budget\" " + budget_id
-            importCommands += "\nterraform plan"
+            importCommands += "\nterraform plan\n"
         if importCommands != "":
             with open(script_file, 'a') as importCommandsfile:
                 importCommandsfile.write(importCommands)

@@ -129,7 +129,7 @@ def create_terraform_keyvaults(inputfile, outdir, service_dir, prefix, ct):
                     tempdict_vault = {'vault_compartment_tf_name': vault_compartment_var_name}
 
                 elif columnname == "Vault Display Name":
-                    tempdict_vault = {'vault_display_tf_name': vault_tf_name}
+                    tempdict_vault = {'vault_display_tf_name': vault_tf_name,'vault_display_name':columnvalue}
 
                 elif columnname == "Vault type":
                     if columnvalue != '' and columnvalue.lower() != 'nan':
@@ -159,8 +159,11 @@ def create_terraform_keyvaults(inputfile, outdir, service_dir, prefix, ct):
                     else:
                         tempdict_vault = {'replica_region': ''}
 
-                tempStr_vault.update(tempdict_vault)
+                else:
+                    columnname = commonTools.check_column_headers(columnname)
+                    tempStr_vault[columnname] = str(columnvalue).strip()
 
+                tempStr_vault.update(tempdict_vault)
             # Write all vaults info to TF string
             vaultStr[region] += vault_template.render(tempStr_vault)
 
@@ -189,7 +192,7 @@ def create_terraform_keyvaults(inputfile, outdir, service_dir, prefix, ct):
                         if columnvalue != '' and columnvalue.lower() != 'nan':
                             columnvalue = columnvalue.strip()
                             key_display_tf_name = commonTools.check_tf_variable(columnvalue)
-                            tempdict_keys = {'key_display_tf_name': key_display_tf_name}
+                            tempdict_keys = {'key_display_tf_name': key_display_tf_name,'key_display_name' : columnvalue}
                             if (str(df.loc[i, 'Key Compartment Name']).lower() == 'nan' or str(
                                     df.loc[i, 'Algorithm']).lower() == 'nan' or str(
                                 df.loc[i, 'Length in bits']).lower() == 'nan'):
