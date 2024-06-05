@@ -15,7 +15,7 @@ Please refer the screenshots below -
 ![image](../images/commonissues-2.png)
 <br>           - Alternately, please attach a data disk and map the container (/cd3user/tenancies) on a folder that is created on the data disk (your local folder).
 
-**2. I used Non-Greenfield workflow to export resources from OCI. I am not able to see all data into my excel sheet.**
+**2. I used Export (Non-Greenfield) workflow to export resources from OCI. I am not able to see all data into my excel sheet.**
 <br>
 There could be multiple reasons for this: <br>
    - You have to specify all compartment names(comma separated) explicitly from where you want to export the data.<br>

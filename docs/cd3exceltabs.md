@@ -23,21 +23,20 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
  - [Tags](tabs.md#tags-tab)
 
-<a href="../terraform/governance">Click here to view sample auto.tfvars for Governance components</a> 
+<a href="../terraform/governance/#1-tag-namespaces">Click here to view sample auto.tfvars for Tags</a> 
 
  - [Quotas](tabs.md#quotas-tab)
 
-<a href="../terraform/budgets#quotas">Click here to view sample auto.tfvars for Quotas </a>
+<a href="../terraform/governance/#4-quotas">Click here to view sample auto.tfvars for Quotas </a>
+
 
 #### Cost Management
 
 - [Budgets](tabs.md#budgets-tab)
 
-
-<a href="../terraform/budgets#budgets">Click here to view sample auto.tfvars for Budgets </a> 
+<a href="../terraform/costmanagement/#budgets">Click here to view sample auto.tfvars for Budgets </a> 
    
-<a href="../terraform/budgets#budget-alert-rules">Click here to view sample auto.tfvars for Budget Alert Rules</a>
-
+<a href="../terraform/costmanagement/#budget-alert-rules">Click here to view sample auto.tfvars for Budget Alert Rules</a>
 
 
 
@@ -177,8 +176,13 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
 - [KMS](tabs.md#kms-tab)
 
-<a href="../terraform/kms">Click here to view sample auto.tfvars for KMS </a> 
+<a href="../terraform/security/#1vaults">Click here to view sample auto.tfvars for KMS Vaults </a> 
+
+<a href="../terraform/security/#2keys">Click here to view sample auto.tfvars for KMS Keys </a> 
+
 
 - [Cloud Guard](tabs.md#cloud-guard)
+
+<a href="../terraform/security/#cloud-guard">Click here to view sample auto.tfvars for Cloud Guard </a> 
 
 

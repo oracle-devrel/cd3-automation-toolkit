@@ -1,5 +1,4 @@
-
-# auto.tfvars syntax for Budgets and Quotas service 
+# auto.tfvars syntax for Cost management module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 
 <b>"key"</b> must be unique to every resource that is created.
@@ -117,36 +116,3 @@ Comments preceed with <b>##</b>.
     }
 ```
 
-## Quotas
-
-- <b>Syntax</b>
-
-```
-    quota-template
-    quota_policies = {
-        ## key - Is a unique value to reference the resources respectively
-        key =  {
-            quota_name               = string
-            quota_description        = string
-            quota_statements         = list(string)
-            defined_tags               = map(any)
-            freeform_tags              = map(any)
-        }
-    }
-```
-
-- <b>Example</b>
-
-```
-    quota_policies = {
-        Compute_1-x_Quota =  {
-            quota_name               = "Compute_1.x_Quota"
-            quota_description        = "Quota policies for 1.x compute shapes"
-            quota_statements         = ["zero compute-core quota standard1-core-count in tenancy", "set compute-core quota standard1-core-count to 100 in compartment root:AppDev where any{request.region = 'us-ashburn-1', request.region = 'us-phoenix-1'}"]
-            defined_tags = {
-                    "ssc_resource_tag.APP_CODE"= "test1" ,
-                    "ssc_resource_tag.LEGAL_HOLD"= "N"
-            }
-        },
-    }
-```

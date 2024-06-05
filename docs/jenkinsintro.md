@@ -35,7 +35,7 @@ Below table shows the stages executed in this pipeline along with their descript
 
 #### a. Download CD3 Excel File
 Here are the <a href=../download-excel> steps</a> to download excel file after successful completion of 'Execute setUpOCI' stage of the pipeline. The Excel file is available as an artifact for each build of the setUpOCI pipeline.
-  >Note: For Greenfield workflow, this will be the same Excel file which was uploaded to create resources in OCI. For Non-Greenfield workflow, this will be the updated Excel file with exported OCI resource data.
+  >Note: For create_resources (Greenfield workflow), this will be the same Excel file which was uploaded to create resources in OCI. For export_resoucres (Non-Greenfield workflow), this will be the updated Excel file with exported OCI resource data.
 
 ### 2. terraform_files Folder
 

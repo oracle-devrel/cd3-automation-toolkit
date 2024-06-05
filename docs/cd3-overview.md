@@ -33,7 +33,7 @@ The toolkit supports 2 workflows:<br>
 
 **2. Export & Manage Resources in OCI (Non-Greenfield Workflow):**
 
-- Use this workflow when there is need to use / manage existing resources with terraform which have not been created using CD3. Export these existing resources into CD3 & TF State. Once the export is complete, switch to the Greenfield workflow to create new or manage existing resources .
+- Use this workflow when there is need to use / manage existing resources with terraform which have not been created using CD3. Export these existing resources into CD3 & TF State. Once the export is complete, switch to the create_resources (greenfield) workflow to create new or manage existing resources .
 - The input Excel (preferably the Blank template) is fed to the toolkit and resources are exported into CD3 Excel template. <br>
 - The toolkit then generates tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.<br>
 - The shell scripts have to be executed in order to have the updated state file to manage the resources further.<br>

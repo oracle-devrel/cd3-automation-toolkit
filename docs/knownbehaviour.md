@@ -32,6 +32,7 @@
      </I>
 
 ## Terraform Behavior
+
 **1.**
 Create a Load Balancer with Reserved IP: When you create a LBaaS with reserved ip as "Y" and do a terraform apply, everything will go smooth and be in sync for the first time. If you do a terraform plan immediately (post apply), you will find that the plan changes the private ip of load balancer to null.
 
@@ -149,5 +150,10 @@ Terraform ordering changes observed during plan phase for OCI compute plugins.
   It changes the order of plugin's in terraform state file and doesn't change anything in OCI console for compute resource.
 
 **9.**
-When exporting OCI Replica Vault to terraform, the terraform plan indicates the creation of OCI vault replication resource. As a temporary work-around, from the tfvars remove the *replica_region* parameter from the primary vault to add or modify resources.
+When exporting Virtual Private Vault's Replica to terraform, after executing the *tf_import_commands_kms_nonGF.sh* script, 
+the terraform plan indicates the creation of a new OCI vault replication resource. This happens because there is no terraform import command for replication resource. 
+
+As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove the *replica_region* parameter from the replica's source vault dictionary. This will allow users to add or modify other resources without creating a new replica. Check below image for reference.
+
+![image](../images/vaults_known_behaviour.png)
 

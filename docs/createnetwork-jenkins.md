@@ -1,6 +1,6 @@
 # Executing Networking Scenarios using toolkit via Jenkins
 
-## Managing Network for Greenfield Workflow
+## Managing Network for create_resources (Greenfield) Workflow
 - [Create Network](#create-network)
 - [Modify Network](#modify-network)
 - [Modify Security Rules, Route Rules and DRG Route Rules](#modify-security-rules-route-rules-and-drg-route-rules)
@@ -178,7 +178,7 @@ Remote VCN peering is the process of connecting two VCNs in different regions (b
    - Make sure that the DRGRouteRulesinOCI sheet and corresponding to terraform is in synch with DRG route rules in OCI console. If not, follow the procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
    - Global directory which is inside the customer outdir will have all RPC related files and scripts.
    - The RPC resources(modules,provider configurations etc) are generated dynamically for the tenancy and can work along only with CD3 automation toolkit.
-   - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in GreenField workflow.
+   - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in create_resources (GreenField) workflow.
    - Output files are created under ```/cd3user/tenancies/<customer_name>/terraform_files/global/rpc directory```
 
 <br>[Go back to Networking Scenarios](#executing-networking-scenarios-using-toolkit-via-jenkins)

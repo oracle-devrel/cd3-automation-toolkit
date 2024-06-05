@@ -1,4 +1,4 @@
-## Greenfield Workflow
+## create_resources (Greenfield) Workflow
 
 Below sub-options appear under _OCI Firewall_ option-
 
@@ -29,6 +29,6 @@ Below sub-options appear under _OCI Firewall_ option-
 
 
 
-## Non-Greenfield Workflow
+## export_resources (Non-Greenfield) Workflow
 - Specify region and compartment to export OCI Network Firewall objects from a tenancy.
 - Display name pattern can also be supplied to export firewall policies with a particular pattern in their name.
