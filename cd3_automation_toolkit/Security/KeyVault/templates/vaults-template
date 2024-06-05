@@ -17,7 +17,7 @@ vaults = {
 
     {{ vault_display_tf_name }} = {
             compartment_id = "{{ vault_compartment_tf_name }}"
-            display_name = "{{ vault_display_tf_name }}"
+            display_name = "{{ vault_display_name }}"
             vault_type = "{{ vault_type }}"
             {% if replica_region and replica_region!="" and replica_region!="nan" %}
             replica_region = "{{ replica_region }}"

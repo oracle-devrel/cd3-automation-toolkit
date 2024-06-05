@@ -18,7 +18,7 @@ keys = {
 
     {{ key_display_tf_name }} = {
             compartment_id = "{{ key_compartment_tf_name }}"
-            display_name = "{{ key_display_tf_name }}"
+            display_name = "{{ key_display_name }}"
             vault_name = "{{ vault_name }}"
 
             algorithm = "{{ algorithm }}"

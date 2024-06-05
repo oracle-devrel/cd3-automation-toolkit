@@ -45,25 +45,29 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
 
     print("\nFetching KMS Vaults and Keys...")
     for reg in export_regions:
+        importCommands = ""
         region = reg.lower()
         script_file = f'{outdir}/{region}/{service_dir}/tf_import_commands_kms_nonGF.sh'
         # create backups
         if os.path.exists(script_file):
             commonTools.backup_file(os.path.dirname(script_file), "tf_import_kms", os.path.basename(script_file))
 
-        importCommands = "\n######### Writing import for Vaults and Keys #########\n\n#!/bin/bash\nterraform init"
         config["region"] = ct.region_dict[reg]
         kms_vault_client = KmsVaultClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         for ntk_compartment_name in export_compartments:
             vaults = oci.pagination.list_call_get_all_results(kms_vault_client.list_vaults,
                                                               compartment_id=ct.ntk_compartment_ids[
                                                                   ntk_compartment_name])
+
             for vault in vaults.data:
                 get_vault_data = kms_vault_client.get_vault(vault_id=vault.id).data
                 key_count = 0
                 if vault.lifecycle_state == "ACTIVE":
+                    if importCommands == '':
+                        importCommands += "\n######### Writing import for Vaults and Keys #########\n\n#!/bin/bash\nterraform init"
                     total_vaults += 1
                     vault_tf_name = commonTools.check_tf_variable(vault.display_name)
+
                     importCommands += f'\nterraform import "module.vaults[\\\"{vault_tf_name}\\\"].oci_kms_vault.vault" {vault.id}'
                     kms_key_client = oci.key_management.KmsManagementClient(config,
                                                                             service_endpoint=vault.management_endpoint)
@@ -206,8 +210,8 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                                                                          values_for_column_kms)
 
         #Write Import Commands to script file
-        if importCommands:
-            importCommands += "\nterraform plan"
+        if importCommands!="":
+            importCommands += "\nterraform plan\n"
             with open(script_file, 'a') as importCommandsfile:
                 importCommandsfile.write(importCommands)
 
