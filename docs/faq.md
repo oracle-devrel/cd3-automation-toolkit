@@ -2,7 +2,7 @@
  
 **1. Is there a way to verify my input CD3 Excel sheet for any typos/miskates?**
 <br>   
- 	   Yes, choose 'Validate CD3' option in setUpOCI menu in GreenField workflow. It validates specific tabs of the excel sheet. Check out [CD3 Validator Features](cd3validator.md) for more details.
+ 	   Yes, choose 'Validate CD3' option in setUpOCI menu in create_resources (GreenField) workflow. It validates specific tabs of the excel sheet. Check out [CD3 Validator Features](cd3validator.md) for more details.
 
 **2. Can I use an existing outdir to export the data from OCI?**
 <br> 

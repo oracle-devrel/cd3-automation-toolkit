@@ -3,7 +3,7 @@ These are the syntax and sample format for providing inputs to the modules via <
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
-**1. Tag Namespaces**
+## 1. Tag Namespaces
 
 - <b>Syntax</b>
   
@@ -56,7 +56,7 @@ Comments preceed with <b>##</b>.
 ```
   
 
-**2. Tag Keys**
+## 2. Tag Keys
 
 - <b>Syntax</b>
   
@@ -123,7 +123,7 @@ Comments preceed with <b>##</b>.
 ```
   
 
-**3. Tag Defaults**
+## 3. Tag Defaults
  
 - <b>Syntax</b>
   
@@ -170,101 +170,37 @@ Comments preceed with <b>##</b>.
 ```
 
 
-**4. Budgets**
+
+## 4. Quotas
 
 - <b>Syntax</b>
 
 ```
-  budgets = {
-  ## key - Is a unique value to reference the resources respectively
-      key = {
-         #Required
-         amount         = string
-         compartment_id = string
-         reset_period   = string
-
-         #Optional
-         budget_processing_period_start_offset  = number
-         defined_tags                           = map
-         description                            = string
-         display_name                           = string
-         freeform_tags                          = map
-         processing_period_type                 = string
-         target_type                            = string
-         targets                                = list
-      },
-  }
+    quota-template
+    quota_policies = {
+        ## key - Is a unique value to reference the resources respectively
+        key =  {
+            quota_name               = string
+            quota_description        = string
+            quota_statements         = list(string)
+            defined_tags               = map(any)
+            freeform_tags              = map(any)
+        }
+    }
 ```
 
 - <b>Example</b>
-```
-  // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-    ############################
-    # Governance
-    # Create Budgets
-    # Allowed Values:
-    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
-    # processing_period_type : Valid values are INVOICE and MONTH.
-    # target_type : Valid values are COMPARTMENT and TAG
-    # targets :  list of compartment OCIDs or list of cost tracking tag identifiers in the form of "{tagNamespace}.{tagKey}.{tagValue}"
-    ############################
-    budgets = {
-        CD3-main-budget = {
-                compartment_id = "root"
-                amount = 10
-                reset_period = "MONTHLY"
-                description = "Tracks spending from the root compartment and down"
-                budget_processing_period_start_offset = "1"
-                display_name = "CD3-main-budget"
-                target_type = "COMPARTMENT"
-                targets = ["root"]
-                },
-    }
 
 ```
-**5. Alert Rule**
-
-- <b>Syntax</b>
-```
-    budget_alert_rules = {
-    ## key - Is a unique value to reference the resources respectively
-        key = {
-          #Required
-          budget_id      = string
-          threshold      = string
-          threshold_type = string
-          type           = string
-      
-          #Optional
-          defined_tags   = map
-          description    = string
-          display_name   = string
-          freeform_tags  = map
-          message        = string
-          recipients     = string
+    quota_policies = {
+        Compute_1-x_Quota =  {
+            quota_name               = "Compute_1.x_Quota"
+            quota_description        = "Quota policies for 1.x compute shapes"
+            quota_statements         = ["zero compute-core quota standard1-core-count in tenancy", "set compute-core quota standard1-core-count to 100 in compartment root:AppDev where any{request.region = 'us-ashburn-1', request.region = 'us-phoenix-1'}"]
+            defined_tags = {
+                    "ssc_resource_tag.APP_CODE"= "test1" ,
+                    "ssc_resource_tag.LEGAL_HOLD"= "N"
+            }
         },
-    }
-```
-
-- <b>Example</b>
-```
-   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-    ############################
-    # Governance
-    # Create Budget Alert Rules
-    # Allowed Values:
-    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
-    ############################
-    budget_alert_rules = {
-        CD3-main-budget_alert_rule = {
-                budget_id = "CD3-main-budget"
-                type = "FORECAST"
-                threshold = "50"
-                threshold_type = "PERCENTAGE"
-                description = "Budget Alert Rule"
-                display_name = "CD3-main-budget_alert_rule"
-                },
     }
 ```
