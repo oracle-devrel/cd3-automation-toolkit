@@ -32,7 +32,7 @@ To enable independent service directories for the generated Terraform files, fol
   <img width="953" alt="image" src="../images/grouptf-2.png">
 
    
-   Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield workflow](greenfield-cli.md)
+   Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in[Greenfield workflow](greenfield-cli.md)
 
   
  3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder.

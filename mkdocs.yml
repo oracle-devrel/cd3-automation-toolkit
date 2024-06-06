@@ -144,6 +144,8 @@ extra:
     - icon: fontawesome/brands/youtube
       link: https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp
   generator: false
+  version:
+    provider: mike
 
 extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js #?features=es6
