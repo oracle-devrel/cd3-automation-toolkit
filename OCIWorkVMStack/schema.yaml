@@ -129,10 +129,10 @@ variables:
     description: Oracle Linux image OCID for VM provisioning
     type: enum
     enum:
-    - "Oracle-Linux-7.9-2024.02.26-0"
-    - "Oracle-Linux-8.9-2024.02.26-0"
-    - "Oracle-Linux-9.3-2024.02.26-0"
-    default: "Oracle-Linux-9.3-2024.02.26-0"
+    - "Oracle-Linux-7"
+    - "Oracle-Linux-8"
+    - "Oracle-Linux-9"
+    default: "Oracle-Linux-9"
     #pattern: '^ocid1\.([a-z0-9_-]{1,32})\.([a-z0-9_-]{1,15})\.([a-z0-9]{0,24})\.([a-z0-9]{60})$'
     required: true
   instance_shape:
