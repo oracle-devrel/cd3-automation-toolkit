@@ -173,6 +173,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
 
 #### Developer Services
+ - [Upload to OCI Resource Manager Stack](../resource-manager-upload)
  
  - [OKE]( tabs.md#oke-tab)
 
