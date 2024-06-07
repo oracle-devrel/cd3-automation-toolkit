@@ -16,6 +16,7 @@ resource "oci_network_load_balancer_network_load_balancer" "network_load_balance
   is_private                     = var.is_private
   network_security_group_ids     = var.network_security_group_ids != null ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
   nlb_ip_version                 = var.nlb_ip_version
+  assigned_private_ipv4          = var.assigned_private_ipv4
   defined_tags                   = var.defined_tags
   freeform_tags                  = var.freeform_tags
 
@@ -27,6 +28,6 @@ resource "oci_network_load_balancer_network_load_balancer" "network_load_balance
     }
   }
   lifecycle {
-    ignore_changes = [reserved_ips]
+    ignore_changes = [reserved_ips, assigned_private_ipv4]
   }
 }

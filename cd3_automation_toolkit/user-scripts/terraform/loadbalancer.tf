@@ -274,7 +274,6 @@ output "log_group_map" {
 
 module "loadbalancer-logs" {
   source     = "./modules/managementservices/log"
-  depends_on = [module.load-balancers, module.loadbalancer-log-groups]
   for_each   = (var.loadbalancer_logs != null || var.loadbalancer_logs != {}) ? var.loadbalancer_logs : {}
 
   # Logs

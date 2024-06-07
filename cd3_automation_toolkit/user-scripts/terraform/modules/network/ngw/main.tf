@@ -17,5 +17,6 @@ resource "oci_core_nat_gateway" "nat_gateway" {
   display_name  = var.display_name
   freeform_tags = var.freeform_tags
   public_ip_id  = var.public_ip_id
+  route_table_id = var.route_table_id
 
 }

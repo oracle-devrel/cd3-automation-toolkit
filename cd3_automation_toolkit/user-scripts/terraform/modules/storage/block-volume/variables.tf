@@ -59,6 +59,26 @@ variable "size_in_gbs" {
   type        = number
 }
 
+variable "autotune_policies" {
+  description = "List of Autotune Policies for Block volume"
+  type = list(map(any))
+  default = []
+}
+variable "source_details" {
+  description = "OCID for existing Block volume, Block volume backup or Replica"
+  type = list(map(any))
+  default = []
+}
+variable "block_volume_replicas" {
+  description = "Details for Block volume replication"
+  type = list(map(any))
+  default = []
+}
+variable "block_volume_replicas_deletion" {
+  type = bool
+  default = false
+}
+
 variable "attach_to_instance" {
   description = "The instance display name to attach the volume"
   type        = string
@@ -112,4 +132,12 @@ variable "is_shareable" {
 variable "use_chap" {
   type    = bool
   default = null
+}
+variable "is_agent_auto_iscsi_login_enabled" {
+  type    = bool
+  default = null
+}
+variable "blockvolume_source_ocids" {
+  type = map(any)
+  default = {}
 }

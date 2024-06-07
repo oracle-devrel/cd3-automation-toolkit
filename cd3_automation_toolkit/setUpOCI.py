@@ -12,6 +12,7 @@ import Storage
 import Network
 import SDDC
 import Governance
+import CostManagement
 from commonTools import *
 from collections import namedtuple
 import requests
@@ -132,12 +133,17 @@ def execute_options(options, *args, **kwargs):
         menu = 'm' in options
         quit = 'q' in options
     else:
+        pattern = re.compile("Enable(.*)Logs")
         for option in options:
             if option.name == "Execute All":
                 continue
             if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','Customer Connectivity'] and devops:
                 with section(option.text):
                     option.callback(*args, **kwargs,sub_options=sub_child_options)
+            # Logging function
+            elif pattern.match(str(option.name)) !=None:
+                with section(option.text):
+                    option.callback(*args, **kwargs, option=option.name)
             else:
                 with section(option.text):
                     option.callback(*args, **kwargs)
@@ -214,7 +220,7 @@ def fetch_compartments(outdir, outdir_struct, ct):
     ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
     ct.all_regions.append('global')
     print("\nWriting to variables files...")
-    home_region_services = ['identity', 'tagging', 'budget']
+    home_region_services = ['identity', 'tagging', 'budget', 'quota']
     for region in ct.all_regions:
         # for global directory
         if region == 'global':
@@ -294,12 +300,14 @@ def validate_cd3(prim_options=[]):
         Option("Validate Groups", None, None),
         Option("Validate Policies", None, None),
         Option("Validate Tags", None, None),
+        Option("Validate Budgets", None, None),
         Option("Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)", None, None),
         Option("Validate DNS", None, None),
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
         Option("Validate FSS", None, None),
-        Option("Validate Buckets", None, None)
+        Option("Validate Buckets", None, None),
+        Option("Validate KMS", None, None)
     ]
     if prim_options:
         if "Validate Networks" in prim_options:
@@ -317,7 +325,9 @@ def validate_firewall_cd3(execute_all=False):
 
 ################## Export Identity ##########################
 def export_identityOptions(prim_options=[]):
-    options = [Option("Export Compartments/Groups/Policies", export_compartmentPoliciesGroups, 'Exporting Compartments/Groups/Policies'),
+    options = [Option("Export Compartments", export_compartments, 'Exporting Compartments'),
+               Option("Export Groups",export_groups, 'Exporting Groups'),
+               Option("Export Policies", export_policies, 'Exporting Policies'),
                Option("Export Users", export_users, 'Exporting Users'),
                Option("Export Network Sources", export_networkSources, 'Exporting Network Sources')
     ]
@@ -330,24 +340,69 @@ def export_identityOptions(prim_options=[]):
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
 
 
-def export_compartmentPoliciesGroups(inputfile, outdir,config, signer, ct):
-    compartments = ct.get_compartment_map(var_file, 'Identity Objects')
-    Identity.export_identity(inputfile, outdir, service_dir_identity, config, signer, ct, export_compartments=compartments)
-    create_identity(prim_options=['Add/Modify/Delete Compartments','Add/Modify/Delete Groups','Add/Modify/Delete Policies'])
-    print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+def export_compartments(inputfile, outdir,config, signer, ct):
+    resource = 'Compartments'
+    Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct)
+    create_identity(prim_options=['Add/Modify/Delete Compartments'])
+    print("\n\nExecute tf_import_commands_compartments_nonGF.sh script created under home region directory to synch TF with OCI Identity Compartments\n")
+
+def export_policies(inputfile, outdir,config, signer, ct):
+    resource = 'IAM Policies'
+    compartments = ct.get_compartment_map(var_file, resource)
+    Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_compartments=compartments)
+    create_identity(prim_options=['Add/Modify/Delete Policies'])
+    print("\n\nExecute tf_import_commands_policies_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
+
+def export_groups(inputfile, outdir,config, signer, ct):
+    resource = 'IAM Groups'
+    #selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
+    selected_domains_data = {}
+    Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_domains=selected_domains_data)
+    create_identity(prim_options=['Add/Modify/Delete Groups'])
+    print("\n\nExecute tf_import_commands_groups_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
 def export_users(inputfile, outdir,config,signer, ct):
+    resource = 'IAM Users'
+    # check if tenancy is identity_domain enabled
+    #selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
     Identity.Users.export_users(inputfile, outdir, service_dir_identity, config, signer, ct)
     create_identity(prim_options=['Add/Modify/Delete Users'])
-    print("\n\nExecute tf_import_commands_users_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+    print("\n\nExecute tf_import_commands_users_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
 def export_networkSources(inputfile, outdir, config, signer, ct):
-    compartments = ct.get_compartment_map(var_file, 'Identity Objects')
+    resource = 'Network Sources'
     Identity.NetworkSources.export_networkSources(inputfile, outdir, service_dir_identity, config, signer, ct)
     create_identity(prim_options=['Add/Modify/Delete Network Sources'])
-    print("\n\nExecute tf_import_commands_networkSources_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+    print("\n\nExecute tf_import_commands_networkSources_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
+
+def export_governance(prim_options=[]):
+    options = [
+    Option('Export Tags', export_tags, 'Tagging'),
+    Option('Export Quotas', export_quotas, 'Quotas')]
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options)
+
+def export_cost_management(prim_options=[]):
+    options = [
+    Option('Export Budgets', export_budget, 'Budgets')]
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options)
+
+def export_budget(prim_options=[]):
+    compartments = ct.get_compartment_map(var_file, 'Budgets')
+    CostManagement.export_budgets_nongreenfield(inputfile, outdir, service_dir_budget, config, signer, ct,export_regions)
+    create_budgets()
+    print("\n\nExecute tf_import_commands_budgets_nonGF.sh script created under each region directory to synch TF with OCI Tags\n")
+    # Update modified path list
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_budget])
 
 def export_tags(prim_options=[]):
     compartments = ct.get_compartment_map(var_file, 'Tagging Objects')
@@ -356,6 +411,13 @@ def export_tags(prim_options=[]):
     print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Tags\n")
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_tagging])
+
+def export_quotas(prim_options=[]):
+    Governance.export_quotas_nongreenfield(inputfile, outdir, service_dir_quota, config, signer, ct)
+    create_quotas()
+    print("\n\nExecute tf_import_commands_quotas_nonGF.sh script created under home region directory to synch TF with OCI Quota\n")
+    # Update modified path list
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_quota])
 
 
 def export_network(prim_options=[]):
@@ -640,6 +702,23 @@ def export_loadbalancer(prim_options=[]):
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
 
+
+def export_security(prim_options=[]):
+    options = [Option("Export KMS (Keys/Vaults)", export_kms,'Exporting KMS Objects (Keys/Vaults)')]
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+
+def export_kms(inputfile, outdir, config, signer, ct, export_regions):
+    compartments = ct.get_compartment_map(var_file, 'KMS')
+    Security.export_keyvaults(inputfile, outdir, service_dir_kms, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+    Security.create_terraform_keyvaults(inputfile, outdir, service_dir_kms, prefix, ct)
+    print("\n\nExecute tf_import_commands_kms_nonGF.sh script created under each region directory to synch TF with OCI Key Vaults\n")
+    # Update modified path list
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_kms])
+
 def export_lbr(inputfile, outdir,config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'LBR objects')
     Network.export_lbr(inputfile, outdir, service_dir_loadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
@@ -827,11 +906,44 @@ def create_identity(prim_options=[]):
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
 
 
+
+def create_governance(prim_options=[]):
+    options = [
+    Option('Tags', create_tags, 'Tagging'),
+    Option('Quotas', create_quotas, 'Quotas')]
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options)
+
+def create_cost_management(prim_options=[]):
+    options = [
+    Option('Budgets', create_budgets, 'Budgets')]
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options)
+
+
 def create_tags(prim_options=[]):
     options = [Option(None, Governance.create_terraform_tags, 'Processing Tags Tab')]
     execute_options(options, inputfile, outdir, service_dir_tagging, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_tagging])
+
+def create_quotas(prim_options=[]):
+    options = [Option(None, Governance.create_terraform_quotas, 'Processing Quota Tab')]
+    execute_options(options, inputfile, outdir, service_dir_quota, prefix, ct)
+    # Update modified path list
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_quota])
+
+def create_budgets(prim_options=[]):
+    options = [Option(None, CostManagement.create_terraform_budgets, 'Processing Budget Tab')]
+    execute_options(options, inputfile, outdir, service_dir_budget, prefix, ct)
+    # Update modified path list
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_budget])
 
 
 def create_network(execute_all=False,prim_options=[]):
@@ -1177,47 +1289,49 @@ def create_terraform_dns(inputfile, outdir, service_dir, prefix, ct):
 
 def create_logging(prim_options=[]):
     options = [
-        Option('Enable VCN Flow Logs', create_cis_vcnflow_logs, 'VCN Flow Logs'),
-        Option('Enable LBaaS Logs', enable_lb_logs, 'LBaaS Logs'),
-        Option('Enable Object Storage Buckets Write Logs', create_cis_oss_logs, 'OSS Write Logs')
+        Option('Enable VCN Flow Logs', ManagementServices.enable_service_logging, 'VCN Flow Logs'),
+        Option('Enable LBaaS Logs', ManagementServices.enable_service_logging, 'LBaaS Logs'),
+        Option('Enable Object Storage Buckets Logs', ManagementServices.enable_service_logging, 'OSS Logs'),
+        Option('Enable File Storage Logs', ManagementServices.enable_service_logging, 'File Storage Logs'),
+        Option('Enable Network Firewall Logs', ManagementServices.enable_service_logging, 'Network Firewall Logs')
     ]
     if prim_options:
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, prefix, ct)
 
-def create_cis_vcnflow_logs(inputfile, outdir,  prefix, ct):
-    options = [Option(None, ManagementServices.enable_cis_vcnflow_logging, 'Enabling VCN Flow Logs')]
-    execute_options(options, inputfile, outdir, service_dir_network, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_network])
+    for option in options:
+        options1=[]
+        if option == "m" or option == 'q':
+            service_dir=''
+        elif option.name == 'Enable VCN Flow Logs':
+            service_dir=service_dir_network
+        elif option.name == 'Enable LBaaS Logs':
+            service_dir = service_dir_loadbalancer
+        elif option.name == 'Enable Object Storage Buckets Logs':
+            service_dir = service_dir_object_storage
+        elif option.name == 'Enable File Storage Logs':
+            service_dir = service_dir_fss
+        elif option.name == 'Enable Network Firewall Logs':
+            service_dir = service_dir_firewall
 
+        options1.append(option)
+        execute_options(options1, inputfile, outdir, prefix, ct, service_dir)
+        update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir])
 
-def enable_lb_logs(inputfile, outdir, prefix, ct):
-    options = [Option(None, ManagementServices.enable_load_balancer_logging, 'Enabling LBaaS Logs')]
-    execute_options(options, inputfile, outdir, service_dir_loadbalancer, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_loadbalancer])
-
-
-def create_cis_oss_logs(inputfile, outdir, prefix, ct):
-    options = [Option(None, ManagementServices.enable_cis_oss_logging, 'Enabling OSS Write Logs')]
-    execute_options(options, inputfile, outdir, service_dir_object_storage, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_object_storage])
-
-
-def create_cis_features(prim_options=[]):
-    options = [Option("Create Key/Vault", create_cis_keyvault, 'Creating CIS Key/Vault and enable Logging for write events to bucket'),
-               Option("Create Default Budget",create_cis_budget,'Create Default Budget'),
-               Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard'),]
+def create_security_services(prim_options=[]):
+    options = [Option("Add/Modify/Delete KMS (Keys/Vaults)", Security.create_terraform_keyvaults, 'Creating Keys/Vaults'),
+               Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard')]
 
     if prim_options:
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, outdir, prefix, config_file_path)
+    execute_options(options, inputfile, outdir, service_dir_kms, prefix, ct)
+    for option in options:
+        if option.name == 'Add/Modify/Delete KMS (Keys/Vaults)':
+            update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])
+
 
 def run_utility(prim_options=[]):
     options = [Option('CIS Compliance Check Script', initiate_cis_scan, 'CIS Compliance Check Script'),
@@ -1231,30 +1345,12 @@ def run_utility(prim_options=[]):
         options = show_options(options, quit=True, menu=True, index=1)
         execute_options(options, outdir, prefix, config_file_path)
 
-def create_cis_keyvault(*args,**kwargs):
-    if not devops:
-        region_name = input("Enter region name eg ashburn where you want to create Key/Vault: ")
-        comp_name = input("Enter name of compartment as it appears in OCI Console: ")
-    else:
-        region_name = ct.vault_region
-        comp_name = ct.vault_comp
+"""def create_cis_keyvault(*args,**kwargs):
+
     options = [Option(None, Security.create_cis_keyvault, 'Creating KeyVault')]
     execute_options(options, outdir, service_dir_kms, service_dir_identity,prefix, ct, region_name, comp_name)
     # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])
-
-
-def create_cis_budget(*args,**kwargs):
-    if not devops:
-        amount = input("Enter Monthly Budget Amount (in US$): ")
-        threshold = input("Enter Threshold Percentage of Budget: ")
-    else:
-        amount = ct.budget_amount
-        threshold = ct.budget_threshold
-    options = [Option(None, Governance.create_cis_budget, 'Creating Budget')]
-    execute_options(options, outdir, service_dir_budget, prefix,ct, amount,threshold)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_budget])
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])"""
 
 
 def enable_cis_cloudguard(*args,**kwargs):
@@ -1691,7 +1787,8 @@ if non_gf_tenancy:
     export_regions = get_region_list(rm=False)
     inputs = [
         Option('Export Identity', export_identityOptions, 'Identity'),
-        Option('Export Tags', export_tags, 'Tagging'),
+        Option('Export Governance', export_governance, 'Governance'),
+        Option('Export Cost Management', export_cost_management, 'Cost Management'),
         Option('Export Network', export_network, 'Network'),
         Option('Export OCI Firewall', export_firewall_policies, 'OCI Firewall Policy'),
         Option('Export DNS Management', export_dns, 'DNS Management'),
@@ -1701,6 +1798,7 @@ if non_gf_tenancy:
         Option('Export Load Balancers', export_loadbalancer, 'Load Balancers'),
         Option('Export Management Services', export_management_services, 'Management Services'),
         Option('Export Developer Services', export_developer_services, 'Development Services'),
+        Option('Export Security', export_security, 'Security'),
         Option('Export Software-Defined Data Centers - OCVS', export_sddc, 'OCVS'),
         Option('CD3 Services', cd3_services, 'CD3 Services')
 
@@ -1710,7 +1808,8 @@ else:
     inputs = [
         Option('Validate CD3', validate_cd3, 'Validate CD3'),
         Option('Identity', create_identity, 'Identity'),
-        Option('Tags', create_tags, 'Tagging'),
+        Option('Governance', create_governance, 'Governance'),
+        Option('Cost Management', create_cost_management, 'Cost Management'),
         Option('Network', create_network, 'Network'),
         Option('OCI Firewall', create_validate_firewall_service, 'Firewall'),
         Option('DNS Management', create_dns, 'DNS Management'),
@@ -1720,9 +1819,9 @@ else:
         Option('Load Balancers', create_loadbalancer, 'Load Balancers'),
         Option('Management Services', create_management_services, 'Management Services'),
         Option('Developer Services', create_developer_services, 'Developer Services'),
+        Option('Security', create_security_services, 'OCI security services'),
         Option('Logging Services', create_logging, 'Logging Services'),
         Option('Software-Defined Data Centers - OCVS', create_sddc, 'Processing SDDC Tabs'),
-        Option('CIS Compliance Features', create_cis_features, 'CIS Compliance Features'),
         Option('CD3 Services', cd3_services, 'CD3 Services'),
         Option('3rd Party Services', run_utility,'3rd Party Services')
     ]

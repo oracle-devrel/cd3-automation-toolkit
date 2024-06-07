@@ -78,3 +78,19 @@ variable "cloud_init_script" {
   type        = string
   default     = "installToolkit.sh"
 }
+
+variable "tenancy_ocid" {
+  type = string
+}
+
+variable "current_user_ocid" {
+  type = string
+}
+
+variable "tenancy_name" {
+  type = string
+}
+
+variable "config_region" {
+  type = string
+}

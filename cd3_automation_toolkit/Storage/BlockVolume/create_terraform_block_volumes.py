@@ -61,10 +61,13 @@ def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,ct):
         #temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
+        source_details = []
+        block_volume_replicas = []
+        autotune_policies = []
 
         # Check if values are entered for mandatory fields - to create volumes
         if str(df.loc[i,'Region']).lower() == 'nan' or str(df.loc[i, 'Block Name']).lower() == 'nan' or str(df.loc[i,'Compartment Name']).lower()  == 'nan' or str(df.loc[i,'Availability Domain(AD1|AD2|AD3)']).lower()  == 'nan':
-            print( " The values for Region, Block Name, Compartment Name and Availability Domain cannot be left empty. Please enter a value and try again !!")
+            print( "The values for Region, Block Name, Compartment Name and Availability Domain cannot be left empty. Please enter a value and try again !!")
             exit(1)
 
         # Check if values are entered for mandatory fields - to attach volumes to instances
@@ -127,6 +130,120 @@ def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,ct):
             if columnname == "Size In GBs":
                 if columnvalue != '':
                     columnvalue = int(float(columnvalue))
+            if columnname == "Source Details":
+                if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
+                    if "ocid1.volume.oc1" in columnvalue.strip():
+                        ocid = columnvalue.strip()
+                        type = "volume"
+                        source_details.append(type)
+                        source_details.append(ocid)
+                    elif "ocid1.volumebackup.oc1" in columnvalue.strip():
+                        ocid = columnvalue.strip()
+                        type = "volumeBackup"
+                        source_details.append(type)
+                        source_details.append(ocid)
+                    elif "ocid1.blockvolumereplica.oc1" in columnvalue.strip():
+                        ocid = columnvalue.strip()
+                        type = "blockVolumeReplica"
+                        source_details.append(type)
+                        source_details.append(ocid)
+                    elif "::" in columnvalue.strip():
+                        source_details = columnvalue.strip().split("::")
+                    tempdict = {'source_details': source_details}
+            if columnname == "Block Volume Replica (Region::AD::Name)":
+                columnname = "Block Volume Replicas"
+                if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
+                    if "::" in columnvalue.strip():
+                        if columnvalue.strip().count("::") == 2:
+                            block_volume_replicas_ads = columnvalue.strip().split("::")
+                            block_volume_replicas_region = (block_volume_replicas_ads[0]).lower()
+                            block_volume_replicas_ad = (block_volume_replicas_ads[1]).upper()
+                            block_volume_replicas_name = (block_volume_replicas_ads[2])
+                            if block_volume_replicas_region == str(df.loc[i,'Region']).strip().lower() and block_volume_replicas_ad == str(df.loc[i,'Availability Domain(AD1|AD2|AD3)']).strip().upper():
+                                print("Volume replication Region and AD can not be same as volume Region and AD - column 'Block Volume Replica (Region::AD::Name)'")
+                                exit(1)
+                            if (block_volume_replicas_region in ct.all_regions) and (block_volume_replicas_ad in ADS):
+                                region_ads = ct.region_ad_dict[block_volume_replicas_region]
+                                if len(region_ads) >= int(block_volume_replicas_ad.split("AD")[1]):
+                                    block_volume_replicas_ad = region_ads[(int(block_volume_replicas_ad.split("AD")[1]) -1)]
+                                    block_volume_replicas.append(block_volume_replicas_ad)
+                                    if block_volume_replicas_name != '' or block_volume_replicas_name != 'nan':
+                                        block_volume_replicas.append(block_volume_replicas_name)
+                                    else:
+                                        rep_name = str(df.loc[i, 'Block Name']).strip() + "-replica"
+                                        block_volume_replicas.append(rep_name)
+                                else:
+                                    print("AD is not present in Replication Region. " + columnname)
+                                    exit(1)
+                            else:
+                                print("Replication Region is not subscribed or AD is in incorrect format. " +columnname)
+                                exit(1)
+                        elif columnvalue.strip().count("::") == 1:
+                            block_volume_replicas_ads = columnvalue.strip().split("::")
+                            block_volume_replicas_region = (block_volume_replicas_ads[0]).lower()
+                            block_volume_replicas_ad = (block_volume_replicas_ads[1]).upper()
+                            if block_volume_replicas_region == str(df.loc[i,'Region']).strip().lower() and block_volume_replicas_ad == str(df.loc[i,'Availability Domain(AD1|AD2|AD3)']).strip().upper():
+                                print("Volume replication Region and AD can not be same as volume Region and AD - column 'Block Volume Replica (Region::AD::Name)'")
+                                exit(1)
+                            if (block_volume_replicas_region in ct.all_regions) and (block_volume_replicas_ad in ADS):
+                                region_ads = ct.region_ad_dict[block_volume_replicas_region]
+                                if len(region_ads) >= int(block_volume_replicas_ad.split("AD")[1]):
+                                    block_volume_replicas_ad = region_ads[(int(block_volume_replicas_ad.split("AD")[1]) - 1)]
+                                    block_volume_replicas.append(block_volume_replicas_ad)
+                                    rep_name = str(df.loc[i, 'Block Name']).strip() + "-replica"
+                                    block_volume_replicas.append(rep_name)
+                                else:
+                                    print("AD is not present in Replication Region. " + columnname)
+                                    exit(1)
+                            else:
+                                print("Replication Region is not subscribed or AD is in incorrect format. " + columnname)
+                                exit(1)
+
+                        tempdict = {'block_volume_replicas': block_volume_replicas}
+                    else:
+                        print("Value is not in correct format. " + columnname)
+                        exit(1)
+            if columnname == "Cross Region Replication":
+                val=''
+                if columnvalue.lower()=="off":
+                    val = 'true'
+                if columnvalue.lower() !='on':
+                    tempdict = {'block_volume_replicas': ''}
+                    tempStr.update(tempdict)
+
+                tempdict = {'block_volume_replicas_deletion': val}
+            if columnname == "Autotune Type":
+                if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
+                    if columnvalue.strip().upper() == "PERFORMANCE_BASED":
+                        if "Max VPUS Per GB" not in dfcolumns:
+                            print("column 'Max VPUS Per GB' must be present in sheet and can not be left blank if Autotune type is PERFORMANCE_BASED.")
+                            exit(1)
+                        if str(df.loc[i,'Max VPUS Per GB']) != 'nan':
+                            perf = {'autotune_type':'PERFORMANCE_BASED','max_vpus_per_gb':str(df.loc[i,'Max VPUS Per GB']).strip()}
+                            autotune_policies.append(perf)
+                        else:
+                            print("column 'Max VPUS Per GB' can not be left blank if Autotune type is PERFORMANCE_BASED.")
+                            exit(1)
+                    elif columnvalue.strip().upper() == "DETACHED_VOLUME":
+                        max_vpus_per_gb = 'null'
+                        detach = {'autotune_type': 'DETACHED_VOLUME','max_vpus_per_gb': max_vpus_per_gb}
+                        autotune_policies.append(detach)
+                    elif columnvalue.strip().upper() == "BOTH":
+                        if "Max VPUS Per GB" not in dfcolumns:
+                            print("column 'Max VPUS Per GB' must be present in sheet and can not be left blank if Autotune type is PERFORMANCE_BASED.")
+                            exit(1)
+                        if str(df.loc[i, 'Max VPUS Per GB']) != 'nan':
+                            perf = {'autotune_type':'PERFORMANCE_BASED','max_vpus_per_gb':str(df.loc[i,'Max VPUS Per GB']).strip()}
+                            detach = {'autotune_type': 'DETACHED_VOLUME', 'max_vpus_per_gb': 'null'}
+                            autotune_policies.append(detach)
+                            autotune_policies.append(perf)
+                        else:
+                            print("Column 'Max VPUS Per GB' can not be left blank if Autotune type is PERFORMANCE_BASED/BOTH.")
+                            exit(1)
+                    else:
+                        print("Value is not in correct format. " + columnname)
+                        exit(1)
+                    tempdict = {'autotune_policies': autotune_policies}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()

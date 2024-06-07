@@ -16,7 +16,7 @@
 }{% else %}{% if loggroup_tf_name != "" and loggroup_tf_name != "nan" and loggroup_tf_name != null %}
   {{ loggroup_tf_name }} = {
         compartment_id = "{{ compartment_tf_name }}"
-        display_name   = "{{ loggroup_name }}"
+        display_name   = "{{ loggroup_tf_name }}"
         description    = "{{ loggroup_desc }}"
 
     {#  ##Do not modify below this line##  #}
@@ -49,7 +49,7 @@
                 {% endif %}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-      },
+   },
 {% endif %}{% endif %}
 {% endif %}
 
@@ -68,16 +68,18 @@
 {{ oci_service }}_logs = {
   # Log map #
   ##Add New Logs for {{ region.lower() }} here##
-}{% else %}{% if log_name != "" and log_name != "nan" and log_name != null %}
+}{% else %}{% if log_tf_name != "" and log_tf_name != "nan" and log_tf_name != null %}
 
-  {# If the logs are for Load balancers - Access and Error #}
-  {% if lb_log_tf_name and lb_log_tf_name != "" %}
     {% for type in logtype %}
-    {{ lb_log_tf_name }}-log-{{ type }}  = {
-        display_name        = "{{ log_name }}_{{ type }}-log"
-        log_group_id        = "{{ log_group_id }}"
+    {{ log_tf_name }}_{{type}}-log  = {
+        display_name        = "{{ log_tf_name }}_{{ type }}-log"
+        log_group_id        = "{{ loggroup_tf_name }}"
         log_type            = "SERVICE"
+        {% if type=='flow' %}
+        category            = "all"
+        {% else %}
         category            = "{{ type }}"
+        {% endif %}
         resource            = "{{ resource }}"
         service             = "{{ service }}"
         source_type         = "OCISERVICE"
@@ -99,70 +101,24 @@
             {% endif %}
         {% endfor %}
         }
-        {% endif %}
-       {% endif %}
-            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
-                {% if freeform_tags[0] %}
-        freeform_tags = {
-                    {% for tags in freeform_tags %}
-                        {% if not loop.last  %}
-                "{{ tags[0] }}"="{{ tags[1] }}",
-                        {% else %}
-                "{{ tags[0] }}"="{{ tags[1] }}"
-                        {% endif %}
-                    {% endfor %}
-                    }
-                {% endif %}
-            {% endif %}
-     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-      },
-    {% endfor %}
-  {% else %}
-  {# Logs for other services - OSS and VCN Flow Logs #}
-  {{ log_tf_name }}  = {
-        display_name        = "{{ log_name }}"
-        log_group_id        = "{{ log_group_id }}"
-        log_type            = "SERVICE"
-        category            = "{{ category }}"
-        resource            = "{{ resource }}"
-        service             = "{{ service }}"
-        source_type         = "OCISERVICE"
-        compartment_id      = "{{ compartment_tf_name }}"
-        is_enabled          = true
-        retention_duration  = 30
-
-    {#  ##Do not modify below this line##  #}
-    {#                                     #}
-    {#  ###Section for adding Defined and Freeform Tags###  #}
-    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
-      {% if defined_tags[0] %}
-        defined_tags = {
-        {% for tags in defined_tags  %}
-            {% if not loop.last %}
-                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-            {% else %}
-                "{{ tags[0]  }}"= "{{ tags[1] }}"
-            {% endif %}
-        {% endfor %}
-        }
-        {% endif %}
-       {% endif %}
-            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
-                {% if freeform_tags[0] %}
-        freeform_tags = {
-                    {% for tags in freeform_tags %}
-                        {% if not loop.last  %}
-                "{{ tags[0] }}"="{{ tags[1] }}",
-                        {% else %}
-                "{{ tags[0] }}"="{{ tags[1] }}"
-                        {% endif %}
-                    {% endfor %}
-                    }
-                {% endif %}
-            {% endif %}
-     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-      },
+      {% endif %}
     {% endif %}
+    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+      {% if freeform_tags[0] %}
+        freeform_tags = {
+        {% for tags in freeform_tags %}
+            {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+            {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+            {% endif %}
+         {% endfor %}
+         }
+      {% endif %}
+     {% endif %}
+     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+     },
+    {% endfor %}
+   {% endif %}
   {% endif %}
-{% endif %}
 {% endif %}

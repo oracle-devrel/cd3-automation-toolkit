@@ -24,6 +24,10 @@ resource "oci_core_instance" "instances" {
   }
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
+    tenancy_ocid        = var.tenancy_ocid
+    tenancy_name        = var.tenancy_name
+    current_user_ocid   = var.current_user_ocid
+    config_region       = var.config_region
     user_data           = fileexists("${path.root}/scripts/${var.cloud_init_script}") ? "${base64encode(file("${path.root}/scripts/${var.cloud_init_script}"))}" : null
   }
 

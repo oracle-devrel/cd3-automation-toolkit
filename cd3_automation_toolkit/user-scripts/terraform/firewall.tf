@@ -165,3 +165,59 @@ module "decryption_rules" {
   secret                     = each.value.secret
 }
 
+
+#############################
+# Module Block - Network Firewall Logging
+# Create VCN Log Groups and Logs
+#############################
+
+module "fw-log-groups" {
+  source   = "./modules/managementservices/log-group"
+  for_each = (var.fw_log_groups != null || var.fw_log_groups != {}) ? var.fw_log_groups : {}
+
+  # Log Groups
+  #Required
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+
+  display_name = each.value.display_name
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  description   = each.value.description
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "vcn_log_group_map" {
+  value = [ for k,v in merge(module.vcn-log-groups.*...) : v.log_group_tf_id ]
+}
+*/
+
+module "fw-logs" {
+  source     = "./modules/managementservices/log"
+  for_each   = (var.fw_logs != null || var.fw_logs != {}) ? var.fw_logs : {}
+
+  # Logs
+  #Required
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  display_name   = each.value.display_name
+  log_group_id   = length(regexall("ocid1.loggroup.oc*", each.value.log_group_id)) > 0 ? each.value.log_group_id : merge(module.fw-log-groups.*...)[each.value.log_group_id]["log_group_tf_id"]
+
+  log_type = each.value.log_type
+  #Required
+  source_category        = each.value.category
+  source_resource        = length(regexall("ocid1.*", each.value.resource)) > 0 ? each.value.resource : merge(module.firewalls.*...)[each.value.resource]["firewall_tf_id"]
+  source_service         = each.value.service
+  source_type            = each.value.source_type
+  defined_tags           = each.value.defined_tags
+  freeform_tags          = each.value.freeform_tags
+  log_is_enabled         = (each.value.is_enabled == "" || each.value.is_enabled == null) ? true : each.value.is_enabled
+  log_retention_duration = (each.value.retention_duration == "" || each.value.retention_duration == null) ? 30 : each.value.retention_duration
+
+}
+
+/*
+output "vcn_logs_id" {
+  value = [ for k,v in merge(module.vcn-logs.*...) : v.log_tf_id]
+}
+*/

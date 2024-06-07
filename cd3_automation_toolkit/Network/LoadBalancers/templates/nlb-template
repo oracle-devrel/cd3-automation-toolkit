@@ -52,6 +52,10 @@ network_load_balancers = {
         nlb_ip_version = {{ nlb_ip_version }}
         {% endif %}
 
+        {% if ip_address and ip_address != "" %}
+        assigned_private_ipv4 = "{{ ip_address }}"
+        {% endif %}
+
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}

@@ -5,8 +5,8 @@ resource "oci_containerengine_node_pool" "nodepool" {
   cluster_id         = var.cluster_name
   compartment_id     = var.compartment_id
   node_shape         = var.node_shape
-  kubernetes_version = var.kubernetes_version
   name               = var.display_name
+  kubernetes_version = var.kubernetes_version
   ssh_public_key     = var.ssh_public_key
   defined_tags       = var.nodepool_defined_tags
   freeform_tags      = var.nodepool_freeform_tags
@@ -24,6 +24,7 @@ resource "oci_containerengine_node_pool" "nodepool" {
       #Required
       availability_domain = data.oci_identity_availability_domains.ads.availability_domains[var.availability_domain].name
       subnet_id           = var.subnet_id
+      fault_domains       = var.fault_domains
     }
     node_pool_pod_network_option_details {
       #Required
@@ -32,13 +33,14 @@ resource "oci_containerengine_node_pool" "nodepool" {
       #Optional
       max_pods_per_node = var.max_pods_per_node
       pod_nsg_ids       = var.pod_nsg_ids != null ? (local.pod_nsg_ids == [] ? ["INVALID POD NSG Name"] : local.pod_nsg_ids) : null
-      pod_subnet_ids    = var.pod_subnet_ids != null ? [var.pod_subnet_ids] : null
+      pod_subnet_ids   = var.pod_subnet_ids != null ? [var.pod_subnet_ids] : null
     }
     size                                = var.size
     nsg_ids                             = var.worker_nsg_ids != null ? (local.nodepool_nsg_ids == [] ? ["INVALID WORKER NSG Name"] : local.nodepool_nsg_ids) : null
     is_pv_encryption_in_transit_enabled = var.is_pv_encryption_in_transit_enabled
     kms_key_id                          = var.kms_key_id
     defined_tags                        = var.node_defined_tags
+    freeform_tags                       = var.node_freeform_tags
   }
 
   node_source_details {

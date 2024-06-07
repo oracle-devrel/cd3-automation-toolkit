@@ -35,8 +35,6 @@ variable "vcns_tf_id" {}
 
 variable "route_table_tf_id" {}
 
-variable "default_route_table_tf_id" {}
-
 variable "drg_id" {
   type    = string
   default = null

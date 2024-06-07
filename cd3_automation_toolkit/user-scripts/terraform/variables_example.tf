@@ -110,6 +110,28 @@ variable "instance_source_ocids" {
   }
 }
 
+variable "blockvolume_source_ocids" {
+  type = map(any)
+  default = {
+    block1 = "<Source OCID here>"
+    #blockvolume_source_ocid    = "<VOLUME SOURCE OCID HERE>"
+    #START_blockvolume_source_ocids#
+    # exported block volume source ocids
+    #blockvolume_source_ocids_END#
+  }
+}
+
+variable "fss_source_ocids" {
+  type = map(any)
+  default = {
+    snapshot1 = "<Source Snapshot OCID here>"
+    #fss_source_snapshot_ocid    = "<SOURCE SNAPSHOT OCID HERE>"
+    #START_fss_source_snapshot_ocids#
+    # exported fss source snapshot ocids
+    #fss_source_snapshot_ocids_END#
+  }
+}
+
 variable "oke_source_ocids" {
   type = map(any)
   default = {
@@ -262,7 +284,7 @@ variable "networkSources" {
 }
 
 #########################
-####### Tagging #########
+####### Governance #########
 #########################
 
 variable "tag_namespaces" {
@@ -303,6 +325,17 @@ variable "tag_defaults" {
     tag_definition_id = string
     value             = string
     is_required       = optional(bool)
+  }))
+  default = {}
+}
+
+variable "quota_policies" {
+  type = map(object({
+	quota_name               = string
+	quota_description        = string
+	quota_statements         = list(string)
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
   }))
   default = {}
 }
@@ -373,6 +406,7 @@ variable "sgws" {
     vcn_id         = string
     service        = optional(string)
     sgw_name       = optional(string)
+    route_table_id = optional(string)
     defined_tags   = optional(map(any))
     freeform_tags  = optional(map(any))
   }))
@@ -386,6 +420,7 @@ variable "ngws" {
     block_traffic  = optional(bool)
     public_ip_id   = optional(string)
     ngw_name       = optional(string)
+    route_table_id = optional(string)
     defined_tags   = optional(map(any))
     freeform_tags  = optional(map(any))
   }))
@@ -468,12 +503,41 @@ variable "default_seclists" {
 }
 
 variable "route_tables" {
-  type    = map(any)
-  default = {}
+  type = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    route_rules_igw = list(map(any))
+    route_rules_ngw = list(map(any))
+    route_rules_sgw = list(map(any))
+    route_rules_drg = list(map(any))
+    route_rules_lpg = list(map(any))
+    route_rules_ip = list(map(any))
+    gateway_route_table = optional(bool,false)
+    default_route_table = optional(bool,false)
+
+}))
+default = {}
 }
 
 variable "default_route_tables" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    route_rules_igw = list(map(any))
+    route_rules_ngw = list(map(any))
+    route_rules_sgw = list(map(any))
+    route_rules_drg = list(map(any))
+    route_rules_lpg = list(map(any))
+    route_rules_ip = list(map(any))
+    gateway_route_table = optional(bool,false)
+    default_route_table = optional(bool,false)
+}))
   default = {}
 }
 
@@ -609,73 +673,73 @@ variable "data_drg_route_table_distributions" {
 ####################
 
 variable "zones" {
-  type = map(object({
-    compartment_id      = string
-    display_name        = string
-    view_compartment_id = optional(string)
-    view_id             = optional(string)
-    zone_type           = optional(string)
-    scope               = optional(string)
-    freeform_tags       = optional(map(any))
-    defined_tags        = optional(map(any))
-  }))
-  default = {}
+type    = map(object({
+compartment_id       = string
+display_name         = string
+view_compartment_id = optional(string)
+view_id = optional(string)
+zone_type = optional(string)
+scope = optional(string)
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
+default = {}
 }
 
 variable "views" {
-  type = map(object({
-    compartment_id = string
-    display_name   = string
-    scope          = optional(string)
-    freeform_tags  = optional(map(any))
-    defined_tags   = optional(map(any))
-  }))
+type    = map(object({
+compartment_id       = string
+display_name         = string
+scope = optional(string)
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
   default = {}
 }
 
 variable "rrsets" {
-  type = map(object({
-    compartment_id      = optional(string)
-    view_compartment_id = optional(string)
-    view_id             = optional(string)
-    zone_id             = string
-    domain              = string
-    rtype               = string
-    ttl                 = number
-    rdata               = optional(list(string))
-    scope               = optional(string)
-  }))
-  default = {}
+type    = map(object({
+compartment_id       = optional(string)
+view_compartment_id = optional(string)
+view_id = optional(string)
+zone_id = string
+domain = string
+rtype = string
+ttl = number
+rdata = optional(list(string))
+scope = optional(string)
+}))
+default = {}
 }
 
 variable "resolvers" {
-  type = map(object({
-    network_compartment_id = string
-    vcn_name               = string
-    display_name           = optional(string)
-    views = optional(map(object({
-      view_id             = optional(string)
-      view_compartment_id = optional(string)
-    })))
-    resolver_rules = optional(map(object({
-      client_address_conditions = optional(list(any))
-      destination_addresses     = optional(list(any))
-      qname_cover_conditions    = optional(list(any))
-      source_endpoint_name      = optional(string)
-    })))
-    endpoint_names = optional(map(object({
-      is_forwarding      = optional(bool)
-      is_listening       = optional(bool)
-      name               = optional(string)
-      subnet_name        = optional(string)
-      forwarding_address = optional(string)
-      listening_address  = optional(string)
-      nsg_ids            = optional(list(string))
-    })))
-    freeform_tags = optional(map(any))
-    defined_tags  = optional(map(any))
-  }))
-  default = {}
+type    = map(object({
+network_compartment_id= string
+vcn_name = string
+display_name = optional(string)
+views = optional(map(object({
+  view_id = optional(string)
+  view_compartment_id = optional(string)
+})))
+resolver_rules = optional(map(object({
+  client_address_conditions = optional(list(any))
+  destination_addresses = optional(list(any))
+  qname_cover_conditions = optional(list(any))
+  source_endpoint_name = optional(string)
+})))
+endpoint_names = optional(map(object({
+  is_forwarding = optional(bool)
+  is_listening = optional(bool)
+  name = optional(string)
+  subnet_name = optional(string)
+  forwarding_address = optional(string)
+  listening_address = optional(string)
+  nsg_ids = optional(list(string))
+})))
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
+default = {}
 }
 
 
@@ -722,8 +786,13 @@ variable "blockvolumes" {
     is_pv_encryption_in_transit_enabled = optional(bool)
     is_shareable                        = optional(bool)
     use_chap                            = optional(bool)
+    is_agent_auto_iscsi_login_enabled   = optional(bool)
     defined_tags                        = optional(map(any))
     freeform_tags                       = optional(map(any))
+    source_details                      = optional(list(map(any)))
+    block_volume_replicas               = optional(list(map(any)))
+    block_volume_replicas_deletion      = optional(bool)
+    autotune_policies                   = optional(list(map(any)))
   }))
   default = {}
 }
@@ -765,32 +834,32 @@ variable "instances" {
     policy_compartment_id                      = optional(string)
     network_type                               = optional(string)
     #extended_metadata                          = optional(string)
-    skip_source_dest_check    = optional(bool)
-    baseline_ocpu_utilization = optional(string)
+    skip_source_dest_check                     = optional(bool)
+    baseline_ocpu_utilization                  = optional(string)
     #preemptible_instance_config                = optional(string)
-    all_plugins_disabled                = optional(bool)
-    is_management_disabled              = optional(bool)
-    is_monitoring_disabled              = optional(bool)
-    assign_private_dns_record           = optional(string)
-    plugins_details                     = optional(map(any))
-    is_live_migration_preferred         = optional(bool)
-    recovery_action                     = optional(string)
-    are_legacy_imds_endpoints_disabled  = optional(bool)
-    boot_volume_type                    = optional(string)
-    firmware                            = optional(string)
-    is_consistent_volume_naming_enabled = optional(bool)
-    remote_data_volume_type             = optional(string)
-    platform_config                     = optional(list(map(any)))
-    launch_options                      = optional(list(map(any)))
-    ipxe_script                         = optional(string)
-    preserve_boot_volume                = optional(bool)
-    vlan_id                             = optional(string)
-    kms_key_id                          = optional(string)
-    vnic_display_name                   = optional(string)
-    vnic_defined_tags                   = optional(map(any))
-    vnic_freeform_tags                  = optional(map(any))
-    defined_tags                        = optional(map(any))
-    freeform_tags                       = optional(map(any))
+    all_plugins_disabled                       = optional(bool)
+    is_management_disabled                     = optional(bool)
+    is_monitoring_disabled                     = optional(bool)
+    assign_private_dns_record                  = optional(string)
+    plugins_details                            = optional(map(any))
+    is_live_migration_preferred                = optional(bool)
+    recovery_action                            = optional(string)
+    are_legacy_imds_endpoints_disabled         = optional(bool)
+    boot_volume_type                           = optional(string)
+    firmware                                   = optional(string)
+    is_consistent_volume_naming_enabled        = optional(bool)
+    remote_data_volume_type                    = optional(string)
+    platform_config                            = optional(list(map(any)))
+    launch_options                             = optional(list(map(any)))
+    ipxe_script                                = optional(string)
+    preserve_boot_volume                       = optional(bool)
+    vlan_id                                    = optional(string)
+    kms_key_id                                 = optional(string)
+    vnic_display_name                          = optional(string)
+    vnic_defined_tags                          = optional(map(any))
+    vnic_freeform_tags                         = optional(map(any))
+    defined_tags                               = optional(map(any))
+    freeform_tags                              = optional(map(any))
   }))
   default = {}
 }
@@ -890,13 +959,15 @@ variable "mount_targets" {
 variable "fss" {
   description = "To provision File System Services"
   type = map(object({
-    availability_domain  = string
-    compartment_id       = string
-    display_name         = optional(string)
-    source_snapshot_name = optional(string)
-    kms_key_name         = optional(string)
-    defined_tags         = optional(map(any))
-    freeform_tags        = optional(map(any))
+    availability_domain         = string
+    compartment_id              = string
+    display_name                = optional(string)
+    source_snapshot             = optional(string)
+    snapshot_policy             = optional(string)
+    policy_compartment_id       = optional(string)
+    kms_key_id                  = optional(string)
+    defined_tags                = optional(map(any))
+    freeform_tags               = optional(map(any))
   }))
   default = {}
 }
@@ -910,9 +981,60 @@ variable "nfs_export_options" {
     export_options = optional(list(any))
     defined_tags   = optional(map(any))
     freeform_tags  = optional(map(any))
+    is_idmap_groups_for_sys_auth = optional(bool)
   }))
   default = {}
 }
+
+variable "fss_replication" {
+  description = "To provision File System Replication"
+  type = map(object({
+    compartment_id       = string
+    source_id            = string
+    target_id            = string
+    display_name         = optional(string)
+    replication_interval = optional(number)
+    defined_tags         = optional(map(any))
+    freeform_tags        = optional(map(any))
+  }))
+  default = {}
+}
+
+#########################
+####### FSS Logs ########
+#########################
+
+variable "nfs_log_groups" {
+  description = "To provision Log Groups for Mount Target"
+  type = map(object({
+    compartment_id = string
+    display_name   = string
+    description    = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
+  default = {}
+}
+
+variable "nfs_logs" {
+  description = "To provision Logs for Mount Target"
+  type = map(object({
+    display_name       = string
+    log_group_id       = string
+    log_type           = string
+    compartment_id     = optional(string)
+    category           = optional(string)
+    resource           = optional(string)
+    service            = optional(string)
+    source_type        = optional(string)
+    is_enabled         = optional(bool)
+    retention_duration = optional(number)
+    defined_tags       = optional(map(any))
+    freeform_tags      = optional(map(any))
+  }))
+  default = {}
+}
+
 
 #########################
 #### Load Balancers #####
@@ -1175,6 +1297,7 @@ variable "network_load_balancers" {
     is_preserve_source_destination = optional(bool)
     is_symmetric_hash_enabled      = optional(bool)
     nlb_ip_version                 = optional(string)
+    assigned_private_ipv4          = optional(string)
     nsg_ids                        = optional(list(string))
     defined_tags                   = optional(map(any))
     freeform_tags                  = optional(map(any))
@@ -1199,6 +1322,11 @@ variable "nlb_backend_sets" {
     network_load_balancer_id = string
     policy                   = string
     protocol                 = string
+    domain_name          = optional(string)
+    query_class          = optional(string)
+    query_type           = optional(string)
+    rcodes               = optional(list(string))
+    transport_protocol   = optional(string)
     return_code              = optional(number)
     interval_in_millis       = optional(number)
     port                     = optional(number)
@@ -1448,6 +1576,9 @@ variable "clusters" {
     vcn_name                        = string
     kubernetes_version              = string
     cni_type                        = string
+    cluster_type                    = string
+    is_policy_enabled               = optional(bool)
+    policy_kms_key_id               = optional(string)
     is_kubernetes_dashboard_enabled = optional(bool)
     is_tiller_enabled               = optional(bool)
     is_public_ip_enabled            = optional(bool)
@@ -1460,6 +1591,10 @@ variable "clusters" {
     cluster_kms_key_id              = optional(string)
     defined_tags                    = optional(map(any))
     freeform_tags                   = optional(map(any))
+    lb_defined_tags                    = optional(map(any))
+    lb_freeform_tags                   = optional(map(any))
+    volume_defined_tags                    = optional(map(any))
+    volume_freeform_tags                   = optional(map(any))
   }))
   default = {}
 }
@@ -1476,6 +1611,7 @@ variable "nodepools" {
     kubernetes_version                  = string
     is_pv_encryption_in_transit_enabled = optional(bool)
     availability_domain                 = number
+    fault_domains                       = optional(list(string))
     subnet_id                           = string
     size                                = number
     cni_type                            = string
@@ -1497,6 +1633,32 @@ variable "nodepools" {
   }))
   default = {}
 }
+
+variable "virtual-nodepools" {
+  type = map(object({
+    display_name                        = string
+    cluster_name                        = string
+    compartment_id                      = string
+    network_compartment_id              = string
+    vcn_name                            = string
+    node_shape                          = string
+    initial_virtual_node_labels         = optional(map(any))
+    availability_domain                 = number
+    fault_domains                       = list(string)
+    subnet_id                           = string
+    size                                = number
+    pod_nsg_ids                         = optional(list(string))
+    pod_subnet_id                       = string
+    worker_nsg_ids                      = optional(list(string))
+    taints                              = optional(list(any))
+    node_defined_tags                   = optional(map(any))
+    node_freeform_tags                  = optional(map(any))
+    nodepool_defined_tags               = optional(map(any))
+    nodepool_freeform_tags              = optional(map(any))
+  }))
+  default = {}
+}
+
 
 ##################################
 ############## SDDCs #############
@@ -1520,13 +1682,14 @@ variable "sddcs" {
     vsphere_vlan_id                       = string
     capacity_reservation_id               = optional(string)
     defined_tags                          = optional(map(any))
-    display_name                          = optional(string)
+    display_name                     	  = optional(string)
+	initial_cluster_display_name          = optional(string)
     freeform_tags                         = optional(map(any))
     hcx_action                            = optional(string)
     hcx_vlan_id                           = optional(string)
     initial_host_ocpu_count               = optional(number)
     initial_host_shape_name               = optional(string)
-    initial_sku                           = optional(string)
+    initial_commitment                    = optional(string)
     instance_display_name_prefix          = optional(string)
     is_hcx_enabled                        = optional(bool)
     is_shielded_instance_enabled          = optional(bool)
@@ -1544,6 +1707,51 @@ variable "sddcs" {
 
 }
 
+variable "sddc-clusters" {
+  type = map(object({
+    compartment_id                        = string
+    availability_domain                   = string
+    network_compartment_id                = string
+    vcn_name                              = string
+    esxi_hosts_count                      = number
+    nsx_edge_uplink1vlan_id               = string
+    nsx_edge_uplink2vlan_id               = optional(string)
+    nsx_edge_vtep_vlan_id                 = string
+    nsx_vtep_vlan_id                      = string
+    provisioning_subnet_id                = string
+    ssh_authorized_keys                   = optional(string)
+    vmotion_vlan_id                       = string
+    vmware_software_version               = string
+    vsan_vlan_id                          = string
+    vsphere_vlan_id                       = string
+    capacity_reservation_id               = optional(string)
+    defined_tags                          = optional(map(any))
+    display_name                     	  = optional(string)
+    freeform_tags                         = optional(map(any))
+    hcx_action                            = optional(string)
+    hcx_vlan_id                           = optional(string)
+    initial_host_ocpu_count               = optional(number)
+    initial_host_shape_name               = optional(string)
+    initial_commitment                    = optional(string)
+    instance_display_name_prefix          = optional(string)
+    is_hcx_enabled                        = optional(bool)
+    is_shielded_instance_enabled          = optional(bool)
+    is_single_host_sddc                   = optional(bool)
+    provisioning_vlan_id                  = optional(string)
+    refresh_hcx_license_status            = optional(bool)
+    replication_vlan_id                   = optional(string)
+    reserving_hcx_on_premise_license_keys = optional(string)
+    workload_network_cidr                 = optional(string)
+    workload_datastore                    = optional(list(string))
+    sddc_id								  = optional(string)
+    esxi_software_version                 = optional(string)
+
+  }))
+  default = {}
+
+}
+
+
 ############################
 ## Key Management Service ##
 ############################
@@ -1555,6 +1763,7 @@ variable "vaults" {
     vault_type     = string
     freeform_tags  = optional(map(any))
     defined_tags   = optional(map(any))
+    replica_region = optional(string)
   }))
   default = {}
 }
@@ -1563,12 +1772,16 @@ variable "keys" {
   type = map(object({
     compartment_id      = string
     display_name        = string
-    management_endpoint = string
+    vault_name          = string
     algorithm           = optional(string)
     length              = optional(string)
+    curve_id            = optional(string)
     protection_mode     = optional(string)
     freeform_tags       = optional(map(any))
     defined_tags        = optional(map(any))
+    is_auto_rotation_enabled = optional(bool)
+    rotation_interval_in_days = optional(string)
+
   }))
   default = {}
 }
@@ -1582,12 +1795,14 @@ variable "budgets" {
     amount                                = string
     compartment_id                        = string
     reset_period                          = string
-    budget_processing_period_start_offset = optional(number)
+    budget_processing_period_start_offset = optional(string)
     defined_tags                          = optional(map(any))
     description                           = optional(string)
     display_name                          = optional(string)
     freeform_tags                         = optional(map(any))
     processing_period_type                = optional(string)
+    budget_end_date                       = optional(string)
+	budget_start_date                     = optional(string)
     target_type                           = optional(string)
     targets                               = optional(list(any))
   }))
@@ -1825,6 +2040,42 @@ variable "decryption_rules" {
   }))
   default = {}
 }
+
+#########################
+####### Firewall Logs ########
+#########################
+
+variable "fw_log_groups" {
+  description = "To provision Log Groups for Network Firewall"
+  type = map(object({
+    compartment_id = string
+    display_name   = string
+    description    = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
+  default = {}
+}
+
+variable "fw_logs" {
+  description = "To provision Logs for Network Firewall"
+  type = map(object({
+    display_name       = string
+    log_group_id       = string
+    log_type           = string
+    compartment_id     = optional(string)
+    category           = optional(string)
+    resource           = optional(string)
+    service            = optional(string)
+    source_type        = optional(string)
+    is_enabled         = optional(bool)
+    retention_duration = optional(number)
+    defined_tags       = optional(map(any))
+    freeform_tags      = optional(map(any))
+  }))
+  default = {}
+}
+
 ##########################
 # Add new variables here #
 ##########################

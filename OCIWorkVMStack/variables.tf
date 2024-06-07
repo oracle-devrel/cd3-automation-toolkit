@@ -6,6 +6,15 @@ variable "tenancy_ocid" {
   type = string
 }
 
+variable "current_user_ocid" {
+  type = string
+}
+
+variable "region" {
+  type = string
+}
+
+
 ###############################################################################
 #  Marketplace Image Listing - information available in the Partner portal    #
 ###############################################################################

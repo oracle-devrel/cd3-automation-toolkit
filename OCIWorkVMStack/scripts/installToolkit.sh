@@ -4,6 +4,7 @@ username=cd3user
 sudo mkdir -p /$username/mount_path
 logfile="/$username/mount_path/installToolkit.log"
 toolkit_dir="/tmp/githubCode"
+tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
 start=$(date +%s.%N)
 sudo sh -c "echo '########################################################################' >> /etc/motd"
 sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"
@@ -24,29 +25,32 @@ if [[ $? -ne 0 ]] ; then
 fi
 }
 
-sudo systemctl stop oracle-cloud-agent.service
+sudo systemctl stop oracle-cloud-agent.service >> $logfile 2>&1
 cd /etc/yum.repos.d/
 for i in $( ls *.osms-backup ); do sudo mv $i ${i%.*}; done
-
-echo "########################################################" >> $logfile 2>&1
-echo " Setting SELinux to permissive " >> $logfile 2>&1
-echo "########################################################" >> $logfile 2>&1
+echo "***SELinux permissive***" >> $logfile 2>&1
 sudo setenforce 0
 sudo sed -c -i "s/\SELINUX=.*/SELINUX=permissive/" /etc/sysconfig/selinux
-sudo getenforce >> $logfile 2>&1
-stop_exec
-echo "********************************************************" >> $logfile 2>&1
 
-echo "########################################################" >> $logfile 2>&1
-echo " Installing git on the workvm " >> $logfile 2>&1
-echo "########################################################" >> $logfile 2>&1
+echo "***cd3user setup***" >> $logfile 2>&1
+sudo useradd -u 1001 $username
+sudo sh -c "echo $username ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$username"
+sudo chmod 0440 /etc/sudoers.d/$username
+sudo chmod 775 -R /$username
+sudo chown -R $username:$username /$username
+sudo usermod -aG $username opc
+sudo mkdir /home/$username/.ssh
+sudo chown -R $username:$username /home/$username/.ssh
+sudo chmod 700 /home/$username/.ssh
+sudo cp /home/opc/.ssh/authorized_keys /home/$username/.ssh/authorized_keys
+sudo chown -R $username:$username /home/$username/.ssh/authorized_keys
+sudo chmod 600 /home/$username/.ssh/authorized_keys
+
+echo "***Install git***" >> $logfile 2>&1
 sudo yum install -y git >> $logfile 2>&1
 stop_exec
-echo "git installation completed successfully" >> $logfile 2>&1
-echo "********************************************************" >> $logfile 2>&1
 
-echo "########################################################" >> $logfile 2>&1
-echo " Installing Podman on the workvm " >> $logfile 2>&1
+echo "***Install Podman***" >> $logfile 2>&1
 echo "########################################################" >> $logfile 2>&1
 osrelase=`cat /etc/oracle-release`
 if [[ $osrelase == "Oracle Linux Server release 7".* ]] ; then
@@ -60,73 +64,34 @@ else
     stop_exec
 fi
 sudo podman --version >> $logfile 2>&1
-stop_exec
-echo "podman installation completed successfully" >> $logfile 2>&1
-echo "********************************************************" >> $logfile 2>&1
 
-echo "########################################################" >> $logfile 2>&1
-echo "Downloading CD3 Automation Toolkit Code from Github " >> $logfile 2>&1
-echo "########################################################" >> $logfile 2>&1
-sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git  $toolkit_dir >> $logfile 2>&1
+echo "***Download Toolkit***" >> $logfile 2>&1
+sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git $toolkit_dir >> $logfile 2>&1
 stop_exec
-sudo ls -la /tmp/githubCode >> $logfile 2>&1
-echo "Downloading CD3 Automation Toolkit Code from Github completed successfully" >> $logfile 2>&1
-echo "********************************************************" >> $logfile 2>&1
 
-echo "########################################################" >> $logfile 2>&1
-echo "Building container image for CD3 Automation Toolkit " >> $logfile 2>&1
-echo "########################################################" >> $logfile 2>&1
+curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
+metadata=$(cat /tmp/metadata.json)
+user_id=$(echo "$metadata" | jq -r '.metadata.current_user_ocid')
+cust_name=$(echo "$metadata" | jq -r '.metadata.tenancy_name')
+tenancy_id=$(echo "$metadata" | jq -r '.metadata.tenancy_ocid')
+config_region=$(echo "$metadata" | jq -r '.metadata.config_region')
+sudo sed -c -i "s/customer_name=.*/customer_name=$cust_name/" $tenancyconfig_properties
+sudo sed -c -i "s/tenancy_ocid=.*/tenancy_ocid=$tenancy_id/" $tenancyconfig_properties
+sudo sed -c -i "s/region=.*/region=$config_region/" $tenancyconfig_properties
+sudo sed -c -i "s/user_ocid=.*/user_ocid=$user_id/" $tenancyconfig_properties
+
+echo "***Building container image***" >> $logfile 2>&1
 cd /tmp
 cd githubCode
-echo "Building CD3 Automation Toolkit Podman Image " >> $logfile 2>&1
 sudo podman build --platform linux/amd64 -t cd3_toolkit -f Dockerfile --pull --no-cache . >> $logfile 2>&1
-#stop_exec
+stop_exec
 sudo podman images >> $logfile 2>&1
-stop_exec
-echo " " >> $logfile 2>&1
-echo " ********************************************** " >> $logfile 2>&1
 
-echo "########################################################" >> $logfile 2>&1
-echo "Setting Up cd3user for CD3 Automation Toolkit " >> $logfile 2>&1
-echo "########################################################" >> $logfile 2>&1
-sudo useradd -u 1001 $username >> $logfile 2>&1
-sudo sh -c "echo $username ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$username" >> $logfile 2>&1
-sudo chmod 0440 /etc/sudoers.d/$username >> $logfile 2>&1
-stop_exec
-sudo chmod 775 -R /$username >> $logfile 2>&1
-stop_exec
-sudo chown -R $username:$username /$username >> $logfile 2>&1
-stop_exec
-sudo usermod -aG $username opc >> $logfile 2>&1
-stop_exec
-sudo mkdir /home/$username/.ssh >> $logfile 2>&1
-stop_exec
-sudo chown -R $username:$username /home/$username/.ssh >> $logfile 2>&1
-stop_exec
-sudo chmod 700 /home/$username/.ssh >> $logfile 2>&1
-stop_exec
-sudo cp /home/opc/.ssh/authorized_keys /home/$username/.ssh/authorized_keys >> $logfile 2>&1
-stop_exec
-sudo chown -R $username:$username /home/$username/.ssh/authorized_keys >> $logfile 2>&1
-stop_exec
-sudo chmod 600 /home/$username/.ssh/authorized_keys >> $logfile 2>&1
-stop_exec
-sudo id cd3user >> $logfile 2>&1
-stop_exec
-echo " Successfully created cd3user with required permission " >> $logfile 2>&1
-echo " ********************************************** " >> $logfile 2>&1
-
-echo "########################################################" >> $logfile 2>&1
-echo "Setting Up CD3 Automation Toolkit Podman Container " >> $logfile 2>&1
-echo "########################################################" >> $logfile 2>&1
+echo "***Setting Up podman Container***" >> $logfile 2>&1
 sudo podman run --name cd3_toolkit -it -p 8443:8443 -d -v /cd3user/mount_path:/cd3user/tenancies  cd3_toolkit bash >> $logfile 2>&1
 stop_exec
 sudo podman ps -a >> $logfile 2>&1
-stop_exec
-echo " " >> $logfile 2>&1
-echo "Successfully Created podman Container named as cd3_toolkit " >> $logfile 2>&1
 echo "Connect to Container using command - sudo podman exec -it cd3_toolkit bash " >> $logfile 2>&1
-echo "########################################################" >> $logfile 2>&1
 
 sudo systemctl start oracle-cloud-agent.service
 

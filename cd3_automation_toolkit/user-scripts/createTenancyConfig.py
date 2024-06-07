@@ -23,6 +23,7 @@ import glob
 import yaml
 import subprocess
 sys.path.append(os.getcwd()+"/..")
+from os import environ
 from commonTools import *
 from copy import deepcopy
 from subprocess import DEVNULL
@@ -197,13 +198,14 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     file.close()
 
     # Update Environment variable for jenkins
-    yaml_file_path = os.environ['JENKINS_INSTALL'] + "/jcasc.yaml"
-    with open(yaml_file_path) as yaml_file:
-        cfg = yaml.load(yaml_file, Loader=yaml.FullLoader)
-    cfg["jenkins"]["globalNodeProperties"] = [{'envVars': {'env': [{'key': 'customer_prefix', 'value': prefix}]}}]
-    with open(yaml_file_path, "w") as yaml_file:
-        cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)
-    # Clean repo config if exists and initiate git repo
+    yaml_file_path = jenkins_dir + "/jcasc.yaml"
+    if (os.path.exists(yaml_file_path)):
+        with open(yaml_file_path) as yaml_file:
+            cfg = yaml.load(yaml_file, Loader=yaml.FullLoader)
+        cfg["jenkins"]["globalNodeProperties"] = [{'envVars': {'env': [{'key': 'customer_prefix', 'value': prefix}]}}]
+        with open(yaml_file_path, "w") as yaml_file:
+            cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)
+        # Clean repo config if exists and initiate git repo
     subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
     subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
     subprocess.run(['git', 'config', '--global', 'safe.directory', devops_dir], cwd=devops_dir)
@@ -227,7 +229,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         f.close()
         exit(1)
 
-    for f in glob.glob(os.environ['JENKINS_INSTALL'] + "/*.groovy"):
+    for f in glob.glob(jenkins_dir + "/*.groovy"):
         shutil.copy2(f, devops_dir)
     # Create local branch "main" from remote "main"
     subprocess.run(['git', 'checkout', '-B', 'main','-q'], cwd=devops_dir,stdout=DEVNULL)
@@ -309,7 +311,10 @@ toolkit_dir = os.path.dirname(os.path.abspath(__file__))+"/.."
 modules_dir = toolkit_dir + "/user-scripts/terraform"
 variables_example_file = modules_dir + "/variables_example.tf"
 setupoci_props_toolkit_file_path = toolkit_dir + "/setUpOCI.properties"
-if hasattr(os.environ,'JENKINS_INSTALL'):
+
+jenkins_dir = ''
+#if hasattr(os.environ,'JENKINS_INSTALL'):
+if environ.get('JENKINS_INSTALL') is not None:
     jenkins_dir = os.environ['JENKINS_INSTALL']
 
 prefix = config.get('Default', 'customer_name').strip()
@@ -549,6 +554,12 @@ tenancy_id=tenancy
 ## Authenticate
 ct = commonTools()
 config, signer = ct.authenticate(auth_mechanism, config_file_path)
+## Fetch OCI_regions
+cd3service = cd3Services()
+cd3service.fetch_regions(config, signer)
+
+#This is needed to be initialised again
+ct = commonTools()
 try:
     ct.get_subscribedregions(config,signer)
 except Exception as e:
@@ -561,10 +572,6 @@ except Exception as e:
 
 home_region = ct.home_region
 
-## Fetch OCI_regions
-cd3service = cd3Services()
-print("")
-cd3service.fetch_regions(config, signer)
 
 ## Check the remote state requirements
 backend_file = open(modules_dir + "/backend.tf", 'r')
@@ -729,8 +736,52 @@ if not os.path.exists(terraform_files):
 print("Creating Tenancy specific region directories, terraform provider , variables files.................")
 regions_file_data = ""
 
+# 6. Read variables.tf from examples folder and copy the variables as string
+
 for region in ct.all_regions:
-    regions_file_data = regions_file_data+region.title()+"\n"
+    regions_file_data = regions_file_data + region.title() + "\n"
+
+    with open(variables_example_file, 'r+') as var_eg_file:
+        variables_example_file_data = var_eg_file.read().rstrip()
+
+    variables_example_file_data = variables_example_file_data.replace("<TENANCY OCID HERE>", tenancy)
+    variables_example_file_data = variables_example_file_data.replace("<USER OCID HERE>", user)
+    variables_example_file_data = variables_example_file_data.replace("<SSH KEY FINGERPRINT HERE>", fingerprint)
+    variables_example_file_data = variables_example_file_data.replace("<SSH PRIVATE KEY FULL PATH HERE>", _key_path)
+    variables_example_file_data = variables_example_file_data.replace("<SSH PUB KEY STRING HERE>", ssh_public_key)
+    variables_example_file_data = variables_example_file_data.replace(
+        "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>", ct.region_dict[region])
+
+    # Global dir for RPC related
+    if region == ct.home_region:
+
+        if not os.path.exists(f"{terraform_files}/global/rpc"):
+            os.makedirs(f"{terraform_files}/global/rpc")
+
+            shutil.copyfile(modules_dir + "/provider.tf", f"{terraform_files}/global/rpc/provider.tf")
+
+            with open(f"{terraform_files}/global/rpc/provider.tf", 'r+') as provider_file:
+                provider_file_data = provider_file.read().rstrip()
+            if auth_mechanism == 'instance_principal':
+                provider_file_data = provider_file_data.replace("provider \"oci\" {",
+                                                                "provider \"oci\" {\nauth = \"InstancePrincipal\"")
+            if auth_mechanism == 'session_token':
+                provider_file_data = provider_file_data.replace("provider \"oci\" {",
+                                                                "provider \"oci\" {\nauth = \"SecurityToken\"\nconfig_file_profile = \"DEFAULT\"")
+
+            f = open(f"{terraform_files}/global/rpc/provider.tf", "w+")
+            f.write(provider_file_data)
+            f.close()
+
+            f = open(f"{terraform_files}/global/rpc/variables_global.tf", "w+")
+            f.write(variables_example_file_data)
+            f.close()
+
+            f = open(f"{terraform_files}/global/rpc/backend.tf", "w+")
+            f.write(global_backend_file_data)
+            f.close()
+
+
     # Rerunning createTenancy for any new region subscription. Process only new region directories else continue
     if os.path.exists(terraform_files+region):
         continue
@@ -763,16 +814,6 @@ for region in ct.all_regions:
                                                                                                                   "Please make sure to have Read Access to the Tenancy at the minimum !!!")
         print("\nContinuing without fetching Image OCIDs........!!!")
 
-    # 6. Read variables.tf from examples folder and copy the variables as string
-    with open(variables_example_file, 'r+') as var_eg_file:
-        variables_example_file_data = var_eg_file.read().rstrip()
-
-    variables_example_file_data = variables_example_file_data.replace("<TENANCY OCID HERE>", tenancy)
-    variables_example_file_data = variables_example_file_data.replace("<USER OCID HERE>", user)
-    variables_example_file_data = variables_example_file_data.replace("<SSH KEY FINGERPRINT HERE>", fingerprint)
-    variables_example_file_data = variables_example_file_data.replace("<SSH PRIVATE KEY FULL PATH HERE>", _key_path)
-    variables_example_file_data = variables_example_file_data.replace("<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>", ct.region_dict[region])
-    variables_example_file_data = variables_example_file_data.replace("<SSH PUB KEY STRING HERE>", ssh_public_key)
     if (windows_image_id != ''):
         variables_example_file_data = variables_example_file_data.replace("<LATEST WINDOWS OCID HERE>", windows_image_id)
 
@@ -782,32 +823,6 @@ for region in ct.all_regions:
     f = open(terraform_files+"/"+region+"/variables_" + region + ".tf", "w+")
     f.write(variables_example_file_data)
     f.close()
-
-
-    # Global dir for RPC related
-    if region == ct.home_region:
-        if not os.path.exists(f"{terraform_files}/global/rpc"):
-            os.makedirs(f"{terraform_files}/global/rpc")
-        shutil.copyfile(modules_dir + "/provider.tf", f"{terraform_files}/global/rpc/provider.tf")
-
-        with open(f"{terraform_files}/global/rpc/provider.tf", 'r+') as provider_file:
-            provider_file_data = provider_file.read().rstrip()
-        if auth_mechanism == 'instance_principal':
-            provider_file_data = provider_file_data.replace("provider \"oci\" {", "provider \"oci\" {\nauth = \"InstancePrincipal\"")
-        if auth_mechanism == 'session_token':
-            provider_file_data = provider_file_data.replace("provider \"oci\" {", "provider \"oci\" {\nauth = \"SecurityToken\"\nconfig_file_profile = \"DEFAULT\"")
-
-        f = open(f"{terraform_files}/global/rpc/provider.tf", "w+")
-        f.write(provider_file_data)
-        f.close()
-
-        f = open(f"{terraform_files}/global/rpc/variables_global.tf", "w+")
-        f.write(variables_example_file_data)
-        f.close()
-
-        f = open(f"{terraform_files}/global/rpc/backend.tf", "w+")
-        f.write(global_backend_file_data)
-        f.close()
 
     # 7. Copy terraform modules and variables file to outdir
     distutils.dir_util.copy_tree(modules_dir, terraform_files +"/" + region)
@@ -869,7 +884,7 @@ for region in ct.all_regions:
             if service_dir=="" or service_dir == "\n":
                 continue
             #if (service != 'identity' and service != 'tagging') or ((service == 'identity' or service == 'tagging') and region == home_region):
-            home_region_services = ['identity', 'tagging', 'budget']
+            home_region_services = ['identity', 'tagging', 'budget','quota']
             if (region != home_region) and (service in home_region_services):
                 os.remove(region_dir + service + ".tf")
 
@@ -953,7 +968,12 @@ if use_devops == 'yes':
 
     repo_ssh_url,files_in_repo = create_devops_resources(config, signer)
     devops_dir = terraform_files
-    jenkins_home = os.environ['JENKINS_HOME']
+
+    jenkins_home = user_dir+"/tenancies/jenkins_home"
+    #if hasattr(os.environ, 'JENKINS_HOME'):
+    if environ.get('JENKINS_HOME') is not None:
+        jenkins_home = os.environ['JENKINS_HOME']
+
     git_config_file = config_files + "/" + prefix + "_git_config"
 
     #Get Username from $user_ocid if $oci_devops_git_user is left empty

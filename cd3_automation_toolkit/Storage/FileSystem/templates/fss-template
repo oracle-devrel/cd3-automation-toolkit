@@ -28,8 +28,16 @@ fss = {
         kms_key_id = "{{ kms_key_id }}"
         {% endif %}
 
-        {% if source_snapshot_name and source_snapshot_name != "" %}
-        source_snapshot_name = "{{ source_snapshot_name }}"
+        {% if source_snapshot and source_snapshot != "" %}
+        source_snapshot = "{{ source_snapshot }}"
+        {% endif %}
+
+        {% if snapshot_policy and snapshot_policy != "" %}
+        snapshot_policy = "{{ snapshot_policy }}"
+        {% endif %}
+
+        {% if policy_compartment_id and policy_compartment_id != "" %}
+        policy_compartment_id = "{{ policy_compartment_id }}"
         {% endif %}
 
     {#  ##Do not modify below this line##  #}

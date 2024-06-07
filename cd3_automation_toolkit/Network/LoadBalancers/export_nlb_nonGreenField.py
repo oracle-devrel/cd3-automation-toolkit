@@ -45,6 +45,7 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
             backend_list = ""
             backendset_details = nlb.get_backend_set(eachnlb.__getattribute__('id'), backendsets).data
             hc = nlb.get_health_checker(eachnlb.__getattribute__('id'), backendsets).data
+            dns=hc.__getattribute__('dns')
 
             # Process the Backend Server
             cnt_bes = 0
@@ -128,7 +129,7 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
                 elif col_header == "Backend Set Name":
                     values_for_column_bss[col_header].append(backendsets)
                 else:
-                    oci_objs = [eachnlb,backendset_details,hc]
+                    oci_objs = [eachnlb,backendset_details,hc,dns]
                     values_for_column_bss = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_bss,values_for_column_bss)
 
     return values_for_column_bss
@@ -214,6 +215,12 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
                     else:
                         values_for_column_lis[col_header].append("")
 
+                elif (col_header == "Is Private(True|False)"):
+                    if cnt_lsnr == 1:
+                        values_for_column_lis[col_header].append(not(ips.is_public))
+                    else:
+                        values_for_column_lis[col_header].append("")
+
                 elif (col_header == "Reserved IP(Y|N|OCID)"):
                     if cnt_lsnr == 1:
                         values_for_column_lis[col_header].append(reserved_ip)
@@ -227,7 +234,7 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
                     else:
                         values_for_column_lis[col_header].append("")
                 else:
-                    oci_objs = [values,eachnlb]
+                    oci_objs = [values,eachnlb,ips]
                     values_for_column_lis = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_lis, values_for_column_lis)
 
         if cnt_lsnr == 0:
@@ -244,11 +251,13 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
                     values_for_column_lis[col_header].append(nsg_detail)
                 elif (col_header == "Reserved IP(Y|N|OCID)"):
                     values_for_column_lis[col_header].append(reserved_ip)
+                elif (col_header == "Is Private(True|False)"):
+                    values_for_column_lis[col_header].append(not(ips.is_public))
                 # Process the Tag Columns
                 elif col_header.lower() in commonTools.tagColumns:
                     values_for_column_lis = commonTools.export_tags(eachnlb, col_header, values_for_column_lis)
                 else:
-                    oci_objs = [eachnlb]
+                    oci_objs = [eachnlb,ips]
                     values_for_column_lis = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_lis,values_for_column_lis)
 
     return values_for_column_lis

@@ -41,3 +41,13 @@ variable "source_snapshot_id" {
   type    = string
   default = null
 }
+
+variable "filesystem_snapshot_policy_id" {
+  type    = string
+  default = null
+}
+
+variable "policy_compartment_id" {
+  type = string
+  default = null
+}

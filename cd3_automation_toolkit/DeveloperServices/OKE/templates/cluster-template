@@ -23,6 +23,7 @@ clusters = {
         compartment_id = "{{ compartment_tf_name }}"
         network_compartment_id = "{{ network_compartment_tf_name }}"
         vcn_name = "{{ vcn_name }}"
+        cluster_type     = "{{ cluster_type|upper }}"
         kubernetes_version = "{{ cluster_kubernetes_version }}"
         cni_type = "{{ network_type }}"
         {% if api_endpoint_pub_address == '' %}
@@ -39,6 +40,15 @@ clusters = {
         {% else %}
         is_pod_security_policy_enabled = "false"
         {% endif %}
+
+        {% if is_policy_enabled == 'true' %}
+        is_policy_enabled = "true"
+        {% endif %}
+
+        {% if policy_kms_key_id %}
+        policy_kms_key_id = "{{ policy_kms_key_id }}"
+        {% endif %}
+
         {% if pod_cidr_block != '' %}
         pods_cidr = "{{ pod_cidr_block }}"
         {% endif %}
@@ -82,5 +92,73 @@ clusters = {
                 {% endif %}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+
+    {#  ###Section for adding LB Defined and Freeform Tags###  #}
+    {% if lb_defined_tags and lb_defined_tags != 'nan' and lb_defined_tags != '' and lb_defined_tags != [['nan']] %}
+      {% if lb_defined_tags[0] %}
+        lb_defined_tags = {
+        {% for tags in lb_defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+            {% if lb_freeform_tags and lb_freeform_tags != 'nan' and lb_freeform_tags != '' and lb_freeform_tags != [['nan']] %}
+                {% if lb_freeform_tags[0] %}
+        lb_freeform_tags = {
+                    {% for tags in lb_freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% endif %}
+    {#  ###Section for adding LB Defined and Freeform Tags ends here###  #}
+
+    {#  ###Section for adding Volume Defined and Freeform Tags###  #}
+    {% if volume_defined_tags and volume_defined_tags != 'nan' and volume_defined_tags != '' and volume_defined_tags != [['nan']] %}
+      {% if volume_defined_tags[0] %}
+        volume_defined_tags = {
+        {% for tags in volume_defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+            {% if volume_freeform_tags and volume_freeform_tags != 'nan' and volume_freeform_tags != '' and volume_freeform_tags != [['nan']] %}
+                {% if volume_freeform_tags[0] %}
+        volume_freeform_tags = {
+                    {% for tags in volume_freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% endif %}
+    {#  ###Section for adding Volume Defined and Freeform Tags ends here###  #}
+
+
+
+
+
+
+
+
+
     },
 {% endif %}

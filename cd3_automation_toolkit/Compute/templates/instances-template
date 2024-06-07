@@ -143,9 +143,13 @@ instances = {
             }]
             {% endif %}
 
-            {% if platform_config_type %}
+            {% if platform_config_type or is_secure_boot_enabled or is_measured_boot_enabled or is_trusted_platform_module_enabled or numa_nodes_per_socket %}
             platform_config = [{
-                    config_type = "{{platform_config_type}}"
+              {% if platform_config_type %}
+                    config_type = "{{platform_config_type}}",
+              {% else %}
+                    config_type = ""
+              {% endif %}
               {% if is_secure_boot_enabled %}
                     is_secure_boot_enabled = {{ is_secure_boot_enabled }},
               {% endif %}

@@ -20,15 +20,42 @@ variable "key_name" {
   default = null
 }
 
-variable "igw_id" {}
-variable "ngw_id" {}
-variable "sgw_id" {}
-variable "drg_id" {}
-variable "hub_lpg_id" {}
-variable "spoke_lpg_id" {}
-variable "peer_lpg_id" {}
-variable "exported_lpg_id" {}
-variable "none_lpg_id" {}
+variable "igw_id" {
+    type    = map(any)
+    default = {}
+}
+variable "ngw_id" {
+    type    = map(any)
+    default = {}
+}
+variable "sgw_id" {
+    type    = map(any)
+    default = {}
+}
+variable "drg_id" {
+    type    = map(any)
+    default = {}
+}
+variable "hub_lpg_id" {
+    type    = map(any)
+    default = {}
+}
+variable "spoke_lpg_id" {
+    type    = map(any)
+    default = {}
+}
+variable "peer_lpg_id" {
+    type    = map(any)
+    default = {}
+}
+variable "exported_lpg_id" {
+    type    = map(any)
+    default = {}
+}
+variable "none_lpg_id" {
+    type    = map(any)
+    default = {}
+}
 
 variable "rt_details" {
   type = map(any)
@@ -72,6 +99,22 @@ variable "destination" {
 }
 
 variable "destination_type" {
+  type    = string
+  default = null
+}
+
+variable "gateway_route_table" {
+  type    = bool
+  default = false
+}
+
+variable "default_route_table" {
+  type    = bool
+  default = false
+}
+
+
+variable "manage_default_resource_id" {
   type    = string
   default = null
 }
