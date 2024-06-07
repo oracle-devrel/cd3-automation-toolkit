@@ -1303,6 +1303,7 @@ def create_logging(prim_options=[]):
     for option in options:
         options1=[]
         if option == "m" or option == 'q':
+            options1.append(option)
             service_dir=''
         elif option.name == 'Enable VCN Flow Logs':
             service_dir=service_dir_network
@@ -1315,7 +1316,7 @@ def create_logging(prim_options=[]):
         elif option.name == 'Enable Network Firewall Logs':
             service_dir = service_dir_firewall
 
-        options1.append(option)
+
         execute_options(options1, inputfile, outdir, prefix, ct, service_dir)
         update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir])
 

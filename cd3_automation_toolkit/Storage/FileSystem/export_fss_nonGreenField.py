@@ -269,12 +269,10 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
         ###### code to fetch FSS without any exports #####
         fss_all_ids = []
         for fss_all in list_fss.data:
-            if fss_all.id not in fss_all_ids:
-                fss_all_ids.append(fss_all.id)
+            fss_all_ids.append(fss_all.id)
         if len(mnt_fss_ids) > 0:
             for mnt_fss_id in mnt_fss_ids:
-                if mnt_fss_id in fss_all_ids:
-                    fss_all_ids.remove(mnt_fss_id)
+                fss_all_ids.remove(mnt_fss_id)
         if len(fss_all_ids) > 0:
             for fss_id in fss_all_ids:
                 file_system_info_1 = file_system.get_file_system(file_system_id=fss_id)
@@ -337,7 +335,7 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                         mnt_p_ip = v['ip']
                         mnt_p_hostname = v['hostname']
                         nsg_names = v['nsg']
-                        add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip, mnt_p_hostname, "","", "", "", "", "", "","", "", "", "", "", "","", "", "", fsinfo=None, values_for_column_fss=values_for_column_fss, mnt_info1=None, nsg_n=nsg_names)
+                        add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip, mnt_p_hostname, "","", "", "", "", "", "","", "", "", "", "", "","", "", "", fsinfo=file_system_info_1, values_for_column_fss=values_for_column_fss, mnt_info1=None, nsg_n=nsg_names)
 
     except Exception as e:
         pass
