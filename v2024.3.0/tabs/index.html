@@ -2633,6 +2633,40 @@ default = {
 </tr>
 </tbody>
 </table>
+<h2 id="fss-logs">FSS Logs</h2>
+<p>This will enable logs for all the File systems mentioned in 'FSS' tab of CD3 Excel sheet. Log group for each File system is created under the same compartment as specified for FSS and its logs are added to the log group.</p>
+<p>Below TF file is created:</p>
+<table>
+<thead>
+<tr>
+<th>File name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;customer_name&gt;_nfs-logging.auto.tfvars</td>
+<td>TF variables file containing log group for each File system and its logs.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="firewall-logs">Firewall Logs</h2>
+<p>This will enable logs for the Firewalls specified in "Firewall" sheet of the Firewall template.. Log group for each Firewall is created under the same compartment as specified for Firewall and its logs are added to the log group.</p>
+<p>Below TF file is created:</p>
+<table>
+<thead>
+<tr>
+<th>File name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;customer_name&gt;_fw-logging.auto.tfvars</td>
+<td>TF variables file containing log group for each Firewall and its logs.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="sddcs-tab">SDDCs Tab</h2>
 <p>Use this tab to create OCVS in your tenancy. </p>
 <blockquote>
