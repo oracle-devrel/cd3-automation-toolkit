@@ -1,0 +1,81 @@
+{% if count == 0 %}
+
+// Copyright (c) 2024, Oracle and/or its affiliates.
+
+############################
+# Governance
+# Create Budget Alert Rules
+# Allowed Values:
+# budget_id = <budget name or ocid>
+# type = <ACTUAL/FORECAST>
+# threshold = <threshold value>
+# threshold_type = <ABSOLUTE/PERCENTAGE>
+
+# Sample import command :
+# terraform import "module.budget-alert-rules[\"<< budget alert rule terraform variable name>>\"].oci_budget_alert_rule.alert_rule" budgets/<budget ocid>/alertRules/<budget alert rule ocid>
+############################
+
+
+budget_alert_rules = {
+    ##Add New Budgets-Alert-Rules for {{ region|lower }} here##
+}{% else %}
+
+    "{{ alert_tf_name }}" = {
+
+            {% if budget_tf_name and budget_tf_name != "" %}
+            budget_id = "{{ budget_name }}"
+            {% endif %}
+
+            {% if type and type != "" %}
+            type = "{{ type }}"
+            {% endif %}
+
+            {% if threshold and threshold != "" %}
+            threshold = "{{ threshold }}"
+            {% endif %}
+
+            {% if threshold_type and threshold_type != "" %}
+            threshold_type = "{{ threshold_type }}"
+            {% endif %}
+
+            {% if alert_message and alert_message != "" %}
+            message = "{{ alert_message | replace("\n","\\n") }}"
+            {% endif %}
+
+            {% if alert_recipients and alert_recipients != [''] %}
+            recipients = "{{ alert_recipients }}"
+            {% endif %}
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if budget_alert_defined_tags and budget_alert_defined_tags != 'nan' and budget_alert_defined_tags != '' and budget_alert_defined_tags != [['nan']] %}
+          {% if budget_alert_defined_tags[0] %}
+            defined_tags = {
+            {% for tags in budget_alert_defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if budget_alert_freeform_tags and budget_alert_freeform_tags != 'nan' and budget_alert_freeform_tags != '' and budget_alert_freeform_tags != [['nan']] %}
+                    {% if budget_alert_freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in budget_alert_freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            },
+
+{% endif %}

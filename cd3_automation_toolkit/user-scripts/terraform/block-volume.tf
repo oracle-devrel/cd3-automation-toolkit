@@ -32,13 +32,18 @@ module "block-volumes" {
   size_in_gbs              = each.value.size_in_gbs != null ? each.value.size_in_gbs : null
   block_tf_policy          = each.value.backup_policy != null ? each.value.backup_policy : null
   policy_tf_compartment_id = each.value.policy_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : null
-
+  autotune_policies        = each.value.autotune_policies
+  source_details           = each.value.source_details
+  block_volume_replicas    = each.value.block_volume_replicas
+  block_volume_replicas_deletion = each.value.block_volume_replicas_deletion
 
   #Volume Attachment Optional Params
   #  attachment_display_name   = each.value.attachment_display_name
   #  encryption_in_transit_type          = each.value.encryption_in_transit_type                  # Applicable when attachment_type=iscsi
   is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled # Applicable when attachment_type=paravirtualized
-  #  is_read_only              = each.value.is_read_only
-  #  is_shareable              = each.value.is_shareable
-  #  use_chap                  = each.value.use_chap
+  is_read_only              = each.value.is_read_only
+  is_shareable              = each.value.is_shareable
+  use_chap                  = each.value.use_chap
+  is_agent_auto_iscsi_login_enabled = each.value.is_agent_auto_iscsi_login_enabled # Applicable when attachment_type=iscsi
+  blockvolume_source_ocids       = var.blockvolume_source_ocids
 }

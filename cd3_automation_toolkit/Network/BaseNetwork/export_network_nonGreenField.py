@@ -40,7 +40,7 @@ def print_drgv2(values_for_column_drgv2, region, comp_name, vcn_info, drg_info, 
                     attach_id = drg_attachment_info.vcn_id
 
                 if (attach_type.upper() == "VCN"):
-                    columnval = attach_type + "::" + vcn_info.display_name
+                    columnval = attach_type + "::" + vcn_info.display_name+"::"+drg_attachment_info.display_name
                     values_for_column_drgv2[col_header].append(columnval)
                 else:
                     columnval = attach_type + "::" + attach_id
@@ -86,34 +86,63 @@ def print_drgv2(values_for_column_drgv2, region, comp_name, vcn_info, drg_info, 
                                                                        values_for_column_drgv2)
 
 
-def print_vcns(values_for_column_vcns, region, comp_name, vcn_info, drg_info, igw_info, ngw_info, sgw_info,
+def print_vcns(values_for_column_vcns, region, comp_name, vnc,vcn_info, drg_attachment_info, igw_info, ngw_info, sgw_info,
                lpg_display_names):
+    drg_info=None
     for col_header in values_for_column_vcns.keys():
+
         if (col_header == "Region"):
             values_for_column_vcns[col_header].append(region)
         elif (col_header == "Compartment Name"):
             values_for_column_vcns[col_header].append(comp_name)
         elif (col_header == "DRG Required"):
-            if (drg_info == None):
-                values_for_column_vcns[col_header].append("n")
+            if drg_attachment_info!=None:
+                drg_id = drg_attachment_info.drg_id
+                drg_info = vnc.get_drg(drg_id).data
+                if (drg_info == None):
+                    values_for_column_vcns[col_header].append("n")
+                else:
+                    route_table_id = drg_attachment_info.route_table_id
+                    if (route_table_id is not None):
+                        val = drg_info.display_name + "::" + vnc.get_route_table(route_table_id).data.display_name
+                    else:
+                        val = drg_info.display_name
+                    values_for_column_vcns[col_header].append(val)
             else:
-                values_for_column_vcns[col_header].append(drg_info.display_name)
+                values_for_column_vcns[col_header].append("n")
+
 
         elif (col_header == "IGW Required"):
             if (igw_info == None):
                 values_for_column_vcns[col_header].append("n")
             else:
-                values_for_column_vcns[col_header].append(igw_info.display_name)
+                route_table_id = igw_info.route_table_id
+                if (route_table_id is not None):
+                    val=igw_info.display_name+"::"+vnc.get_route_table(route_table_id).data.display_name
+                else:
+                    val=igw_info.display_name
+                values_for_column_vcns[col_header].append(val)
+
         elif (col_header == "NGW Required"):
             if (ngw_info == None):
                 values_for_column_vcns[col_header].append("n")
             else:
-                values_for_column_vcns[col_header].append(ngw_info.display_name)
+                route_table_id = ngw_info.route_table_id
+                if (route_table_id is not None):
+                    val = ngw_info.display_name + "::" + vnc.get_route_table(route_table_id).data.display_name
+                else:
+                    val = ngw_info.display_name
+                values_for_column_vcns[col_header].append(val)
         elif (col_header == "SGW Required"):
             if (sgw_info == None):
                 values_for_column_vcns[col_header].append("n")
             else:
-                values_for_column_vcns[col_header].append(sgw_info.display_name)
+                route_table_id = sgw_info.route_table_id
+                if (route_table_id is not None):
+                    val = sgw_info.display_name + "::" + vnc.get_route_table(route_table_id).data.display_name
+                else:
+                    val = sgw_info.display_name
+                values_for_column_vcns[col_header].append(val)
         elif (col_header == "LPG Required"):
             values_for_column_vcns[col_header].append(lpg_display_names)
         elif (col_header == "DNS Label"):
@@ -602,6 +631,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
                 tf_name = commonTools.check_tf_variable(drg_display_name)
                 if (drg_id not in drg_ocid):
+                    oci_obj_names[reg].write("\nDRG Version::::" + drg_display_name + "::::" + drg_version)
                     importCommands[reg].write(
                         "\nterraform import \"module.drgs[\\\"" + tf_name + "\\\"].oci_core_drg.drg\" " + drg_info.id)
                     drg_ocid.append(drg_id)
@@ -617,27 +647,20 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     attach_type = "VCN"
                     attach_id = drg_attachment_info.vcn_id
 
-                oci_obj_names[reg].write("\nDRG Version::::" + drg_version + "::::None::::None")
+
 
                 vcn_info = None
                 if (attach_type.upper() == "VCN"):
                     vcn_drgattach_route_table_id = drg_attachment_info.route_table_id
                     vcn_info = vnc.get_vcn(attach_id).data
-                    if (vcn_drgattach_route_table_id is not None):
-                        oci_obj_names[reg].write(
-                            "\ndrginfo::::" + vcn_info.display_name + "::::" + drg_info.display_name + "::::" + vnc.get_route_table(
-                                vcn_drgattach_route_table_id).data.display_name)
-                    else:
-                        oci_obj_names[reg].write(
-                            "\ndrginfo::::" + vcn_info.display_name + "::::" + drg_info.display_name + "::::None")
 
                     # tf_name = vcn_info.display_name + "_" + drg_attachment_name
                     tf_name = commonTools.check_tf_variable(drg_attachment_name)
 
                     importCommands[reg].write(
                         "\nterraform import \"module.drg-attachments[\\\"" + tf_name + "\\\"].oci_core_drg_attachment.drg_attachment\" " + drg_attachment_info.id)
-                    oci_obj_names[reg].write(
-                        "\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
+                    #oci_obj_names[reg].write(
+                        #"\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
 
                     drg_route_table_id = drg_attachment_info.drg_route_table_id
 
@@ -780,12 +803,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
-        comp_ocid_done = []
         for ntk_compartment_name in export_compartments:
-            # if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-            # if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-            #    continue
-            # comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                             compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="AVAILABLE")
@@ -797,14 +815,14 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,
                                                                            compartment_id=ct.ntk_compartment_ids[
                                                                                ntk_compartment_name], vcn_id=vcn.id)
-                drg_info = None
                 igw_info = None
                 ngw_info = None
                 sgw_info = None
+                drg_attachment_info = None
 
                 for drg_attachment_info in DRG_Attachments.data:
-                    drg_id = drg_attachment_info.drg_id
-                    drg_info = vnc.get_drg(drg_id).data
+                    if (drg_attachment_info.lifecycle_state != "ATTACHED"):
+                        continue
 
                 # igw_display_name = "n"
                 IGWs = oci.pagination.list_call_get_all_results(vnc.list_internet_gateways,
@@ -818,6 +836,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     tf_name = commonTools.check_tf_variable(tf_name)
                     importCommands[reg].write(
                         "\nterraform import \"module.igws[\\\"" + tf_name + "\\\"].oci_core_internet_gateway.internet_gateway\" " + igw_info.id)
+
 
                 # ngw_display_name = "n"
                 NGWs = oci.pagination.list_call_get_all_results(vnc.list_nat_gateways,
@@ -874,7 +893,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     lpg_display_names = lpg_display_names[:-1]
 
                 # Fill VCNs Tab
-                print_vcns(values_for_column_vcns, region, ntk_compartment_name, vcn_info, drg_info, igw_info, ngw_info,
+                print_vcns(values_for_column_vcns, region, ntk_compartment_name, vnc,vcn_info, drg_attachment_info, igw_info, ngw_info,
                            sgw_info, lpg_display_names)
 
     commonTools.write_to_cd3(values_for_column_vcns, cd3file, "VCNs")

@@ -25,8 +25,8 @@ igws = {
         enable_igw = {{ enable_igw }}
         {% endif %}
 
-        {% if route_table_id and route_table_id != 'nan' and route_table_id != '' %}
-        route_table_id = "{{ route_table_id }}"
+        {% if vcn_igw_route_table_id and vcn_igw_route_table_id != 'nan' and vcn_igw_route_table_id != '' %}
+        route_table_id = "{{ vcn_igw_route_table_id }}"
         {% endif %}
 
     {#  ##Do not modify below this line##  #}

@@ -39,7 +39,7 @@ nodepools = {
         boot_volume_size_in_gbs = {{ boot_volume_size_in_gbs }}
         {% endif %}
         {% if oke_labels and oke_labels != 'nan' and defined_tags != '' and oke_labels != [['nan']] %}
-      {% if oke_labels[0] %}
+        {% if oke_labels[0] %}
         initial_node_labels = {
         {% for tags in oke_labels  %}
             {% if not loop.last %}
@@ -53,6 +53,9 @@ nodepools = {
        {% endif %}
 
         availability_domain = {{ availability_domain }}
+        {% if fault_domains %}
+        fault_domains       = [{{ fault_domains }}]
+        {% endif %}
         network_compartment_id = "{{ network_compartment_tf_name }}"
         vcn_name = "{{ vcn_name }}"
         subnet_id = "{{ worker_node_subnet }}"
@@ -66,7 +69,7 @@ nodepools = {
         pod_nsg_ids = [{{ pod_nsgs }}]
         {% endif %}
         {% if pod_communication_subnet %}
-        pod_subnet_ids = "{{ pod_communication_subnet}}"
+        pod_subnet_id = "{{ pod_communication_subnet}}"
         {% else %}
         pod_subnet_ids = ""
         {% endif %}

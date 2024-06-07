@@ -31,7 +31,7 @@ variable "length" {
 variable "curve_id" {
   description = "Supported curve IDs for ECDSA keys."
   type        = string
-  default     = false
+  default     = null
 }
 
 variable "defined_tags" {
@@ -61,4 +61,16 @@ variable "management_endpoint" {
   description = "Vault ID"
   type        = string
   default     = null
+}
+
+variable "rotation_interval_in_days"{
+    description = "The interval of auto key rotation. For auto key rotation the interval should between 30 day and 365 days (1 year)."
+    type        =  string
+    default     =  "30"
+}
+
+variable "is_auto_rotation_enabled"{
+    description = "A parameter specifying whether the auto key rotation is enabled or not."
+    type        = bool
+    default     = false
 }

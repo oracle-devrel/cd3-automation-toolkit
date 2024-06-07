@@ -24,6 +24,8 @@ route_tables = {
         vcn_id     = "{{ vcn_tf_name }}"
         display_name     = "{{ display_name }}"
 
+        ### gateway_route_table for #{{ region.lower() }}_{{ rt_tf_name }}# ##
+
         route_rules_igw = [
     {{ route_rules_igw }}
         ]

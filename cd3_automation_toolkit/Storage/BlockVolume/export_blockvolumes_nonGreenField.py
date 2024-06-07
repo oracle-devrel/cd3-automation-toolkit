@@ -8,6 +8,7 @@
 # Oracle Consulting
 #
 
+import re
 import oci
 import os
 from oci.core.blockstorage_client import BlockstorageClient
@@ -16,7 +17,7 @@ from commonTools import *
 
 importCommands = {}
 oci_obj_names = {}
-
+source_ocids = {}
 
 def policy_info(bvol,volume_id,ct):
     asset_policy_name = ''
@@ -87,6 +88,53 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
         if (display_names is not None):
             if (not any(e in d_name for e in display_names)):
                 continue
+        if blockvols.block_volume_replicas is None:
+            block_volume_replicas = ''
+            cross_region_replication = ''
+        else:
+            cross_region_replication = 'On'
+            block_volume_replicas = blockvols.block_volume_replicas
+            bv_rep_ads = block_volume_replicas[0].availability_domain.strip()
+            bv_rep_name = block_volume_replicas[0].display_name.strip()
+            bv_rep_ads = bv_rep_ads.split(':')[1]
+            if 'PHX' in bv_rep_ads:
+                bv_rep_ad_region = 'Phoenix'
+                bv_rep_ad = bv_rep_ads.split('-')[1] + bv_rep_ads.split('-')[2]
+                block_volume_replicas = bv_rep_ad_region + '::' + bv_rep_ad + '::' + bv_rep_name
+            elif 'ASHBURN' in bv_rep_ads:
+                bv_rep_ad_region = bv_rep_ads.split('-')[1]
+                bv_rep_ad = bv_rep_ads.split('-')[2] + bv_rep_ads.split('-')[3]
+                bv_rep_ad_region = bv_rep_ad_region.lower().capitalize()
+                block_volume_replicas = bv_rep_ad_region + '::' + bv_rep_ad + '::' + bv_rep_name
+            else:
+                bv_rep_ad_region = bv_rep_ads.split('-')[1]
+                bv_rep_ad = bv_rep_ads.split('-')[3] + bv_rep_ads.split('-')[4]
+                bv_rep_ad_region = bv_rep_ad_region.lower().capitalize()
+                block_volume_replicas = bv_rep_ad_region + '::' + bv_rep_ad + '::' + bv_rep_name
+        source_details = ''
+        if blockvols.source_details is None:
+            source_details = ''
+        else:
+            source_id = blockvols.source_details.id
+            source_details = blockvols.source_details.type.strip() + "::" + blockvols.display_name.strip()
+            tmp_key = region + "--" + source_id
+            source_ocids[tmp_key] = blockvols.display_name.strip()
+        autotune_type = ''
+        max_vpus_per_gb = ''
+        if len(blockvols.autotune_policies) == 0:
+            autotune_type = ''
+            max_vpus_per_gb = ''
+        elif len(blockvols.autotune_policies) == 1:
+            autotune_type = blockvols.autotune_policies[0].autotune_type
+            if autotune_type == 'PERFORMANCE_BASED':
+                max_vpus_per_gb = blockvols.autotune_policies[0].max_vpus_per_gb
+            else:
+                max_vpus_per_gb = ''
+        elif len(blockvols.autotune_policies) == 2:
+            autotune_type = "BOTH"
+            for autotune_policy in blockvols.autotune_policies:
+                if autotune_policy.autotune_type == 'PERFORMANCE_BASED':
+                    max_vpus_per_gb = autotune_policy.max_vpus_per_gb
         attachments, attachment_id, instance_name, attachment_type = volume_attachment_info(compute, ct,volume_id,export_compartments)
         asset_assignment_id, asset_policy_name, policy_comp_name = policy_info(bvol, volume_id,ct)
         block_tf_name = commonTools.check_tf_variable(blockvols.display_name)
@@ -127,6 +175,16 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 values_for_column[col_header].append(asset_policy_name)
             elif col_header == 'Custom Policy Compartment Name':
                 values_for_column[col_header].append(policy_comp_name)
+            elif col_header == 'Block Volume Replica (Region::AD::Name)':
+                values_for_column[col_header].append(block_volume_replicas)
+            elif col_header == 'Cross Region Replication':
+                values_for_column[col_header].append(cross_region_replication)
+            elif col_header == 'Source Details':
+                values_for_column[col_header].append(source_details)
+            elif col_header == 'Autotune Type':
+                values_for_column[col_header].append(autotune_type)
+            elif col_header == 'Max VPUS Per GB':
+                values_for_column[col_header].append(max_vpus_per_gb)
             elif col_header.lower() in commonTools.tagColumns:
                 values_for_column = commonTools.export_tags(blockvols, col_header, values_for_column)
             else:
@@ -183,6 +241,29 @@ def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, expo
         for ntk_compartment_name in export_compartments:
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names, export_compartments)
+
+        # writing volume source into variables file
+        var_data = {}
+        for reg in export_regions:
+            file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
+            # Read variables file data
+            with open(file, 'r') as f:
+                var_data[reg] = f.read()
+
+            tempStrOcids = ""
+            for k, v in source_ocids.items():
+                if k.split("--")[0].lower() == reg:
+                    k = "\"" + k.split("--")[1] + "\""
+                    tempStrOcids = "\t" + v + " = " + k + "\n" + tempStrOcids
+            tempStrOcids = "\n" + tempStrOcids
+            tempStrOcids = "#START_blockvolume_source_ocids#" + tempStrOcids + "\t#blockvolume_source_ocids_END#"
+            var_data[reg] = re.sub('#START_blockvolume_source_ocids#.*?#blockvolume_source_ocids_END#', tempStrOcids,
+                                   var_data[reg],
+                                   flags=re.DOTALL)
+            # Write variables file data
+            with open(file, "w") as f:
+                f.write(var_data[reg])
+            f.close()
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print("{0} Block Volumes exported into CD3.\n".format(len(values_for_column["Region"])))

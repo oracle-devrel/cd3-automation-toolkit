@@ -1,0 +1,60 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+
+############################
+# Storage
+# FSS REPLICATION - tfvars
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for FSS:
+# terraform import "module.fss-replication[\"<<fss replication terraform variable name>>\"].oci_file_storage_replication.file_system_replication" <<file system ocid>>
+############################
+
+fss_replication = {
+     ##Add New FSS Replication for {{ region|lower }} here##
+}
+{% else %}
+
+    {{ replication_tf_name }} = {
+        compartment_id = "{{ compartment_tf_name }}"
+        source_id    = "{{ fss_tf_name }}"
+        target_id    = "{{ target_id }}"
+        #Optional
+        display_name = "{{ replication_name }}"
+        replication_interval = {{ interval }}
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% endif %}
+     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+        },
+
+{% endif %}

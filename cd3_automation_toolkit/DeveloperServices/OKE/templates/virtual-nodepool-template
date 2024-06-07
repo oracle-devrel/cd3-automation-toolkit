@@ -1,0 +1,135 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Developer Services
+# OKE Nodepool - tfvars
+# Allowed Values:
+# vcn_name must be the name of the VCN as in OCI
+# subnet_id and pod_subnet_ids can be the ocid of the subnet or the name as in OCI
+# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# pod_nsg_ids and worker_nsg_ids can be the ocids of the nsgs or the name in OCI
+# Sample import command for nodepool:
+# terraform import "module.nodepools[\"<<nodepool terraform variable name>>\"].oci_containerengine_node_pool.nodepool" <<nodepool ocid>>
+#############################
+
+virtual-nodepools = {
+    ##Add New Virtual Nodepool for {{ region|lower }} here##
+}
+{% else %}
+    {{ cluster_tf_name }}_{{ nodepool_tf_name }} = {
+        display_name = "{{ nodepool_display_name }}"
+        cluster_name = "{{ cluster_tf_name }}"
+        compartment_id = "{{ node_compartment }}"
+        node_shape = "{{ shape }}"
+
+        {% if oke_labels and oke_labels != 'nan' and oke_labels != '' and oke_labels != [['nan']] %}
+        {% if oke_labels[0] %}
+        initial_virtual_node_labels = {
+        {% for tags in oke_labels  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}" = "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}" = "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+
+       {% if taints and taints != 'nan' and taints != '' and taints != [['nan']] %}
+
+        taints = [
+        {% for taint in taints  %}
+        {
+        {% set list1 = taint.split(',') %}
+                "key" = "{{ list1[0].strip() }}"
+                "value" = "{{ list1[1].strip() }}"
+                "effect" = "{{ list1[2].strip() }}"
+        },
+        {% endfor %}
+        ]
+        {% endif %}
+
+
+        availability_domain = {{ availability_domain }}
+        fault_domains       = [{{ fault_domains }}]
+        network_compartment_id = "{{ network_compartment_tf_name }}"
+        vcn_name = "{{ vcn_name }}"
+        subnet_id = "{{ worker_node_subnet }}"
+        size = {{ number_of_nodes }}
+        {% if pod_nsgs %}
+        pod_nsg_ids = [{{ pod_nsgs }}]
+        {% endif %}
+        pod_subnet_id = "{{ pod_communication_subnet}}"
+        {% if nodepool_nsgs %}
+        worker_nsg_ids = [{{ nodepool_nsgs }}]
+        {% endif %}
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if node_defined_tags and node_defined_tags != 'nan' and node_defined_tags != '' and node_defined_tags != [['nan']] %}
+      {% if node_defined_tags[0] %}
+        node_defined_tags = {
+        {% for tags in node_defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+            {% if node_freeform_tags and node_freeform_tags != 'nan' and node_freeform_tags != '' and node_freeform_tags != [['nan']] %}
+                {% if node_freeform_tags[0] %}
+        node_freeform_tags = {
+                    {% for tags in node_freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if nodepool_defined_tags and nodepool_defined_tags != 'nan' and nodepool_defined_tags != '' and nodepool_defined_tags != [['nan']] %}
+      {% if nodepool_defined_tags[0] %}
+        nodepool_defined_tags = {
+        {% for tags in nodepool_defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+            {% if nodepool_freeform_tags and nodepool_freeform_tags != 'nan' and nodepool_freeform_tags != '' and nodepool_freeform_tags != [['nan']] %}
+                {% if nodepool_freeform_tags[0] %}
+        nodepool_freeform_tags = {
+                    {% for tags in nodepool_freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+    },
+{% endif %}

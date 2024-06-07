@@ -19,9 +19,9 @@ sddcs = {
 }
 {% else %}
    {{ display_tf_name }} =  {
-
           compartment_id                = "{{ compartment_tf_name }}"
-          display_name                  = "{{ display_name  }}"
+          display_name                  = "{{ sddc_display_name  }}"
+          initial_cluster_display_name  = "{{ sddc_cluster_display_name }}"
           {% if availability_domain == "multi-AD"  %}
           availability_domain           =  "{{ availability_domain }}"
           {% else %}
@@ -33,9 +33,9 @@ sddcs = {
           {% if hcx_license_type|upper == "ENTERPRISE" %}
           hcx_action                    = "UPGRADE"
           {% endif %}
-
           vmware_software_version       = "{{ vmware_software_version }}"
-          initial_sku                   = "{{ pricing_interval }}"
+          {#initial sku renamed as initial_commitment#}
+          initial_commitment            = "{{ pricing_interval }}"
           {% if sddc_hardware_type   %}
           initial_host_shape_name       = "{{ sddc_hardware_type}}"
           {% if 'Standard' in sddc_hardware_type  %}

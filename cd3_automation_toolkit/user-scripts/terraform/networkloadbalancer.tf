@@ -33,6 +33,7 @@ module "network-load-balancers" {
   is_private                     = each.value.is_private
   network_security_group_ids     = each.value.nsg_ids
   nlb_ip_version                 = each.value.nlb_ip_version
+  assigned_private_ipv4          = each.value.assigned_private_ipv4
   vcn_name                       = each.value.vcn_name
   defined_tags                   = each.value.defined_tags
   freeform_tags                  = each.value.freeform_tags
@@ -59,6 +60,12 @@ module "nlb-backend-sets" {
   ip_version               = each.value.ip_version
   is_preserve_source       = each.value.is_preserve_source
   #healthcheck parameters
+  domain_name              = each.value.domain_name
+  query_class              = each.value.query_class
+  query_type               = each.value.query_type
+  rcodes                   = each.value.rcodes
+  transport_protocol       = each.value.transport_protocol
+
   protocol            = each.value.protocol
   interval_in_millis  = each.value.interval_in_millis
   port                = each.value.port

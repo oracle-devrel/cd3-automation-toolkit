@@ -32,6 +32,12 @@ variable "kubernetes_version" {
   default     = null
 }
 
+variable "type" {
+  type        = string
+  description = "The type of the cluster"
+  default     = null
+}
+
 variable "cni_type" {
   type        = string
   description = "The configuration for pod networking for the cluster"
@@ -53,6 +59,18 @@ variable "endpoint_subnet_id" {
   type        = string
   description = "The subnet for the endpoint"
   default     = null
+}
+
+variable "is_policy_enabled" {
+  type        = bool
+  description = "Whether the image verification policy is enabled"
+  default     = false
+}
+
+variable "policy_kms_key_id" {
+  type    = string
+  description = "The OCIDs of the KMS key that will be used to verify whether the images are signed by an approved source"
+  default = null
 }
 
 variable "is_kubernetes_dashboard_enabled" {
@@ -101,6 +119,26 @@ variable "defined_tags" {
 }
 
 variable "freeform_tags" {
+  type    = map(any)
+  default = {}
+}
+
+variable "volume_defined_tags" {
+  type = map(any)
+  default = {}
+}
+
+variable "volume_freeform_tags" {
+  type    = map(any)
+  default = {}
+}
+
+variable "lb_defined_tags" {
+  type = map(any)
+  default = {}
+}
+
+variable "lb_freeform_tags" {
   type    = map(any)
   default = {}
 }

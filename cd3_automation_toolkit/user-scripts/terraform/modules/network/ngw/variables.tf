@@ -25,6 +25,11 @@ variable "block_traffic" {
   default = false
 }
 
+variable "route_table_id" {
+  type    = string
+  default = null
+}
+
 variable "defined_tags" {
   type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",

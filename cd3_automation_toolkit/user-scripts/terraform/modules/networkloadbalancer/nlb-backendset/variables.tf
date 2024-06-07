@@ -11,6 +11,36 @@ variable "protocol" {
   default     = null
 }
 
+variable "domain_name" {
+  type        = string
+  description = "domain_name"
+  default     = null
+}
+
+variable "query_class" {
+  type        = string
+  description = "query_class"
+  default     = null
+}
+
+variable "query_type" {
+  type        = string
+  description = "query_type"
+  default     = null
+}
+
+variable "rcodes" {
+  type        = list(string)
+  description = "rcodes"
+  default     = []
+}
+
+variable "transport_protocol" {
+  type        = string
+  description = "transport_protocol"
+  default     = null
+}
+
 variable "interval_in_millis" {
   type        = number
   description = "The interval between health checks, in milliseconds"
@@ -89,6 +119,16 @@ variable "ip_version" {
 }
 
 variable "is_preserve_source" {
+  type    = bool
+  default = null
+}
+
+variable "is_instant_failover_enabled" {
+  type    = bool
+  default = null
+}
+
+variable "is_fail_open" {
   type    = bool
   default = null
 }

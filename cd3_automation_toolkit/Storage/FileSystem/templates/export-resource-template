@@ -20,12 +20,13 @@ nfs_export_options = {
     {{ FSE_tf_name }} = {
         export_set_id = "{{ mount_target_tf_name }}"
         file_system_id = "{{ fss_tf_name }}"
+        {% if is_idmap_groups_for_sys_auth and is_idmap_groups_for_sys_auth != '' %}
+        is_idmap_groups_for_sys_auth = {{ is_idmap_groups_for_sys_auth }}
+        {% endif %}
         path = "{{ path }}"
-
         {% if export_set_info != "" %}
         export_options=[{{ export_set_info }}]
         {% endif %}
-
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}

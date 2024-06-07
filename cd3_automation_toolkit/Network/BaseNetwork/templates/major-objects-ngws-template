@@ -25,6 +25,10 @@ ngws = {
         {% if block_traffic and block_traffic != 'nan' and block_traffic != ''%}
         block_traffic = {{ block_traffic }}
         {% endif %}
+        
+        {% if vcn_ngw_route_table_id and vcn_ngw_route_table_id != 'nan' and vcn_ngw_route_table_id != '' %}
+        route_table_id = "{{ vcn_ngw_route_table_id }}"
+        {% endif %}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}

@@ -1,0 +1,101 @@
+{% if count == 0 %}
+// Copyright (c) 2024, Oracle and/or its affiliates.
+
+############################
+# Governance
+# Create Budgets
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# budget_end_date and budget_start_date are mandatory for budgets of "SINGLE USE" type
+# budget_processing_period_start_offset is mandatory for budgets of "MONTH" type
+# target_type - supported values are "TAG"/"COMPARTMENT"
+# for COMPARTMENT type target, targets value should be list of compartment ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# for TAG type target, targets value should be list of  <tag-namespace.tag-key.tag-value>
+# Sample import command :
+# terraform import "module.budgets[\"<<budget terraform variable name>>\"].oci_budget_budget.budget" <budget ocid>
+############################
+
+budgets = {
+    ##Add New Budgets for {{ region|lower }} here##
+}{% else %}
+
+    {{ budget_tf_name }} = {
+
+            {% if compartment_tf_name and compartment_tf_name != "" %}
+            compartment_id = "{{ compartment_tf_name }}"
+            {% else %}
+            compartment_id = "root"
+            {% endif %}
+
+            {% if amount and amount != "" %}
+            amount = {{ amount }}
+            {% endif %}
+
+            {%  if reset_period and reset_period != "" %}
+            reset_period = "{{ reset_period }}"
+            {% else %}
+            reset_period = "MONTHLY"
+            {% endif %}
+
+            {% if description and description != "" %}
+            description = "{{ description | replace("\n","\\n") }}"
+            {% endif %}
+
+            {% if period_start and period_start != "" %}
+            budget_processing_period_start_offset = "{{ period_start }}"
+            {% endif %}
+
+            {% if budget_name and budget_name != "" %}
+            display_name = "{{ budget_name }}"
+            {% endif %}
+
+            {% if processing_period_type and processing_period_type != "" %}
+            processing_period_type = "{{ processing_period_type }}"
+            {% endif %}
+
+            {% if processing_period_type and processing_period_type == "SINGLE_USE" %}
+            budget_start_date = "{{ budget_start_date }}"
+            budget_end_date = "{{ budget_end_date }}"
+            {% endif %}
+
+            {% if target_type and target_type != "" %}
+            target_type = "{{ target_type }}"
+            {% endif %}
+
+            {% if target and target != [] %}
+            targets = ["{{ target }}"]
+            {% endif %}
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            },
+
+{% endif %}

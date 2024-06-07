@@ -2,7 +2,8 @@ if (Workflow.toLowerCase().contains("create")){
 return[
 "Validate CD3",
 "Identity",
-"Tags",
+"Governance",
+"Cost Management",
 "Network",
 "OCI Firewall",
 "DNS Management",
@@ -12,9 +13,9 @@ return[
 "Load Balancers",
 "Management Services",
 "Developer Services",
+"Security",
 "Logging Services",
 "Software-Defined Data Centers - OCVS",
-"CIS Compliance Features",
 "CD3 Services",
 "3rd Party Services"
 ]
@@ -22,7 +23,8 @@ return[
 else if(Workflow.toLowerCase().contains("export")) {
 return[
 "Export Identity",
-"Export Tags",
+"Export Governance",
+"Export Cost Management",
 "Export Network",
 "Export OCI Firewall",
 "Export DNS Management",
@@ -32,6 +34,7 @@ return[
 "Export Load Balancers",
 "Export Management Services",
 "Export Developer Services",
+"Export Security",
 "Export Software-Defined Data Centers - OCVS",
 "CD3 Services"
 ]
