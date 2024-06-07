@@ -1,3 +1,10 @@
+# auto.tfvars syntax for Logging Module
+These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
+<b>"key"</b> must be unique to every resource that is created.
+Comments preceed with <b>##</b>.
+
+## Object Storage logs
+
 **1. Object Storage Log Groups**
 
 - <b>Syntax</b>
@@ -14,6 +21,7 @@
             description    = string
             defined_tags   = map
             freeform_tags  = map
+          }
     }
 ```
 
@@ -61,7 +69,10 @@
             retention_duration       = number
             defined_tags             = map
             freeform_tags            = map
+        }
+    
     }
+
 ```
 
 - <b>Example</b>
@@ -93,6 +104,8 @@
             
 ```
 
+## VCN Flow logs
+
 **3. VCN Log Groups**
 
 - <b>Syntax</b>
@@ -109,6 +122,7 @@
             description    = string
             defined_tags   = map
             freeform_tags  = map
+        }
     }
 ```
 
@@ -133,10 +147,7 @@
           description    = "Log Group for VCN"
           defined_tags = {
                   "Oracle-Tags.CreatedOn"= "2023-01-10T08:18:18.100Z" ,
-                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,
-                  "Schedule.Weekend"= "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" ,
-                  "Schedule.WeekDay"= "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" ,
-                  "ArchitectureCenter\devops_oke-d802.ArchitectureCenter\testrelease"= "test"
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,                  
           }
           freeform_tags = {}
         },
@@ -167,6 +178,7 @@
             retention_duration       = number
             defined_tags             = map
             freeform_tags            = map
+        }
     }
 ```
 
@@ -199,9 +211,6 @@
         defined_tags = {
                 "Oracle-Tags.CreatedOn"= "2023-01-10T08:18:18.100Z" ,
                 "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,
-                "Schedule.Weekend"= "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" ,
-                "Schedule.WeekDay"= "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" ,
-                "ArchitectureCenter\devops_oke-d802.ArchitectureCenter\testrelease"= "test"
         }
       },
       fwl-vcn_fwl-mgmt-flow-log  = {
@@ -221,14 +230,13 @@
         defined_tags = {
                 "Oracle-Tags.CreatedOn"= "2023-01-10T08:18:19.064Z" ,
                 "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,
-                "Schedule.Weekend"= "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" ,
-                "Schedule.WeekDay"= "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" ,
-                "ArchitectureCenter\devops_oke-d802.ArchitectureCenter\testrelease"= "test"
         }
       },
     ##Add New Logs for london here##
     }
 ```
+
+## Load balancer logs
 
 **5. Load Balancer Log Groups**
 
@@ -246,6 +254,7 @@
             description    = string
             defined_tags   = map
             freeform_tags  = map
+        }
     }
 ```
 
@@ -268,9 +277,6 @@
         defined_tags = {
                 "Oracle-Tags.CreatedOn"= "2023-01-11T08:02:47.567Z" ,
                 "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,
-                "Schedule.Weekend"= "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" ,
-                "Schedule.WeekDay"= "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" ,
-                "ArchitectureCenter\devops_oke-d802.ArchitectureCenter\testrelease"= "test"
         }
         freeform_tags = {}
       },
@@ -280,10 +286,7 @@
         description    = "Log Group for lbr1"
         defined_tags = {
                 "Oracle-Tags.CreatedOn"= "2023-01-11T08:02:47.566Z" ,
-                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,
-                "Schedule.Weekend"= "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" ,
-                "Schedule.WeekDay"= "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" ,
-                "ArchitectureCenter\devops_oke-d802.ArchitectureCenter\testrelease"= "test"
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,              
         }
         freeform_tags = {}
       },
@@ -314,6 +317,7 @@
             retention_duration       = number
             defined_tags             = map
             freeform_tags            = map
+        }
     }
 ```
 
@@ -343,9 +347,6 @@
             defined_tags = {
                     "Oracle-Tags.CreatedOn"= "2023-01-11T08:02:47.567Z" ,
                     "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,
-                    "Schedule.Weekend"= "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" ,
-                    "Schedule.WeekDay"= "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" ,
-                    "ArchitectureCenter\devops_oke-d802.ArchitectureCenter\testrelease"= "test"
             }
           },
         lbr2-log-error  = {
@@ -362,11 +363,253 @@
             defined_tags = {
                     "Oracle-Tags.CreatedOn"= "2023-01-11T08:02:47.567Z" ,
                     "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@xyz.com" ,
-                    "Schedule.Weekend"= "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" ,
-                    "Schedule.WeekDay"= "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" ,
-                    "ArchitectureCenter\devops_oke-d802.ArchitectureCenter\testrelease"= "test"
             }
           },
       ##Add New Logs for london here##
       }
 ```
+
+## NFS Logs
+
+**7. NFS Log Groups**
+
+- <b>Syntax</b>
+  
+```
+    nfs_log_groups = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+            # Required
+            compartment_id = string
+            display_name   = string
+    
+            # Optional
+            description    = string
+            defined_tags   = map
+            freeform_tags  = map
+        }
+    }
+```
+
+- <b>Example</b>
+```
+    // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+    ############################
+    # ManagementServices
+    # NFS Log Groups - tfvars
+    # Allowed Values:
+    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Security--Prod" where "Security" is the parent of "Prod" compartment
+    ############################
+    nfs_log_groups = {
+        # Log Group map #
+        MT1_nfs-log-group = {
+            compartment_id = "AppDev"
+            display_name   = "MT1_nfs-log-group"
+            description    = "Log Group for MT1"
+            defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2024-05-31T17:28:50.621Z" ,
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+            }
+        },
+    ##Add New Log Groups for london here##
+    }
+```
+
+**8. NFS Logs**
+
+- <b>Syntax</b>
+  
+```
+    nfs_logs = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+            # Required
+            display_name             = string
+            log_group_id             = string
+            log_type                 = string
+    
+            # Optional
+            compartment_id           = string
+            category                 = string
+            resource                 = string
+            service                  = string
+            source_type              = string
+            is_enabled               = bool
+            retention_duration       = number
+            defined_tags             = map
+            freeform_tags            = map
+        }
+
+    }
+```
+
+- <b>Example</b>
+``` 
+    ############################
+    # ManagementServices
+    # NFS Logs - tfvars
+    # Allowed Values:
+    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+    ############################
+    nfs_logs = {
+        # Log map #
+        MT1_nfslogs-log  = {
+            display_name        = "MT1_nfslogs-log"
+            log_group_id        = "MT1_nfs-log-group"
+            log_type            = "SERVICE"
+            category            = "nfslogs"
+            resource            = "MT1"
+            service             = "filestorage"
+            source_type         = "OCISERVICE"
+            compartment_id      = "AppDev"
+            is_enabled          = true
+            retention_duration  = 30
+            defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2024-05-31T17:28:50.621Z" ,
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+            }
+        },
+        MT1_nfslogs-log  = {
+            display_name        = "MT1_nfslogs-log"
+            log_group_id        = "MT1_nfs-log-group"
+            log_type            = "SERVICE"
+            category            = "nfslogs"
+            resource            = "MT1"
+            service             = "filestorage"
+            source_type         = "OCISERVICE"
+            compartment_id      = "AppDev"
+            is_enabled          = true
+            retention_duration  = 30
+            defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2024-05-31T17:28:50.621Z" ,
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+            }
+        },      
+        ##Add New Logs for london here##
+     }
+```
+## Firewall logs
+
+**9. Firewall Log Groups**
+
+- <b>Syntax</b>
+  
+```
+    fw_log_groups = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+            # Required
+            compartment_id = string
+            display_name   = string
+    
+            # Optional
+            description    = string
+            defined_tags   = map
+            freeform_tags  = map
+      }
+    }
+```
+
+- <b>Example</b>
+```
+    // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+    ############################
+    # ManagementServices
+    # FW Log Groups - tfvars
+    # Allowed Values:
+    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Security--Prod" where "Security" is the parent of "Prod" compartment
+    ############################
+    fw_log_groups = {
+    # Log Group map #
+        OCI-FWL_fw-log-group = {
+            compartment_id = "Network"
+            display_name   = "OCI-FWL_fw-log-group"
+            description    = "Log Group for OCI-FWL"
+            defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2024-03-14T06:18:47.503Z" ,
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+            } 
+        },
+    ##Add New Log Groups for phoenix here##
+    }
+```
+
+
+**10. Firewall Logs**
+
+- <b>Syntax</b>
+  
+```
+    fw_logs = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+            # Required
+            display_name             = string
+            log_group_id             = string
+            log_type                 = string
+    
+            # Optional
+            compartment_id           = string
+            category                 = string
+            resource                 = string
+            service                  = string
+            source_type              = string
+            is_enabled               = bool
+            retention_duration       = number
+            defined_tags             = map
+            freeform_tags            = map
+      }
+    }
+```
+
+- <b>Example</b>
+```
+    ############################
+    # ManagementServices
+    # FW Logs - tfvars
+    # Allowed Values:
+    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+    ############################
+    fw_logs = {
+    # Log map #
+        OCI-FWL_threatlog-log  = {
+            display_name        = "OCI-FWL_threatlog-log"
+            log_group_id        = "OCI-FWL_fw-log-group"
+            log_type            = "SERVICE"
+            category            = "threatlog"
+            resource            = "OCI-FWL"
+            service             = "ocinetworkfirewall"
+            source_type         = "OCISERVICE"
+            compartment_id      = "Network"
+            is_enabled          = true
+            retention_duration  = 30
+            defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2024-03-14T06:18:47.503Z" ,
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+            }
+        },
+        OCI-FWL_trafficlog-log  = {
+            display_name        = "OCI-FWL_trafficlog-log"
+            log_group_id        = "OCI-FWL_fw-log-group"
+            log_type            = "SERVICE"
+            category            = "trafficlog"
+            resource            = "OCI-FWL"
+            service             = "ocinetworkfirewall"
+            source_type         = "OCISERVICE"
+            compartment_id      = "Network"
+            is_enabled          = true
+            retention_duration  = 30
+            defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2024-03-14T06:18:47.503Z" ,
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+            }
+        },
+        ##Add New Logs for phoenix here##
+    } 
+```
+
+
