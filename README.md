@@ -61,7 +61,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   </tr>
   <tr>    
     <td>Cloud Guard</td>
-    <td>Show OCI report</td>    
+    <td>SHOWOCI report</td>    
     <td>CIS Landing Zone<br>Compliance</td>
     
   </tr>
