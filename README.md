@@ -40,7 +40,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   </tr>
   <tr>
     <td>OCI Network Firewall</td>
-    <td>SDDCs</td>
+    <td>KMS</td>
     <td>Policy Enforcement using OPA</td>
     
   </tr>
@@ -57,7 +57,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   <tr>
     <td>Logging Services</td>
     <td>Monitoring</td>
-    <td>KMS</td>
+    <td>SDDCs</td>
   </tr>
   <tr>    
     <td>Cloud Guard</td>
