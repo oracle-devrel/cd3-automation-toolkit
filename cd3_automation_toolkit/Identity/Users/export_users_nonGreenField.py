@@ -169,7 +169,7 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct):
                         values_for_column_users[col_header].append("")
 
     commonTools.write_to_cd3(values_for_column_users, cd3file, sheetName_users)
-    print("{0} Users exported into CD3.\n".format(len(values_for_column_groups["Region"])))
+    print("{0} Users exported into CD3.\n".format(len(values_for_column_users["Region"])))
 
     with open(script_file, 'a') as importCommands[ct.home_region]:
         importCommands[ct.home_region].write('\n\nterraform plan\n')
