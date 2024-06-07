@@ -121,6 +121,9 @@ def enable_service_logging(filename, outdir, prefix, ct, service_dir, option='')
 
          log_tf_name = obj_tf_name
 
+         if obj_name.lower()=='nan':
+             continue
+
          #VCN Flow Logs
          if (option.lower().__contains__("vcn")):
              subnet_vlan_in_excel = str(df.loc[i, 'Subnet or VLAN']).strip()
