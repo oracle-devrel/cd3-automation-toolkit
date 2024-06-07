@@ -150,6 +150,10 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
             try:
                 with open(region_dir + '/variables_' + region + '.tf') as origfile, open(rm_dir + '/variables_' + region + '.tf', 'w') as newfile:
                     for line in origfile:
+                        if 'gateway_route_table = optional(bool,false)' in line:
+                            line = line.replace('gateway_route_table = optional(bool,false)','gateway_route_table = optional(bool)')
+                        if 'default_route_table = optional(bool,false)' in line:
+                            line = line.replace('default_route_table = optional(bool,false)','default_route_table = optional(bool)')
                         if "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
                             skipline = True
                         if not skipline:
@@ -181,6 +185,12 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
                 try:
                     with open(region_dir+'/'+service_dir+'/variables_' + region + '.tf') as origfile, open(rm_dir + '/'+ service_dir +'/variables_' + region + '.tf','w') as newfile:
                         for line in origfile:
+                            if 'gateway_route_table = optional(bool,false)' in line:
+                                line = line.replace('gateway_route_table = optional(bool,false)',
+                                                    'gateway_route_table = optional(bool)')
+                            if 'default_route_table = optional(bool,false)' in line:
+                                line = line.replace('default_route_table = optional(bool,false)',
+                                                    'default_route_table = optional(bool)')
                             if "user_ocid"  in line or "fingerprint"  in line or "private_key_path" in line:
                                 skipline = True
                             if not skipline:
