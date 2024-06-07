@@ -704,7 +704,7 @@ Below TF file is created:
 |<customer_name\>_load-balancers-logging.auto.tfvars |TF variables file containing log group for each LBaaS and its error and access logs.| 
 
 ## OSS Logs
-This will enable OSS Bucket logs for all the buckets mentioned in 'Buckets' tab of CD3 Excel sheet. Log group for each bucket is created under the same compartment as specified for bucket and write log type is added as logs to this log group.
+This will enable OSS Bucket logs for all the buckets mentioned in 'Buckets' tab of CD3 Excel sheet. Log group for each bucket is created under the same compartment as specified for bucket and read and write log type is added as logs to this log group.
 
 Below TF file is created:
 
