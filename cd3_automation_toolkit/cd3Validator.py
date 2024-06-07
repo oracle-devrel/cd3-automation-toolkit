@@ -1946,7 +1946,7 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
             val_net=True
 
             log("\n============================= Verifying VCNs Tab ==========================================\n")
-            log("\n====================== Note: LPGs will npt be verified ====================================\n")
+            log("\n====================== Note: LPGs will not be verified ====================================\n")
             print("\nProcessing VCNs Tab..")
             print("NOTE: LPGs will not be verified")
             vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj) #, config)
