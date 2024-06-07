@@ -52,12 +52,12 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   <tr>
     <td>OKE</td>
     <td>Resource Manager</td>
-    <td>Budgets</td>    
+    <td>SDDCs</td>    
   </tr>
   <tr>
     <td>Logging Services</td>
     <td>Monitoring</td>
-    <td>SDDCs</td>
+    <td>Budgets</td>
   </tr>
   <tr>    
     <td>Cloud Guard</td>
