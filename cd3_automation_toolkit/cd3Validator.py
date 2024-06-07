@@ -1391,6 +1391,9 @@ def validate_budgets(filename,comp_ids):
         # Encountered <End>
         if (region in commonTools.endNames):
             break
+        if region!='nan' and region != ct.home_region:
+            log(f'ROW {i + 3} : It should be Home Region of the tenancy')
+            budget_check_result.append(False)
         name = str(dfbudget.loc[i, 'Name']).strip().lower()
         desc = str(dfbudget.loc[i, 'Description']).strip()
         scope = str(dfbudget.loc[i, 'Scope']).strip().lower().lower()
