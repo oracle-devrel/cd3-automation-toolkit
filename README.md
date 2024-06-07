@@ -30,8 +30,8 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   
   <tr>
     <td>IAM/Identity</td>
-    <td>Governance</td>
-    <td>Policy Enforcement using OPA</td>
+    <td>Tagging</td>
+    <td>Quotas</td>
   </tr>
   <tr>
     <td>Network</td>
@@ -40,8 +40,9 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   </tr>
   <tr>
     <td>OCI Network Firewall</td>
-    <td>SDDCs</td>
-    <td>CIS Landing Zone<br>Compliance</td>
+    <td>KMS</td>
+    <td>Policy Enforcement using OPA</td>
+    
   </tr>
   <tr>
     <td>Compute</td>
@@ -49,12 +50,20 @@ Additionally, the toolkit also supports seamless resource management using OCI D
     <td>Database</td>    
   </tr>
   <tr>
-    <td>Developer Services</td>
-    <td>Logging Services</td>
-    <td>Observability and Management</td>
+    <td>OKE</td>
+    <td>Resource Manager</td>
+    <td>SDDCs</td>    
   </tr>
   <tr>
-  
+    <td>Logging Services</td>
+    <td>Monitoring</td>
+    <td>Budgets</td>
+  </tr>
+  <tr>    
+    <td>Cloud Guard</td>
+    <td>SHOWOCI report</td>    
+    <td>CIS Landing Zone<br>Compliance</td>
+    
   </tr>
 </table>
 </tr>
