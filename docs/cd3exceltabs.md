@@ -152,10 +152,24 @@ Click on the links below to know about the specifics of each tab in the excel sh
 #### Logging Services
  
  - [VCN Flow Logs]( tabs.md#vcn-flow-logs)
- - [LBaaS Logs]( tabs.md#lbaas-logs)
-- [OSS Logs]( tabs.md#oss-logs)
 
-<a href="../terraform/logging">Click here to view sample auto.tfvars for Logging components </a> 
+<a href="../terraform/logging#vcn-flow-logs">Click here to view sample auto.tfvars for VCN Flow Logs </a> 
+
+ - [LBaaS Logs]( tabs.md#lbaas-logs)
+
+<a href="../terraform/logging#load-balancer-logs">Click here to view sample auto.tfvars for Load Balancer Logs </a> 
+
+ - [OSS Logs]( tabs.md#oss-logs)
+
+<a href="../terraform/logging#object-storage-logs">Click here to view sample auto.tfvars for Object storage Logs </a> 
+ 
+ - [FSS Logs]( tabs.md#fss-logs)
+  
+<a href="../terraform/logging#nfs-logs">Click here to view sample auto.tfvars for FSS Logs </a> 
+
+ - [Firewall Logs]( tabs.md#firewall-logs)
+
+<a href="../terraform/logging#firewall-logs">Click here to view sample auto.tfvars for Firewall Logs </a> 
 
 
 #### Developer Services

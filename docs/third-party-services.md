@@ -6,3 +6,9 @@ As a best practice, the script should be executed after every deployment in the 
 
 #### showOCI script
 
+The Automation toolkit also provides an option to run the [showoci](https://github.com/adizohar/showoci) script against your tenancy.
+
+In the setupoci menu, select **3rd Party Services --> ShowOCI Report**. Users can either choose to download the latest showoci script or execute the script. 
+
+After successful execution, the report can be found under ```/cd3user/tenancies/<customer_name>/terraform_files/<customer_name>_showoci_report``` folder. 
+

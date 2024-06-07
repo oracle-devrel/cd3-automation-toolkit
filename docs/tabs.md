@@ -712,6 +712,25 @@ Below TF file is created:
 |---|---|
 |<customer_name\>_buckets-logging.auto.tfvars |TF variables file containing log group for each bucket and its write logs.| 
 
+## FSS Logs
+This will enable logs for all the File systems mentioned in 'FSS' tab of CD3 Excel sheet. Log group for each File system is created under the same compartment as specified for FSS and its logs are added to the log group.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|<customer_name\>_nfs-logging.auto.tfvars | TF variables file containing log group for each File system and its logs.| 
+
+## Firewall Logs
+
+This will enable logs for the Firewalls specified in "Firewall" sheet of the Firewall template.. Log group for each Firewall is created under the same compartment as specified for Firewall and its logs are added to the log group.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|<customer_name\>_fw-logging.auto.tfvars | TF variables file containing log group for each Firewall and its logs.| 
+
   
 ## SDDCs Tab
 Use this tab to create OCVS in your tenancy. 
