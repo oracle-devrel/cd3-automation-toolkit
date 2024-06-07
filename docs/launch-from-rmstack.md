@@ -23,12 +23,13 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
     <summary> Alternate way to deploy the stack if above button does not work (eg for Gov tenancies) </summary>
 
     <br>
-    - Clone the repo using 'Download the Zip' link as shown below:<br>
-
+    -  Clone the repo using 'Download the Zip' link as shown below:
+        <br>
 		<img width="70%" height="80%"  alt="CD3 Container" src= "../images/deploystack.png"><br><br>
 
 	
-    - Login to OCI Console and navigate to 'Developer Services' -> Stacks under 'Resource Manager' and click on Create Stack. Chose .zip file and select the downloaded zip file as shown below: <br>
+    -  Login to OCI Console and navigate to 'Developer Services' -> Stacks under 'Resource Manager' and click on Create Stack. Chose .zip file and select the downloaded zip file as shown below: 
+        <br>
 		<img width="70%" height="80%"  alt="CD3 Container" src= "../images/rmstack.png">
 </details>
 		
