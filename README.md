@@ -54,7 +54,9 @@ Additionally, the toolkit also supports seamless resource management using OCI D
     <td>Observability and Management</td>
   </tr>
   <tr>
-  
+    <td>Budgets</td>
+    <td>Quotas</td>
+    <td>KMS</td>
   </tr>
 </table>
 </tr>
