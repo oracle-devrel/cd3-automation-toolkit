@@ -164,7 +164,7 @@ class commonTools():
                 self.cg_region = (i.split("=")[1])[2:][:-2]
 
             if 'fwl_clone_src_region' in i:
-                self.fwl_clone_src_region = (i.split("=")[1])[2:][:-2]
+                self.fwl_clone_src_region = (i.split("=")[1])[1:][:-1]
 
             if 'src_policy_str' in i:
                 self.src_policy_str = (i.split("=")[1])[2:][:-2]
@@ -179,7 +179,7 @@ class commonTools():
                 self.fwl_name = (i.split("=")[1])[2:][:-2]
 
             if 'fwl_clone_comp' in i:
-                self.fwl_clone_comp = (i.split("=")[1])[2:][:-2]
+                self.fwl_clone_comp = (i.split("=")[1])[1:][:-1]
                 self.fwl_clone_comp = self.fwl_clone_comp if self.fwl_clone_comp else "null"
 
             if 'fwl_del_comp' in i:
