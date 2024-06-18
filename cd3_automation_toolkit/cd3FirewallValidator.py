@@ -207,7 +207,7 @@ def validate_Firewall(filename,comp_ids,fwpolicy,config,signer, ct):
             columnvalue = str(dffirewall.loc[i, columnname]).strip()
 
             if (columnname == 'Availability Domain(AD1|AD2|AD3|Regional)'):
-                if columnvalue.lower() != 'nan' and columnvalue.upper() not in ["AD1", "AD2", "AD3","Regional"]:
+                if columnvalue.lower() != 'nan' and columnvalue.upper() not in ["AD1", "AD2", "AD3","REGIONAL"]:
                     log(f'ROW {i+3} : Wrong value at column "Availability Domain" - {columnvalue}.')
                     fw_invalid_check = True
 
@@ -1161,5 +1161,3 @@ def validate_firewall_cd3(filename, var_file, prefix, outdir, config,signer,ct):
         print("=======")
         print("There are no errors in CD3. Please proceed with TF Generation\n")
         return "No Error"
-
-
