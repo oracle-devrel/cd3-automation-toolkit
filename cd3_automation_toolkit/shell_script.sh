@@ -16,6 +16,7 @@ sudo dnf install python-pip -y
 pip install --user oci-cli==3.39.0
 pip install --user pycryptodomex==3.10.1
 pip install --user regex==2022.10.31
+pip install --user numpy==1.26.4
 pip install --user pandas==1.1.5
 pip install --user openpyxl==3.0.7
 pip install --user xlrd==1.2.0
