@@ -106,11 +106,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/isv_jenkins/</loc>
-         <lastmod>2024-06-28</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/jenkinsintro/</loc>
          <lastmod>2024-06-28</lastmod>
          <changefreq>daily</changefreq>
@@ -216,11 +211,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/queries/</loc>
-         <lastmod>2024-06-28</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/remotestate/</loc>
          <lastmod>2024-06-28</lastmod>
          <changefreq>daily</changefreq>
@@ -317,6 +307,11 @@
     </url>
     <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/terraform/logging/</loc>
+         <lastmod>2024-06-28</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/terraform/logging_notneeded/</loc>
          <lastmod>2024-06-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
