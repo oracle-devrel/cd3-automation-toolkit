@@ -79,6 +79,8 @@ nav:
     - Learning Videos: learningvideos.md
     - Tutorials: tutorials.md
 
+  - CD3 Slack:
+    - Join: queries.md
   
 # Configuration
 theme:
