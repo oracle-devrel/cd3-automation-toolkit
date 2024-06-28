@@ -8,8 +8,10 @@
       
       
       
-        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/createnetwork-jenkins/">
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/queries/">
       
+      
+        <link rel="prev" href="../tutorials/">
       
       
       
@@ -18,7 +20,7 @@
     
     
       
-        <title>Executing Networking Scenarios using toolkit via Jenkins - CD3 Documentation</title>
+        <title>Join - CD3 Documentation</title>
       
     
     
@@ -72,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#executing-networking-scenarios-using-toolkit-via-jenkins" class="md-skip">
+        <a href="#cd3-slack-channel" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Executing Networking Scenarios using toolkit via Jenkins
+              Join
             
           </span>
         </div>
@@ -377,11 +379,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../queries/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
     
@@ -2016,8 +2020,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -2026,19 +2032,20 @@
     
     
       
+        
+        
+      
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
-        
-          
-          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -2049,7 +2056,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             CD3 Slack
@@ -2060,10 +2067,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../queries/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -2072,6 +2088,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -2102,221 +2119,13 @@
   
 
 
-<h1 id="executing-networking-scenarios-using-toolkit-via-jenkins">Executing Networking Scenarios using toolkit via Jenkins</h1>
-<h2 id="managing-network-for-create_resources-greenfield-workflow">Managing Network for create_resources (Greenfield) Workflow</h2>
-<ul>
-<li><a href="#create-network">Create Network</a></li>
-<li><a href="#modify-network">Modify Network</a></li>
-<li><a href="#modify-security-rules-route-rules-and-drg-route-rules">Modify Security Rules, Route Rules and DRG Route Rules</a></li>
-<li><a href="#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform">Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform</a></li>
-<li><a href="#addmodifydelete-nsgs">Add/Modify/Delete NSGs</a></li>
-<li><a href="#addmodifydelete-vlans">Add/Modify/Delete VLANs</a></li>
-<li><a href="#rpcs">Remote Peering Connections</a></li>
-</ul>
-<p><strong>NOTE-</strong></p>
-<h3 id="create-network">Create Network</h3>
-<p>Creation of Networking components using Automation Toolkit involves four simple steps.
- - Add the networking resource details to appropriate Excel Sheets.
- - Running the setUpOCI pipeline in the toolkit to generate auto.tfvars.
- - Executing terraform pipeline to provision the resources in OCI.
- - Exporting the automatically generated Security Rules and Route Rules by the toolkit to CD3 Excel Sheet.</p>
-<p>Below are the steps to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.</p>
-<ol>
-<li>
-<p>Choose appropriate excel sheet from <a href="../excel-templates/">Excel Templates</a> and fill the required Network details in the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs tabs.</p>
-</li>
-<li>
-<p>Execute the <em>setupOCI</em> pipeline with <em>Workflow</em> as <em>Create Resources in OCI(Greenfield Workflow)</em></p>
-</li>
-<li>
-<p>Choose option <em>'Validate CD3'</em> and then <em>'Validate Networks'</em> to check for syntax errors in Excel sheet. Examine the log file generated at <code>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_cd3validator.log</code>. If there are errors, rectify them accordingly and proceed to the next step.</p>
-</li>
-<li>
-<p>Choose <em>'Create Network'</em> under <em>'Network'</em> from the displayed options. Click on Build.
-<img width="347" alt="301705033-c16f8d7b-dd8d-484d-b873-f5ad36facfa9" src="../images/jenkinsnetwork-1.png"></p>
-</li>
-<li>
-<p>It will show different stages of execution of <em>setUpOCI</em> pipeline and also launch the <em>terraform-apply</em> pipeline for 'network'.</p>
-</li>
-<li>Click on Proceed for 'Get Approval' stage of the terraform pipeline.</li>
-</ol>
-<p>This completes the creation of Networking components in OCI. Verify the components in console. However the details of the default security lists and default route tables are not available in the CD3 Excel sheet yet. Inorder to export that data, follow the below steps:</p>
-<ol>
-<li>Execute the <em>setupOCI.py</em> pipeline with <em>Workflow</em> as <em>Create Resources in OCI(Greenfield Workflow)</em></li>
-<li>Choose <em>'Network'</em> from the displayed options. Choose below sub-options: (Make sure to choose all the three optionsfor the first time)</li>
-<li>Security Rules<ul>
-<li>Export Security Rules (From OCI into SecRulesinOCI sheet)</li>
-</ul>
-</li>
-<li>Route Rules<ul>
-<li>Export Route Rules (From OCI into RouteRulesinOCI sheet)</li>
-</ul>
-</li>
-<li>DRG Route Rules<ul>
-<li>Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)
-Click on Build.</li>
-</ul>
-</li>
-</ol>
-<p><img width="604" alt="Screenshot 2024-02-02 at 7 45 16 AM" src="../images/jenkinsnetwork-2.png"></p>
-<p>This completes the steps for Creating the Network in OCI and exporting the default rules to the CD3 Excel Sheet using the Automation Toolkit.</p>
-<p><br><a href="#executing-networking-scenarios-using-toolkit-via-jenkins">Go back to Networking Scenarios</a></p>
-<h3 id="modify-network">Modify Network</h3>
-<p>Modifying the Networking components using Automation Toolkit involves three simple steps.</p>
-<ul>
-<li>Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.</li>
-<li>Running the the setUpOCI pipeline in the toolkit to generate auto.tfvars.</li>
-<li>Executing Terraform pipeline to provision/modify the resources in OCI.</li>
-</ul>
-<p><strong><em>Note</em></strong>: Follow <a href="#modify-security-rules-route-rules-and-drg-route-rules">these steps</a> to modify Security Rules, Route Rules and DRG Route Rules</p>
-<p><b><em>Steps in detail</em>:</b></p>
-<ol>
-<li>Modify the excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.</li>
-<li>Execute the <em>setupOCI.py</em> pipeline with <em>Workflow</em> as <em>Create Resources in OCI(Greenfield Workflow)</em></li>
-<li>To Validate the CD3 excel Tabs - Choose option <em>'Validate CD3'</em> and <em>'Validate Networks'</em> from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at <code>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_cd3validator.logs</code>. If there are errors, rectify them accordingly and proceed to the next step.</li>
-<li>
-<p>Choose option to <em>'Modify Network'</em> under <em>'Network'</em> from the displayed options. Once the execution is successful, multiple .tfvars related to networking like <code>&lt;customer_name&gt;_major-objects.auto.tfvars</code> and more will be generated under the folder <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;</code>. Existing files will move into respective backup folders.   </p>
-<blockquote>
-<p><strong>Note-</strong>: Make sure to export Sec Rules, Route Rules, DRG Route Rules to CD3 Excel Sheet before executing this option.</p>
-</blockquote>
-</li>
-<li>
-<p>It will show different stages of execution of <em>setUpOCI</em> pipeline and also launch the <em>terraform-apply</em> pipeline for 'network'.</p>
-</li>
-<li>Click on Proceed for 'Get Approval' stage of the terraform pipeline.</li>
-</ol>
-<p>This completes the modification of Networking components in OCI. Verify the components in console.</p>
-<p><br><a href="#executing-networking-scenarios-using-toolkit-via-jenkins">Go back to Networking Scenarios</a></p>
-<h3 id="modify-security-rules-route-rules-and-drg-route-rules">Modify Security Rules, Route Rules and DRG Route Rules</h3>
-<p>Follow the below steps to add, update or delete the following components:
-- Security Lists and Security Rules
-- Route Table and Route Rules
-- DRG Route Table and DRG Route Rules</p>
-<ol>
-<li>
-<p>Modify the excel sheet to update required data in the Tabs - RouteRulesInOCI, SecRulesInOCI, DRGRouteRulesInOCI tabs.</p>
-</li>
-<li>
-<p>Execute the <em>setupOCI.py</em> pipeline with <em>Workflow</em> as <em>Create Resources in OCI(Greenfield Workflow)</em></p>
-</li>
-<li>
-<p>Choose <em>'Network'</em> from the displayed options. Choose below sub-options:</p>
-<blockquote>
-<ul>
-<li>Security Rules: Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)</li>
-<li>Route Rules: Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet)</li>
-<li>DRG Route Rules: Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet) <br>
-<br>Once the execution is successful, <em><customer\_name>_seclists.auto.tfvars</em>, <em><customer\_name>_routetables.auto.tfvars</em> and <em><customer\_name>_drg-routetables.auto.tfvars</em> file will be generated under the folder <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;</code>. Existing files will move into respective backup folders. <br>
-   <br> <strong>NOTE</strong>: This will create TF for only those Security Lists and Route Tables in VCNs which are part of cd3 and skip any VCNs that have been created outside of cd3 execution.</li>
-</ul>
-</blockquote>
-</li>
-<li>
-<p>It will show different stages of execution of <em>setUpOCI</em> pipeline and also launch the <em>terraform-apply</em> pipeline for 'network'.</p>
-</li>
-<li>Click on Proceed for 'Get Approval' stage of the terraform pipeline.</li>
-</ol>
-<p>This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.<br></p>
-<p><br><a href="#executing-networking-scenarios-using-toolkit-via-jenkins">Go back to Networking Scenarios</a></p>
-<h3 id="sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform">Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform</h3>
-<p>Follow the below process to export the rules to the same CD3 Excel Sheet as the one used to Create Network, and to sync the Terraform files with OCI whenever an user adds, modifies or deletes rules in OCI Console manually.</p>
-<p><strong>NOTE</strong>: Make sure to close the Excel sheet during the export process.</p>
-<ol>
-<li>
-<p>Execute the <em>setupOCI.py</em> pipeline with <em>Workflow</em> as <em>Create Resources in OCI(Greenfield Workflow)</em></p>
-</li>
-<li>
-<p>Choose <em>'Network'</em> from the displayed menu. Choose below sub-options:</p>
-</li>
-<li>Security Rules<ul>
-<li>Export Security Rules (From OCI into SecRulesinOCI sheet)</li>
-<li>Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)</li>
-</ul>
-</li>
-<li>Route Rules<ul>
-<li>Export Route Rules (From OCI into RouteRulesinOCI sheet)</li>
-<li>Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet)</li>
-</ul>
-</li>
-<li>
-<p>DRG Route Rules</p>
-<ul>
-<li>Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)</li>
-<li>Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)</li>
-</ul>
-<p>Once the execution is successful, 'RouteRulesInOCI', 'SecRulesInOCI', 'DRGRouteRulesInOCI' tabs of the excel sheet will be updated with the rules exported from OCI. And <code>&lt;customer_name&gt;_seclists.auto.tfvars</code>,  <code>&lt;customer_name&gt;_routetables.auto.tfvars</code> and  <code>&lt;customer_name&gt;_drg-routetables.auto.tfvars</code> file will be generated under the folder <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;</code></p>
-</li>
-<li>
-<p>It will show different stages of execution of <em>setUpOCI</em> pipeline and also launch the <em>terraform-apply</em> pipeline for 'network'.</p>
-</li>
-<li>Click on Proceed for 'Get Approval' stage of the terraform pipeline.</li>
-</ol>
-<p>This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.</p>
-<p><br><a href="#executing-networking-scenarios-using-toolkit-via-jenkins">Go back to Networking Scenarios</a></p>
-<h3 id="addmodifydelete-nsgs">Add/Modify/Delete NSGs</h3>
-<p>Follow the below steps to update NSGs.</p>
-<ol>
-<li>
-<p>Modify the excel sheet to update required data in the Tabs - NSGs.</p>
-</li>
-<li>
-<p>Execute the <em>setupOCI.py</em> pipeline with <em>Workflow</em> as <em>Create Resources in OCI(Greenfield Workflow)</em></p>
-</li>
-<li>
-<p>Choose <em>'Network'</em> from the displayed menu. Choose below sub-option:</p>
-</li>
-<li>
-<p>Network Security Groups</p>
-<ul>
-<li>Add/Modify/Delete NSGs (Reads NSGs sheet)</li>
-</ul>
-<p>Once the execution is successful,  <code>&lt;customer_name&gt;_nsgs.auto.tfvars</code> will be generated under the folder <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;</code>. Existing files will move into respective backup folders.</p>
-</li>
-<li>
-<p>It will show different stages of execution of <em>setUpOCI</em> pipeline and also launch the <em>terraform-apply</em> pipeline for 'nsg'.</p>
-</li>
-<li>Click on Proceed for 'Get Approval' stage of the terraform pipeline.</li>
-</ol>
-<p>This completes the modification of NSGs in OCI. Verify the components in console.</p>
-<p><br><a href="#executing-networking-scenarios-using-toolkit-via-jenkins">Go back to Networking Scenarios</a></p>
-<h3 id="addmodifydelete-vlans">Add/Modify/Delete VLANs</h3>
-<p>Follow the below steps to update VLANs.</p>
-<ol>
-<li>Modify the excel sheet to update required data in the Tabs - SubnetsVLANs.</li>
-<li>
-<p>Make sure that the RouteRulesinOCI sheet and corresponing terraform is in synch with route rules in OCI console. If not, follow the procedure specified in <a href="#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform">Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform</a> </p>
-</li>
-<li>
-<p>Execute the <em>setupOCI.py</em> pipeline with <em>Workflow</em> as <em>Create Resources in OCI(Greenfield Workflow)</em></p>
-</li>
-<li>Choose <em>'Network'</em> from the displayed menu. Choose below sub-option:</li>
-<li>
-<p>Add/Modify/Delete VLANs (Reads SubnetsVLANs sheet)</p>
-<p>Once the execution is successful,  <code>&lt;customer_name&gt;_vlans.auto.tfvars</code> will be generated under the folder <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;</code>. Existing files will move into respective backup folders.  <code>&lt;customer_name&gt;\routetables.auto.tfvars</code> file will also be updated with the route table information specified for each VLAN.</p>
-</li>
-<li>
-<p>It will show different stages of execution of <em>setUpOCI</em> pipeline and also launch the <em>terraform-apply</em> pipeline for 'vlan' and 'network'.</p>
-</li>
-<li>
-<p>Click on Proceed for 'Get Approval' stage of the terraform pipeline.</p>
-</li>
-<li>
-<p>Again make sure to export the Route Rules in OCI into excel and terraform. Follow procedure specified in <a href="#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform">Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform</a> </p>
-</li>
-</ol>
-<p>This completes the modification of VLANs in OCI. Verify the components in console.</p>
-<h3 id="rpcs">RPCs</h3>
-<p>Remote VCN peering is the process of connecting two VCNs in different regions (but the same tenancy). The peering allows the VCNs' resources to communicate using private IP addresses without routing the traffic over the internet or through your on-premises network.</p>
-<ul>
-<li>Modify the excel sheet to update required data in the Tabs - DRGs.</li>
-<li>The source and target RPC details to be entered in DRG sheet for establishing a connection. Check the example in excel file for reference.</li>
-<li>Make sure that the DRGRouteRulesinOCI sheet and corresponding to terraform is in synch with DRG route rules in OCI console. If not, follow the procedure specified in <a href="#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform">Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform</a></li>
-<li>Global directory which is inside the customer outdir will have all RPC related files and scripts.</li>
-<li>The RPC resources(modules,provider configurations etc) are generated dynamically for the tenancy and can work along only with CD3 automation toolkit.</li>
-<li>Choose option 'Network' and then 'Customer Connectivity' for creating RPC in create_resources (GreenField) workflow.</li>
-<li>Output files are created under <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/global/rpc directory</code></li>
-</ul>
-<p><br><a href="#executing-networking-scenarios-using-toolkit-via-jenkins">Go back to Networking Scenarios</a></p>
+<h1 id="cd3-slack-channel">CD3 Slack Channel</h1>
+<p>CD3 Public Slack Channel is avaialble on the workspace <a href="https://join.slack.com/t/oracledevs/shared_invite/zt-2lfv28k9i-fXiYiHcdh3Amsf6cVXvZTQ">here</a>.</p>
+<p>Once you are signed into the workspace, you can join the channel <b> #cd3-toolkit-users </b></p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>CD3 Automation Toolkit is an open source tool.<br> Please post your queries on the slack channel  or raise issue on Github <a href="https://github.com/oracle-devrel/terraform-oci-cd3/issues">Issues</a>.</p>
+</div>
 
 
 
