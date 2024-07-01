@@ -8,24 +8,26 @@
       
       
       
-        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/terraform/logging_notneeded/">
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/queries/">
+      
+      
+        <link rel="prev" href="../tutorials/">
       
       
       
-      
-      <link rel="icon" href="../../images/oci.png">
+      <link rel="icon" href="../images/oci.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.18">
     
     
       
-        <title>Logging notneeded - CD3 Documentation</title>
+        <title>Join - CD3 Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -44,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="../../stylesheets/extra.css">
+      <link rel="stylesheet" href="../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -72,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#autotfvars-syntax-for-logging-services" class="md-skip">
+        <a href="#cd3-slack-channel" class="md-skip">
           Skip to content
         </a>
       
@@ -90,9 +92,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CD3 Documentation" class="md-header__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
+    <a href=".." title="CD3 Documentation" class="md-header__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
       
-  <img src="../../images/oci.png" alt="logo">
+  <img src="../images/oci.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -109,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Logging notneeded
+              Join
             
           </span>
         </div>
@@ -226,7 +228,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../cd3-overview/" class="md-tabs__link">
+      <a href="../cd3-overview/" class="md-tabs__link">
         
   
     
@@ -243,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../install-cd3/" class="md-tabs__link">
+      <a href="../install-cd3/" class="md-tabs__link">
         
   
     
@@ -260,7 +262,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../cd3-cli/" class="md-tabs__link">
+      <a href="../cd3-cli/" class="md-tabs__link">
         
   
     
@@ -277,7 +279,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../cd3-jenkins/" class="md-tabs__link">
+      <a href="../cd3-jenkins/" class="md-tabs__link">
         
   
     
@@ -294,7 +296,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../must-read-prerequisites/" class="md-tabs__link">
+      <a href="../must-read-prerequisites/" class="md-tabs__link">
         
   
     
@@ -311,7 +313,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../group-tf-files/" class="md-tabs__link">
+      <a href="../group-tf-files/" class="md-tabs__link">
         
   
     
@@ -328,7 +330,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../upgrade-toolkit/" class="md-tabs__link">
+      <a href="../upgrade-toolkit/" class="md-tabs__link">
         
   
     
@@ -345,7 +347,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../knownbehaviour/" class="md-tabs__link">
+      <a href="../knownbehaviour/" class="md-tabs__link">
         
   
     
@@ -362,7 +364,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../learningvideos/" class="md-tabs__link">
+      <a href="../learningvideos/" class="md-tabs__link">
         
   
     
@@ -371,6 +373,28 @@
 
       </a>
     </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+    
+  
+  CD3 Slack
+
+        </a>
+      </li>
+    
   
 
       
@@ -398,9 +422,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CD3 Documentation" class="md-nav__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
+    <a href=".." title="CD3 Documentation" class="md-nav__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
       
-  <img src="../../images/oci.png" alt="logo">
+  <img src="../images/oci.png" alt="logo">
 
     </a>
     CD3 Documentation
@@ -454,7 +478,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../cd3-overview/" class="md-nav__link ">
+            <a href="../cd3-overview/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -485,7 +509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cd3-overview/" class="md-nav__link">
+      <a href="../cd3-overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -506,7 +530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/" class="md-nav__link">
+      <a href="../architecture/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -527,7 +551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supportedservices/" class="md-nav__link">
+      <a href="../supportedservices/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -548,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../excel-templates/" class="md-nav__link">
+      <a href="../excel-templates/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -601,7 +625,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../install-cd3/" class="md-nav__link ">
+            <a href="../install-cd3/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -632,7 +656,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../prerequisites/" class="md-nav__link">
+      <a href="../prerequisites/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -676,7 +700,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../launch-container/" class="md-nav__link ">
+            <a href="../launch-container/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -707,7 +731,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../launch-from-rmstack/" class="md-nav__link">
+      <a href="../launch-from-rmstack/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -728,7 +752,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../launch-from-local/" class="md-nav__link">
+      <a href="../launch-from-local/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -757,7 +781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../connect-container-to-oci-tenancy/" class="md-nav__link">
+      <a href="../connect-container-to-oci-tenancy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -810,7 +834,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../cd3-cli/" class="md-nav__link ">
+            <a href="../cd3-cli/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -841,7 +865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cd3-cli/" class="md-nav__link">
+      <a href="../cd3-cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -885,7 +909,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../greenfield-cli/" class="md-nav__link ">
+            <a href="../greenfield-cli/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -916,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../greenfield-cli/" class="md-nav__link">
+      <a href="../greenfield-cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -937,7 +961,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../opa-integration/" class="md-nav__link">
+      <a href="../opa-integration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -987,7 +1011,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../nongreenfield-cli/" class="md-nav__link ">
+            <a href="../nongreenfield-cli/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1018,7 +1042,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../nongreenfield-cli/" class="md-nav__link">
+      <a href="../nongreenfield-cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1083,7 +1107,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../cd3-jenkins/" class="md-nav__link ">
+            <a href="../cd3-jenkins/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1114,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cd3-jenkins/" class="md-nav__link">
+      <a href="../cd3-jenkins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1135,7 +1159,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../jenkinsintro/" class="md-nav__link">
+      <a href="../jenkinsintro/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1179,7 +1203,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../greenfield-jenkins/" class="md-nav__link ">
+            <a href="../greenfield-jenkins/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1210,7 +1234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../greenfield-jenkins/" class="md-nav__link">
+      <a href="../greenfield-jenkins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1231,7 +1255,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../multiple-services-jenkins/" class="md-nav__link">
+      <a href="../multiple-services-jenkins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1281,7 +1305,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../nongreenfield-jenkins/" class="md-nav__link ">
+            <a href="../nongreenfield-jenkins/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1312,7 +1336,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../nongreenfield-jenkins/" class="md-nav__link">
+      <a href="../nongreenfield-jenkins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1341,7 +1365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../sync-cli-jenkins/" class="md-nav__link">
+      <a href="../sync-cli-jenkins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1394,7 +1418,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../must-read-prerequisites/" class="md-nav__link ">
+            <a href="../must-read-prerequisites/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1425,7 +1449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../manage-network/" class="md-nav__link">
+      <a href="../manage-network/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1446,7 +1470,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../manage-compute/" class="md-nav__link">
+      <a href="../manage-compute/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1467,7 +1491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../manage-firewall/" class="md-nav__link">
+      <a href="../manage-firewall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1526,7 +1550,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../group-tf-files/" class="md-nav__link ">
+            <a href="../group-tf-files/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1557,7 +1581,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../group-tf-files/" class="md-nav__link">
+      <a href="../group-tf-files/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1578,7 +1602,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../remotestate/" class="md-nav__link">
+      <a href="../remotestate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1599,7 +1623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../resource-manager-upload/" class="md-nav__link">
+      <a href="../resource-manager-upload/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1620,7 +1644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../additional-attributes/" class="md-nav__link">
+      <a href="../additional-attributes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1641,7 +1665,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cd3validator/" class="md-nav__link">
+      <a href="../cd3validator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1662,7 +1686,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../jobs-migration/" class="md-nav__link">
+      <a href="../jobs-migration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1711,7 +1735,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../upgrade-toolkit/" class="md-nav__link ">
+            <a href="../upgrade-toolkit/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1742,7 +1766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upgrade-toolkit/" class="md-nav__link">
+      <a href="../upgrade-toolkit/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1795,7 +1819,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../knownbehaviour/" class="md-nav__link ">
+            <a href="../knownbehaviour/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1826,7 +1850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../knownbehaviour/" class="md-nav__link">
+      <a href="../knownbehaviour/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1847,7 +1871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commonissues/" class="md-nav__link">
+      <a href="../commonissues/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1868,7 +1892,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../faq/" class="md-nav__link">
+      <a href="../faq/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1919,7 +1943,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../learningvideos/" class="md-nav__link ">
+            <a href="../learningvideos/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1950,7 +1974,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../learningvideos/" class="md-nav__link">
+      <a href="../learningvideos/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1971,7 +1995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/" class="md-nav__link">
+      <a href="../tutorials/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1980,6 +2004,91 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    CD3 Slack
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            CD3 Slack
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Join
+  </span>
+  
+
+      </a>
+      
     </li>
   
 
@@ -2010,248 +2119,13 @@
   
 
 
-  <h1>Logging notneeded</h1>
-
-<h2 id="autotfvars-syntax-for-logging-services">auto.tfvars syntax for logging services</h2>
-<p>These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
-<b>"key"</b> must be unique to every resource that is created.</p>
-<p><strong>1. VCN Flow logs and VCN log groups</strong></p>
-<p><br></p>
-<ul>
-<li><strong>Syntax for vcn flow logs</strong>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>vcn_logs = {
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  # Log map #
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  ## key - Is a unique value to reference the resources respectively
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   key = {
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        display_name        =  string
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        log_group_id        =  string
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        log_type            =  string
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        category            =  string
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        resource            =  string
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        service             =  string
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        source_type         =  string
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        compartment_id      =  string
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        is_enabled          = bool
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        retention_duration  = string
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>      }
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>}
-</span></code></pre></div></li>
-<li><strong>Syntax for all log groups</strong></li>
-</ul>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>vcn_log_groups = {
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  # Log Group map #
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>   ## key - Is a unique value to reference the resources respectively
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>     key = {
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        compartment_id = string
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        display_name   = string
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        description    = string
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>      }
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>   }
-</span></code></pre></div>
-<p><br></p>
-<ul>
-<li><strong>Example</strong></li>
-</ul>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>############################
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a># ManagementServices
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a># VCN Logs - tfvars
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a># Allowed Values:
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a># compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens &quot;--&quot;
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a># Example : compartment_id = &quot;ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c&quot; or compartment_id = &quot;Network-root-cpt--Network&quot; where &quot;Network-root-cpt&quot; is the parent of &quot;Network&quot; compartment
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>############################
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>vcn_logs = {
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  # Log map #
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  cd3_vcn_subnet1-flow-log  = {
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        display_name        = &quot;subnet1-flow-log&quot;
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>        log_group_id        = &quot;cd3_vcn-flow-log-group&quot;
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>        log_type            = &quot;SERVICE&quot;
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>        category            = &quot;all&quot;
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>        resource            = &quot;cd3_vcn_subnet1&quot;
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>        service             = &quot;flowlogs&quot;
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>        source_type         = &quot;OCISERVICE&quot;
-</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>        compartment_id      = &quot;Network&quot;
-</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>        is_enabled          = true
-</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>        retention_duration  = 30
-</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>      }
-</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a> ##Add New Logs for london here##
-</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>}
-</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>############################
-</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a># ManagementServices
-</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a># VCN Log Groups - tfvars
-</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a># Allowed Values:
-</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a># compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens &quot;--&quot;
-</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a># Example : compartment_id = &quot;ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c&quot; or compartment_id = &quot;Security--Prod&quot; where &quot;Security&quot; is the parent of &quot;Prod&quot; compartment
-</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>############################
-</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>vcn_log_groups = {
-</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>  # Log Group map #
-</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>    cd3_vcn-flow-log-group = {
-</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>        compartment_id = &quot;Network&quot;
-</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>        display_name   = &quot;cd3_vcn-flow-log-group&quot;
-</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>        description    = &quot;Log Group for VCN&quot;
-</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>      },
-</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>##Add New Log Groups for london here##
-</span><span id="__span-2-40"><a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>}
-</span></code></pre></div>
-<p><br>
-<br></p>
-<p><strong>2.  LBaaS access and error logs, log groups</strong>
-<br></p>
-<ul>
-<li><strong>Syntax for Load Balancer access and error logs</strong></li>
-</ul>
-<p><div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>loadbalancer_logs = {
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  # Log map #
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  ## key - Is a unique value to reference the resources respectively
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    key  = {
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        display_name        = string
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        log_group_id        = string
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        log_type            = string
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        category            = string
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>        resource            = string
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>        service             = string
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>        source_type         = string
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        compartment_id      = string
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        is_enabled          = bool
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        retention_duration  = string
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        defined_tags        = map
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>      }
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>}
-</span></code></pre></div>
-<br></p>
-<ul>
-<li><strong>Example</strong>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>########################################################
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a># ManagementServices
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a># LOADBALANCER Logs - tfvars
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a># Allowed Values:
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a># compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens &quot;--&quot;
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a># Example : compartment_id = &quot;ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c&quot; or compartment_id = &quot;Network-root-cpt--Network&quot; where &quot;Network-root-cpt&quot; is the parent of &quot;Network&quot; compartment
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>############################
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>loadbalancer_logs = {
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>  # Log map #
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    my_lbr1-log-access  = {
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>        display_name        = &quot;my_lbr1_access-log&quot;
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>        log_group_id        = &quot;my_lbr1-log-group&quot;
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        log_type            = &quot;SERVICE&quot;
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>        category            = &quot;access&quot;
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>        resource            = &quot;my_lbr1&quot;
-</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>        service             = &quot;loadbalancer&quot;
-</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>        source_type         = &quot;OCISERVICE&quot;
-</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>        compartment_id      = &quot;Networkt&quot;
-</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>        is_enabled          = true
-</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>        retention_duration  = 30
-</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>        defined_tags = {
-</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>                &quot;Operations.CostCenter&quot;= &quot;01&quot; ,
-</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>                &quot;Users.Name&quot;= &quot;user01&quot;
-</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>        }
-</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>      },
-</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>    my_lbr1-log-error  = {
-</span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>        display_name        = &quot;my_lbr1_error-log&quot;
-</span><span id="__span-4-29"><a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>        log_group_id        = &quot;my_lbr1-log-group&quot;
-</span><span id="__span-4-30"><a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>        log_type            = &quot;SERVICE&quot;
-</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>        category            = &quot;error&quot;
-</span><span id="__span-4-32"><a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>        resource            = &quot;my_lbr1&quot;
-</span><span id="__span-4-33"><a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a>        service             = &quot;loadbalancer&quot;
-</span><span id="__span-4-34"><a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a>        source_type         = &quot;OCISERVICE&quot;
-</span><span id="__span-4-35"><a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>        compartment_id      = &quot;Network&quot;
-</span><span id="__span-4-36"><a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>        is_enabled          = true
-</span><span id="__span-4-37"><a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>        retention_duration  = 30
-</span><span id="__span-4-38"><a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>        defined_tags = {
-</span><span id="__span-4-39"><a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>                &quot;Operations.CostCenter&quot;= &quot;01&quot; ,
-</span><span id="__span-4-40"><a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>                &quot;Users.Name&quot;= &quot;user01&quot;
-</span><span id="__span-4-41"><a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a>        }
-</span><span id="__span-4-42"><a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a>      },
-</span><span id="__span-4-43"><a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a>##Add New Logs for london here##
-</span><span id="__span-4-44"><a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a>}
-</span><span id="__span-4-45"><a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a>// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-</span><span id="__span-4-46"><a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a>############################
-</span><span id="__span-4-47"><a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a># ManagementServices
-</span><span id="__span-4-48"><a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a># LOADBALANCER Log Groups - tfvars
-</span><span id="__span-4-49"><a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a># Allowed Values:
-</span><span id="__span-4-50"><a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a># compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens &quot;--&quot;
-</span><span id="__span-4-51"><a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a># Example : compartment_id = &quot;ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c&quot; or compartment_id = &quot;Security--Prod&quot; where &quot;Security&quot; is the parent of &quot;Prod&quot; compartment
-</span><span id="__span-4-52"><a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a>############################
-</span><span id="__span-4-53"><a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a>loadbalancer_log_groups = {
-</span><span id="__span-4-54"><a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a>  # Log Group map #
-</span><span id="__span-4-55"><a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a>    my_lbr1-log-group = {
-</span><span id="__span-4-56"><a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a>        compartment_id = &quot;Network&quot;
-</span><span id="__span-4-57"><a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a>        display_name   = &quot;my_lbr1-log-group&quot;
-</span><span id="__span-4-58"><a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a>        description    = &quot;Log Group for my_lbr1&quot;
-</span><span id="__span-4-59"><a id="__codelineno-4-59" name="__codelineno-4-59" href="#__codelineno-4-59"></a>        defined_tags = {
-</span><span id="__span-4-60"><a id="__codelineno-4-60" name="__codelineno-4-60" href="#__codelineno-4-60"></a>                &quot;Operations.CostCenter&quot;= &quot;01&quot; ,
-</span><span id="__span-4-61"><a id="__codelineno-4-61" name="__codelineno-4-61" href="#__codelineno-4-61"></a>                &quot;Users.Name&quot;= &quot;user01&quot;
-</span><span id="__span-4-62"><a id="__codelineno-4-62" name="__codelineno-4-62" href="#__codelineno-4-62"></a>        }
-</span><span id="__span-4-63"><a id="__codelineno-4-63" name="__codelineno-4-63" href="#__codelineno-4-63"></a>      }
-</span></code></pre></div></li>
-</ul>
-<p><br>
-<br></p>
-<p><strong>3. Object Storage logs and log groups</strong></p>
-<p><br></p>
-<ul>
-<li><strong>Syntax for Object Storage logs</strong></li>
-</ul>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>oss_logs = {
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  # Log map #
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>   ## key - Is a unique value to reference the resources respectively
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>   key  = {
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>        display_name        =  string
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        log_group_id        =  string
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        log_type            =  string
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        category            =  string
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>        resource            =  string
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>        service             =  string
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>        source_type         =  string
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>        compartment_id      =  string
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>        is_enabled          =  bool
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>        retention_duration  =  string
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>      }
-</span></code></pre></div>
-<p><br></p>
-<ul>
-<li><strong>Example</strong></li>
-</ul>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a># ManagementServices
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a># OSS Logs - tfvars
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a># Allowed Values:
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a># compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens &quot;--&quot;
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a># Example : compartment_id = &quot;ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c&quot; or compartment_id = &quot;Network-root-cpt--Network&quot; where &quot;Network-root-cpt&quot; is the parent of &quot;Network&quot; compartment
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>############################
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>oss_logs = {
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>  # Log map #
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>  cd3bucket-write-log  = {
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        display_name        = &quot;cd3bucket-write-log&quot;
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>        log_group_id        = &quot;cd3bucket-bucket-log-group&quot;
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        log_type            = &quot;SERVICE&quot;
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>        category            = &quot;write&quot;
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        resource            = &quot;cd3bucket&quot;
-</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        service             = &quot;objectstorage&quot;
-</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>        source_type         = &quot;OCISERVICE&quot;
-</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>        compartment_id      = &quot;Security&quot;
-</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>        is_enabled          = true
-</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>        retention_duration  = 30
-</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>      },
-</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>##Add New Logs for london here##
-</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>}
-</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>############################
-</span><span id="__span-6-25"><a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a># ManagementServices
-</span><span id="__span-6-26"><a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a># OSS Log Groups - tfvars
-</span><span id="__span-6-27"><a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a># Allowed Values:
-</span><span id="__span-6-28"><a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a># compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens &quot;--&quot;
-</span><span id="__span-6-29"><a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a># Example : compartment_id = &quot;ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c&quot; or compartment_id = &quot;Security--Prod&quot; where &quot;Security&quot; is the parent of &quot;Prod&quot; compartment
-</span><span id="__span-6-30"><a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a>############################
-</span><span id="__span-6-31"><a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a>oss_log_groups = {
-</span><span id="__span-6-32"><a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a>  # Log Group map #
-</span><span id="__span-6-33"><a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a>    cd3bucket-bucket-log-group = {
-</span><span id="__span-6-34"><a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a>        compartment_id = &quot;Security&quot;
-</span><span id="__span-6-35"><a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a>        display_name   = &quot;cd3bucket-bucket-log-group&quot;
-</span><span id="__span-6-36"><a id="__codelineno-6-36" name="__codelineno-6-36" href="#__codelineno-6-36"></a>        description    = &quot;Log Group for OSS bucket&quot;
-</span><span id="__span-6-37"><a id="__codelineno-6-37" name="__codelineno-6-37" href="#__codelineno-6-37"></a>      },
-</span><span id="__span-6-38"><a id="__codelineno-6-38" name="__codelineno-6-38" href="#__codelineno-6-38"></a>}
-</span></code></pre></div>
+<h1 id="cd3-slack-channel">CD3 Slack Channel</h1>
+<p>CD3 Public Slack Channel is avaialble on the workspace <a href="https://join.slack.com/t/oracledevs/shared_invite/zt-2lfv28k9i-fXiYiHcdh3Amsf6cVXvZTQ">here</a>.</p>
+<p>Once you are signed into the workspace, you can join the channel <b> #cd3-toolkit-users </b></p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>CD3 Automation Toolkit is an open source tool.<br> Please post your queries on the slack channel  or raise issue on Github <a href="https://github.com/oracle-devrel/terraform-oci-cd3/issues">Issues</a>.</p>
+</div>
 
 
 
@@ -2329,10 +2203,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.indexes", "navigation.top", "navigation.tabs", "navigation.expand", "navigation.path", "content.code.copy", "toc.integrate"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "navigation.top", "navigation.tabs", "navigation.expand", "navigation.path", "content.code.copy", "toc.integrate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.3220b9d7.min.js"></script>
+      <script src="../assets/javascripts/bundle.3220b9d7.min.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js"></script>
       

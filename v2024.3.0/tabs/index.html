@@ -374,6 +374,26 @@
   
 
       
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queries/" class="md-tabs__link">
+          
+  
+    
+  
+  CD3 Slack
+
+        </a>
+      </li>
+    
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -1992,6 +2012,78 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CD3 Slack
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            CD3 Slack
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../queries/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Join
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -2617,7 +2709,7 @@ default = {
 </tbody>
 </table>
 <h2 id="oss-logs">OSS Logs</h2>
-<p>This will enable OSS Bucket logs for all the buckets mentioned in 'Buckets' tab of CD3 Excel sheet. Log group for each bucket is created under the same compartment as specified for bucket and write log type is added as logs to this log group.</p>
+<p>This will enable OSS Bucket logs for all the buckets mentioned in 'Buckets' tab of CD3 Excel sheet. Log group for each bucket is created under the same compartment as specified for bucket and read and write log type is added as logs to this log group.</p>
 <p>Below TF file is created:</p>
 <table>
 <thead>
@@ -2630,6 +2722,40 @@ default = {
 <tr>
 <td>&lt;customer_name&gt;_buckets-logging.auto.tfvars</td>
 <td>TF variables file containing log group for each bucket and its write logs.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="fss-logs">FSS Logs</h2>
+<p>This will enable logs for all the File systems mentioned in 'FSS' tab of CD3 Excel sheet. Log group for each File system is created under the same compartment as specified for FSS and its logs are added to the log group.</p>
+<p>Below TF file is created:</p>
+<table>
+<thead>
+<tr>
+<th>File name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;customer_name&gt;_nfs-logging.auto.tfvars</td>
+<td>TF variables file containing log group for each File system and its logs.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="firewall-logs">Firewall Logs</h2>
+<p>This will enable logs for the Firewalls specified in "Firewall" sheet of the Firewall template.. Log group for each Firewall is created under the same compartment as specified for Firewall and its logs are added to the log group.</p>
+<p>Below TF file is created:</p>
+<table>
+<thead>
+<tr>
+<th>File name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;customer_name&gt;_fw-logging.auto.tfvars</td>
+<td>TF variables file containing log group for each Firewall and its logs.</td>
 </tr>
 </tbody>
 </table>
