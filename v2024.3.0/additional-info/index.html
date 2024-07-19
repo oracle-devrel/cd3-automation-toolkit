@@ -2140,7 +2140,7 @@
   <h1>Additional Info</h1>
 
 <p><strong>URL whitelisting</strong></p>
-<p>Users with limited internet connectivity who cannot access everything from the CD3 work VMs' VCN,  need to ensure that at least the below URLs are allowed for CD3 setup to work.</p>
+<p>When deploying CD3 VM in a VCN with restricted outbound connectivity (i.e., 0.0.0.0/0 not allowed for NAT gateway), atleast the below URLs should be allowed for outbound connection.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    *.oracle.com                                                           
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    *.oraclecloud.com
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    app.terraform.io
