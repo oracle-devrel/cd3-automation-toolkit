@@ -16,11 +16,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/additional-info/</loc>
-         <lastmod>2024-07-19</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/architecture/</loc>
          <lastmod>2024-07-19</lastmod>
          <changefreq>daily</changefreq>
@@ -262,6 +257,11 @@
     </url>
     <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/upgrade-toolkit/</loc>
+         <lastmod>2024-07-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/url-whitelisting/</loc>
          <lastmod>2024-07-19</lastmod>
          <changefreq>daily</changefreq>
     </url>

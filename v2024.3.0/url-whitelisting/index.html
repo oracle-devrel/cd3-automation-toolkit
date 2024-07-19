@@ -8,13 +8,9 @@
       
       
       
-        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/additional-info/">
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/url-whitelisting/">
       
       
-        <link rel="prev" href="../launch-from-local/">
-      
-      
-        <link rel="next" href="../connect-container-to-oci-tenancy/">
       
       
       <link rel="icon" href="../images/oci.png">
@@ -22,7 +18,7 @@
     
     
       
-        <title>Additional Info - CD3 Documentation</title>
+        <title>Url whitelisting - CD3 Documentation</title>
       
     
     
@@ -108,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Additional Info
+              Url whitelisting
             
           </span>
         </div>
@@ -240,10 +236,8 @@
         
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
+    <li class="md-tabs__item">
       <a href="../install-cd3/" class="md-tabs__link">
         
   
@@ -594,10 +588,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -610,17 +602,16 @@
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
           
@@ -636,13 +627,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Install CD3
@@ -674,10 +665,8 @@
                 
   
   
-    
   
   
-  
     
     
       
@@ -693,11 +682,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
         
           
           
@@ -719,7 +710,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_2">
             <span class="md-nav__icon md-icon"></span>
             Launch CD3 Container
@@ -772,17 +763,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../additional-info.md" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -791,7 +775,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2137,10 +2120,10 @@
   
 
 
-  <h1>Additional Info</h1>
+  <h1>Url whitelisting</h1>
 
-<p><strong>URL whitelisting</strong></p>
 <p>When deploying CD3 VM in a VCN with restricted outbound connectivity (i.e., 0.0.0.0/0 not allowed for NAT gateway), atleast the below URLs should be allowed for outbound connection.</p>
+<p><br></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    *.oracle.com                                                           
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    *.oraclecloud.com
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    app.terraform.io
