@@ -8,9 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/isv_jenkins/">
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.3.0/additional-info/">
       
       
+        <link rel="prev" href="../launch-from-local/">
+      
+      
+        <link rel="next" href="../connect-container-to-oci-tenancy/">
       
       
       <link rel="icon" href="../images/oci.png">
@@ -18,7 +22,7 @@
     
     
       
-        <title>Clone OCI Environments across Tenancies using CD3 automation toolkit through Jenkins Pipelines - CD3 Documentation</title>
+        <title>Additional Info - CD3 Documentation</title>
       
     
     
@@ -71,11 +75,6 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
-        
-        <a href="#clone-oci-environments-across-tenancies-using-cd3-automation-toolkit-through-jenkins-pipelines" class="md-skip">
-          Skip to content
-        </a>
-      
     </div>
     <div data-md-component="announce">
       
@@ -109,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Clone OCI Environments across Tenancies using CD3 automation toolkit through Jenkins Pipelines
+              Additional Info
             
           </span>
         </div>
@@ -241,8 +240,10 @@
         
   
   
+    
   
-    <li class="md-tabs__item">
+  
+    <li class="md-tabs__item md-tabs__item--active">
       <a href="../install-cd3/" class="md-tabs__link">
         
   
@@ -593,8 +594,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -607,16 +610,17 @@
     
     
       
+        
+        
+      
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           
@@ -632,13 +636,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Install CD3
@@ -670,8 +674,10 @@
                 
   
   
+    
   
   
+  
     
     
       
@@ -687,13 +693,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
         
           
           
@@ -715,7 +719,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2_2">
             <span class="md-nav__icon md-icon"></span>
             Launch CD3 Container
@@ -768,10 +772,17 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../additional-info/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -780,6 +791,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -2125,272 +2137,41 @@
   
 
 
-<h1 id="clone-oci-environments-across-tenancies-using-cd3-automation-toolkit-through-jenkins-pipelines">Clone OCI Environments across Tenancies using CD3 automation toolkit through Jenkins Pipelines</h1>
-<h2 id="introduction">Introduction</h2>
-<p>ISVs or System Integrators or Partners often encounter a typical situation while cloning OCI Resources from one environment (Tenancy/Compartment/Region) to another environment. It takes few days/months to clone the whole infrastructure manually, which can be achieved seamlesly using CD3 automation toolkit within minutes</p>
-<p>CD3 stands for Cloud Deployment Design Deliverable. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources by converting Excel templates to fully functional Terraform modules within minutes. Please click <a href="https://oracle-devrel.github.io/cd3-automation-toolkit/cd3-overview/">here</a> to know more about CD3 automation toolkit.</p>
-<h2 id="objectives">Objectives</h2>
-<p>• Clone or Export OCI infrastructure in one environment (Tenancy/Compartment/Region) to another environment using Cloud Deployment Design Deliverable (CD3) automation toolkit through Jenkins Pipelines</p>
-<h2 id="prerequisites">Prerequisites</h2>
-<p>• Oracle Cloud Infrastructure Identity and Access Management (OCI IAM) policy to allow user to manage the services that are required to be exported/created using CD3 automation toolkit</p>
-<p>• The user executing the CD3 should have access to launch OCI Resource Manager stack, atleast <strong>READ</strong> access in Source OCI Tenancy and <strong>Manage</strong> Access for required OCI resources (Compute, Network, Storage, etc.) in Target OCI Tenancy</p>
-<p>• Set up <strong>2 Compute Instances (Work VM)</strong> on OCI and connect one Work VM to Source OCI Tenancy and other to Target OCI Tenancy. Please follow the steps below to deploy the Work VMs and connect to OCI Tenancies.</p>
-<p>• A beginner level of understanding of Jenkins is required</p>
-<p>!!! <strong>Important</strong>
-    Ensure to have required service limits in the target environment before cloning</p>
-<h2 id="deployment-of-work-vm-using-oci-resource-manager-stack">Deployment of Work VM using OCI Resource Manager Stack</h2>
-<p>OCI Resource Manager Stack will automatically launch the a linux compute VM in OCI tenancy and configure Podman container on the VM.</p>
-<ol>
-<li>
-<p>Click on below button to directly navigate to OCI Resource Manager stack and fill in required details to launch CD3 Work VM &amp; Container.<br>
-<a href="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/main.zip"><img alt="Deploy_To_OCI" src="https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg" /></a></p>
-</li>
-<li>
-<p>This action will initiate the deployment of the Work VM in the tenancy after logging in to OCI and will configure the Automation Toolkit on a Podman container within that Work VM. </p>
-</li>
-<li>
-<p>Enter the required details in the Resource manager stack and click on <strong>Create</strong></p>
-</li>
-<li>
-<p>After the Apply job is successful, click on it and scroll down to the end of logs and find the details for the created VM, and commands to be executed to login to the toolkit container</p>
-</li>
-<li>Login to the VM using private key corresponding to the public key provided during stack creation. Use 'cd3user' or 'opc' user to connect to the VM. Same key has been copied for both the users</li>
-<li>Please use scp command to copy the excel file to and from the container while executing the toolkit. Below is an example of copying excel file to Work VM
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>scp -i &lt;privaye key pushed to VM while creating stack&gt; &lt;path to excel file on local&gt; cd3user@&lt;Public/Private IP of the VM&gt;:/cd3user/mount_path/&lt;customer_name&gt;
-</span></code></pre></div></li>
-<li>Verify if container is launched using below command. If this command does not return any running container, wait for the stack to finish processing. The progress logs are available at /cd3user/mount_path/installToolkit.log
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo podman ps -a
-</span></code></pre></div></li>
-<li>If above command shows a running CD3 container then exec into the container using below command
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>sudo podman exec -it cd3_toolkit bash
-</span></code></pre></div></li>
-</ol>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Path /cd3user/mount_path/ on the Work VM is mapped to /cd3user/tenancies inside the container. This local path on Work VM can be used to transfer any data to and from the container to the local laptop</p>
-</div>
-<h2 id="connect-container-to-oci-tenancy">Connect container to OCI Tenancy</h2>
-<ol>
-<li>Login to the Container using <code>sudo podman exec -it cd3_toolkit bash</code></li>
-<li>
-<p>Choose preferred Authentication Mechanism for OCI SDK</p>
-<ul>
-<li>Click <a href="../authmechanisms/">here</a> to configure any one of the available authentication mechanisms.</li>
-</ul>
-</li>
-<li>
-<p>Edit <strong>tenancyconfig.properties</strong></p>
-</li>
-<li>
-<p>Change the Directory to below 
-  <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
-</span></code></pre></div></p>
-</li>
-<li>
-<p>Fill/Update the input parameters in <code>tenancyconfig.properties</code> file.</p>
-</li>
-</ol>
-<p><strong><em>tenancyconfig.properties</em></strong></p>
-<details>
-    <summary> Parameter Description </summary>
-    <table>
-        <tr>
-            <th>Parameter</th>
-            <th>Description</th>
-            <th>Example</th>
-        </tr>
-        <tr>
-            <td>customer_name</td>
-            <td>Friendly name for the Customer Tenancy</td>
-            <td>demo</td>
-        </tr>
-        <tr>
-            <td>tenancy_ocid</td>
-            <td>OCID of the tenancy</td>
-            <td>ocid1.tenancy.oc1..aaaaaa...5t</td>
-        </tr>
-        <tr>
-            <td>region</td>
-            <td>OCI Region identifier</td>
-            <td>us-phoenix-1</td>
-        </tr>
-        <tr>
-            <td>auth_mechanism</td>
-            <td>Auth Mechanism for OCI APIs</td>
-            <td>api_key, instance_principal, session_token</td>
-        </tr>
-        <tr>
-            <td>user_ocid</td>
-            <td>Required only if ${auth_mechanism} is selected as api_key. Leave empty if 'instance_principal' or 'session_token' is used</td>
-            <td>ocid1.user.oc1..aaaaa...6a</td>
-        </tr>
-        <tr>
-            <td>key_path</td>
-            <td>Required only if ${auth_mechanism} is selected as api_key. Leave empty if 'instance_principal' or 'session_token' is used. Path of API Private Key (PEM Key) File </td>
-            <td>Defaults to /cd3user/tenancies/keys/oci_api_private.pem when left empty</td>
-        </tr>
-        <tr>
-            <td>fingerprint</td>
-            <td>Required only if ${auth_mechanism} is selected as api_key. Leave empty if 'instance_principal' or 'session_token' is used</td>
-            <td>9f:20:0b:....:8c</td>
-        </tr>
-        <tr>
-            <td>outdir_structure_file</td>
-            <td>The outdir_structure_file defines the grouping of the terraform auto.tf.vars for the various generated resources.To group resources into different directories within each region - specify the absolute path to the file.To have all the files generated in a single directory in the corresponding region, leave this variable blank.</td>
-            <td>Defaults to /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties</td>
-        </tr>
-        <tr>
-            <td>ssh_public_key</td>
-            <td>SSH Key for launched instances; Use '\n' as the delimiter to add multiple ssh keys.</td>
-            <td>"ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"</td>
-        </tr>
-    </table>
-</details>
+  <h1>Additional Info</h1>
 
-<details>
-    <summary> Advanced Parameters - Fill this to use toolkit with Jenkins </summary>
-    <table style="width:100%">
-        <tr>
-            <th style="width:25%">Parameter</th>
-            <th style="width:50%">Description</th>
-            <th style="width:25%">Example</th>
-        </tr>
-        <tr>
-            <td>compartment_ocid</td>
-            <td>Compartment OCID where Bucket and DevOps Project/repo will be created; defaults to root if left empty.</td>
-            <td>ocid1.compartment.oc1..aaaaaaaa7....ga</td>
-        </tr>
-        <tr>
-            <td>use_remote_state</td>
-            <td>Remote state configuration: Enter yes if remote state needs to be configured, else tfstate will be stored on local filesystem. Needs to be set as "yes" for Jenkins. </td>
-            <td>yes/no</td>
-        </tr>
-        <tr>
-            <td>remote_state_bucket_name</td>
-            <td>Specify bucket name if you want to use existing bucket else leave empty.If left empty, Bucket with name ${customer_name}-automation-toolkit-bucket will be created/reused in ${region}.</td>
-            <td>demo_bucket</td>
-        </tr>
-        <tr>
-            <td>use_oci_devops_git</td>
-            <td>OCI DevOps GIT configuration: Enter yes if generated terraform_files need to be stored in OCI DevOps GIT Repo else they will be stored on local filesystem. Will enforce 'yes' for use_remote_state in case this value is set to 'yes'. Needs to be set as "yes" for Jenkins. </td>
-            <td>yes/no</td>
-        </tr>
-        <tr>
-            <td>oci_devops_git_repo_name</td>
-            <td>Specify Repo name if you want to use existing OCI Devops GIT Repository else leave empty Format: <project_name/repo_name\>. If left empty, DevOps items  with names <b>${customer_name}-automation-toolkit-project/repo/topic</b> will be created/reused in ${region}.</td>
-            <td>demo_repo</td>
-        </tr>
-        <tr>
-            <td>oci_devops_git_user</td>
-            <td>User Details to perform GIT operations in OCI Devops GIT Repo. 
-        Mandatory when using $(auth_mechanism) as instance_principal or session_token. 
-        Format: <b>&lt;domainName&gt;/&lt;userName&gt;@&lt;tenancyName&gt;</b>
-        When left empty, it will be fetched from $(user_ocid) for $(auth_mechanism) as api_key. 
-        Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is instance_principal or session_token</td>
-            <td>oracleidentitycloudservice/devopsuser@oracle.com@ocitenant</td>
-        </tr>
-        <tr>
-            <td>oci_devops_git_key</td>
-            <td>When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to <b>/cd3user/tenancies/&lt;customer_name&gt;/</b> and used for GIT Operations. Make sure the api key file permissions are rw(600) for cd3user</td>
-            <td>/cd3user/tenancies/keys/oci_api_private.pem</td>
-        </tr>
-    </table>
-
-</details>
-
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<ul>
-<li>Have the details ready for Authentication mechanism you are planning to use</li>
-<li>Review <strong>outdir_structure_file</strong> parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources</li>
-<li>Review Advanced Parameters Section for CI/CD setup. Specifying these parameters as <strong>'yes'</strong> in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations</li>
-</ul>
-</div>
-<ul>
-<li>
-<p>Initialise the environment to use the Automation Toolkit.
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python createTenancyConfig.py tenancyconfig.properties
-</span></code></pre></div></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>Running the above command immediately after adding API key to the user profile in OCI might result in  Authentication Errors. In such cases, retry after a minute.</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Example execution of the script with Advanced Parameters for CI/CD</p>
-<p><img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy.png"></p>
-</li>
-</ul>
-<p>After the containers are successfully connected to the source and target OCI Tenancies, follow the steps below for cloning. </p>
-<h2 id="initiate-and-access-jenkins">Initiate and Access Jenkins</h2>
-<ul>
-<li>
-<p>Execute below cmd to start Jenkins - <br>
-<code>/usr/share/jenkins/jenkins.sh &amp;</code></p>
-</li>
-<li>
-<p>Access Jenkins URL using: <code>https://&lt;IP of the Jenkins Host&gt;:&lt;Port&gt;</code> 
-  <br></p>
-</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li><code>&lt;Port&gt;</code> is the port mapped with local system while docker container creation Eg: 8443.</li>
-<li>Network Connectivity should be allowed on this host and port.</li>
-<li>Please make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available).</li>
-</ul>
-</div>
-<ul>
-<li>It will prompt to create the first user to access Jenkins URL. This will be the admin user.</li>
-<li>The Automation Toolkit only supports a single user Jenkins setup in this release.</li>
-<li>After logging in, Jenkins Dashboard will be displayed.</li>
-</ul>
-<h2 id="step-1-export-oci-network-and-compute-resources-to-an-excel-sheet-from-source-oci-tenancy">Step 1 : Export OCI <strong>Network</strong> and <strong>Compute</strong> Resources to an Excel sheet from Source OCI Tenancy</h2>
-<ol>
-<li>
-<p>After logging in to Jenkins, click <strong>Dashboard</strong>, <strong>setUpOCI pipeline</strong> and <strong>Build with Parameters</strong></p>
-</li>
-<li>
-<p>Download the CD3 blank template from here:<a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template.xlsx</a> and upload it under the <strong>Excel Template</strong> section</p>
-</li>
-<li>
-<p>Under <strong>Workflow</strong>, select <strong>Export Existing Resources from OCI (Non-Greenfield Workflow; Import into excel and tfstate)</strong></p>
-</li>
-<li>
-<p>Under <strong>MainOptions</strong>, select <strong>Export Network and Export Compute</strong></p>
-</li>
-<li>
-<p>Under <strong>SubOptions</strong>, select <strong>Export all Network Components</strong> for network and <strong>Export Instances (excludes instances launched by OKE)</strong> for compute</p>
-</li>
-</ol>
-<p><img alt="Export_Resource" src="../images/Export_Resource.png" width="500" height="500"></p>
-<h2 id="step-2-create-oci-network-and-compute-resources-to-target-oci-tenancy">Step 2 : Create  OCI <strong>Network</strong> and <strong>Compute</strong> Resources to Target OCI Tenancy</h2>
-<ol>
-<li>
-<p>Click <strong>Dashboard</strong>, <strong>setUpOCI pipeline</strong> and <strong>Build with Parameters</strong></p>
-</li>
-<li>
-<p>Under the <strong>Excel Template</strong> section, upload the updated Excel File from Step 1 above</p>
-</li>
-<li>
-<p>Under <strong>Workflow</strong>, select <strong>Create New Resources in OCI (Greenfield Workflow)</strong></p>
-</li>
-<li>
-<p>Under <strong>MainOptions</strong>, select <strong>Network</strong> and <strong>Compute</strong>.</p>
-</li>
-<li>
-<p>Under <strong>SubOptions</strong>, select <strong>Create Network</strong>, <strong>Add/Modify/Delete Instances/Boot Backup Policy</strong></p>
-</li>
-<li>
-<p>Click <strong>Build</strong>. The setUpOCI pipeline stages are executed in order</p>
-</li>
-</ol>
-<p><img alt="Create_Resource" src="../images/Create_Resource.png" width="500" height="500"></p>
-<p>Please Select appropriate <strong>MainOptions</strong> and <strong>SubOptions</strong> to export or create other OCI Resources.</p>
-<p>This is how the CD3 automation toolkit enables ISVs or any individual users to achieve effortless, error-free cloning of OCI infrastructure across tenancies/compartments using Jenkin Pipelines. This approach ensures consistent infrastructure across your deployments.</p>
+<p><strong>URL whitelisting</strong></p>
+<p>Users with limited internet connectivity who cannot access everything from the CD3 work VMs' VCN,  need to ensure that at least the below URLs are allowed for CD3 setup to work.</p>
+<p>*.oracle.com                                                           </p>
+<p>*.oraclecloud.com</p>
+<p>app.terraform.io</p>
+<p>registry.terraform.io</p>
+<p>releases.hashicorp.com</p>
+<p>archivist.terraform.io</p>
+<p>registry.access.redhat.com</p>
+<p>registry.redhat.io</p>
+<p>*.docker.io</p>
+<p>*.docker.com</p>
+<p>github.com</p>
+<p>objects.githubusercontent.com</p>
+<p>*.openpolicyagent.org</p>
+<p>openpolicyagent.org</p>
+<p>*.jenkins-ci.org</p>
+<p>*.jenkins.io</p>
+<p>*.osuosl.org</p>
+<p>sg.mirror.servanamanaged.com</p>
+<p>mirror.freedif.org</p>
+<p>mirrors.tuna.tsinghua.edu.cn</p>
+<p>mirror.yandex.ru</p>
+<p>mirrors.hostico.ro</p>
+<p>ftp.yz.yamagata-u.ac.jp</p>
+<p>ftp.halifax.rwth-aachen.de</p>
+<p>ftp.belnet.be</p>
+<p>mirrors.in.sahilister.net</p>
+<p>pypi.python.org</p>
+<p>pypi.org</p>
+<p>*.pypi.org</p>
+<p>pythonhosted.org</p>
+<p>files.pythonhosted.org</p>
 
 
 
