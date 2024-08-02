@@ -54,6 +54,9 @@ def create_terraform_oss(inputfile, outdir, service_dir, prefix, ct):
     # Initialise empty TF string for each region to take backup of files
     for eachregion in ct.all_regions:
         tfStr[eachregion] = ''
+        srcdir = outdir + "/" + eachregion + "/" + service_dir
+        resource = sheetName.lower()
+        commonTools.backup_file(srcdir + "/", resource, auto_tfvars_filename)
 
     #Declaration
     bucket_lifecycle_policy = {}
@@ -340,6 +343,8 @@ def create_terraform_oss(inputfile, outdir, service_dir, prefix, ct):
             src = "##Add New OSS Buckets for " + reg.lower() + " here##"
             tfStr[reg] = oss_template.render(count = 0, region = reg).replace(src, tfStr[reg] + "\n" + src)
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+
+
             oname[reg]=open(outfile[reg],'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()

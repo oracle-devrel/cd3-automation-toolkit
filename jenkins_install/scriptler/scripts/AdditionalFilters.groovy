@@ -161,41 +161,6 @@ for (item in SubOptions.split(",")) {
          """
    }
 
- if (item.equals('Create Key/Vault')){
-        html_to_be_rendered = """
-        ${html_to_be_rendered}
-<tr>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"vault_region=\"></td>
-     <td><label title=\"service1-label\" class=\" \">Select region name where you want to create Key/Vault : </label></td>
-         <td><select name="value">${reg_options} </select></td>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
-       </tr><tr></tr><tr></tr><tr></tr>
-<tr>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"vault_comp=\"></td>
-     <td><label title=\"service1-label\" class=\" \">select compartment for Key/Vault: </label></td>
-         <td><select name="value">${comp_options}</select></td>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
-       </tr><tr></tr><tr></tr><tr></tr>
-         """
-   }
- if (item.equals('Create Default Budget')){
-        html_to_be_rendered = """
-        ${html_to_be_rendered}
-<tr>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"budget_amount=[\"></td>
-     <td><label title=\"service1-label\" class=\" \">Enter Monthly Budget Amount (in USD) :  </label></td>
-         <td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
-       </tr><tr></tr><tr></tr><tr></tr>
-<tr>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"budget_threshold=[\"></td>
-     <td><label title=\"service1-label\" class=\" \">Enter Threshold Percentage of Budget : </label></td>
-         <td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
-       </tr><tr></tr><tr></tr><tr></tr>
-         """
-   }
-
  if (item.equals('Enable Cloud Guard')){
         html_to_be_rendered = """
         ${html_to_be_rendered}
@@ -225,7 +190,57 @@ for (item in SubChildOptions.split(",")) {
     </tr><tr></tr><tr></tr><tr></tr>
          """
 	}
-  break
+	if (item.equals("Export DR Plan")) {
+      html_to_be_rendered = """
+      ${html_to_be_rendered}
+
+<tr>
+<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"dummy=\"></td>
+<td><label title=\"service1-label\" class=\" \">Use Excel Template oci-fsdr-plan-template.xlsx at /cd3user/oci_tools/othertools/oci-fsdr for the export</label></td>
+</tr>
+  <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_ex_filename=[\"></td>
+     <td><label title=\"service1-label\" class=\" \">Excel File Name where DR plan will be exported : </label></td>
+     <td><input type=\"text\" class=\" \" name=\"value\" > (Default is '$prefix_oci-fsdr-plan.xlsx at /cd3user/tenancies/<prefix>/othertools_files)</br> </td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
+       </tr><tr></tr><tr></tr><tr></tr>
+  <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_ex_sheet=[\"></td>
+     <td><label title=\"service1-label\" class=\" \">Sheet Name where DR plan will be exported : </label></td>
+         <td><input type=\"text\" class=\" \" name=\"value\" > (Default is 'FSDR-Plan') </br></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
+       </tr><tr></tr><tr></tr><tr></tr>
+   <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_ex_ocid=[\"></td>
+     <td><label title=\"service1-label\" class=\" \">FSDR OCID which needs to be exported : </label></td>
+         <td><input type=\"text\" class=\" \" name=\"value\" > (Mandatory) </br></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
+       </tr><tr></tr><tr></tr><tr></tr>
+   """
+   }
+
+  if (item.equals("Update DR Plan")) {
+      html_to_be_rendered = """
+      ${html_to_be_rendered}
+  <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_up_filename=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Excel File Name from where DR plan will be updated : </label></td>
+    <td><input type=\"text\" class=\" \" name=\"value\" >  (Default is '$prefix_oci-fsdr-plan.xlsx at /cd3user/tenancies/<prefix>/othertools_files)</br></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr><tr></tr><tr></tr><tr></tr>
+ <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_up_sheet=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Sheet Name from where DR plan will be updated : </label></td>
+    <td><input type=\"text\" class=\" \" name=\"value\" > (Default is 'FSDR-Plan' if left empty)</br></td>
+    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr><tr></tr><tr></tr><tr></tr>
+  <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_up_ocid=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">FSDR OCID which needs to be updated : </label></td>
+    <td><input type=\"text\" class=\" \" name=\"value\" > (Mandatory)</br></td>
+    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr><tr></tr><tr></tr><tr></tr>
+
+      """
+   }
+
 }
 
 html_to_be_rendered = "${html_to_be_rendered} </table></dev>"

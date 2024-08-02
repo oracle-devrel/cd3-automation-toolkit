@@ -55,6 +55,10 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, ct)
         beset_str[reg] = ''
         beserver_str[reg] = ''
 
+        srcdir = outdir + "/" + reg + "/" + service_dir + "/"
+        resource = sheetName.lower()
+        commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
+
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
@@ -173,7 +177,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, ct)
                 else:
                     pass
 
-            if columnname == "Backend ServerComp&ServerName:Port":
+            if columnname == "Backend ServerComp@ServerName:Port":
                 columnname = "backend_server"
 
             columnname = commonTools.check_column_headers(columnname)
@@ -186,13 +190,28 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, ct)
         cnt = 0
 
         #beserver_str = ''
-        columnvalue = str(df.loc[i,'Backend ServerComp&ServerName:Port']).strip().split(',')
+        columnvalue = str(df.loc[i,'Backend ServerComp@ServerName:Port']).strip().split(',')
         for lbr_be_server in columnvalue:
+            lbr_be_server=lbr_be_server.strip()
+
             if (lbr_be_server != "" and lbr_be_server != "nan"):
                 bserver_list = str(df.loc[i, 'Backup <Backend Server Name>']).strip().split(',')
                 cnt = cnt + 1
-                serverinfo = lbr_be_server.strip().split("&")
-                servername = serverinfo[1].split(":")[0].strip()
+
+                inst_compartment_tf_name = commonTools.check_tf_variable(str(df.loc[i, 'Compartment Name']).strip())
+                if len(lbr_be_server.split("@")) == 2:
+                    if(len(lbr_be_server.split("@")[0].strip())!=0):
+                        inst_compartment_tf_name = commonTools.check_tf_variable(lbr_be_server.split("@")[0].strip())
+                    serverinfo = lbr_be_server.split("@")[1]
+                else:
+                    serverinfo=lbr_be_server
+                if (":" not in serverinfo):
+                    print("Invalid Backend ServerComp@ServerName:Port format specified for row " + str(i + 3) + ". Exiting!!!")
+                    exit(1)
+                else:
+                    servername = serverinfo.split(":")[0].strip()
+                    serverport = serverinfo.split(":")[1].strip()
+
                 if servername in bserver_list:
                     backup = "true"
                 else:
@@ -202,16 +221,12 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, ct)
                 tempStr.update(tempback)
 
                 backend_server_tf_name = commonTools.check_tf_variable(servername+"-"+str(cnt))
-                serverport = serverinfo[1].split(":")[1].strip()
-                inst_compartment_tf_name = ''
                 e = servername.count(".")
                 if (e == 3):
                     backend_server_ip_address = "IP:"+servername
                 else:
                     backend_server_ip_address = "NAME:" + servername
 
-                if serverinfo[0].strip() != "":
-                    inst_compartment_tf_name = commonTools.check_tf_variable(serverinfo[0].strip())
                 tempback = {'backend_server_tf_name': backend_set_tf_name+"_"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address, 'instance_tf_compartment': inst_compartment_tf_name }
                 tempStr.update(tempback)
 
@@ -235,9 +250,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, ct)
 
         if finalstring != "":
 
-            resource = sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
-            commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             # Write to TF file
             outfile = srcdir + lb_auto_tfvars_filename

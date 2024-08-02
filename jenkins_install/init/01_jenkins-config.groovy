@@ -1,37 +1,37 @@
-import jenkins.model.Jenkins
+import jenkins.model.*
 import com.cloudbees.hudson.plugins.folder.*
+import java.io.ByteArrayInputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
+// Read the Jenkins instance
+Jenkins jenkins = Jenkins.getInstance()
 
-Jenkins jenkins = Jenkins.instance
+// Read the properties file
 def JENKINS_HOME = System.getenv("JENKINS_HOME")
 File file = new File("$JENKINS_HOME/jenkins.properties")
-file.withReader { reader ->
-     while ((line = reader.readLine()) != null) {
-          if (line.startsWith('git_url')) {
-            git_url = Eval.me(line.split("=")[1])
-        }
-          if (line.startsWith('regions')) {
-            regions = Eval.me(line.split("=")[1])
-        }
-          if (line.startsWith('outdir_structure')) {
-            outdir_structure = Eval.me(line.split("=")[1])
-        }
-          if (line.startsWith('services')) {
-            services = Eval.me(line.split("=")[1])
-        }
-      }
- }
 
-def tfApplyJobName = "terraform-apply"
-def tfDestroyJobName = "terraform-destroy"
+// Parse the properties file into profiles first.
+def profiles = [:]
+def currentProfile = ""
+file.readLines('UTF-8').each { line ->
+    if (line.startsWith('[')) {
+        currentProfile = line.replace('[', '').replace(']', '').trim()
+        profiles[currentProfile] = [:]
+    } else if (line.contains('=')) {
+        def parts = line.split('=')
+        profiles[currentProfile][parts[0].trim()] = Eval.me(parts[1].trim())
+    }
+}
 
 // Function to create job XML
-def createJobXml(scriptPath, gitUrl) {
+def createJobXml(scriptPath, gitUrl, tf_or_tofu) {
     return """
     <flow-definition>
         <actions/>
         <description/>
         <keepDependencies>false</keepDependencies>
+        <properties/>
         <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
             <scriptPath>${scriptPath}</scriptPath>
             <lightweight>false</lightweight>
@@ -55,37 +55,60 @@ def createJobXml(scriptPath, gitUrl) {
     """
 }
 
-// Function to create Jenkins job
-def createJob(parent, jobName, xml) {
-    def jobXmlStream = new ByteArrayInputStream(xml.getBytes())
-    parent.createProjectFromXML(jobName, jobXmlStream)
-}
-
-// Create jobs for each configuration
-jenkins.with {
-    Folder ost = getItem("terraform_files") ?: createProject(Folder.class, "terraform_files")
-
-    for (os in outdir_structure) {
-        Folder global = ost.getItem("global") ?: ost.createProject(Folder.class, "global")
-        Folder rpc = global.getItem("rpc") ?: global.createProject(Folder.class, "rpc")
-
-        createJob(rpc, tfApplyJobName, createJobXml('tf-apply.groovy', git_url))
-        createJob(rpc, tfDestroyJobName, createJobXml('tf-destroy.groovy', git_url))
-        for (reg in regions) {
-        Folder folder = ost.getItem(reg) ?: ost.createProject(Folder.class, reg)
-
-        if (os == "Single_Outdir") {
-            createJob(folder, tfApplyJobName, createJobXml('tf-apply.groovy', git_url))
-            createJob(folder, tfDestroyJobName, createJobXml('tf-destroy.groovy', git_url))
-        }
-
-        if (os == "Multiple_Outdir" && services) {
-            for (svc in services) {
-                Folder svcFolder = folder.getItem(svc) ?: folder.createProject(Folder.class, svc)
-                createJob(svcFolder, tfApplyJobName, createJobXml('tf-apply.groovy', git_url))
-                createJob(svcFolder, tfDestroyJobName, createJobXml('tf-destroy.groovy', git_url))
-            }
-        }
+// Function to create Jenkins job if it does not exist
+def createJobIfNotExists(parent, jobName, xml) {
+    def job = parent.getItem(jobName)
+    if (job == null) {
+        def jobXmlStream = new ByteArrayInputStream(xml.getBytes())
+        parent.createProjectFromXML(jobName, jobXmlStream)
+    } else {
+        println "Job already exists: ${jobName}"
     }
 }
+
+// Create jobs for each profile
+profiles.each { profileName, profile ->
+    // Create profile folder
+    Folder profileFolder = jenkins.getItem(profileName) ?: jenkins.createProject(Folder.class, profileName)
+    Folder tfFolder = profileFolder.getItem("terraform_files") ?: profileFolder.createProject(Folder.class, "terraform_files")
+
+    // Create global and rpc folders
+    Folder globalFolder = tfFolder.getItem("global") ?: tfFolder.createProject(Folder.class, "global")
+    Folder rpcFolder = globalFolder.getItem("rpc") ?: globalFolder.createProject(Folder.class, "rpc")
+
+    // Create jobs in rpc folder
+    createJobIfNotExists(rpcFolder, "apply", createJobXml('apply.groovy', profile.git_url, profile.tf_or_tofu))
+    createJobIfNotExists(rpcFolder, "destroy", createJobXml('destroy.groovy', profile.git_url, profile.tf_or_tofu))
+
+    profile.regions.each { region ->
+        Folder regionFolder = tfFolder.getItem(region) ?: tfFolder.createProject(Folder.class, region)
+
+        if (profile.outdir_structure.contains("Multiple_Outdir") && profile.services) {
+            profile.services.each { service ->
+                Folder serviceFolder = regionFolder.getItem(service) ?: regionFolder.createProject(Folder.class, service)
+
+                createJobIfNotExists(serviceFolder, "apply", createJobXml('apply.groovy', profile.git_url, profile.tf_or_tofu))
+                createJobIfNotExists(serviceFolder, "destroy", createJobXml('destroy.groovy', profile.git_url, profile.tf_or_tofu))
+            }
+        } else {
+            createJobIfNotExists(regionFolder, "apply", createJobXml('apply.groovy', profile.git_url, profile.tf_or_tofu))
+            createJobIfNotExists(regionFolder, "destroy", createJobXml('destroy.groovy', profile.git_url, profile.tf_or_tofu))
+        }
+    }
+     // Move setupoci directory to the correct location. Default is not picked up in UI.
+    def setupociSrcPath = "$JENKINS_HOME/jobs/${profileName}/setupoci"
+    def setupociDestPath = "$JENKINS_HOME/jobs/${profileName}/jobs/setupoci"
+
+    def setupociSrcDir = new File(setupociSrcPath)
+    def setupociDestDir = new File(setupociDestPath)
+
+    if (setupociSrcDir.exists()) {
+        Files.move(setupociSrcDir.toPath(), setupociDestDir.toPath(), StandardCopyOption.REPLACE_EXISTING)
+       // println "Moved directory from ${setupociSrcDir} to ${setupociDestDir}"
+    }
 }
+
+// Reload Jenkins configuration
+Jenkins.instance.reload()
+println "Jenkins configuration reloaded."
+

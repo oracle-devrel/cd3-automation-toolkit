@@ -47,6 +47,7 @@ security:
       - "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object"
       - "new java.io.File java.lang.String"
       - "staticMethod org.codehaus.groovy.runtime.ResourceGroovyMethods readLines java.io.File"
+      - "method java.io.File listFiles"
 unclassified:
   buildDiscarders:
     configuredBuildDiscarders:

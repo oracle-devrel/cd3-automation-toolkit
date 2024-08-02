@@ -8,6 +8,7 @@
 locals {
     all_route_tables = merge(var.route_tables,var.default_route_tables)
     all_seclists = merge(var.seclists,var.default_seclists)
+    gateway_rt_status = {for k,v in local.all_route_tables : k => (v.gateway_route_table == null ? false : v.gateway_route_table )}
 }
 
 
@@ -427,7 +428,8 @@ output "seclist_id_map" {
 
 module "route-tables" {
   source   = "./modules/network/route-table"
-  for_each = {for k,v in local.all_route_tables : k => v if ! v.gateway_route_table}
+  #for_each = {for k,v in local.all_route_tables : k => v if ! v.gateway_route_table}
+  for_each = {for k,v in local.all_route_tables : k => v if ! local.gateway_rt_status[k] }
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -456,7 +458,8 @@ module "route-tables" {
 
 module "gateway-route-tables" {
   source   = "./modules/network/route-table"
-  for_each = {for k,v in local.all_route_tables : k => v if v.gateway_route_table }
+  #for_each = {for k,v in local.all_route_tables : k => v if v.gateway_route_table }
+  for_each = {for k,v in local.all_route_tables : k => v if local.gateway_rt_status[k] }
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null

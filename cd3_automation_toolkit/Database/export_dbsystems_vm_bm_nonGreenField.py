@@ -14,18 +14,26 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 import json
 import re
+import subprocess as sp
 
 importCommands = {}
 oci_obj_names = {}
 
 
-def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_client, key_name, values_for_column, ntk_compartment_name):
+def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_client, key_name, values_for_column, ntk_compartment_name,state,ct):
     db_system_vm_bm_tf_name = commonTools.check_tf_variable(db_system_vm_bm.display_name)
 
     db_system_subnet_id = db_system_vm_bm.subnet_id
     subnet_info = vnc_client.get_subnet(db_system_subnet_id)
     sub_name = subnet_info.data.display_name  # Subnet-Name
     vcn_name = vnc_client.get_vcn(subnet_info.data.vcn_id).data.display_name  # vcn-Name
+
+    ntk_compartment_id = vnc_client.get_vcn(subnet_info.data.vcn_id).data.compartment_id  # compartment-id
+    network_compartment_name = ntk_compartment_name
+    for comp_name, comp_id in ct.ntk_compartment_ids.items():
+        if comp_id == ntk_compartment_id:
+            network_compartment_name = comp_name
+    vs = network_compartment_name + "@" + vcn_name + "::" + sub_name
 
     db_system_options = db_system_vm_bm.db_system_options
     maintenance_window = db_system_vm_bm.maintenance_window
@@ -43,12 +51,13 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
     connection_strings = database.connection_strings
     database_management_config = database.database_management_config
 
-    if (count ==1):
-        importCommands[region.lower()].write("\nterraform import \"module.dbsystems-vm-bm[\\\"" + db_system_vm_bm_tf_name + "\\\"].oci_database_db_system.database_db_system\" " + str(db_system_vm_bm.id))
+    tf_resource = f'module.dbsystems-vm-bm[\\"{db_system_vm_bm_tf_name}\\"].oci_database_db_system.database_db_system'
+    if (count ==1) and tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(db_system_vm_bm.id)}'
 
     if(count!=1):
         for col_header in values_for_column:
-            if col_header == 'Region' or col_header == 'Compartment Name' or col_header == 'Subnet Name' or "Availability Domain" in col_header or \
+            if col_header == 'Region' or col_header == 'Compartment Name' or col_header == 'Network Details' or "Availability Domain" in col_header or \
                 col_header == 'Shape' or col_header == 'DB System Display Name' or col_header == 'Node Count' or col_header == 'CPU Core Count' or col_header == "Database Edition" or \
                 col_header == 'Data Storage in GB' or col_header == 'Data Storage Percentage' or col_header == 'Disk Redundancy' or col_header == 'License Model' or \
                 col_header == 'Hostname Prefix' or col_header == 'SSH Key Var Name' or col_header == 'Time Zone' or col_header == 'NSGs':
@@ -70,8 +79,8 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
                 values_for_column[col_header].append(region)
             elif col_header == 'Compartment Name':
                 values_for_column[col_header].append(ntk_compartment_name)
-            elif col_header == 'Subnet Name':
-                values_for_column[col_header].append(vcn_name + "_" + sub_name)
+            elif col_header == 'Network Details':
+                values_for_column[col_header].append(vs)
             elif col_header == 'DB Admin Password':
                 values_for_column[col_header].append('nullval')
             elif col_header == 'SSH Key Var Name':
@@ -102,7 +111,10 @@ def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, e
     global importCommands
     global cd3file
     global reg
-    global values_for_column
+    global values_for_column,tf_or_tofu
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
 
     cd3file = inputfile
@@ -128,25 +140,29 @@ def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, e
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
 
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
     # Fetch Block Volume Details
     print("\nFetching details of VM and BM DB Systems...")
 
     for reg in export_regions:
         var_data[reg] = ""
-        importCommands[reg].write("\n\n######### Writing import for DB System VM and DB System BM #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         region = reg.capitalize()
 
         db_client = oci.database.DatabaseClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -171,7 +187,7 @@ def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, e
                         break
                     databases = oci.pagination.list_call_get_all_results(db_client.list_databases,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],db_home_id=db_home.id,system_id=db_system.id,lifecycle_state="AVAILABLE")
                     for database in databases.data:
-                        print_dbsystem_vm_bm(region, db_system, count,db_home, database, vnc_client, key_name,values_for_column, ntk_compartment_name)
+                        print_dbsystem_vm_bm(region, db_system, count,db_home, database, vnc_client, key_name,values_for_column, ntk_compartment_name,state,ct)
 
         file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
         # Read variables file data
@@ -191,11 +207,14 @@ def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, e
         with open(file, "w") as f:
             f.write(var_data[reg])
 
-
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
-
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-
     print("{0} Virtual Machine and Bare Metal DB Systems exported into CD3.\n".format(len(values_for_column["Region"])))
 
+    # writing data
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        init_commands = f'\n######### Writing import for DB System VM and DB System BM #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])

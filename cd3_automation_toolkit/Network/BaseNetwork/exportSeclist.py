@@ -4,6 +4,7 @@ import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
 import os
+import subprocess as sp
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 
@@ -44,7 +45,7 @@ def insert_values(values_for_column,oci_objs, region, comp_name, vcn_name, rulet
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict,values_for_column)
 
 
-def print_secrules(seclists,region,vcn_name,comp_name):
+def print_secrules(seclists,region,vcn_name,comp_name,state):
     for seclist in seclists.data:
         isec_rules = seclist.ingress_security_rules
         esec_rules = seclist.egress_security_rules
@@ -53,11 +54,13 @@ def print_secrules(seclists,region,vcn_name,comp_name):
 
         if tf_import_cmd:
             tf_name = vcn_name + "_" + dn
-            tf_name=commonTools.check_tf_variable(tf_name)
+            tf_name = commonTools.check_tf_variable(tf_name)
             if("Default Security List for " in dn):
-                importCommands[region.lower()].write("\nterraform import \"module.security-lists[\\\"" + tf_name + "\\\"].oci_core_default_security_list.default_security_list[0]\" " + str(seclist.id))
+                tf_resource = f'module.security-lists[\\"{tf_name}\\"].oci_core_default_security_list.default_security_list[0]'
             else:
-                importCommands[region.lower()].write("\nterraform import \"module.security-lists[\\\"" + tf_name + "\\\"].oci_core_security_list.security_list[0]\" " + str(seclist.id))
+                tf_resource = f'module.security-lists[\\"{tf_name}\\"].oci_core_security_list.security_list[0]'
+            if tf_resource not in state["resources"]:
+                importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(seclist.id)}'
 
 
         if(len(isec_rules)==0 and len(esec_rules)==0):
@@ -211,7 +214,10 @@ def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_comp
     global tf_import_cmd
     global values_for_column
     global sheet_dict
-    global importCommands
+    global importCommands,tf_or_tofu
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
 
@@ -234,18 +240,22 @@ def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_comp
     if tf_import_cmd:
         importCommands={}
         for reg in export_regions:
-            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_secrules_nonGF.sh")):
-                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "tf_import_network",
-                                        "tf_import_commands_network_secrules_nonGF.sh")
-            importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_secrules_nonGF.sh", "w")
-            importCommands[reg].write("#!/bin/bash")
-            importCommands[reg].write("\n")
-            importCommands[reg].write("terraform init")
-            importCommands[reg].write("\n\n######### Writing import for Security Lists #########\n\n")
+            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/import_commands_network_secrules.sh")):
+                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "import_network",
+                                        "import_commands_network_secrules.sh")
+            importCommands[reg] = ''
 
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         vcn = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         #comp_ocid_done = []
@@ -256,11 +266,16 @@ def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_comp
                     vcn_name=v.display_name
                     for ntk_compartment_name_again in export_compartments:
                             seclists = oci.pagination.list_call_get_all_results(vcn.list_security_lists,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
-                            print_secrules(seclists,region,vcn_name,ntk_compartment_name_again)
+                            print_secrules(seclists,region,vcn_name,ntk_compartment_name_again,state)
 
     commonTools.write_to_cd3(values_for_column,cd3file,"SecRulesinOCI")
     print("SecRules exported to CD3\n")
     if tf_import_cmd:
         for reg in export_regions:
-            importCommands[reg].write('\n\nterraform plan\n')
-            importCommands[reg].close()
+            script_file = f'{outdir}/{reg}/{service_dir}/import_commands_network_secrules.sh'
+            init_commands = f'\n#!/bin/bash\n{tf_or_tofu} init\n######### Writing import for Security Lists #########\n'
+            if importCommands[reg] != "":
+                importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+                with open(script_file, 'a') as importCommandsfile:
+                    importCommandsfile.write(init_commands + importCommands[reg])
+

@@ -48,10 +48,13 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
         reserved_ips_str[reg] = ''
         nlb_listener_str[reg] = ''
         nlb_names[reg] = []
+        resource = sheetName.lower()
+        srcdir = outdir + "/" + reg + "/" + service_dir + "/"
+        commonTools.backup_file(srcdir, resource, nlb_auto_tfvars_filename)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-    subnets = parseSubnets(filename)
+    #subnets = parseSubnets(filename)
     prevreg = ''
 
     for i in df.index:
@@ -76,18 +79,18 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
             empty_nlb = 1
 
         #NLB having multiple Listeners can't have null values for listener properties
-        elif (str(df.loc[i, 'Region']).lower() == 'nan') and (str(df.loc[i, 'Compartment Name']).lower() == 'nan') and (str(df.loc[i, 'NLB Name']).lower() == 'nan') and (str(df.loc[i, 'Subnet Name']).lower() == 'nan'):
+        elif (str(df.loc[i, 'Region']).lower() == 'nan') and (str(df.loc[i, 'Compartment Name']).lower() == 'nan') and (str(df.loc[i, 'NLB Name']).lower() == 'nan') and (str(df.loc[i, 'Network Details']).lower() == 'nan'):
             if (str(df.loc[i, 'Listener Name']).lower() == 'nan') or (str(df.loc[i, 'Listener Protocol(UDP|TCP|UDP/TCP|Any)']).lower() == 'nan') or (str(df.loc[i, 'Listener Port']).lower() == 'nan') or (str(df.loc[i, 'Backend Set Name']).lower() == 'nan'):
                 print("\nColumns Backend Set Name, Listener Name, Listener Protocol and Listener Port cannot be left empty.....Exiting! Check Row No "+(str(i+3)))
                 exit(1)
-        elif (str(df.loc[i, 'Region']).lower() != 'nan') and (str(df.loc[i, 'Compartment Name']).lower() != 'nan') and (str(df.loc[i, 'NLB Name']).lower() != 'nan') and (str(df.loc[i, 'Subnet Name']).lower() != 'nan'):
+        elif (str(df.loc[i, 'Region']).lower() != 'nan') and (str(df.loc[i, 'Compartment Name']).lower() != 'nan') and (str(df.loc[i, 'NLB Name']).lower() != 'nan') and (str(df.loc[i, 'Network Details']).lower() != 'nan'):
             if (str(df.loc[i, 'Listener Name']).lower() == 'nan') or (str(df.loc[i, 'Listener Protocol(UDP|TCP|UDP/TCP|Any)']).lower() == 'nan') or (str(df.loc[i, 'Listener Port']).lower() == 'nan') or (str(df.loc[i, 'Backend Set Name']).lower() == 'nan'):
                 print("\nColumns Backend Set Name, Listener Name, Listener Protocol and Listener Port cannot be left empty.....Exiting! Check Row No " + (str(i + 3)))
                 exit(1)
 
         elif (str(df.loc[i, 'Listener Name']).lower() != 'nan') and (str(df.loc[i, 'Listener Protocol(UDP|TCP|UDP/TCP|Any)']).lower() != 'nan') and (str(df.loc[i, 'Listener Port']).lower() != 'nan') and (str(df.loc[i, 'Backend Set Name']).lower() != 'nan'):
-            if (str(df.loc[i, 'Region']).lower() == 'nan') or (str(df.loc[i, 'Compartment Name']).lower() == 'nan') or (str(df.loc[i, 'NLB Name']).lower() == 'nan') or (str(df.loc[i, 'Subnet Name']).lower() == 'nan'):
-                print("\nColumns Region, Compartment Name, NLB Name and Subnet Name cannot be left empty.....Exiting! Check Row No "+(str(i+3)))
+            if (str(df.loc[i, 'Region']).lower() == 'nan') or (str(df.loc[i, 'Compartment Name']).lower() == 'nan') or (str(df.loc[i, 'NLB Name']).lower() == 'nan') or (str(df.loc[i, 'Network Details']).lower() == 'nan'):
+                print("\nColumns Region, Compartment Name, NLB Name and Network Details cannot be left empty.....Exiting! Check Row No "+(str(i+3)))
                 exit(1)
 
         # temporary dictionaries
@@ -130,26 +133,31 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
                     nlb_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'nlb_tf_name': nlb_tf_name, 'nlb_name': nlb_name}
 
+            subnet_id = ''
             network_compartment_id = ''
             vcn_name = ''
-            if columnname == 'Subnet Name':
-                subnet_tf_name = str(columnvalue).strip()
-                if subnet_tf_name == 'nan' or subnet_tf_name == '':
-                    continue
-                if ("ocid1.subnet.oc1" in subnet_tf_name):
-                    network_compartment_id = ""
+            if columnname == 'Network Details':
+                columnvalue = columnvalue.strip()
+                if ("ocid1.subnet.oc" in columnvalue):
+                    network_compartment_id = "root"
                     vcn_name = ""
-                    subnet_id = subnet_tf_name
-                else:
-                    try:
-                        key = region, subnet_tf_name
-                        network_compartment_id = subnets.vcn_subnet_map[key][0]
-                        vcn_name = subnets.vcn_subnet_map[key][1]
-                        subnet_id = subnets.vcn_subnet_map[key][2]
-                    except Exception as e:
-                        print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                    subnet_id = columnvalue
+                elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                    if len(columnvalue.split("@")) == 2:
+                        network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                        vcn_subnet_name = columnvalue.split("@")[1].strip()
+                    else:
+                        network_compartment_id = commonTools.check_tf_variable(
+                            str(df.loc[i, 'Compartment Name']).strip())
+                        vcn_subnet_name = columnvalue
+                    if ("::" not in vcn_subnet_name):
+                        print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
                         exit(1)
-                tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,'subnet_id': subnet_id}
+                    else:
+                        vcn_name = vcn_subnet_name.split("::")[0].strip()
+                        subnet_id = vcn_subnet_name.split("::")[1].strip()
+                tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,
+                            'subnet_id': subnet_id}
 
             if columnname == "NSGs":
                 if columnvalue != '' and columnvalue != 'nan':
@@ -221,9 +229,7 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
         finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
 
         if finalstring != "":
-            resource = sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
-            commonTools.backup_file(srcdir, resource, nlb_auto_tfvars_filename)
 
             # Write to TF file
             outfile = srcdir + nlb_auto_tfvars_filename

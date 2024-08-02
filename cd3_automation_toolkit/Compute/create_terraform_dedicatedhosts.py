@@ -130,9 +130,6 @@ def create_terraform_dedicatedhosts(inputfile, outdir, service_dir,prefix, ct):
             tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg] + "\n" + src)
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-            resource = sheetName.lower()
-            commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
-
             # Write to TF file
             outfile = reg_out_dir + "/" + auto_tfvars_filename
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])

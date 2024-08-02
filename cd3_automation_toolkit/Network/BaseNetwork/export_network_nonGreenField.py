@@ -8,13 +8,16 @@ from .exportRoutetable import export_routetable
 from .exportRoutetable import export_drg_routetable
 from .exportSeclist import export_seclist
 from .exportNSG import export_nsg
+import subprocess as sp
 
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
 
 importCommands = {}
+importCommands_dhcp = {}
 importCommands_rpc = {}
 importCommands_vlan = {}
+importCommands_subnet = {}
 oci_obj_names = {}
 
 
@@ -87,7 +90,7 @@ def print_drgv2(values_for_column_drgv2, region, comp_name, vcn_info, drg_info, 
 
 
 def print_vcns(values_for_column_vcns, region, comp_name, vnc,vcn_info, drg_attachment_info, igw_info, ngw_info, sgw_info,
-               lpg_display_names):
+               lpg_display_names,state):
     drg_info=None
     for col_header in values_for_column_vcns.keys():
 
@@ -161,11 +164,12 @@ def print_vcns(values_for_column_vcns, region, comp_name, vnc,vcn_info, drg_atta
                                                                       values_for_column_vcns)
 
     tf_name = commonTools.check_tf_variable(vcn_info.display_name)
-    importCommands[region.lower()].write(
-        "\nterraform import \"module.vcns[\\\"" + tf_name + "\\\"].oci_core_vcn.vcn\" " + str(vcn_info.id))
+    tf_resource = f'module.vcns[\\"{tf_name}\\"].oci_core_vcn.vcn'
+    if tf_resource not in state["resources"]:
+        importCommands[region.lower()].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(vcn_info.id)}')
 
 
-def print_dhcp(values_for_column_dhcp, region, comp_name, vcn_name, dhcp_info):
+def print_dhcp(values_for_column_dhcp, region, comp_name, vcn_name, dhcp_info,state):
     tf_name = vcn_name + "_" + str(dhcp_info.display_name)
     tf_name = commonTools.check_tf_variable(tf_name)
 
@@ -206,27 +210,26 @@ def print_dhcp(values_for_column_dhcp, region, comp_name, vcn_name, dhcp_info):
             values_for_column_dhcp = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_dhcp,
                                                                       values_for_column_dhcp)
     if ("Default DHCP Options for " in dhcp_info.display_name):
-        importCommands[region.lower()].write(
-            "\nterraform import \"module.default-dhcps[\\\"" + tf_name + "\\\"].oci_core_default_dhcp_options.default_dhcp_option\" " + str(
-                dhcp_info.id))
+        tf_resource = f'module.default-dhcps[\\"{tf_name}\\"].oci_core_default_dhcp_options.default_dhcp_option'
     else:
-        importCommands[region.lower()].write(
-            "\nterraform import \"module.custom-dhcps[\\\"" + tf_name + "\\\"].oci_core_dhcp_options.custom_dhcp_option\" " + str(
-                dhcp_info.id))
+        tf_resource = f'module.custom-dhcps[\\"{tf_name}\\"].oci_core_dhcp_options.custom_dhcp_option'
+    if tf_resource not in state["resources"]:
+        importCommands_dhcp[region.lower()].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(dhcp_info.id)}')
 
 
 def print_subnets_vlans(values_for_column_subnets_vlans, region, comp_name, vcn_name, subnet_vlan_info, dhcp_name,
-                        rt_name, sl_nsg_names, add_def_seclist, subnet_vlan_in_excel):
+                        rt_name, sl_nsg_names, add_def_seclist, subnet_vlan_in_excel,state):
     tf_name = vcn_name + "_" + str(subnet_vlan_info.display_name)
     tf_name = commonTools.check_tf_variable(tf_name)
     if subnet_vlan_in_excel == 'Subnet':
-        importCommands[region.lower()].write(
-            "\nterraform import \"module.subnets[\\\"" + tf_name + "\\\"].oci_core_subnet.subnet\" " + str(
-                subnet_vlan_info.id))
+        tf_resource = f'module.subnets[\\"{tf_name}\\"].oci_core_subnet.subnet'
+        if tf_resource not in state["resources"]:
+            importCommands_subnet[region.lower()].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(subnet_vlan_info.id)}')
+
     elif subnet_vlan_in_excel == 'VLAN':
-        importCommands_vlan[region.lower()].write(
-            "\nterraform import \"module.vlans[\\\"" + tf_name + "\\\"].oci_core_vlan.vlan\" " + str(
-                subnet_vlan_info.id))
+        tf_resource = f'module.vlans[\\"{tf_name}\\"].oci_core_vlan.vlan'
+        if tf_resource not in state["resources"]:
+            importCommands_vlan[region.lower()].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(subnet_vlan_info.id)}')
 
     for col_header in values_for_column_subnets_vlans.keys():
         if (col_header == "Region"):
@@ -322,7 +325,7 @@ def get_drg_rt_name(drg_rpc_attachment_list, source_rpc_id, rpc_source_client):
 
 
 def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_client, ct, values_for_column,
-                      ntk_compartment_name, outdir):
+                      ntk_compartment_name, outdir,drg_info, drg_attachment_info,state_rpc):
     # Variables
     dest_rpc_drg_name = ""
     src_drg_rt_name = ""
@@ -381,6 +384,7 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
             src_drg_rt_import_dist_id = getattr(src_drg_rt_dist.data, 'import_drg_route_distribution_id')
             if (src_drg_rt_import_dist_id!=None):
                 import_rt_info = rpc_source_client.get_drg_route_distribution(drg_route_distribution_id=src_drg_rt_import_dist_id)
+                src_drg_rt_dist_info = import_rt_info
                 drg_rt_import_dist_name = getattr(import_rt_info.data, "display_name")
                 import_rt_statements = rpc_source_client.list_drg_route_distribution_statements(drg_route_distribution_id=src_drg_rt_import_dist_id)
 
@@ -406,6 +410,7 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                 dest_rpc_details = client.get_remote_peering_connection(
                                     remote_peering_connection_id=source_rpc_peer_id)
                                 dest_rpc_drg_id = dest_rpc.drg_id
+                                dest_drg_info=client.get_drg(drg_id=dest_rpc_drg_id).data
                                 dest_rpc_drg_name = getattr(client.get_drg(drg_id=dest_rpc_drg_id).data, 'display_name')
                                 dest_drg_comp_name = get_comp_details(getattr(client.get_drg(drg_id=dest_rpc_drg_id).data, 'compartment_id'))
                                 dest_rpc_display_name = dest_rpc.display_name
@@ -428,16 +433,18 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                                                          'import_drg_route_distribution_id')
                                     if dest_drg_rt_import_dist_id!=None:
                                         dest_import_rt_info = client.get_drg_route_distribution(drg_route_distribution_id=dest_drg_rt_import_dist_id)
+                                        dest_drg_rt_dist_info=dest_import_rt_info
                                         dest_drg_rt_import_dist_name = getattr(dest_import_rt_info.data, "display_name")
                                         dest_import_rt_statements = client.list_drg_route_distribution_statements(drg_route_distribution_id=dest_drg_rt_import_dist_id)
 
-                                importCommands_rpc["global"].write(
-                                    "\nterraform import \"module.rpcs[\\\"" + rpc_tf_name + f"\\\"].oci_core_remote_peering_connection.{source_region.lower()}_{region.lower()}_requester_rpc[\\\"region\\\"]\" " + str(
-                                        source_rpc_id))
-                                importCommands_rpc["global"].write(
-                                    "\nterraform import \"module.rpcs[\\\"" + rpc_tf_name + f"\\\"].oci_core_remote_peering_connection.{source_region.lower()}_{region.lower()}_accepter_rpc[\\\"region\\\"]\" " + str(
-                                        dest_rpc_id))
-                        importCommands_rpc["global"].write("\nterraform plan")
+                                tf_resource = f'module.rpcs[\\"{rpc_tf_name}\\"].oci_core_remote_peering_connection.{source_region.lower()}_{region.lower()}_requester_rpc[\\"region\\"]'
+                                if tf_resource not in state_rpc["resources"]:
+                                    importCommands_rpc["global"].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(source_rpc_id)}')
+                                tf_resource = f'module.rpcs[\\"{rpc_tf_name}\\"].oci_core_remote_peering_connection.{source_region.lower()}_{region.lower()}_accepter_rpc[\\"region\\"]'
+                                if tf_resource not in state_rpc["resources"]:
+                                    importCommands_rpc["global"].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(dest_rpc_id)}')
+
+                        importCommands_rpc["global"].write(f'\n{tf_or_tofu} plan')
                         for col_header in values_for_column:
                             if col_header == 'Region':
                                 values_for_column[col_header].append(source_region)
@@ -480,9 +487,10 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                 values_for_column[col_header].append(statement_val)
 
                             elif col_header.lower() in commonTools.tagColumns:
-                                values_for_column = commonTools.export_tags(new_rpc, col_header, values_for_column)
+                                values_for_column = commonTools.export_tags(drg_info, col_header, values_for_column)
                             else:
-                                oci_objs = [new_rpc]
+                                oci_objs = [new_rpc, drg_info, drg_attachment_info, src_drg_rt_dist,
+                                            src_drg_rt_dist_info]
                                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header,
                                                                                      sheet_dict,
                                                                                      values_for_column)
@@ -529,9 +537,10 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                 values_for_column[col_header].append(statement_val)
 
                             elif col_header.lower() in commonTools.tagColumns:
-                                values_for_column = commonTools.export_tags(new_rpc, col_header, values_for_column)
+                                values_for_column = commonTools.export_tags(dest_drg_info, col_header, values_for_column)
                             else:
-                                oci_objs = [new_rpc]
+                                oci_objs = [new_rpc, dest_drg_info, dest_drg_rt_dist,
+                                            dest_drg_rt_dist_info]
                                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header,
                                                                                      sheet_dict,
                                                                                      values_for_column)
@@ -544,7 +553,9 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
 
 def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
     global sheet_dict_vcns
-    global sheet_dict_drgv2
+    global sheet_dict_drgv2,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -563,7 +574,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
     # For RPCs import file.
     # Create backups
-    rpc_file_name = 'tf_import_commands_' + "rpcs" + '_nonGF.sh'
+    rpc_file_name = 'import_commands_' + "rpcs" + '.sh'
     rpc_script_file = f'{outdir}/global/rpc/{rpc_file_name}'
     os.makedirs(os.path.dirname(rpc_script_file), exist_ok=True)
     importCommands_rpc["global"] = open(rpc_script_file, "w+")
@@ -571,6 +582,14 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
     importCommands_rpc["global"].write("\n")
     importCommands_rpc["global"].write("terraform init")
     importCommands_rpc["global"].write("\n\n######### Writing import for RPC #########\n\n")
+    state_rpc = {'path': f'{outdir}/global/rpc/', 'resources': []}
+    try:
+        byteOutput = sp.check_output(tf_state_list, cwd=state_rpc["path"],stderr=sp.DEVNULL)
+        output = byteOutput.decode('UTF-8').rstrip()
+        for item in output.split('\n'):
+            state_rpc["resources"].append(item.replace("\"", "\\\""))
+    except Exception as e:
+        pass
 
     # Remove existing rpc.safe file if exists.
     file_path = f'{outdir}/global/rpc/' + "rpc.safe"
@@ -579,16 +598,23 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
     # Create backups
     for reg in export_regions:
-        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_network_major-objects_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, "tf_import_network",
-                                    "tf_import_commands_network_major-objects_nonGF.sh")
+        file_name = "import_commands_network_major-objects.sh"
+        if (os.path.exists(outdir + "/" + reg + "/" + service_dir +"/"+ file_name)):
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, "import_network",file_name)
         if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/obj_names.safe")):
             commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, "obj_names", "obj_names.safe")
-        importCommands[reg] = open(
-            outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_network_major-objects_nonGF.sh", "w")
+        importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir +"/"+ file_name, "w")
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg].write(f'{tf_or_tofu} init')
         oci_obj_names[reg] = open(outdir + "/" + reg + "/" + service_dir + "/obj_names.safe", "w")
 
     print("Tabs- VCNs and DRGs would be overwritten during export process!!!\n")
@@ -632,8 +658,9 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 tf_name = commonTools.check_tf_variable(drg_display_name)
                 if (drg_id not in drg_ocid):
                     oci_obj_names[reg].write("\nDRG Version::::" + drg_display_name + "::::" + drg_version)
-                    importCommands[reg].write(
-                        "\nterraform import \"module.drgs[\\\"" + tf_name + "\\\"].oci_core_drg.drg\" " + drg_info.id)
+                    tf_resource = f'module.drgs[\\"{tf_name}\\"].oci_core_drg.drg'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg].write( f'\n{tf_or_tofu} import "{tf_resource}" {str(drg_info.id)}')
                     drg_ocid.append(drg_id)
 
                 # Get Attachment Details
@@ -647,8 +674,6 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     attach_type = "VCN"
                     attach_id = drg_attachment_info.vcn_id
 
-
-
                 vcn_info = None
                 if (attach_type.upper() == "VCN"):
                     vcn_drgattach_route_table_id = drg_attachment_info.route_table_id
@@ -656,9 +681,9 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
                     # tf_name = vcn_info.display_name + "_" + drg_attachment_name
                     tf_name = commonTools.check_tf_variable(drg_attachment_name)
-
-                    importCommands[reg].write(
-                        "\nterraform import \"module.drg-attachments[\\\"" + tf_name + "\\\"].oci_core_drg_attachment.drg_attachment\" " + drg_attachment_info.id)
+                    tf_resource = f'module.drg-attachments[\\"{tf_name}\\"].oci_core_drg_attachment.drg_attachment'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(drg_attachment_info.id)}')
                     #oci_obj_names[reg].write(
                         #"\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
 
@@ -683,14 +708,15 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                             tf_name = commonTools.check_tf_variable(
                                 drg_display_name + "_" + import_drg_route_distribution_info.display_name)
                             if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
-                                importCommands[reg].write(
-                                    "\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution\" " + import_drg_route_distribution_info.id)
+                                tf_resource = f'module.drg-route-distributions[\\"{tf_name}\\"].oci_core_drg_route_distribution.drg_route_distribution'
+                                if tf_resource not in state["resources"]:
+                                    importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(import_drg_route_distribution_info.id)}')
 
                                 k = 1
                                 for stmt in drg_route_distribution_statements.data:
-                                    importCommands[reg].write(
-                                        "\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name + "_statement" + str(
-                                            k) + "\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                    tf_resource = f'module.drg-route-distribution-statements[\\"{tf_name}_statement{str(k)}\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement'
+                                    if tf_resource not in state["resources"]:
+                                        importCommands[reg].write( f'\n{tf_or_tofu} import "{tf_resource}" drgRouteDistributions/{str(import_drg_route_distribution_info.id)}/statements/{stmt.id}')
                                     k = k + 1
 
                     print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info, drg_info, drg_attachment_info,
@@ -721,14 +747,14 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                             tf_name = commonTools.check_tf_variable(
                                 drg_display_name + "_" + import_drg_route_distribution_info.display_name)
                             if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
-                                importCommands[reg].write(
-                                    "\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution\" " + import_drg_route_distribution_info.id)
-
+                                tf_resource = f'module.drg-route-distributions[\\"{tf_name}\\"].oci_core_drg_route_distribution.drg_route_distribution'
+                                if tf_resource not in state["resources"]:
+                                    importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(import_drg_route_distribution_info.id)}')
                                 k = 1
                                 for stmt in drg_route_distribution_statements.data:
-                                    importCommands[reg].write(
-                                        "\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name + "_statement" + str(
-                                            k) + "\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                    tf_resource = f'module.drg-route-distribution-statements[\\"{tf_name}_statement{str(k)}\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement'
+                                    if tf_resource not in state["resources"]:
+                                        importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" drgRouteDistributions/{str(import_drg_route_distribution_info.id)}/statements/{stmt.id}')
                                     k = k + 1
 
                     dest_rpc_dict = {}
@@ -746,7 +772,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                             ntk_compartment_name])
 
                     get_rpc_resources(region, SOURCE_RPC_LIST, dest_rpc_dict, vnc,
-                                       ct, values_for_column_drgv2, ntk_compartment_name, outdir)
+                                       ct, values_for_column_drgv2, ntk_compartment_name, outdir,drg_info, drg_attachment_info,state_rpc)
                     rpc_execution = False
 
             # Get All Other RTs for this DRG only if it is DRGv2
@@ -779,14 +805,15 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                             tf_name = commonTools.check_tf_variable(
                                 drg_display_name + "_" + import_drg_route_distribution_info.display_name)
                             if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
-                                importCommands[reg].write(
-                                    "\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution\" " + import_drg_route_distribution_info.id)
-
+                                tf_resource = f'module.drg-route-distributions[\\"{tf_name}\\"].oci_core_drg_route_distribution.drg_route_distribution'
+                                if tf_resource not in state["resources"]:
+                                    importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(import_drg_route_distribution_info.id)}')
                                 k = 1
                                 for stmt in drg_route_distribution_statements.data:
-                                    importCommands[reg].write(
-                                        "\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name + "_statement" + str(
-                                            k) + "\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                    tf_resource = f'module.drg-route-distribution-statements[\\"{tf_name}_statement{str(k)}\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement'
+                                    if tf_resource not in state["resources"]:
+                                        importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" drgRouteDistributions/{str(import_drg_route_distribution_info.id)}/statements/{stmt.id}')
+
                                     k = k + 1
                         print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info, drg_info,
                                     drg_attachment_info, drg_route_table_info,
@@ -799,6 +826,14 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
     # Fetch VCNs
     for reg in export_regions:
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         importCommands[reg].write("\n######### Writing import for VCNs #########\n")
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -834,9 +869,9 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     igw_display_name = igw_info.display_name
                     tf_name = vcn_info.display_name + "_" + igw_display_name
                     tf_name = commonTools.check_tf_variable(tf_name)
-                    importCommands[reg].write(
-                        "\nterraform import \"module.igws[\\\"" + tf_name + "\\\"].oci_core_internet_gateway.internet_gateway\" " + igw_info.id)
-
+                    tf_resource = f'module.igws[\\"{tf_name}\\"].oci_core_internet_gateway.internet_gateway'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(igw_info.id)}')
 
                 # ngw_display_name = "n"
                 NGWs = oci.pagination.list_call_get_all_results(vnc.list_nat_gateways,
@@ -848,9 +883,9 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     ngw_display_name = ngw_info.display_name
                     tf_name = vcn_info.display_name + "_" + ngw_display_name
                     tf_name = commonTools.check_tf_variable(tf_name)
-
-                    importCommands[reg].write(
-                        "\nterraform import \"module.ngws[\\\"" + tf_name + "\\\"].oci_core_nat_gateway.nat_gateway\" " + ngw_info.id)
+                    tf_resource = f'module.ngws[\\"{tf_name}\\"].oci_core_nat_gateway.nat_gateway'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(ngw_info.id)}')
 
                 # sgw_display_name = "n"
                 SGWs = oci.pagination.list_call_get_all_results(vnc.list_service_gateways,
@@ -862,8 +897,9 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     sgw_display_name = sgw_info.display_name
                     tf_name = vcn_info.display_name + "_" + sgw_display_name
                     tf_name = commonTools.check_tf_variable(tf_name)
-                    importCommands[reg].write(
-                        "\nterraform import \"module.sgws[\\\"" + tf_name + "\\\"].oci_core_service_gateway.service_gateway\" " + sgw_info.id)
+                    tf_resource = f'module.sgws[\\"{tf_name}\\"].oci_core_service_gateway.service_gateway'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(sgw_info.id)}')
 
                 lpg_display_names = ""
                 LPGs = oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,
@@ -884,8 +920,9 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
                     tf_name = vcn_info.display_name + "_" + lpg_info.display_name
                     tf_name = commonTools.check_tf_variable(tf_name)
-                    importCommands[reg].write(
-                        "\nterraform import \"module.exported-lpgs[\\\"" + tf_name + "\\\"].oci_core_local_peering_gateway.local_peering_gateway\" " + lpg_info.id)
+                    tf_resource = f'module.exported-lpgs[\\"{tf_name}\\"].oci_core_local_peering_gateway.local_peering_gateway'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(lpg_info.id)}')
 
                 if (lpg_display_names == ""):
                     lpg_display_names = "n"
@@ -894,19 +931,22 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
                 # Fill VCNs Tab
                 print_vcns(values_for_column_vcns, region, ntk_compartment_name, vnc,vcn_info, drg_attachment_info, igw_info, ngw_info,
-                           sgw_info, lpg_display_names)
+                           sgw_info, lpg_display_names,state)
 
     commonTools.write_to_cd3(values_for_column_vcns, cd3file, "VCNs")
     print("VCNs exported to CD3\n")
 
     for reg in export_regions:
-        importCommands[reg].write('\n\nterraform plan\n')
+        importCommands[reg].write(f'\n\n{tf_or_tofu} plan\n')
         importCommands[reg].close()
         oci_obj_names[reg].close()
 
 
 def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
-    global sheet_dict_dhcp
+    global sheet_dict_dhcp,tf_or_tofu
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -923,19 +963,26 @@ def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compa
 
     # Create backups
     for reg in export_regions:
-        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_network_dhcp_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, "tf_import_network",
-                                    "tf_import_commands_network_dhcp_nonGF.sh")
-        importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_network_dhcp_nonGF.sh",
-                                   "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        dhcp_file_name = "import_commands_network_dhcp.sh"
+        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/"+dhcp_file_name)):
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, "import_network",dhcp_file_name)
+        importCommands_dhcp[reg] = open(outdir + "/" + reg + "/" + service_dir + "/"+dhcp_file_name,"w")
+        importCommands_dhcp[reg].write("#!/bin/bash")
+        importCommands_dhcp[reg].write("\n")
+        importCommands_dhcp[reg].write(f'{tf_or_tofu} init')
 
     print("Tab- DHCP would be overwritten during export process!!!")
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for DHCP #########\n\n")
+        importCommands_dhcp[reg].write("\n\n######### Writing import for DHCP #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         # comp_ocid_done = []
@@ -954,17 +1001,20 @@ def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compa
                     for dhcp in DHCPs.data:
                         dhcp_info = dhcp
                         print_dhcp(values_for_column_dhcp, region, ntk_compartment_name_again, vcn_info.display_name,
-                                   dhcp_info)
+                                   dhcp_info,state)
     commonTools.write_to_cd3(values_for_column_dhcp, cd3file, "DHCP")
     print("DHCP exported to CD3\n")
 
     for reg in export_regions:
-        importCommands[reg].write('\n\nterraform plan\n')
-        importCommands[reg].close()
+        importCommands_dhcp[reg].write(f'\n\n{tf_or_tofu} plan\n')
+        importCommands_dhcp[reg].close()
 
 
 def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
-    global sheet_dict_subnets_vlans
+    global sheet_dict_subnets_vlans,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
+    skip_vlans = {}
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -987,41 +1037,44 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
 
     # Create backups for subnets/vlans tf import shell script files
     for reg in export_regions:
-        if (os.path.exists(
-                outdir + "/" + reg + "/" + service_dir_network + "/tf_import_commands_network_subnets_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir_network, "tf_import_network",
-                                    "tf_import_commands_network_subnets_nonGF.sh")
-        importCommands[reg] = open(
-            outdir + "/" + reg + "/" + service_dir_network + "/tf_import_commands_network_subnets_nonGF.sh", "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        subnet_file_name = "import_commands_network_subnets.sh"
+        if (os.path.exists(outdir + "/" + reg + "/" + service_dir_network + "/"+subnet_file_name)):
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir_network, "import_network",subnet_file_name)
+        importCommands_subnet[reg] = open(outdir + "/" + reg + "/" + service_dir_network + "/"+subnet_file_name, "w")
+        importCommands_subnet[reg].write("#!/bin/bash")
+        importCommands_subnet[reg].write("\n")
+        importCommands_subnet[reg].write(f'{tf_or_tofu} init')
 
-        if (os.path.exists(outdir + "/" + reg + "/" + service_dir_vlan + "/tf_import_commands_network_vlans_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir_vlan, "tf_import_network",
-                                    "tf_import_commands_network_vlans_nonGF.sh")
-        importCommands_vlan[reg] = open(
-            outdir + "/" + reg + "/" + service_dir_vlan + "/tf_import_commands_network_vlans_nonGF.sh", "w")
-        importCommands_vlan[reg].write("#!/bin/bash")
-        importCommands_vlan[reg].write("\n")
-        importCommands_vlan[reg].write("terraform init")
+        vlan_file_name = "import_commands_network_vlans.sh"
+
+        if (os.path.exists(outdir + "/" + reg + "/" + service_dir_vlan + "/"+vlan_file_name)):
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir_vlan, "import_network",vlan_file_name)
+        importCommands_vlan[reg] = open(outdir + "/" + reg + "/" + service_dir_vlan + "/" + vlan_file_name, "w")
 
     print("Tab- 'SubnetsVLANs' would be overwritten during export process!!!")
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Subnets #########\n\n")
-        importCommands_vlan[reg].write("\n\n######### Writing import for VLANs #########\n\n")
+        importCommands_subnet[reg].write("\n\n######### Writing import for Subnets #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        # check resources in subnet state
+        state = {'path': f'{outdir}/{reg}/{service_dir_network}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
 
-        skip_vlans = 0
+        skip_vlans['reg'] = 0
         try:
             VLANs = oci.pagination.list_call_get_all_results(vnc.list_vlans,
                                                              compartment_id=ct.ntk_compartment_ids['root'])
         except Exception as e:
             if ('Tenancy is NOT whitelisted for VMware SKU' in str(e)):
                 print('Tenancy is NOT whitelisted for VMware SKU..skipping export of VLANs')
-                skip_vlans = 1
+                skip_vlans['reg'] = 1
 
         for ntk_compartment_name in export_compartments:
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
@@ -1065,12 +1118,24 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                         # Fill Subnets tab
                         print_subnets_vlans(values_for_column_subnets_vlans, region, ntk_compartment_name_again,
                                             vcn_info.display_name, subnet_info, dhcp_name,
-                                            rt_name, sl_names, add_def_seclist, subnet_vlan_in_excel)
+                                            rt_name, sl_names, add_def_seclist, subnet_vlan_in_excel,state)
 
                     # VLAN Data
-                    if skip_vlans == 1:
+                    if skip_vlans['reg'] == 1:
                         continue
-
+                    importCommands_vlan[reg].write("#!/bin/bash")
+                    importCommands_vlan[reg].write("\n")
+                    importCommands_vlan[reg].write(f'{tf_or_tofu} init')
+                    importCommands_vlan[reg].write("\n\n######### Writing import for VLANs #########\n\n")
+                    # check resources in vlan state
+                    state_vlan = {'path': f'{outdir}/{reg}/{service_dir_vlan}', 'resources': []}
+                    try:
+                        byteOutput = sp.check_output(tf_state_list, cwd=state_vlan["path"],stderr=sp.DEVNULL)
+                        output = byteOutput.decode('UTF-8').rstrip()
+                        for item in output.split('\n'):
+                            state_vlan["resources"].append(item.replace("\"", "\\\""))
+                    except Exception as e:
+                        pass
                     subnet_vlan_in_excel = "VLAN"
                     VLANs = oci.pagination.list_call_get_all_results(vnc.list_vlans,
                                                                      compartment_id=ct.ntk_compartment_ids[
@@ -1098,15 +1163,17 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                         # Fill Subnets tab
                         print_subnets_vlans(values_for_column_subnets_vlans, region, ntk_compartment_name_again,
                                             vcn_info.display_name, vlan_info, dhcp_name,
-                                            rt_name, nsg_names, add_def_seclist, subnet_vlan_in_excel)
+                                            rt_name, nsg_names, add_def_seclist, subnet_vlan_in_excel,state_vlan)
 
     commonTools.write_to_cd3(values_for_column_subnets_vlans, cd3file, "SubnetsVLANs")
     print("SubnetsVLANs exported to CD3\n")
 
     for reg in export_regions:
-        importCommands[reg].write('\n\nterraform plan\n')
-        importCommands[reg].close()
-        importCommands_vlan[reg].write('\n\nterraform plan\n')
+        importCommands_subnet[reg].write(f'\n\n{tf_or_tofu} plan\n')
+        importCommands_subnet[reg].close()
+        if skip_vlans['reg'] == 1:
+            continue
+        importCommands_vlan[reg].write(f'\n\n{tf_or_tofu} plan\n')
         importCommands_vlan[reg].close()
 
 # Execution of the code begins here

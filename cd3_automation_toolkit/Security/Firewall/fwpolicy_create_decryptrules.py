@@ -47,6 +47,9 @@ def fwpolicy_create_decryptrules(inputfile, outdir, service_dir, prefix, ct):
     for reg in ct.all_regions:
         decryptrules_str[reg] = ''
         decryptrules_names[reg] = []
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
+        resource = sheetName.lower()
+        commonTools.backup_file(reg_out_dir, resource, decryptrules_auto_tfvars_filename)
 
 
     # List of the column headers
@@ -161,12 +164,11 @@ def fwpolicy_create_decryptrules(inputfile, outdir, service_dir, prefix, ct):
 
 
     for reg in region_list:
-        resource = sheetName.lower()
         reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + decryptrules_auto_tfvars_filename
-        commonTools.backup_file(reg_out_dir, resource, decryptrules_auto_tfvars_filename)
+
         if decryptrules_str[reg] != '':
             # Generate Final String
             src = "##Add New Decryption rules for " + reg.lower() + " here##"

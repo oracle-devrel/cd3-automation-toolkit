@@ -138,6 +138,7 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, 
     for eachregion in ct.all_regions:
         tfStr["global"] = ''
 
+
     match_list = []
     for i in df.index:
         if str(df.loc[i, 'Attached To']).lower().startswith("rpc"):
@@ -270,19 +271,20 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, 
                     # Write all info to TF string
                     tfStr["global"] = tfStr["global"] + template.render(tempStr)
 
-    # Write TF string to the file in respective region directory
-    # for reg in ct.all_regions:
+    # Write TF string to the file in global directory
+
     reg_out_dir = f'{outdir}/global/rpc/'
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
+
+    resource = sheetName.lower()
+    commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
     if tfStr["global"] != '':
         # Generate RPC String
         src = "##Add New RPC for global here##"
         tfStr["global"] = template.render(count=0).replace(src, tfStr["global"] + "\n" + src)
         tfStr["global"] = "".join([s for s in tfStr["global"].strip().splitlines(True) if s.strip("\r\n").strip()])
-        resource = sheetName.lower()
-        commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
         # Write to TF file
         outfile = reg_out_dir + "/" + auto_tfvars_filename

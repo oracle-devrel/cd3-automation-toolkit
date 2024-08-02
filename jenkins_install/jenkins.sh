@@ -11,13 +11,51 @@ if [ ! -d "$JENKINS_HOME" ]; then
     exit
 fi
 
-# Copy Required files to JENKINS_HOME
-cp ${JENKINS_INSTALL}/jcasc.yaml "$JENKINS_HOME/"
-if [ ! -d "$JENKINS_HOME/jobs/setUpOCI" ]; then
-  mkdir -p "$JENKINS_HOME/jobs/setUpOCI"
-fi
-cp ${JENKINS_INSTALL}/setUpOCI_config.xml "$JENKINS_HOME/jobs/setUpOCI/config.xml"
-cp -r ${JENKINS_INSTALL}/scriptler $JENKINS_HOME
+## Copy Required files to JENKINS_HOME
+#cp ${JENKINS_INSTALL}/jcasc.yaml "$JENKINS_HOME/"
+#if [ ! -d "$JENKINS_HOME/jobs/setUpOCI" ]; then
+#  mkdir -p "$JENKINS_HOME/jobs/setUpOCI"
+#fi
+#cp ${JENKINS_INSTALL}/setUpOCI_config.xml "$JENKINS_HOME/jobs/setUpOCI/config.xml"
+#cp -r ${JENKINS_INSTALL}/scriptler $JENKINS_HOME
+
+# Read profiles from jenkins.properties only
+declare -A profiles
+current_profile=""
+while IFS= read -r line; do
+    if [[ "$line" =~ ^\[.*\]$ ]]; then
+        current_profile=$(echo "$line" | tr -d '[]' | xargs -0)
+        profiles["$current_profile"]=""
+        echo "Processing profile: $current_profile" # Debug line
+    elif [[ "$line" == *=* ]]; then
+        key=$(echo "$line" | cut -d'=' -f1 | xargs -0)
+        value=$(echo "$line" | cut -d'=' -f2- | xargs -0)
+        profiles["$current_profile"]+="$key='$value' "
+    fi
+done < "$JENKINS_HOME/jenkins.properties"
+
+# Create setupoci job inside each profile folder
+for profile_name in "${!profiles[@]}"; do
+    # Remove any brackets or whitespace from profile_name
+    profile_folder_path="$JENKINS_HOME/jobs/${profile_name}"
+    setupoci_job_dest="$profile_folder_path/setupoci"
+
+    # Create profile and setupoci directories if they don't exist
+    mkdir -p "$setupoci_job_dest"
+    echo "Creating directory: $setupoci_job_dest" # Debug line
+
+    # Copy setupoci config
+    cp "${JENKINS_INSTALL}/setUpOCI_config.xml" "$setupoci_job_dest/config.xml"
+    echo "Copied setUpOCI_config.xml to $setupoci_job_dest/config.xml" # Debug line
+done
+
+# Copy scriptler directory
+cp -r "${JENKINS_INSTALL}/scriptler" "$JENKINS_HOME"
+echo "Copied scriptler directory to $JENKINS_HOME" # Debug line
+
+echo "SetupOCI jobs created for profiles."
+
+
 
 #Generate Self Signed Cert and Copy to JENKINS_HOME
  keytool -genkey -keystore "$JENKINS_INSTALL/oci_toolkit.jks" -alias "automationtoolkit" -keyalg RSA -validity 60 -keysize 2048 -dname "CN=oci-automation, OU=toolkit, C=IN" -ext SAN=dns:automationtoolkit,ip:127.0.0.1 -storepass automationtoolkit && keytool -importkeystore -srckeystore "$JENKINS_INSTALL/oci_toolkit.jks" -srcstoretype JKS -deststoretype PKCS12 -destkeystore "$JENKINS_HOME/oci_toolkit.p12" -srcstorepass automationtoolkit -deststorepass automationtoolkit -noprompt

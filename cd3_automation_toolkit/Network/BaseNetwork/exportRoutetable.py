@@ -4,9 +4,9 @@ import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
 import os
+import subprocess as sp
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
-
 
 def get_network_entity_name(config,signer,network_identity_id):
     vcn1 = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -111,7 +111,7 @@ def insert_values_drg(routetable,import_drg_route_distribution_name,values_for_c
 
 
 
-def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,import_drg_route_distribution_name,drg_rules,region,comp_name):
+def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,import_drg_route_distribution_name,drg_rules,region,comp_name,state):
     drg_rt_name = drg_display_name + "_" + drg_route_table_name
     drg_rt_tf_name = commonTools.check_tf_variable(drg_rt_name)
     if (not drg_rules.data):
@@ -125,10 +125,12 @@ def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,impor
             print(drg_route_table_name)
         else:
             if rule.route_type.lower()=='static':
-                importCommands_drg[region.lower()].write("\nterraform import \"module.drg-route-rules[\\\"" + drg_rt_tf_name+ "_route_rule" + str(i) + "\\\"].oci_core_drg_route_table_route_rule.drg_route_rule\" drgRouteTables/"+str(drg_rt_info.id)+"/routeRules/"+str(rule.id))
+                tf_resource = f'module.drg-route-rules[\\"{drg_rt_tf_name}_route_rule{str(i)}\\"].oci_core_drg_route_table_route_rule.drg_route_rule'
+                if tf_resource not in state["resources"]:
+                    importCommands_drg[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" drgRouteTables/{str(drg_rt_info.id)}/routeRules/{str(rule.id)}'
         i=i+1
 
-def print_routetables(routetables,region,vcn_name,comp_name,gw_route_table_ids):
+def print_routetables(routetables,region,vcn_name,comp_name,gw_route_table_ids,state):
     for routetable in routetables.data:
         rules = routetable.route_rules
         display_name = routetable.display_name
@@ -139,14 +141,17 @@ def print_routetables(routetables,region,vcn_name,comp_name,gw_route_table_ids):
 
             if routetable.id in gw_route_table_ids:
                 if ("Default Route Table for " in dn):
-                    importCommands[region.lower()].write("\nterraform import \"module.gateway-route-tables[\\\"" + tf_name + "\\\"].oci_core_default_route_table.default_route_table[0]\" " + str(routetable.id))
+                    tf_resource = f'module.gateway-route-tables[\\"{tf_name}\\"].oci_core_default_route_table.default_route_table[0]'
                 else:
-                    importCommands[region.lower()].write("\nterraform import \"module.gateway-route-tables[\\\"" + tf_name + "\\\"].oci_core_route_table.route_table[0]\" " + str(routetable.id))
+                    tf_resource = f'module.gateway-route-tables[\\"{tf_name}\\"].oci_core_route_table.route_table[0]'
             else:
                 if ("Default Route Table for " in dn):
-                    importCommands[region.lower()].write("\nterraform import \"module.route-tables[\\\"" + tf_name + "\\\"].oci_core_default_route_table.default_route_table[0]\" " + str(routetable.id))
+                    tf_resource = f'module.route-tables[\\"{tf_name}\\"].oci_core_default_route_table.default_route_table[0]'
                 else:
-                    importCommands[region.lower()].write("\nterraform import \"module.route-tables[\\\"" + tf_name + "\\\"].oci_core_route_table.route_table[0]\" " + str(routetable.id))
+                    tf_resource = f'module.route-tables[\\"{tf_name}\\"].oci_core_route_table.route_table[0]'
+
+            if tf_resource not in state["resources"]:
+                importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(routetable.id)}'
 
         if(not rules):
             insert_values(routetable, values_for_column, region, comp_name, vcn_name,None)
@@ -170,8 +175,11 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
     global importCommands_drg
     global config
     config=config1
-    global signer
+    global signer,tf_or_tofu
     signer=signer1
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
     if '.xls' not in cd3file:
@@ -194,17 +202,21 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
     if tf_import_cmd_drg:
         importCommands_drg = {}
         for reg in export_regions:
-            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_drg_routerules_nonGF.sh")):
-                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "tf_import_network",
-                                        "tf_import_commands_network_drg_routerules_nonGF.sh")
-            importCommands_drg[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_drg_routerules_nonGF.sh", "w")
-            importCommands_drg[reg].write("#!/bin/bash")
-            importCommands_drg[reg].write("\n")
-            importCommands_drg[reg].write("terraform init")
-            importCommands_drg[reg].write("\n\n######### Writing import for DRG Route Tables #########\n\n")
+            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/import_commands_network_drg_routerules.sh")):
+                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "import_network",
+                                        "import_commands_network_drg_routerules.sh")
+            importCommands_drg[reg] = ""
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+             pass
         vcn = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer,timeout=(30,120))
         region = reg.capitalize()
         #comp_ocid_done = []
@@ -234,23 +246,28 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
                         drg_rt_tf_name = commonTools.check_tf_variable(drg_rt_name)
                         if tf_import_cmd_drg:
                             if drg_route_table_name not in commonTools.drg_auto_RTs:
-                                importCommands_drg[reg].write("\nterraform import \"module.drg-route-tables[\\\"" + drg_rt_tf_name + "\\\"].oci_core_drg_route_table.drg_route_table\" " + drg_route_table_id)
-
-
+                                tf_resource = f'module.drg-route-tables[\\"{drg_rt_tf_name}\\"].oci_core_drg_route_table.drg_route_table'
+                                if tf_resource not in state["resources"]:
+                                    importCommands_drg[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {drg_route_table_id}'
 
                         #drg_rt_rules = vcn.list_drg_route_rules(drg_route_table_id)
                         drg_rt_rules = oci.pagination.list_call_get_all_results(vcn.list_drg_route_rules, drg_route_table_id,route_type="STATIC")
                         #drg_rt_rules = None
                         print_drg_routerules(drg_route_table_info, drg_display_name,drg_route_table_name, import_drg_route_distribution_name,
-                                             drg_rt_rules, region, ntk_compartment_name)
+                                             drg_rt_rules, region, ntk_compartment_name,state)
 
     commonTools.write_to_cd3(values_for_column_drg, cd3file, "DRGRouteRulesinOCI")
     print("DRG RouteRules exported to CD3\n")
 
     if tf_import_cmd_drg:
         for reg in export_regions:
-            importCommands_drg[reg].write('\n\nterraform plan\n')
-            importCommands_drg[reg].close()
+            script_file = f'{outdir}/{reg}/{service_dir}/import_commands_network_drg_routerules.sh'
+            init_commands = f'\n#!/bin/bash\n{tf_or_tofu} init\n######### Writing import for DRG Route Tables #########\n'
+            if importCommands_drg[reg] != "":
+                importCommands_drg[reg] += f'\n{tf_or_tofu} plan\n'
+                with open(script_file, 'a') as importCommandsfile:
+                    importCommandsfile.write(init_commands + importCommands_drg[reg])
+
 
 
 # Execution of the code begins here for route table export
@@ -263,8 +280,11 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
     global values_for_vcninfo
     global config
     config=config1
-    global signer
+    global signer,tf_or_tofu
     signer=signer1
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
     if '.xls' not in cd3file:
@@ -291,17 +311,21 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
     if tf_import_cmd:
         importCommands={}
         for reg in export_regions:
-            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_routerules_nonGF.sh")):
-                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "tf_import_network",
-                                        "tf_import_commands_network_routerules_nonGF.sh")
-            importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_routerules_nonGF.sh", "a")
-            importCommands[reg].write("#!/bin/bash")
-            importCommands[reg].write("\n")
-            importCommands[reg].write("terraform init")
-            importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
+            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/import_commands_network_routerules.sh")):
+                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "import_network",
+                                        "import_commands_network_routerules.sh")
+            importCommands[reg] = ''
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         vcn = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         #comp_ocid_done = []
@@ -336,13 +360,18 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
 
                     for ntk_compartment_name_again in export_compartments:
                             routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-                            print_routetables(routetables,region,vcn_name,ntk_compartment_name_again,gw_route_table_ids)
+                            print_routetables(routetables,region,vcn_name,ntk_compartment_name_again,gw_route_table_ids,state)
     commonTools.write_to_cd3(values_for_column,cd3file,"RouteRulesinOCI")
     print("RouteRules exported to CD3\n")
 
     if tf_import_cmd:
         commonTools.write_to_cd3(values_for_vcninfo, cd3file, "VCN Info")
         for reg in export_regions:
-            importCommands[reg].write('\n\nterraform plan\n')
-            importCommands[reg].close()
+            script_file = f'{outdir}/{reg}/{service_dir}/import_commands_network_routerules.sh'
+            init_commands = f'\n#!/bin/bash\n{tf_or_tofu} init\n######### Writing import for Route Tables #########\n'
+            if importCommands[reg] != "":
+                importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+                with open(script_file, 'a') as importCommandsfile:
+                    importCommandsfile.write(init_commands + importCommands[reg])
+
 

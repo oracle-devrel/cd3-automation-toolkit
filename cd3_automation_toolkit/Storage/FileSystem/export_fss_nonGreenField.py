@@ -9,6 +9,7 @@ import os
 import re
 from oci.config import DEFAULT_LOCATION
 from commonTools import *
+import subprocess as sp
 
 fs_source_snapshots = {}
 fss_all_dict = {}
@@ -27,7 +28,7 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
             values_for_column_fss[col_header].append(AD_name)
         elif (col_header == "MountTarget Name"):
             values_for_column_fss[col_header].append(mt_display_name)
-        elif (col_header == "MountTarget SubnetName"):
+        elif (col_header == "Network Details"):
             values_for_column_fss[col_header].append(vplussubnet)
         elif (col_header == "MountTarget IP"):
             values_for_column_fss[col_header].append(mnt_p_ip)
@@ -90,7 +91,7 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
                                                                      values_for_column_fss)
 
 
-def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availability_domain_name, signer):
+def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availability_domain_name, signer,state):
     file_system = oci.file_storage.FileStorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                      signer=signer)
     network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
@@ -101,13 +102,12 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
     try:
         mount_info = oci.pagination.list_call_get_all_results(file_system.list_mount_targets,
                                                               compartment_id=compartment_id,
-                                                              availability_domain=availability_domain_name)
+                                                              availability_domain=availability_domain_name,sort_by="TIMECREATED")
         list_replications = oci.pagination.list_call_get_all_results(file_system.list_replications,
                                                                      compartment_id=compartment_id,
-                                                                     availability_domain=availability_domain_name)
+                                                                     availability_domain=availability_domain_name,sort_by="timeCreated")
         list_fss = oci.pagination.list_call_get_all_results(file_system.list_file_systems,
-                                                            compartment_id=compartment_id,
-                                                            availability_domain=availability_domain_name)
+                                                            compartment_id=compartment_id,availability_domain=availability_domain_name,sort_by="TIMECREATED")
         for fss in list_fss.data:
             fss_all_dict[fss.id] = fss.display_name
         replications_dict = {}
@@ -124,13 +124,13 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
         mnt_info_dict = {}
         mnt_with_export = []
         for mnt in mount_info.data:
-            mnt_id = mnt.id
+            mnt_id = str(mnt.id)
             export_set_id = mnt.export_set_id  # Export Set Id
             mt_display_name = mnt.display_name  # Mount Target Name
             tf_name = commonTools.check_tf_variable(mt_display_name)
-            importCommands[reg].write(
-                "\nterraform import \"module.mts[\\\"" + tf_name + "\\\"].oci_file_storage_mount_target.mount_target\" " + str(
-                    mnt_id))
+            tf_resource = f'module.mts[\\"{tf_name}\\"].oci_file_storage_mount_target.mount_target'
+            if tf_resource not in state["resources"]:
+                importCommands[reg]+=f'\n{tf_or_tofu} import "{tf_resource}" {mnt_id}'
             subnet_id = mnt.subnet_id
             private_ip_ids = mnt.private_ip_ids
             nsg_id = mnt.nsg_ids
@@ -143,7 +143,14 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
             subnet_info = vnc_info.get_subnet(subnet_id)
             mnt_sub_name = subnet_info.data.display_name  # Subnet-Name
             vnc_name = vnc_info.get_vcn(subnet_info.data.vcn_id).data.display_name  # vcn-Name
-            vplussubnet = vnc_name + "_" + mnt_sub_name
+            ntk_compartment_id = vnc_info.get_vcn(subnet_info.data.vcn_id).data.compartment_id # compartment-id
+            network_compartment_name=cname
+            for comp_name, comp_id in ntk_compartment_ids.items():
+                if comp_id == ntk_compartment_id:
+                    network_compartment_name = comp_name
+
+
+            vplussubnet = network_compartment_name+"@"+vnc_name + "::" + mnt_sub_name
 
             for ips in private_ip_ids:
                 private_address = vnc_info.get_private_ip(ips)
@@ -179,6 +186,7 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                     fs_source_snapshot_id = fs_name
                 fs_snapshot_policy_id = file_system_info.data.filesystem_snapshot_policy_id
                 if fs_snapshot_policy_id != '':
+                    policy_comp_name=cname
                     snapshot_policy_info = file_system.get_filesystem_snapshot_policy(filesystem_snapshot_policy_id=fs_snapshot_policy_id)
                     policy_name = snapshot_policy_info.data.display_name
                     policy_comp_id = snapshot_policy_info.data.compartment_id
@@ -195,6 +203,8 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                             for id,name in fss_all_dict.items():
                                 if id == v['targetid']:
                                     targetid = name
+                                else:
+                                    targetid = v['targetid']
 
                             rep_format = targetid + "::" + str(v['interval']) + "::" + v['displayname']
                             fss_replication = fss_replication + rep_format + '\n'
@@ -202,18 +212,19 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                 if (str(fs_id) not in fss):
                     # print(mt_display_name,"-",str(fs_name))
                     tf_name = commonTools.check_tf_variable(fs_name)
-                    importCommands[reg].write(
-                        "\nterraform import \"module.fss[\\\"" + tf_name + "\\\"].oci_file_storage_file_system.file_system\" " + str(
-                            fs_id))
+                    tf_resource = f'module.fss[\\"{tf_name}\\"].oci_file_storage_file_system.file_system'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {fs_id}'
+
                     fss.append(str(fs_id))
                 if len(replications_dict) > 0:
                     for k, v in replications_dict.items():
                         if v['sourceid'] == fs_id:
                             if (str(k) not in rep_ids):
                                 tf_rep_name = commonTools.check_tf_variable(v['displayname'].strip())
-                                importCommands[reg].write(
-                                    "\nterraform import \"module.fss-replication[\\\"" + tf_rep_name + "\\\"].oci_file_storage_replication.file_system_replication\" " + str(
-                                        k))
+                                tf_resource = f'module.fss-replication[\\"{tf_rep_name}\\"].oci_file_storage_replication.file_system_replication'
+                                if tf_resource not in state["resources"]:
+                                    importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {str(k)}'
                                 rep_ids.append(str(k))
 
                 elen = (len(einfo_export_data.export_options))
@@ -262,9 +273,10 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                 tf_name = commonTools.check_tf_variable(
                     "FSE-" + commonTools.check_tf_variable(mt_display_name) + "-" + commonTools.check_tf_variable(
                         fs_name) + "-" + einfo_path[1:])
-                importCommands[reg].write(
-                    "\nterraform import \"module.fss-export-options[\\\"" + tf_name + "\\\"].oci_file_storage_export.export\" " + str(
-                        einfo.id))  # exports import
+                tf_resource = f'module.fss-export-options[\\"{tf_name}\\"].oci_file_storage_export.export'
+                if tf_resource not in state["resources"]:
+                    importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {str(einfo.id)}'
+
 
         ###### code to fetch FSS without any exports #####
         fss_all_ids = []
@@ -291,6 +303,7 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                     snapshot_policy_info = file_system.get_filesystem_snapshot_policy(filesystem_snapshot_policy_id=fs_snapshot_policy_id)
                     policy_name = snapshot_policy_info.data.display_name
                     policy_comp_id = snapshot_policy_info.data.compartment_id
+                    policy_comp_name=cname
                     for comp_name, comp_id in ntk_compartment_ids.items():
                         if comp_id == policy_comp_id:
                             policy_comp_name = comp_name
@@ -303,6 +316,8 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                             for id, name in fss_all_dict.items():
                                 if id == v['targetid']:
                                     targetid = name
+                                else:
+                                    targetid = v['targetid']
                             rep_format = targetid + "::" + str(v['interval']) + "::" + v['displayname']
                             fss_replication = fss_replication + rep_format + '\n'
 
@@ -315,9 +330,9 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
                 if (str(fss_id) not in fss):
                     # print(mt_display_name,"-",str(fs_name))
                     tf_name = commonTools.check_tf_variable(fs_name)
-                    importCommands[reg].write(
-                        "\nterraform import \"module.fss[\\\"" + tf_name + "\\\"].oci_file_storage_file_system.file_system\" " + str(
-                            fss_id))
+                    tf_resource = f'module.fss[\\"{tf_name}\\"].oci_file_storage_file_system.file_system'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {str(fss_id)}'
                     fss.append(str(fss_id))
 
         ###### code to fetch MT without any exports #####
@@ -345,6 +360,9 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
 
 # Execution of the code begins here
 def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_compartments=[], export_regions=[]):
+    global tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
     input_compartment_names = export_compartments
     cd3file = inputfile
 
@@ -385,25 +403,29 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
             all_ads.append(aval.name)
 
     # backup of .sh file
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + reg + "/" + service_dir + "/", resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
-
+        importCommands[reg] =''
     for reg in export_regions:
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         for ntk_compartment_name in export_compartments:
             ads = oci.identity.IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                               signer=signer)
             for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
                 __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name,
-                                 signer)
+                                 signer,state)
 
     # writing volume source into variables file
     var_data = {}
@@ -433,5 +455,8 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
     # writing data
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        init_commands = f'\n######### Writing import for File Storage #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])

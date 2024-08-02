@@ -14,6 +14,7 @@ import os
 from oci.core.blockstorage_client import BlockstorageClient
 from oci.core.compute_client import ComputeClient
 from commonTools import *
+import subprocess as sp
 
 importCommands = {}
 oci_obj_names = {}
@@ -61,7 +62,7 @@ def volume_attachment_info(compute,ct,volume_id,export_compartments):
     return attachments,attachment_id, instance_name, attachment_type
 
 
-def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names,export_compartments):
+def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names,export_compartments,state):
     volume_comp = ''
     for blockvols in BVOLS.data:
         volume_id = blockvols.id
@@ -144,13 +145,17 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             if volume_compartment_id == comp_id and volume_compartment_id not in comp_done_ids:
                 volume_comp = comp_name
                 comp_done_ids.append(volume_compartment_id)
+        tf_resource = f'module.block-volumes[\\"{block_tf_name}\\"].oci_core_volume.block_volume'
+        if tf_resource not in state["resources"]:
+            importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(blockvols.id)}'
 
-        importCommands[region.lower()].write("\nterraform import \"module.block-volumes[\\\"" + block_tf_name + "\\\"].oci_core_volume.block_volume\" " + str(blockvols.id))
-        if attachment_id != '':
-            importCommands[region.lower()].write("\nterraform import \"module.block-volumes[\\\"" + block_tf_name + "\\\"].oci_core_volume_attachment.block_vol_instance_attachment[0]\" " + str(attachment_id))
+        tf_resource = f'module.block-volumes[\\"{block_tf_name}\\"].oci_core_volume_attachment.block_vol_instance_attachment[0]'
+        if attachment_id != '' and tf_resource not in state["resources"]:
+            importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(attachment_id)}'
 
-        if asset_assignment_id != '':
-            importCommands[region.lower()].write("\nterraform import \"module.block-volumes[\\\"" + block_tf_name + "\\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]\" " + str(asset_assignment_id))
+        tf_resource = f'module.block-volumes[\\"{block_tf_name}\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]'
+        if asset_assignment_id != '' and tf_resource not in state["resources"]:
+            importCommands[region.lower()]+= f'\n{tf_or_tofu} import "{tf_resource}" {str(asset_assignment_id)}'
             pass
         for col_header in values_for_column:
             if col_header == 'Region':
@@ -199,7 +204,9 @@ def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, expo
     global values_for_vcninfo
     global cd3file
     global reg
-    global values_for_column
+    global values_for_column,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -217,30 +224,34 @@ def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, expo
     print("Tabs- BlockVolumes  will be overwritten during export process!!!\n")
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
+        importCommands[reg] = ''
 
     # Fetch Block Volume Details
     print("\nFetching details of Block Volumes...")
 
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Block Volumes #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         region = reg.capitalize()
         compute = ComputeClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         bvol = BlockstorageClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         for ntk_compartment_name in export_compartments:
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
-                print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names, export_compartments)
+                print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names, export_compartments,state)
 
         # writing volume source into variables file
         var_data = {}
@@ -268,10 +279,12 @@ def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, expo
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print("{0} Block Volumes exported into CD3.\n".format(len(values_for_column["Region"])))
 
-
     # writing data
+    init_commands = f'\n#!/bin/bash\n{tf_or_tofu} init\n######### Writing import for Block Volumes #########\n'
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 

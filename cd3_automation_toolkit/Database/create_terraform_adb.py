@@ -43,7 +43,7 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-    subnets = parseSubnets(filename)
+    #subnets = parseSubnets(filename)
     # Initialise empty TF string for each region
     for reg in ct.all_regions:
         tfStr[reg] = ''
@@ -130,28 +130,30 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
                     tempStr.update(tempdict)
                 continue
 
-
-            if columnname == "Subnet Name":
-                if columnvalue != '':
-                    subnet_tf_name = columnvalue.strip()
-                    if ("ocid1.subnet.oc1" in subnet_tf_name):
-                        network_compartment_id = ""
-                        vcn_name = ""
-                        subnet_id = subnet_tf_name
-                    else:
-                        try:
-                            key = region, subnet_tf_name
-                            network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
-                            vcn_name = subnets.vcn_subnet_map[key][1]
-                            subnet_id = subnets.vcn_subnet_map[key][2]
-                        except Exception as e:
-                            print("Invalid Subnet Name specified for row " + str(
-                                i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
-                            exit(1)
-                else:
-                    subnet_id = ""
+            subnet_id = ''
+            network_compartment_id = ''
+            vcn_name = ''
+            if columnname == "Network Details":
+                columnvalue = columnvalue.strip()
+                if ("ocid1.subnet.oc" in columnvalue):
+                    network_compartment_id = "root"
                     vcn_name = ""
-                    network_compartment_id = ""
+                    subnet_id = columnvalue
+                elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                    if len(columnvalue.split("@")) == 2:
+                        network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                        vcn_subnet_name = columnvalue.split("@")[1].strip()
+                    else:
+                        network_compartment_id = commonTools.check_tf_variable(
+                            str(df.loc[i, 'Compartment Name']).strip())
+                        vcn_subnet_name = columnvalue
+                    if ("::" not in vcn_subnet_name):
+                        print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
+                        exit(1)
+                    else:
+                        vcn_name = vcn_subnet_name.split("::")[0].strip()
+                        subnet_id = vcn_subnet_name.split("::")[1].strip()
+
 
                 tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
                             'subnet_id': subnet_id}

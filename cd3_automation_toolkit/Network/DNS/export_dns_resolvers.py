@@ -6,6 +6,7 @@
 #
 import oci
 import os
+import subprocess as sp
 from commonTools import *
 importCommands = {}
 oci_obj_names = {}
@@ -102,12 +103,14 @@ def get_e_map(region, dns_client, vnc_client, ct, resolver, ntk_compartment_name
 
 
 # Write values to columns map - values_for_column
-def print_resolvers(resolver_tf_name, resolver, values_for_column, **value):
+def print_resolvers(resolver_tf_name, resolver, values_for_column,state, **value):
     endpoint_value = value
     region = endpoint_value['region']
     res_id = endpoint_value['res_id']
     e_name = endpoint_value['e_name']
-    importCommands[region.lower()].write("\nterraform import \"module.dns-resolvers[\\\"" + resolver_tf_name + "\\\"].oci_dns_resolver_endpoint.resolver_endpoint[\\\"" + e_name + "\\\"]\" resolverId/"+ str(res_id)+"/name/" + str(e_name))
+    tf_resource = f'module.dns-resolvers[\\"{resolver_tf_name}\\"].oci_dns_resolver_endpoint.resolver_endpoint[\\"{e_name}\\"]'
+    if e_name and tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" resolverId/{str(res_id)}/name/{str(e_name)}'
 
     for col_header in values_for_column:
         if col_header == 'Region':
@@ -142,7 +145,9 @@ def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, exp
     global cd3file
     global reg
     global values_for_column
-    global serv_dir
+    global serv_dir,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     serv_dir = service_dir
     cd3file = inputfile
@@ -160,41 +165,48 @@ def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, exp
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- DNS-Resolvers will be overwritten during export process!!!\n")
 
-    # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
-    for reg in export_regions:
-        script_file = f'{outdir}/{reg}/{serv_dir}/' + file_name
-        if os.path.exists(script_file):
-            commonTools.backup_file(outdir + "/" + reg + "/" + serv_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
-
     # Fetch Resolver Details
     print("\nFetching details of DNS Resolvers ...")
 
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
+
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for DNS Resolvers #########\n\n")
+        script_file = f'{outdir}/{reg}/{serv_dir}/' + file_name
+        resource = 'import_' + sheetName.lower()
+        # Create backups
+        if os.path.exists(script_file):
+            commonTools.backup_file(outdir + "/" + reg + "/" + serv_dir, resource, file_name)
+
+        importCommands[reg] = ''
+
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         region = reg.capitalize()
         dns_client = oci.dns.DnsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         vnc_client = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         for ntk_compartment_name in export_compartments:
             vcns = oci.pagination.list_call_get_all_results(vnc_client.list_vcns, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
+
             for vcn in vcns.data:
                 resolver_id = vnc_client.get_vcn_dns_resolver_association(vcn.id).data.dns_resolver_id
                 resolver = dns_client.get_resolver(resolver_id).data
                 endpoint_map = get_e_map(region, dns_client, vnc_client, ct, resolver, ntk_compartment_name)
                 vcn_name = vnc_client.get_vcn(resolver.attached_vcn_id).data.display_name
                 resolver_tf_name = vcn_name
-                importCommands[region.lower()].write(
-                    "\nterraform import \"module.dns-resolvers[\\\"" + resolver_tf_name + "\\\"].oci_dns_resolver.resolver\" " + str(
-                        resolver.id))
+                tf_resource = f'module.dns-resolvers[\\"{resolver_tf_name}\\"].oci_dns_resolver.resolver'
+                if tf_resource not in state["resources"]:
+                    importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(resolver.id)}'
                 for key, value in endpoint_map.items():
-                    print_resolvers(resolver_tf_name, resolver, values_for_column, **value)
+                    print_resolvers(resolver_tf_name, resolver, values_for_column,state,**value)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print("{0} DNS Resolvers and Endpoints exported into CD3.\n".format(len(values_for_column["Region"])))
@@ -202,7 +214,10 @@ def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, exp
 
     # writing data
     for reg in export_regions:
-        script_file = f'{outdir}/{reg}/{serv_dir}/' + file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        if importCommands[reg] != "":
+            init_commands = f'\n######### Writing import for DNS Resolvers #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 

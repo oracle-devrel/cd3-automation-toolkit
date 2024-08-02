@@ -46,6 +46,9 @@ def fwpolicy_create_secret(inputfile, outdir, service_dir, prefix, ct):
 
     for reg in ct.all_regions:
         secret_str[reg] = ''
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
+        resource = sheetName.lower()
+        commonTools.backup_file(reg_out_dir, resource, secret_auto_tfvars_filename)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -125,12 +128,11 @@ def fwpolicy_create_secret(inputfile, outdir, service_dir, prefix, ct):
 
 
     for reg in region_list:
-        resource = sheetName.lower()
         reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + secret_auto_tfvars_filename
-        commonTools.backup_file(reg_out_dir, resource, secret_auto_tfvars_filename)
+
         if secret_str[reg] != '':
             # Generate Final String
             src = "##Add New Secrets for " + reg.lower() + " here##"

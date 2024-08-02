@@ -17,11 +17,11 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
 	"Security":["Add/Modify/Delete KMS (Keys/Vaults)", "Enable Cloud Guard"],
     "Logging Services":["Enable VCN Flow Logs", "Enable LBaaS Logs", "Enable Object Storage Buckets Logs", "Enable File Storage Logs", "Enable Network Firewall Logs"],
     "CD3 Services":["Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"],
-    "3rd Party Services":["CIS Compliance Check Script", "ShowOCI Report"]
+    "Other OCI Tools":["CIS Compliance Check Script", "ShowOCI Report", "OCI FSDR"]
     ]
     def non_gf_options_map = [
     "Export Identity":["Export Compartments", "Export Groups", "Export Policies", "Export Users", "Export Network Sources"],
-    "Export Governance":["Expot Tags", "Export Quotas"],
+    "Export Governance":["Export Tags", "Export Quotas"],
 	"Export Cost Management":["Export Budgets"],
 	"Export Network":["Export all Network Components", "Export Network components for VCNs/DRGs/DRGRouteRulesinOCI Tabs", "Export Network components for DHCP Tab", "Export Network components for SecRulesinOCI Tab", "Export Network components for RouteRulesinOCI Tab", "Export Network components for SubnetsVLANs Tab", "Export Network components for NSGs Tab"],
     "Export OCI Firewall":["Export Firewall Policy", "Export Firewall"],  

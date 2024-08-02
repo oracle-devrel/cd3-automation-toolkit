@@ -12,13 +12,16 @@ import sys
 import oci
 from oci.key_management import KmsVaultClient
 import os
+import subprocess as sp
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
 
 # Execution of the code begins here
 def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_regions=[], export_compartments=[]):
     global values_for_column_kms
-    global cd3file
+    global cd3file,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     comp_id_list = list(ct.ntk_compartment_ids.values())
     comp_name_list = list(ct.ntk_compartment_ids.keys())
@@ -47,12 +50,20 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
     for reg in export_regions:
         importCommands = ""
         region = reg.lower()
-        script_file = f'{outdir}/{region}/{service_dir}/tf_import_commands_kms_nonGF.sh'
+        script_file = f'{outdir}/{region}/{service_dir}/import_commands_kms.sh'
         # create backups
         if os.path.exists(script_file):
             commonTools.backup_file(os.path.dirname(script_file), "tf_import_kms", os.path.basename(script_file))
 
         config["region"] = ct.region_dict[reg]
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         kms_vault_client = KmsVaultClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         for ntk_compartment_name in export_compartments:
             vaults = oci.pagination.list_call_get_all_results(kms_vault_client.list_vaults,
@@ -63,12 +74,11 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                 get_vault_data = kms_vault_client.get_vault(vault_id=vault.id).data
                 key_count = 0
                 if vault.lifecycle_state == "ACTIVE":
-                    if importCommands == '':
-                        importCommands += "\n######### Writing import for Vaults and Keys #########\n\n#!/bin/bash\nterraform init"
                     total_vaults += 1
                     vault_tf_name = commonTools.check_tf_variable(vault.display_name)
-
-                    importCommands += f'\nterraform import "module.vaults[\\\"{vault_tf_name}\\\"].oci_kms_vault.vault" {vault.id}'
+                    tf_resource = f'module.vaults[\\"{vault_tf_name}\\"].oci_kms_vault.vault'
+                    if tf_resource not in state["resources"]:
+                        importCommands += f'\n{tf_or_tofu} import "{tf_resource}" {vault.id}'
                     kms_key_client = oci.key_management.KmsManagementClient(config,
                                                                             service_endpoint=vault.management_endpoint)
                     keys = oci.pagination.list_call_get_all_results(kms_key_client.list_keys,
@@ -81,7 +91,9 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                 key_count += 1
                                 total_keys += 1
                                 key_tf_name = commonTools.check_tf_variable(key.display_name)
-                                importCommands += f'\nterraform import "module.keys[\\\"{key_tf_name}\\\"].oci_kms_key.key" managementEndpoint/{vault.management_endpoint}/keys/{key.id}'
+                                tf_resource = f'module.keys[\\"{key_tf_name}\\"].oci_kms_key.key'
+                                if tf_resource not in state["resources"]:
+                                    importCommands += f'\n{tf_or_tofu} import "{tf_resource}" managementEndpoint/{vault.management_endpoint}/keys/{key.id}'
                                 get_key_data = kms_key_client.get_key(key_id=key.id).data
                                 if get_key_data.vault_id == vault.id and get_key_data.lifecycle_state != "PENDING_DELETION":
                                     if key_count == 1:
@@ -129,9 +141,9 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                             elif col_header == 'Curve Id':
                                                 values_for_column_kms[col_header].append(get_key_data.key_shape.curve_id if get_key_data.key_shape.algorithm == 'ECDSA' else '')
                                             elif col_header == 'Auto rotation':
-                                                values_for_column_kms[col_header].append("TRUE" if get_key_data.is_auto_rotation_enabled else "FALSE")
+                                                values_for_column_kms[col_header].append("TRUE" if hasattr(get_key_data, 'is_auto_rotation_enabled') else "FALSE")
                                             elif col_header == 'Rotation interval in days':
-                                                values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if get_key_data.is_auto_rotation_enabled else '')
+                                                values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data,'is_auto_rotation_enabled') else '')
                                             elif str(col_header).lower() in ["key defined tags" , "key freeform tags"]:
                                                 if len(key.defined_tags) != 0:
                                                     values_for_column_kms = commonTools.export_tags(key, col_header, values_for_column_kms)
@@ -160,10 +172,10 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                                     get_key_data.key_shape.curve_id if get_key_data.key_shape.algorithm == 'ECDSA' else '')
                                             elif col_header == 'Auto rotation':
                                                 values_for_column_kms[col_header].append(
-                                                    "TRUE" if get_key_data.is_auto_rotation_enabled else "FALSE")
+                                                    "TRUE" if hasattr(get_key_data,'is_auto_rotation_enabled') else "FALSE")
                                             elif col_header == 'Rotation interval in days':
                                                 values_for_column_kms[col_header].append(
-                                                    get_key_data.auto_key_rotation_details.rotation_interval_in_days if get_key_data.is_auto_rotation_enabled else '')
+                                                    get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data,'is_auto_rotation_enabled') else '')
                                             elif str(col_header).lower() in ["key defined tags", "key freeform tags"]:
                                                 if len(key.defined_tags) != 0:
                                                     values_for_column_kms = commonTools.export_tags(key, col_header,
@@ -210,10 +222,12 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                                                                          values_for_column_kms)
 
         #Write Import Commands to script file
-        if importCommands!="":
-            importCommands += "\nterraform plan\n"
+        init_commands = f'\n######### Writing import for OCI Vaults #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+
+        if importCommands != "":
+            importCommands += f'\n{tf_or_tofu} plan\n'
             with open(script_file, 'a') as importCommandsfile:
-                importCommandsfile.write(importCommands)
+                importCommandsfile.write(init_commands + importCommands)
 
     #Write resource data to input Excel sheet
     commonTools.write_to_cd3(values_for_column_kms, cd3file, sheetName)

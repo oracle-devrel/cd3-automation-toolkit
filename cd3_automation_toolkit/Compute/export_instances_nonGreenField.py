@@ -7,6 +7,7 @@ import re
 import sys
 import oci
 import os
+import subprocess as sp
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
 
@@ -22,7 +23,7 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances[col_header].append(ad)
         elif (col_header == "Fault Domain"):
             values_for_column_instances[col_header].append(fd)
-        elif (col_header == "Subnet Name"):
+        elif (col_header == "Network Details"):
             values_for_column_instances[col_header].append(vs)
         elif (col_header == "Pub Address"):
             values_for_column_instances[col_header].append(publicip)
@@ -80,7 +81,7 @@ def find_vnic(ins_id, compartment_id):
         return net
 
 
-def __get_instances_info(compartment_name, compartment_id, reg_name, display_names, ad_names, ct):
+def __get_instances_info(compartment_name, compartment_id, reg_name, display_names, ad_names, ct,state):
     config.__setitem__("region", ct.region_dict[reg_name])
     compute = oci.core.ComputeClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     network = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -118,7 +119,9 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
             ins_fd = ins.fault_domain  # FD
             ins_id = ins.id
             tf_name = commonTools.check_tf_variable(ins_dname)
-            importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_instance.instance\" " + str(ins.id))
+            tf_resource = f'module.instances[\\"{tf_name}\\"].oci_core_instance.instance'
+            if tf_resource not in state["resources"]:
+                importCommands[reg_name] += f'\n{tf_or_tofu} import "{tf_resource}" {str(ins.id)}'
 
             # Shape Details
             ins_shape = ins.shape
@@ -162,7 +165,9 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
                 bkp_policy_name = bkp_pname.data.display_name.title()  # backup policy name
                 tf_name = commonTools.check_tf_variable(ins_dname)
                 # print(bvp.data[0])
-                importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]\" " + str(bvp.data[0].id))
+                tf_resource = f'module.instances[\\"{tf_name}\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]'
+                if tf_resource not in state["resources"]:
+                    importCommands[reg_name] += f'\n{tf_or_tofu} import "{tf_resource}" {str(bvp.data[0].id)}'
                 if (bkp_pname.data.display_name not in ["Gold", "Silver", "Bronze"]):
                     bkp_policy_name = bkp_pname.data.display_name
                     for comp_name, comp_id in ct.ntk_compartment_ids.items():
@@ -199,7 +204,15 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
                 vcn_id = subnet_info.data.vcn_id
                 vcn_info = network.get_vcn(vcn_id=vcn_id)
                 vcn_name = vcn_info.data.display_name
-                vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
+                ntk_compartment_id = network.get_vcn(subnet_info.data.vcn_id).data.compartment_id  # compartment-id
+                network_compartment_name = compartment_name
+                for comp_name, comp_id in ct.ntk_compartment_ids.items():
+                    if comp_id == ntk_compartment_id:
+                        network_compartment_name = comp_name
+
+                vs = network_compartment_name + "@" + vcn_name + "::" + subnet_name
+
+                #vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
                 #vs = commonTools.check_tf_variable(vs)
 
                 privateip = vnic_info.private_ip
@@ -273,7 +286,10 @@ def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    global instance_keys, user_data_in, os_keys, importCommands, idc, rows, AD, values_for_column_instances, df, sheet_dict_instances, config, signer  # declaring global variables
+    global instance_keys, user_data_in, os_keys, importCommands, idc, rows, AD, values_for_column_instances, df, sheet_dict_instances, config, signer,tf_or_tofu # declaring global variables
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
     config=config1
     signer=signer1
 
@@ -294,22 +310,27 @@ def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export
     print("Tabs- Instances will be overwritten during this export process!!!\n")
 
     # Create of .sh file
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
+
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + reg+"/"+service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Instances #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         for ntk_compartment_name in export_compartments:
-           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, display_names, ad_names,ct)
+           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, display_names, ad_names,ct,state)
 
     # writing image ocids and SSH keys into variables file
     var_data = {}
@@ -361,11 +382,15 @@ def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export
             f.write(var_data[reg])
         f.close()
 
-    # write data into file
+    # writing data
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+
+        init_commands = f'\n######### Writing import for Instances #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 
     commonTools.write_to_cd3(values_for_column_instances, cd3file, "Instances")
     print("{0} Instance Details exported into CD3.\n".format(len(values_for_column_instances["Region"])))

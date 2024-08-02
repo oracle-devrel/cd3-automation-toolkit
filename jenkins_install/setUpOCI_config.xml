@@ -27,7 +27,7 @@
       <parameterDefinitions>
         <io.jenkins.plugins.file__parameters.StashedFileParameterDefinition plugin="file-parameters@316.va_83a_1221db_a_7">
           <name>Excel_Template</name>
-          <description>Upload input Excel file.
+          <description>Upload input Excel file for the services chosen.
 Previously uploaded file will be used if left empty.</description>
         </io.jenkins.plugins.file__parameters.StashedFileParameterDefinition>
         <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@2.8.1">
@@ -197,10 +197,10 @@ def generateStage(job) {
             if (values.size() > 1) {
                 region = values[0]
                 service = values[1]
-                job_name = "./terraform_files/${region}/${service}/terraform-apply".replace("//","/")
+                job_name = "./terraform_files/${region}/${service}/apply".replace("//","/")
             }else {
                 region = values[0]
-                job_name = "./terraform_files/${region}/terraform-apply".replace("//","/")
+                job_name = "./terraform_files/${region}/apply".replace("//","/")
             }
             build job: "${job_name}"
         }
@@ -285,7 +285,7 @@ pipeline {
     }
     environment {
         prop_file = "/cd3user/tenancies/${customer_prefix}/${customer_prefix}_setUpOCI.properties"
-        //current_timestamp = sh (script: 'date +%m-%d-%Y-%H-%M-%S', returnStdout: true).trim()
+        current_timestamp = sh (script: 'date +%s', returnStdout: true).trim()
     }
     parameters {
         stashedFile (
@@ -394,23 +394,50 @@ pipeline {
 
                     '''
                 script {
-                    // For latest CD3 XL file.
-                    def latestXL = sh(returnStdout: true, script: '''
-                                    set +x
-                                    ls -t /cd3user/tenancies/${customer_prefix}/*.xl* | head -n 1
-                                    ''').trim()
+                    sh '''
+                    set +x
 
-
+		            # For latest CD3 XL file.
+		            latestXL=`ls -t /cd3user/tenancies/${customer_prefix}/*.xl* | head -n 1`
                     echo "XL is ${latestXL}"
-                    sh "rm -f *.xl*"
-                    sh "cp '${latestXL}' ."
+                    rm -f *.*
+                    cp ${latestXL} .
 
+                    # Check for cis_reports and show_oci directories
+                    if [ -d "/cd3user/tenancies/${customer_prefix}/othertools_files/${customer_prefix}_cis_report" ]; then
+                    last_modified=`stat -c "%Y" /cd3user/tenancies/${customer_prefix}/othertools_files/${customer_prefix}_cis_report`
+                    if [ $(($last_modified-$current_timestamp)) -gt 0 ]; then
+                        cp -r /cd3user/tenancies/${customer_prefix}/othertools_files/${customer_prefix}_cis_report .
+                        tar -cf ${customer_prefix}_cis_report.zip ${customer_prefix}_cis_report/
+                        rm -rf ${customer_prefix}_cis_report
+                    fi
+                    fi
+                    if [ -d "/cd3user/tenancies/${customer_prefix}/othertools_files/${customer_prefix}_showoci_report" ]; then
+                    last_modified=`stat -c "%Y" /cd3user/tenancies/${customer_prefix}/othertools_files/${customer_prefix}_showoci_report`
+                    if [ $(($last_modified-$current_timestamp)) -gt 0 ]; then
+                        cp -r /cd3user/tenancies/${customer_prefix}/othertools_files/${customer_prefix}_showoci_report .
+                        tar -cf ${customer_prefix}_showoci_report.zip ${customer_prefix}_showoci_report/
+                        rm -rf ${customer_prefix}_showoci_report
+                    fi
+                    fi
+
+                    # For latest oci_fsdr plan XL file.
+                    count=`ls -1 /cd3user/tenancies/${customer_prefix}/othertools_files/*.xl* 2>/dev/null | wc -l`
+                    if [ $count != 0 ]; then
+            		latest_fsdr_XL=`ls -t /cd3user/tenancies/${customer_prefix}/othertools_files/*.xl* | head -n 1`
+            		last_modified=`stat -c \"%Y\" ${latest_fsdr_XL}`
+            		if [ $(($last_modified-$current_timestamp)) -gt 0 ]; then
+            		    cp ${latest_fsdr_XL} .
+            		fi
+            		fi
+            		'''
                     }
                 }
             }
             post {
                 success {
-                    archiveArtifacts '*.xl*'
+                    archiveArtifacts '*.xl*, *.zip'
+
                 }
             }
         }

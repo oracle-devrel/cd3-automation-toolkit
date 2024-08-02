@@ -10,6 +10,7 @@ import json
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.core.blockstorage_client import BlockstorageClient
 import os
+import subprocess as sp
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
 
@@ -21,14 +22,16 @@ def get_volume_data(bvol, volume_id, ct):
     vol_comp = list(ct.ntk_compartment_ids.keys())[comp_list.index(volume_data.compartment_id)]
     return vol_comp+'@'+vol_name
 
-###SDDC Data
+### Execution start here - SDDC Data
 def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compartments=[], export_regions=[]):
     cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
-
-    global importCommands,importCommands_cluster, values_for_column_sddc, df, sheet_dict_sddc  # declaring global variables
+    # declaring global variables
+    global importCommands,importCommands_cluster, values_for_column_sddc, df, sheet_dict_sddc,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     sheetName= "SDDCs"
     sheetNameNetwork = "SDDCs-Network"
@@ -51,23 +54,29 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
     print("Tabs- SDDCs and SDDCs-Network will be overwritten during this export process!!!\n")
 
     # Create of .sh file
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
+    total_resources=0
+
+    # Create backups
     for reg in export_regions:
-        ## Create of .sh file for sddc
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg+"/"+service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
+        importCommands[reg] = ''
 
     for reg in export_regions:
         var_data[reg] = ""
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        importCommands[reg].write("\n######### Writing import for SDDC #########\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         sddc_client = oci.ocvp.SddcClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         sddc_cluster_client = oci.ocvp.ClusterClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -104,18 +113,18 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                         key_name = commonTools.check_tf_variable(sddc.display_name)
                         ssh_key = json.dumps(sddc.ssh_authorized_keys)
                         sddc_keys[key_name] = ssh_key
-
-                        importCommands[reg].write(
-                            "\nterraform import \"module.sddcs[\\\"" + tf_name + "\\\"].oci_ocvp_sddc.sddc\" " + sddc.id)
+                        tf_resource = f'module.sddcs[\\"{tf_name}\\"].oci_ocvp_sddc.sddc'
+                        if tf_resource not in state["resources"]:
+                            importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {sddc.id}'
 
                     elif sddc_cluster.vsphere_type == "WORKLOAD":
                         sddc_network = sddc_cluster_data.network_configuration
                         sddc_datastores = sddc_cluster_data.datastores
                         tf_name = commonTools.check_tf_variable(
                             sddc.display_name + "--" + sddc_cluster_data.display_name)
-
-                        importCommands[reg].write(
-                            "\nterraform import \"module.sddc-clusters[\\\"" + tf_name + "\\\"].oci_ocvp_cluster.sddc_cluster\" " + sddc_cluster.id)
+                        tf_resource = f'module.sddc-clusters[\\"{tf_name}\\"].oci_ocvp_cluster.sddc_cluster'
+                        if tf_resource not in state["resources"]:
+                            importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {sddc_cluster.id}'
 
                     if 'Standard' in (
                     sddc_init_config.initial_host_shape_name if sddc_cluster.vsphere_type == "MANAGEMENT" else sddc_cluster.initial_host_shape_name):
@@ -170,12 +179,20 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                         elif col_header == 'SSH Key Var Name':
                             values_for_column_sddc[col_header].append(
                                 key_name if sddc_cluster.vsphere_type == "MANAGEMENT" else "")
-                        elif col_header == "Provisioning Subnet":
+                        elif col_header == "Network Details":
                             subnet_id = sddc_network.provisioning_subnet_id
                             subnet_info = vnc.get_subnet(subnet_id)
                             sub_name = subnet_info.data.display_name
                             vcn_name = vnc.get_vcn(subnet_info.data.vcn_id).data.display_name
-                            values_for_column_sddc[col_header].append(vcn_name + "_" + sub_name)
+
+                            ntk_compartment_id = vnc.get_vcn(subnet_info.data.vcn_id).data.compartment_id  # compartment-id
+                            network_compartment_name = ntk_compartment_name
+                            for comp_name, comp_id in ct.ntk_compartment_ids.items():
+                                if comp_id == ntk_compartment_id:
+                                    network_compartment_name = comp_name
+
+                            vplussubnet = network_compartment_name + "@" + vcn_name + "::" + sub_name
+                            values_for_column_sddc[col_header].append(vplussubnet)
                         elif col_header == "NSX Edge Uplink1 VLAN":
                             vlan_id = sddc_network.nsx_edge_uplink1_vlan_id
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
@@ -241,9 +258,12 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
         with open(file, "w") as f:
             f.write(var_data[reg])
 
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        init_commands = f'\n#!/bin/bash\n{tf_or_tofu} init\n######### Writing import for SDDC #########\n'
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 
     commonTools.write_to_cd3(values_for_column_sddc, cd3file, sheetName)
     commonTools.write_to_cd3(values_for_column_sddc, cd3file, sheetNameNetwork)
-    print("{0} SDDC Cluster Details exported into CD3.\n".format(len(values_for_column_sddc["Region"])))
+    print("{0} SDDC Clusters exported into CD3.\n".format(len(values_for_column_sddc["Region"])))

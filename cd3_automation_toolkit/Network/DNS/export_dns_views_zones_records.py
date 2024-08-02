@@ -6,6 +6,7 @@
 #
 import oci
 import os
+import subprocess as sp
 from commonTools import *
 
 importCommands = {}
@@ -15,7 +16,7 @@ oci_obj_names = {}
 def get_rrset(zone_data,dns_client,record_default):
     r_map = {}
     r_tmp = {}
-    zone_records = dns_client.get_zone_records(zone_data.id).data
+    zone_records = oci.pagination.list_call_get_all_results(dns_client.get_zone_records,zone_data.id).data
 
     for zone_record in zone_records.items:
         if record_default == 'n' and zone_record.is_protected == True:
@@ -40,7 +41,7 @@ def get_rrset(zone_data,dns_client,record_default):
     return r_map
 
 
-def print_data(region, ntk_compartment_name, rrset, zone_data, view_data, values_for_column):
+def print_data(region, ntk_compartment_name, rrset, zone_data, view_data, values_for_column,state):
     view_tf_name = str(view_data.display_name)
     #zone_tf_name = view_tf_name + "_" + str(zone_data.name).replace(".", "_")
     zone_name = str(zone_data.name).replace(".", "_")
@@ -49,9 +50,9 @@ def print_data(region, ntk_compartment_name, rrset, zone_data, view_data, values
     rrset_tf_name = str(view_tf_name + "_" + zone_name + "_" + domain.replace(".", "_") + "_" + rtype).replace(".", "_")
     rrset_id = "zoneNameOrId/"+str(zone_data.id)+"/domain/"+domain+"/rtype/"+rtype+"/scope/PRIVATE/viewId/"+str(
             view_data.id)
-    importCommands[region.lower()].write(
-        "\nterraform import \"module.dns-rrsets[\\\"" + rrset_tf_name + "\\\"].oci_dns_rrset.rrset\" " + rrset_id)
-
+    tf_resource = f'module.dns-rrsets[\\"{rrset_tf_name}\\"].oci_dns_rrset.rrset'
+    if tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {rrset_id}'
 
     for col_header in values_for_column:
         if col_header == 'Region':
@@ -104,7 +105,9 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
     global values_for_vcninfo
     global cd3file
     global reg
-    global values_for_column
+    global values_for_column,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -127,23 +130,28 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
     print("Tabs- DNS-ViewsZonesRecords  will be overwritten during export process!!!\n")
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
-    for reg in export_regions:
-        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
 
     # Fetch Views/Zones/rrsets Details
     print("\nFetching details of DNS Views/Zones/Records...")
 
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for DNS Views/Zones/RRsets #########\n\n")
+        resource = 'import_' + sheetName.lower()
+        importCommands[reg] = ""
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        if (os.path.exists(script_file)):
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
+
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         region = reg.capitalize()
         dns_client = oci.dns.DnsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         # Same compartment will be used to export view/zones
@@ -152,6 +160,7 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
             for view_data in views.data:
                 if view_default == 'n' and view_data.is_protected == True:
                     continue
+
                 #view_data = dns_client.get_view(view.id).data
                 view_tf_name = str(view_data.display_name)
                 zones = oci.pagination.list_call_get_all_results(dns_client.list_zones,
@@ -167,18 +176,18 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
                         rrsets = get_rrset(zone_data, dns_client, record_default)
                         if rrsets:
                             for rrset in rrsets.values():
-                                print_data(region, ntk_compartment_name, rrset, zone_data, view_data, values_for_column)
-                            importCommands[region.lower()].write(
-                                "\nterraform import \"module.dns-zones[\\\"" + zone_tf_name + "\\\"].oci_dns_zone.zone\" " + str(
-                                    zone_data.id))
+                                print_data(region, ntk_compartment_name, rrset, zone_data, view_data, values_for_column,state)
+                            tf_resource = f'module.dns-zones[\\"{zone_tf_name}\\"].oci_dns_zone.zone'
+                            if tf_resource not in state["resources"]:
+                                importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(zone_data.id)}'
+
                         else:
                             print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
                 else:
                     print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
-
-                importCommands[region.lower()].write(
-                    "\nterraform import \"module.dns-views[\\\"" + view_tf_name + "\\\"].oci_dns_view.view\" " + str(
-                        view_data.id))
+                tf_resource = f'module.dns-views[\\"{view_tf_name}\\"].oci_dns_view.view'
+                if tf_resource not in state["resources"]:
+                    importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(view_data.id)}'
 
                 #print_data(region, view_data)
 
@@ -190,5 +199,8 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
     # writing data
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        if importCommands[reg] != "":
+            init_commands = f'\n######### Writing import for DNS Views/Zones/RRsets #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])

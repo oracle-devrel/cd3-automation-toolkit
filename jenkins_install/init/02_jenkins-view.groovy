@@ -1,5 +1,9 @@
 import jenkins.model.Jenkins
+import hudson.model.ListView
+import hudson.model.ViewGroup
+import com.cloudbees.hudson.plugins.folder.Folder
 
+// Function to create views for each region within profile directories
 def createRegionViews() {
     def jenkinsInstance = Jenkins.getInstance()
     if (jenkinsInstance == null) {
@@ -7,48 +11,81 @@ def createRegionViews() {
         return
     }
 
-    def parentPath = "terraform_files"
-    def parent = jenkinsInstance.getItemByFullName(parentPath)
+    // Read the properties file
+    def JENKINS_HOME = System.getenv("JENKINS_HOME")
+    File file = new File("$JENKINS_HOME/jenkins.properties")
 
-    if (parent != null && parent instanceof hudson.model.ViewGroup) {
-        parent.items.each { regionFolder ->
-            def viewName = regionFolder.name
-            def view = jenkinsInstance.getView(viewName)
-
-            if (view == null) {
-                view = new hudson.model.ListView(viewName, jenkinsInstance)
-                jenkinsInstance.addView(view)
-            }
-
-            // Clear the view to remove any existing jobs
-            view.items.clear()
-
-            // Add jobs to the view
-            addJobsToView(view, regionFolder)
-
-            // Set the "Recurse in folders" option
-            view.setRecurse(true)
-
-            // Save the view configuration
-            view.save()
-
-            println("View '$viewName' created successfully.")
+    // Parse the properties file into profiles
+    def profiles = [:]
+    def currentProfile = ""
+    file.eachLine { line ->
+        if (line.startsWith('[')) {
+            currentProfile = line.replace('[', '').replace(']', '').trim()
+            profiles[currentProfile] = [:]
+        } else if (line.contains('=')) {
+            def parts = line.split('=')
+            profiles[currentProfile][parts[0].trim()] = Eval.me(parts[1].trim())
         }
-    } else {
-        println("Parent folder not found: $parentPath")
+    }
+
+    // Create views for each profile
+    profiles.each { profileName, profile ->
+        def profileFolder = jenkinsInstance.getItem(profileName)
+        if (profileFolder != null && profileFolder instanceof ViewGroup) {
+            profile.regions.each { region ->
+                def viewName = region
+                def view = profileFolder.getView(viewName)
+
+                if (view == null) {
+                    println("Creating view: $viewName in profile: $profileName")
+                    def newView = new ListView(viewName)
+                    profileFolder.addView(newView)
+                    newView.save()
+                    println("View '$viewName' created successfully in profile '$profileName'.")
+                    view = newView
+                } else {
+                    println("View '$viewName' already exists in profile '$profileName'.")
+                }
+
+                // Clear the view to remove any existing jobs
+                view.items.clear()
+
+                // Navigate through the structure to find jobs
+                def terraformFilesFolder = profileFolder.getItem('terraform_files')
+                if (terraformFilesFolder instanceof ViewGroup) {
+                    def regionFolder = terraformFilesFolder.getItem(region)
+                    if (regionFolder instanceof ViewGroup) {
+                        regionFolder.items.each { serviceFolder ->
+                            if (serviceFolder instanceof ViewGroup) {
+                                addJobsToView(view, serviceFolder)
+                            }
+                        }
+                    }
+                }
+
+                // Set the "Recurse in folders" option
+                view.setRecurse(true)
+
+                // Save the view configuration
+                view.save()
+            }
+        } else {
+            println("Profile folder not found: $profileName")
+        }
     }
 }
 
-def addJobsToView(hudson.model.ListView view, hudson.model.ViewGroup folder) {
+// Function to add jobs to view
+def addJobsToView(ListView view, ViewGroup folder) {
     folder.items.each { item ->
         if (item instanceof hudson.model.Job) {
             view.add(item)
-        } else if (item instanceof hudson.model.ViewGroup) {
+        } else if (item instanceof ViewGroup) {
             // Recursively add jobs from sub-folders
             addJobsToView(view, item)
         }
     }
 }
 
-// function to create region views
+// Function to create region views
 createRegionViews()

@@ -54,6 +54,9 @@ def fwpolicy_create_apps(inputfile, outdir, service_dir, prefix, ct):
         apps_str[reg] = ''
         apps_names[reg] = []
         apps_str_02[reg] = ''
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
+        resource = sheetName.lower()
+        commonTools.backup_file(reg_out_dir, resource, apps_auto_tfvars_filename)
 
 
     # List of the column headers
@@ -165,12 +168,11 @@ def fwpolicy_create_apps(inputfile, outdir, service_dir, prefix, ct):
         apps_str_02[region] = apps_str_02[region] + apps_str[region]
 
     for reg in region_list:
-        resource = "firewall-policy-apps"
         reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + apps_auto_tfvars_filename
-        commonTools.backup_file(reg_out_dir, resource, apps_auto_tfvars_filename)
+
         if apps_str_02[reg] != '':
             # Generate Final String
             src = "##Add New apps for " + reg.lower() + " here##"

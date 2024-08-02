@@ -167,7 +167,7 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
         srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-    subnets = parseSubnets(filename)
+    #subnets = parseSubnets(filename)
 
     fss_tf_name = ''
     for i in df.index:
@@ -189,7 +189,7 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
         if region in commonTools.endNames:
             break
 
-        if region.lower() == 'nan' and str(df.loc[i, 'Compartment Name']).strip().lower() == 'nan' and str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).strip().lower() == 'nan' and str(df.loc[i, 'MountTarget Name']).strip().lower() == 'nan' and str(df.loc[i, 'MountTarget SubnetName']).strip().lower() == 'nan':
+        if region.lower() == 'nan' and str(df.loc[i, 'Compartment Name']).strip().lower() == 'nan' and str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).strip().lower() == 'nan' and str(df.loc[i, 'MountTarget Name']).strip().lower() == 'nan' and str(df.loc[i, 'Network Details']).strip().lower() == 'nan':
             continue
 
         region = str(region).lower().strip()
@@ -232,23 +232,26 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
             subnet_id = ''
             network_compartment_id=''
             vcn_name=''
-            if columnname == 'MountTarget SubnetName':
-                subnet_tf_name = columnvalue.strip()
-                if ("ocid1.subnet.oc1" in subnet_tf_name):
-                    network_compartment_id = ""
+            if columnname == 'Network Details':
+                columnvalue = columnvalue.strip()
+                if ("ocid1.subnet.oc" in columnvalue):
+                    network_compartment_id = "root"
                     vcn_name = ""
-                    subnet_id = subnet_tf_name
-                elif subnet_tf_name.lower()!='nan' and subnet_tf_name.lower()!='':
-                    try:
-                        key = region, subnet_tf_name
-                        network_compartment_id = subnets.vcn_subnet_map[key][0]
-                        vcn_name = subnets.vcn_subnet_map[key][1]
-                        subnet_id = subnets.vcn_subnet_map[key][2]
-                    except Exception as e:
-                        print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                    subnet_id = columnvalue
+                elif columnvalue.lower()!='nan' and columnvalue.lower()!='':
+                    if len(columnvalue.split("@")) == 2:
+                        network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                        vcn_subnet_name = columnvalue.split("@")[1].strip()
+                    else:
+                        network_compartment_id = commonTools.check_tf_variable(str(df.loc[i, 'Compartment Name']).strip())
+                        vcn_subnet_name = columnvalue
+                    if("::" not in vcn_subnet_name):
+                        print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
                         exit(1)
-
-                tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,
+                    else:
+                        vcn_name=vcn_subnet_name.split("::")[0].strip()
+                        subnet_id = vcn_subnet_name.split("::")[1].strip()
+                tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
                             'subnet_id': subnet_id}
 
             if columnname == "Access (READ_ONLY|READ_WRITE)":
@@ -366,16 +369,12 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
                 tempStr.update(tempdict)
             if columnname == "Snapshot Policy":
                 if columnvalue != '':
-                    if "@" in columnvalue:
-                        if len(columnvalue.split("@")) == 2:
+                    if len(columnvalue.split("@")) == 2:
                             snapshot_policy_comp = columnvalue.split("@")[0].strip()
                             snapshot_policy_comp = commonTools.check_tf_variable(snapshot_policy_comp)
                             snapshot_policy_name = columnvalue.split("@")[1].strip()
-                        else:
-                            snapshot_policy_comp = ''
-                            snapshot_policy_name = ''
                     else:
-                        snapshot_policy_comp = ''
+                        snapshot_policy_comp = commonTools.check_tf_variable(str(df.loc[i, 'Compartment Name']).strip())
                         snapshot_policy_name = columnvalue.strip()
                 else:
                     snapshot_policy_comp = ''

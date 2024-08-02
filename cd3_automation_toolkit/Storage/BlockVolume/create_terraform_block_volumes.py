@@ -47,6 +47,9 @@ def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,ct):
     # Take backup of files
     for eachregion in ct.all_regions:
         tfStr[eachregion] = ''
+        reg_out_dir = outdir + "/" + eachregion + "/" + service_dir
+        resource = sheetName.lower()
+        commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
     for i in df.index:
 
@@ -264,9 +267,6 @@ def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,ct):
             src = "##Add New Block Volumes for "+reg.lower()+" here##"
             tfStr[reg] = template.render(count=0, region=reg).replace(src,tfStr[reg])
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-
-            resource=sheetName.lower()
-            commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
             # Write to TF file
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])

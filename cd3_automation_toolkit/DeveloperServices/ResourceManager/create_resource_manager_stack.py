@@ -34,7 +34,7 @@ def create_rm(service_rm_name, comp_id,ocs_stack,svcs):
         stackdetails.description = "Created by Automation ToolKit"
     else:
         stackdetails.description = "Created by Automation ToolKit for services - "+ ','.join(svcs)
-    stackdetails.terraform_version = "1.0.x"
+    stackdetails.terraform_version = "1.5.x"
     stackdetails.compartment_id = comp_id
     stackdetails.display_name = service_rm_name
 
@@ -63,7 +63,7 @@ def update_rm(service_rm_name,service_rm_ocid,ocs_stack,svcs):
     zipConfigSource.config_source_type = 'ZIP_UPLOAD'
     zipConfigSource.zip_file_base64_encoded = encodedZip
     updatestackdetails.config_source = zipConfigSource
-    updatestackdetails.terraform_version = "1.0.x"
+    updatestackdetails.terraform_version = "1.5.x"
     if svcs == []:
         updatestackdetails.description = "Updated by Automation ToolKit"
     else:
@@ -136,10 +136,10 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
                     for line in origfile:
                         if 'version' in line or 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
                             pass
-                        elif 'terraform {' in line:
-                            experimental_line = "experiments = [module_variable_optional_attrs]"
-                            line = line + "\n  " + experimental_line + "\n  "
-                            newfile.write(line)
+                        #elif 'terraform {' in line:
+                        #    experimental_line = "experiments = [module_variable_optional_attrs]"
+                        #    line = line + "\n  " + experimental_line + "\n  "
+                        #    newfile.write(line)
                         else:
                             newfile.write(line)
             except FileNotFoundError as e:
@@ -150,10 +150,12 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
             try:
                 with open(region_dir + '/variables_' + region + '.tf') as origfile, open(rm_dir + '/variables_' + region + '.tf', 'w') as newfile:
                     for line in origfile:
+                        '''
                         if 'gateway_route_table = optional(bool,false)' in line:
                             line = line.replace('gateway_route_table = optional(bool,false)','gateway_route_table = optional(bool)')
                         if 'default_route_table = optional(bool,false)' in line:
                             line = line.replace('default_route_table = optional(bool,false)','default_route_table = optional(bool)')
+                        '''
                         if "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
                             skipline = True
                         if not skipline:
@@ -171,10 +173,11 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
                         for line in origfile:
                             if 'version' in line or 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
                                 pass
-                            elif 'terraform {' in line:
-                                experimental_line = "experiments = [module_variable_optional_attrs]"
-                                line = line+"\n  "+experimental_line+"\n  "
-                                newfile.write(line)
+
+                            #elif 'terraform {' in line:
+                            #    experimental_line = "experiments = [module_variable_optional_attrs]"
+                            #    line = line+"\n  "+experimental_line+"\n  "
+                            #    newfile.write(line)
                             else:
                                 newfile.write(line)
                 except FileNotFoundError as e:
@@ -185,12 +188,14 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
                 try:
                     with open(region_dir+'/'+service_dir+'/variables_' + region + '.tf') as origfile, open(rm_dir + '/'+ service_dir +'/variables_' + region + '.tf','w') as newfile:
                         for line in origfile:
+                            '''
                             if 'gateway_route_table = optional(bool,false)' in line:
                                 line = line.replace('gateway_route_table = optional(bool,false)',
                                                     'gateway_route_table = optional(bool)')
                             if 'default_route_table = optional(bool,false)' in line:
                                 line = line.replace('default_route_table = optional(bool,false)',
                                                     'default_route_table = optional(bool)')
+                            '''
                             if "user_ocid"  in line or "fingerprint"  in line or "private_key_path" in line:
                                 skipline = True
                             if not skipline:

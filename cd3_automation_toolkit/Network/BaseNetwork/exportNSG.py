@@ -4,6 +4,7 @@ import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
 import os
+import subprocess as sp
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 
@@ -13,7 +14,7 @@ def convertNullToNothing(input):
         return EMPTY_STRING
     else:
         return str(input)
-def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsgsl,i):
+def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsgsl,i,state):
     tf_name = commonTools.check_tf_variable(str(vcn_name)+"_"+str(nsg.display_name))
     sportmin = ""
     sportmax = ""
@@ -133,13 +134,14 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
             values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
 
     nsg_rule_tf_name = tf_name + "_security_rule" + str(i)
-    if tf_import_cmd:
-        importCommands[region.lower()].write("\nterraform import \"module.nsg-rules[\\\""+nsg_rule_tf_name+"\\\"].oci_core_network_security_group_security_rule.nsg_rule\" " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
+    tf_resource = f'module.nsg-rules[\\"{nsg_rule_tf_name}\\"].oci_core_network_security_group_security_rule.nsg_rule'
+    if tf_import_cmd and tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" networkSecurityGroups/{str(nsg.id)}/securityRules/{str(nsgsl.id)}'
 
     # importCommands[region.lower()].write("\nterraform import oci_core_network_security_group_security_rule." + tf_name + "_security_rule" + str(i) + " " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
 
 
-def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
+def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg,state):
     tf_name = commonTools.check_tf_variable(str(vcn_name)+"_"+str(nsg.display_name))
 
     for col_header in values_for_column_nsgs.keys():
@@ -154,16 +156,20 @@ def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
         else:
             oci_objs = [nsg]
             values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
-    if tf_import_cmd:
-        importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name +  "\\\"].oci_core_network_security_group.network_security_group\" " + str(nsg.id))
+    tf_resource = f'module.nsgs[\\"{tf_name}\\"].oci_core_network_security_group.network_security_group'
+    if tf_import_cmd and tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(nsg.id)}'
 
 # Execution of the code begins here
 def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartments,export_regions,_tf_import_cmd):
     global tf_import_cmd
     global values_for_column_nsgs
     global sheet_dict_nsgs
-    global importCommands
+    global importCommands,tf_or_tofu
     cd3file = inputfile
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     if '.xls' not in cd3file:
         print("\nAcceptable cd3 format: .xlsx")
@@ -184,18 +190,22 @@ def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartm
     if tf_import_cmd:
         importCommands={}
         for reg in export_regions:
-            if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_network_nsg_nonGF.sh")):
-                commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, "tf_import_network",
-                                        "tf_import_commands_network_nsg_nonGF.sh")
-            importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_nsg_nonGF.sh", "w")
-            importCommands[reg].write("#!/bin/bash")
-            importCommands[reg].write("\n")
-            importCommands[reg].write("terraform init")
-            importCommands[reg].write("\n\n######### Writing import for NSG #########\n\n")
+            if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/import_commands_network_nsg.sh")):
+                commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, "import_network",
+                                        "import_commands_network_nsg.sh")
+            importCommands[reg] = ""
 
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         nsglist = [""]
@@ -213,28 +223,34 @@ def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartm
                                                                     lifecycle_state="AVAILABLE")
 
                     for nsg in NSGs.data:
-                        NSGSLs = vnc.list_network_security_group_security_rules(nsg.id, sort_by="TIMECREATED")
+                        NSGSLs = oci.pagination.list_call_get_all_results(vnc.list_network_security_group_security_rules, network_security_group_id= nsg.id, sort_by="TIMECREATED")
                         i = 1
                         for nsgsl in NSGSLs.data:
                             nsglist.append(nsg.id)
                             print_nsgsl(values_for_column_nsgs, vnc, region, ntk_compartment_name_again,
-                                        vcn_info.display_name, nsg, nsgsl, i)
+                                        vcn_info.display_name, nsg, nsgsl, i,state)
                             i = i + 1
                         if (nsg.id not in nsglist):
                             print_nsg(values_for_column_nsgs, region, ntk_compartment_name_again, vcn_info.display_name,
-                                      nsg)
+                                      nsg,state)
                         else:
                             tf_name = commonTools.check_tf_variable(str(vcn_info.display_name)+"_"+str(nsg.display_name))
 
-                            if tf_import_cmd:
-                                importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name + "\\\"].oci_core_network_security_group.network_security_group\" " + str(
-                                    nsg.id))
+                            tf_resource = f'module.nsgs[\\"{tf_name}\\"].oci_core_network_security_group.network_security_group'
+                            if tf_import_cmd and tf_resource not in state["resources"]:
+                                importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(nsg.id)}'
+
 
     commonTools.write_to_cd3(values_for_column_nsgs, cd3file, "NSGs")
     print("NSGs exported to CD3\n")
 
     if tf_import_cmd:
         for reg in export_regions:
-            importCommands[reg].write('\n\nterraform plan\n')
-            importCommands[reg].close()
+            script_file = f'{outdir}/{reg}/{service_dir}/import_commands_network_nsg.sh'
+            init_commands = f'\n#!/bin/bash\n{tf_or_tofu} init\n######### Writing import for NSGs #########\n'
+            if importCommands[reg] != "":
+                importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+                with open(script_file, 'a') as importCommandsfile:
+                    importCommandsfile.write(init_commands + importCommands[reg])
+
 

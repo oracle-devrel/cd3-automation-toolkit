@@ -7,9 +7,10 @@
 
 locals {
   detector_recipes = {
-    "OCI Activity Detector Recipe"      = data.oci_cloud_guard_detector_recipes.root_activity_detector_recipes.detector_recipe_collection[0].items[0].id
-    "OCI Configuration Detector Recipe" = data.oci_cloud_guard_detector_recipes.root_config_detector_recipes.detector_recipe_collection[0].items[0].id
-    "OCI Threat Detector Recipe"        = data.oci_cloud_guard_detector_recipes.root_threat_detector_recipes.detector_recipe_collection[0].items[0].id
+    "OCI Activity Detector Recipe"          = data.oci_cloud_guard_detector_recipes.root_activity_detector_recipes.detector_recipe_collection[0].items[0].id
+    "OCI Configuration Detector Recipe"     = data.oci_cloud_guard_detector_recipes.root_config_detector_recipes.detector_recipe_collection[0].items[0].id
+    "OCI Threat Detector Recipe"            = data.oci_cloud_guard_detector_recipes.root_threat_detector_recipes.detector_recipe_collection[0].items[0].id
+    "OCI Instance Security Detector Recipe" = data.oci_cloud_guard_detector_recipes.root_instance_security_detector_recipes.detector_recipe_collection[0].items[0].id
   }
   responder_recipes = {
     "OCI Responder Recipe" = data.oci_cloud_guard_responder_recipes.root_responder_recipes.responder_recipe_collection[0].items[0].id
@@ -39,3 +40,11 @@ data "oci_cloud_guard_detector_recipes" "root_threat_detector_recipes" {
   compartment_id = var.tenancy_ocid
   display_name   = "OCI Threat Detector Recipe"
 }
+
+data "oci_cloud_guard_detector_recipes" "root_instance_security_detector_recipes" {
+  #Required
+  compartment_id = var.tenancy_ocid
+  display_name   = "OCI Instance Security Detector Recipe"
+}
+
+

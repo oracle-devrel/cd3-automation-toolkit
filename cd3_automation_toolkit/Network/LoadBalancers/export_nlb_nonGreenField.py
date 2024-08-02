@@ -10,6 +10,7 @@
 import sys
 import oci
 import os
+import subprocess as sp
 
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.network_load_balancer import NetworkLoadBalancerClient
@@ -20,7 +21,7 @@ from commonTools import *
 importCommands = {}
 oci_obj_names = {}
 
-def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, nlb_compartment_name,cmpt,vcn,nlb):
+def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, nlb_compartment_name,cmpt,vcn,nlb,state):
 
     for eachnlb in NLBs.data:
         cnt_bss = 0
@@ -40,7 +41,9 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
             cnt_bss = cnt_bss + 1
 
             backendsets_tf_name = commonTools.check_tf_variable(backendsets)
-            importCommands[reg].write("\nterraform import \"module.nlb-backend-sets[\\\"" + str(tf_name) + "_" + str(backendsets_tf_name) + "\\\"].oci_network_load_balancer_backend_set.backend_set\" networkLoadBalancers/" + eachnlb.id + "/backendSets/" + backendsets)
+            tf_resource = f'module.nlb-backend-sets[\\"{tf_name}_{backendsets_tf_name}\\"].oci_network_load_balancer_backend_set.backend_set'
+            if tf_resource not in state["resources"]:
+                importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" networkLoadBalancers/{eachnlb.id}/backendSets/{backendsets}'
 
             backend_list = ""
             backendset_details = nlb.get_backend_set(eachnlb.__getattribute__('id'), backendsets).data
@@ -59,7 +62,12 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
                     if "ocid1.privateip" in backend_value:
                         private_ip_ocid = backend_value.split(":")[0]
                         #port = backend_value.split(":")[1]
-                        private_ip = vcn.get_private_ip(private_ip_ocid).data
+                        try:
+                            private_ip = vcn.get_private_ip(private_ip_ocid).data
+                        except Exception as e:
+                            print("Some issue with  Backend "+backend_value+ " for NLB "+nlb_display_name+". Skipping it...")
+                            continue
+
                         vnic_ocid = private_ip.vnic_id
                         vnic = vcn.get_vnic(vnic_ocid).data
                         vnic_found = 0
@@ -75,19 +83,20 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
                             if vnic_found==1:
                                 break
 
-                        backend = instance_comp_name+"&"+instance_display_name+":"+port
+                        backend = instance_comp_name+"@"+instance_display_name+":"+port
                         backend_list = backend_list + "," + backend
 
                         backendservers_name = instance_display_name +"-"+str(cnt_bes)
                         backendservers_tf_name = commonTools.check_tf_variable(backendservers_name)
                     else:
                         backend = backend_value
-                        backend_list= backend_list+","+"&"+backend
+                        backend_list= backend_list+","+backend
 
                         backendservers_name = backend.split(":")[0] +"-"+str(cnt_bes)
                         backendservers_tf_name = commonTools.check_tf_variable(backendservers_name)
-
-                    importCommands[reg].write("\nterraform import \"module.nlb-backends[\\\"" + str(tf_name) + "_" + backendsets_tf_name + "_" + backendservers_tf_name + "\\\"].oci_network_load_balancer_backend.backend\" networkLoadBalancers/" + eachnlb.id + "/backendSets/" + backendsets + "/backends/" + backend_value)
+                    tf_resource = f'module.nlb-backends[\\"{tf_name}_{backendsets_tf_name}_{backendservers_tf_name}\\"].oci_network_load_balancer_backend.backend'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" networkLoadBalancers/{eachnlb.id}/backendSets/{backendsets}/backends/{backend_value}'
 
                 if (backend_list != "" and backend_list[0] == ','):
                     backend_list = backend_list.lstrip(',')
@@ -123,7 +132,7 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
                 elif 'Backend HealthCheck' in col_header:
                     values_for_column_bss[col_header].append(hc.__getattribute__(sheet_dict_bss[col_header]))
 
-                elif col_header == "Backend ServerComp&ServerName:Port":
+                elif col_header == "Backend ServerComp@ServerName:Port":
                     values_for_column_bss[col_header].append(backend_list)
 
                 elif col_header == "Backend Set Name":
@@ -135,7 +144,7 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
     return values_for_column_bss
 
 
-def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartment_name,vcn):
+def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartment_name,vcn,ct,state):
     for eachnlb in NLBs.data:
 
         # Filter out the NLBs provisioned by oke
@@ -148,7 +157,9 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
 
         nlb_display_name = eachnlb.display_name
         tf_name = commonTools.check_tf_variable(nlb_display_name)
-        importCommands[reg].write("\nterraform import \"module.network-load-balancers[\\\"" + str(tf_name) + "\\\"].oci_network_load_balancer_network_load_balancer.network_load_balancer\" " + eachnlb.id)
+        tf_resource = f'module.network-load-balancers[\\"{tf_name}\\"].oci_network_load_balancer_network_load_balancer.network_load_balancer'
+        if tf_resource not in state["resources"]:
+            importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {eachnlb.id}'
 
         cnt_lsnr = 0
 
@@ -159,8 +170,13 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
         vcn_id = subnet_info.vcn_id
         vcn_info = vcn.get_vcn(vcn_id).data
         vcn_name = vcn_info.display_name
+        ntk_compartment_id = vcn.get_vcn(vcn_id).data.compartment_id  # compartment-id
+        network_compartment_name = nlb_compartment_name
+        for comp_name, comp_id in ct.ntk_compartment_ids.items():
+            if comp_id == ntk_compartment_id:
+                network_compartment_name = comp_name
 
-        subnet_detail = vcn_name + "_" + subnet_name
+        subnet_detail = network_compartment_name + "@" + vcn_name + "::" + subnet_name
 
         #Fetch NSGs
         nsg_detail = ""
@@ -173,9 +189,11 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
 
         # Fetch reserved IP address
         reserved_ip = ""
+        is_public=False
         if eachnlb.ip_addresses != []:
             for ips in eachnlb.ip_addresses:
                 if(ips.is_public == True):
+                    is_public=ips.is_public
                     if str(ips.reserved_ip) == "null" or str(ips.reserved_ip) == "None":
                         reserved_ip = "N"
                     else:
@@ -186,7 +204,9 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
             cnt_lsnr = cnt_lsnr + 1
 
             listener_tf_name = commonTools.check_tf_variable(listeners)
-            importCommands[reg].write("\nterraform import \"module.nlb-listeners[\\\"" + str(tf_name) + "_" + str(listener_tf_name) + "\\\"].oci_network_load_balancer_listener.listener\" networkLoadBalancers/" + eachnlb.id + "/listeners/" + listeners)
+            tf_resource = f'module.nlb-listeners[\\"{tf_name}_{listener_tf_name}\\"].oci_network_load_balancer_listener.listener'
+            if tf_resource not in state["resources"]:
+                importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" networkLoadBalancers/{eachnlb.id}/listeners/{listeners}'
 
             for col_header in values_for_column_lis.keys():
                 if col_header == 'Region':
@@ -204,7 +224,7 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
                         values_for_column_lis[col_header].append(eachnlb.display_name)
                     else:
                         values_for_column_lis[col_header].append("")
-                elif col_header == "Subnet Name":
+                elif col_header == "Network Details":
                     if cnt_lsnr == 1:
                         values_for_column_lis[col_header].append(subnet_detail)
                     else:
@@ -217,7 +237,7 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
 
                 elif (col_header == "Is Private(True|False)"):
                     if cnt_lsnr == 1:
-                        values_for_column_lis[col_header].append(not(ips.is_public))
+                        values_for_column_lis[col_header].append(not(is_public))
                     else:
                         values_for_column_lis[col_header].append("")
 
@@ -245,7 +265,7 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
                     values_for_column_lis[col_header].append(nlb_compartment_name)
                 elif col_header == 'NLB Name':
                     values_for_column_lis[col_header].append(eachnlb.display_name)
-                elif col_header == "Subnet Name":
+                elif col_header == "Network Details":
                     values_for_column_lis[col_header].append(subnet_detail)
                 elif (col_header == "NSGs"):
                     values_for_column_lis[col_header].append(nsg_detail)
@@ -274,7 +294,9 @@ def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compart
     global values_for_column_lis
     global sheet_dict_bss
     global sheet_dict_lis
-    global listener_to_cd3
+    global listener_to_cd3,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -293,45 +315,57 @@ def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compart
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- NLB-Listeners, NLB-BackendSets-BackendServers will be overwritten during export process!!!\n")
 
-    # Create backups
-    for reg in export_regions:
-        resource='tf_import_nlb'
-        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_nlb_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, "tf_import_commands_nlb_nonGF.sh")
-        importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_nlb_nonGF.sh", "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
-
     # Fetch NLB Details
     print("\nFetching details of Network Load Balancer...")
 
+    file_name = 'import_commands_nlb.sh'
+    resource = 'import_nlb'
+    total_resources = 0
+
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Network Load Balancer Objects #########\n\n")
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+
+        # Create backups
+        if os.path.exists(script_file):
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
+
+        importCommands[reg] = ''
+
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         nlb = NetworkLoadBalancerClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         vcn = VirtualNetworkClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         cmpt = ComputeClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         region = reg.capitalize()
 
-
         for compartment_name in export_compartments:
                 NLBs = oci.pagination.list_call_get_all_results(nlb.list_network_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
+                if NLBs.data != [] and importCommands[reg] == '':
+                    total_resources += len(NLBs.data)
 
-                values_for_column_lis = print_nlb_listener(region, outdir, values_for_column_lis,NLBs,compartment_name,vcn)
-                values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs,compartment_name,cmpt,vcn,nlb)
+                values_for_column_lis = print_nlb_listener(region, outdir, values_for_column_lis,NLBs,compartment_name,vcn,ct,state)
+                values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs,compartment_name,cmpt,vcn,nlb,state)
 
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "NLB-Listeners")
     commonTools.write_to_cd3(values_for_column_bss, cd3file, "NLB-BackendSets-BackendServers")
 
-    print("{0} NLBs exported into CD3.\n".format(len(values_for_column_lis["Region"])))
-
+    print("{0} NLBs exported into CD3.\n".format(total_resources))
 
     # writing data
     for reg in export_regions:
-        script_file = f'{outdir}/{reg}/{service_dir}/tf_import_commands_nlb_nonGF.sh'
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        if importCommands[reg] != "":
+            init_commands = f'\n######### Writing import for Network Load Balancer Objects #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 

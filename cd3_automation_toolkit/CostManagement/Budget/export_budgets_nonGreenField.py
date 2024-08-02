@@ -9,6 +9,8 @@
 import sys
 import oci
 import os
+import subprocess as sp
+
 from commonTools import *
 
 sys.path.append(os.getcwd()+"/..")
@@ -105,7 +107,10 @@ def print_budgets(values_for_columns, region, budget,budget_name,budget_alert_ru
 def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer, ct,export_regions=[]):
     global importCommands
     global values_for_column_budgets
-    global sheet_dict_budgets
+    global sheet_dict_budgets,tf_or_tofu
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
     cd3file = inputfile
     total_resources = 0
     budget_done = []
@@ -129,22 +134,26 @@ def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer,
     for reg in [ct.home_region]:
         importCommands = ""
         region = reg.lower()
-        script_file = f'{outdir}/{region}/{service_dir}/tf_import_commands_budgets_nonGF.sh'
+        script_file = f'{outdir}/{region}/{service_dir}/import_commands_budgets.sh'
         # Create backups
         if os.path.exists(script_file):
-            commonTools.backup_file(os.path.dirname(script_file), "tf_import_budgets", os.path.basename(script_file))
+            commonTools.backup_file(os.path.dirname(script_file), "import_budgets", os.path.basename(script_file))
 
         config.__setitem__("region", ct.region_dict[region])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         tenancy_id = config["tenancy"]
         budgets_client = oci.budget.BudgetClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
 
         budgets_list = oci.pagination.list_call_get_all_results(budgets_client.list_budgets,compartment_id=tenancy_id,lifecycle_state="ACTIVE",target_type="ALL")
         if budgets_list.data != []:
-            importCommands += "\n######### Writing import for budgets #########\n\n"
-            importCommands += "#!/bin/bash"
-            importCommands += "\n"
-            importCommands += "terraform init"
             for budget in budgets_list.data:
                 budget_name = str(budget.display_name)
                 budget_id = str(budget.id)
@@ -159,17 +168,25 @@ def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer,
                             budget = []
                         print_budgets(values_for_column_budgets, region, budget,budget_name,budget_alert_rule,ct)
                         budget_done.append(budget_tf_name)
-                        importCommands += "\nterraform import \"module.budget-alert-rules[\\\""+alert_tf_name+"\\\"].oci_budget_alert_rule.alert_rule\" " + alert_id
+                        tf_resource = f'module.budget-alert-rules[\\"{alert_tf_name}\\"].oci_budget_alert_rule.alert_rule'
+                        if tf_resource not in state["resources"]:
+                            importCommands += f'\n{tf_or_tofu} import "{tf_resource}" {alert_id}'
+
                 else:
                     print_budgets(values_for_column_budgets, region, budget,budget.display_name, budget_alert_rules.data, ct)
                     total_resources += 1
 
+                tf_resource = f'module.budgets[\\"{budget_tf_name}\\"].oci_budget_budget.budget'
+                if tf_resource not in state["resources"]:
+                    importCommands += f'\n{tf_or_tofu} import "{tf_resource}" {budget_id}'
 
-                importCommands += "\nterraform import \"module.budgets[\\\"" + budget_tf_name + "\\\"].oci_budget_budget.budget\" " + budget_id
-            importCommands += "\nterraform plan\n"
+
+        init_commands = f'\n######### Writing import for Budgets #########\n\n#!/bin/bash\n{tf_or_tofu} init'
         if importCommands != "":
+            importCommands += f'\n{tf_or_tofu} plan\n'
             with open(script_file, 'a') as importCommandsfile:
-                importCommandsfile.write(importCommands)
+                importCommandsfile.write(init_commands + importCommands)
+
 
     commonTools.write_to_cd3(values_for_column_budgets, cd3file, "Budgets")
     print("{0} rows exported into CD3 for Budgets and Budget alert-rules.\n".format(total_resources))

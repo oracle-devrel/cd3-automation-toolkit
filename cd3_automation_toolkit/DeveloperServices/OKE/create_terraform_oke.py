@@ -47,13 +47,13 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
     # fill the empty values with that in previous row.
     dffill = df[
         ['Region', 'Compartment Name', 'Cluster Name', 'Cluster Kubernetes Version','Network Type', 'Pod Security Policies Enforced',
-         'Load Balancer Subnets', 'API Endpoint Subnet']]
+         'Load Balancer Network Details', 'API Endpoint Network Details']]
     dffill = dffill.fillna(method='ffill')
 
     #Drop unnecessary columns
     dfdrop = df[
         ['Region', 'Compartment Name', 'Cluster Name', 'Cluster Kubernetes Version','Network Type', 'Pod Security Policies Enforced',
-         'Load Balancer Subnets', 'API Endpoint Subnet']]
+         'Load Balancer Network Details', 'API Endpoint Network Details']]
     dfdrop = df.drop(dfdrop, axis=1)
     df = pd.concat([dffill, dfdrop], axis=1)
 
@@ -62,11 +62,16 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
         cluster_str[reg] = ''
         node_str[reg] = ''
         virtual_node_str[reg] = ''
+        resource = sheetName.lower()
+        srcdir = outdir + "/" + reg + "/" + service_dir + "/"
+        commonTools.backup_file(srcdir, resource, cluster_auto_tfvars_filename)
+        commonTools.backup_file(srcdir, resource, nodepool_auto_tfvars_filename)
+        commonTools.backup_file(srcdir, resource, virtual_nodepool_auto_tfvars_filename)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    subnets = parseSubnets(filename)
+    #subnets = parseSubnets(filename)
 
     for i in df.index:
 
@@ -97,24 +102,24 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                 str(df.loc[i, 'Network Type']).lower() == 'nan' or \
                 str(df.loc[i, 'Cluster Kubernetes Version']).lower() == 'nan' or \
                 str(df.loc[i, 'Pod Security Policies Enforced']).lower() == 'nan' or \
-                str(df.loc[i, 'Load Balancer Subnets']).lower() == 'nan' or \
-                str(df.loc[i, 'API Endpoint Subnet']).lower() == 'nan':
+                str(df.loc[i, 'Load Balancer Network Details']).lower() == 'nan' or \
+                str(df.loc[i, 'API Endpoint Network Details']).lower() == 'nan':
             print(
-                "\nRegion, Compartment Name, Cluster Name, Network Type, Cluster Kubernetes Version, Pod Security Policies, Load Balancer Subnets, API Endpoint Subnet fields are mandatory. Please enter a value and try again !!\n\nPlease fix it for row : {}".format(
+                "\nRegion, Compartment Name, Cluster Name, Network Type, Cluster Kubernetes Version, Pod Security Policies, Load Balancer Network Details, API Endpoint Network Details fields are mandatory. Please enter a value and try again !!\n\nPlease fix it for row : {}".format(
                     i + 3))
             print("\n** Exiting **")
             exit(1)
-        if str(df.loc[i, 'CompartmentName&Node Pool Name:Node Pool Type']).lower() != 'nan':
-            nodepool_tf_name_type = str(df.loc[i, 'CompartmentName&Node Pool Name:Node Pool Type']).strip().split("&")[1]
+        if str(df.loc[i, 'CompartmentName@Node Pool Name:Node Pool Type']).lower() != 'nan':
+            nodepool_tf_name_type = str(df.loc[i, 'CompartmentName@Node Pool Name:Node Pool Type']).strip().split("@")[1]
             if (":" in nodepool_tf_name_type):
                 nodepool_type = nodepool_tf_name_type.split(":")[1]
                 nodepool_type = nodepool_type.lower()
             else:
                 nodepool_type = 'managed'
 
-            if str(df.loc[i, 'Worker Node Subnet']).lower() == 'nan' or \
+            if str(df.loc[i, 'Worker Node Network Details']).lower() == 'nan' or \
                 str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan':
-                print("\nCompartmentName&Node Pool Name:Node Pool Type, Worker Node Subnet and Availability Domain(AD1|AD2|AD3) fields are mandatory. \n\nPlease fix it for row : {} and try again.".format(i+3))
+                print("\nCompartmentName@Node Pool Name:Node Pool Type, Worker Node Network Details and Availability Domain(AD1|AD2|AD3) fields are mandatory. \n\nPlease fix it for row : {} and try again.".format(i+3))
                 print("\n** Exiting **")
                 exit(1)
             if (nodepool_type == "managed"):
@@ -122,9 +127,9 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                     str(df.loc[i, 'Shape']).lower() == 'nan' or \
                     str(df.loc[i, 'Source Details']).lower() == 'nan' or \
                     str(df.loc[i, 'Number of Nodes']).lower() == 'nan' or \
-                    str(df.loc[i, 'Worker Node Subnet']).lower() == 'nan' or \
+                    str(df.loc[i, 'Worker Node Network Details']).lower() == 'nan' or \
                     str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan':
-                    print("\nCompartmentName&Node Pool Name:Node Pool Type, Nodepool Kubernetes Version, Shape, Source Details, Number of Nodes, Worker Node Subnet and Availability Domain(AD1|AD2|AD3) fields are mandatory. \n\nPlease fix it for row : {} and try again.".format(i+3))
+                    print("\nCompartmentName@Node Pool Name:Node Pool Type, Nodepool Kubernetes Version, Shape, Source Details, Number of Nodes, Worker Node Network Details and Availability Domain(AD1|AD2|AD3) fields are mandatory. \n\nPlease fix it for row : {} and try again.".format(i+3))
                     print("\n** Exiting **")
                     exit(1)
 
@@ -152,8 +157,8 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
 
         '''
         if str(df.loc[i, 'Network Type']).lower() == 'oci_vcn_ip_native':
-            if str(df.loc[i, 'Pod Communication Subnet']).lower() == 'nan':
-                print("\nPod Communication Subnet required for cluster with networking type:OCI_VCN_IP_NATIVE")
+            if str(df.loc[i, 'Pod Communication Network Details']).lower() == 'nan':
+                print("\nPod Communication Network Details required for cluster with networking type:OCI_VCN_IP_NATIVE")
                 print("\n** Exiting **")
                 exit(1)
         '''
@@ -197,12 +202,12 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                     cluster_tf_name = commonTools.check_tf_variable(columnvalue)
                     tempdict = {'cluster_tf_name': cluster_tf_name, 'cluster_display_name': columnvalue}
 
-            if columnname == "CompartmentName&Node Pool Name:Node Pool Type":
+            if columnname == "CompartmentName@Node Pool Name:Node Pool Type":
                 if columnvalue != '':
                     try:
-                        node_compartment = columnvalue.split("&")[0]
+                        node_compartment = columnvalue.split("@")[0]
                         node_compartment = commonTools.check_tf_variable(node_compartment)
-                        nodepool_tf_name_type = columnvalue.split("&")[1]
+                        nodepool_tf_name_type = columnvalue.split("@")[1]
                         nodepool_tf_name = nodepool_tf_name_type.split(":")[0]
                         nodepool_tf_name = commonTools.check_tf_variable(nodepool_tf_name)
                         nodepool_display_name = nodepool_tf_name
@@ -222,10 +227,6 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                     columnvalue = columnvalue.strip()
                     tempdict = {'shape': [columnvalue]}
 
-            oke_lb_subnets_list = []
-            #network_compartment_id = ''
-            #vcn_name = ''
-
             if columnname == "SSH Key Var Name":
                 if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
                     if "ssh-rsa" in columnvalue.strip():
@@ -242,111 +243,124 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                     taints='nan'
                 tempdict = {'taints': taints}
 
+            oke_lb_subnets_list = []
+            if columnname == 'Load Balancer Network Details':
+                if columnvalue!='':
+                    oke_lb_subnets = str(columnvalue).strip().split(",")
+                    if len(oke_lb_subnets) == 1:
+                        columnvalue = str(oke_lb_subnets[0]).strip()
+                        if ("ocid1.subnet.oc" in columnvalue):
+                            subnet_id = columnvalue
+                            oke_lb_subnets_list.append(subnet_id)
+                            tempdict = {'oke_lb_subnets': json.dumps(oke_lb_subnets_list)}
 
-            if columnname == 'Load Balancer Subnets':
-                oke_lb_subnets = str(columnvalue).strip().split(",")
-                if len(oke_lb_subnets) == 1:
-                    if len(oke_lb_subnets[0]) == 0:
-                        pass
-                    elif ("ocid1.subnet.oc1" in str(oke_lb_subnets[0]).strip()):
-                        oke_lb_subnets_list.append(str(oke_lb_subnets[0]).strip())
-                        network_compartment_id = ''
-                        vcn_name = ''
-                    else:
-                        subnet_tf_name = commonTools.check_tf_variable(str(oke_lb_subnets[0]).strip())
-                        try:
-                            key = region, subnet_tf_name
-                            network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
-                            vcn_name = subnets.vcn_subnet_map[key][1]
-                            oke_lb_subnets_list.append(subnets.vcn_subnet_map[key][2])
-                        except Exception as e:
-                            print("Invalid Subnet Name specified for row {} and column \"{}\". It Doesnt exist in Subnets sheet. Exiting!!!".format(i+3,columnname))
-                            exit(1)
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'oke_lb_subnets': json.dumps(oke_lb_subnets_list)}
+                        elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                            if len(columnvalue.split("@")) == 2:
+                                network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                                vcn_subnet_name = columnvalue.split("@")[1].strip()
+                            else:
+                                network_compartment_id = commonTools.check_tf_variable(str(df.loc[i, 'Compartment Name']).strip())
+                                vcn_subnet_name = columnvalue
+                            if ("::" not in vcn_subnet_name):
+                                print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
+                                exit(1)
+                            else:
+                                vcn_name = vcn_subnet_name.split("::")[0].strip()
+                                subnet_id = vcn_subnet_name.split("::")[1].strip()
+                            oke_lb_subnets_list.append(subnet_id)
+                            tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'oke_lb_subnets': json.dumps(oke_lb_subnets_list)}
                 elif len(oke_lb_subnets) > 1:
                     for subnet in oke_lb_subnets:
-                        if "ocid1.subnet.oc1" in subnet:
-                            oke_lb_subnets_list.append(str(subnet).strip())
-                        else:
-                            subnet_tf_name = commonTools.check_tf_variable(str(subnet).strip())
-                            try:
-                                key = region, subnet_tf_name
-                                network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
-                                vcn_name = subnets.vcn_subnet_map[key][1]
-                                oke_lb_subnets_list.append(subnets.vcn_subnet_map[key][2])
-                            except Exception as e:
-                                print("Invalid Subnet Name specified for row {} and column \"{}\". It Doesnt exist in Subnets sheet. Exiting!!!".format(i+3,columnname))
+                        columnvalue = subnet
+                        if ("ocid1.subnet.oc" in columnvalue):
+                            subnet_id = columnvalue
+                            oke_lb_subnets_list.append(subnet_id)
+                            tempdict = {'oke_lb_subnets': json.dumps(oke_lb_subnets_list)}
+                        elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                            if len(columnvalue.split("@")) == 2:
+                                network_compartment_id = commonTools.check_tf_variable(
+                                    columnvalue.split("@")[0].strip())
+                                vcn_subnet_name = columnvalue.split("@")[1].strip()
+                            else:
+                                network_compartment_id = commonTools.check_tf_variable(
+                                    str(df.loc[i, 'Compartment Name']).strip())
+                                vcn_subnet_name = columnvalue
+                            if ("::" not in vcn_subnet_name):
+                                print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
                                 exit(1)
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'oke_lb_subnets': json.dumps(oke_lb_subnets_list) }
+                            else:
+                                vcn_name = vcn_subnet_name.split("::")[0].strip()
+                                subnet_id = vcn_subnet_name.split("::")[1].strip()
+                            oke_lb_subnets_list.append(subnet_id)
+                            tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
+                                    'oke_lb_subnets': json.dumps(oke_lb_subnets_list)}
 
-            if columnname == 'API Endpoint Subnet':
-                subnet_tf_name = str(columnvalue).strip().split()
-                if len(subnet_tf_name) == 1:
-                    if len(subnet_tf_name[0]) == 0:
-                        pass
-                    elif ("ocid1.subnet.oc1" in str(subnet_tf_name[0]).strip()):
-                        api_endpoint_subnet = str(subnet_tf_name[0]).strip()
-                        network_compartment_id = ''
-                        vcn_name = ''
+            if columnname == 'API Endpoint Network Details':
+                columnvalue = columnvalue.strip()
+                if ("ocid1.subnet.oc" in columnvalue):
+                    network_compartment_id="root"
+                    vcn_name=""
+                    subnet_id = columnvalue
+                elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                    if len(columnvalue.split("@")) == 2:
+                        network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                        vcn_subnet_name = columnvalue.split("@")[1].strip()
                     else:
-                        try:
-                            key = region, str(subnet_tf_name[0]).strip()
-                            network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
-                            vcn_name = subnets.vcn_subnet_map[key][1]
-                            api_endpoint_subnet = subnets.vcn_subnet_map[key][2]
-                        except Exception as e:
-                            print("Invalid Subnet Name specified for row {} and column \"{}\". It Doesnt exist in Subnets sheet. Exiting!!!".format(i+3,columnname))
-                            exit(1)
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'api_endpoint_subnet': api_endpoint_subnet}
-                elif len(subnet_tf_name) > 1:
-                    print("Invalid Subnet Values for row {} and column \"{}\". Only one subnet allowed".format(i+3,columnname))
-                    exit(1)
+                        network_compartment_id = commonTools.check_tf_variable(
+                            str(df.loc[i, 'Compartment Name']).strip())
+                        vcn_subnet_name = columnvalue
+                    if ("::" not in vcn_subnet_name):
+                        print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
+                        exit(1)
+                    else:
+                        vcn_name = vcn_subnet_name.split("::")[0].strip()
+                        subnet_id = vcn_subnet_name.split("::")[1].strip()
+                tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,
+                            'api_endpoint_subnet': subnet_id}
 
-            if columnname == 'Worker Node Subnet':
-                subnet_tf_name = str(columnvalue).strip().split()
-                if len(subnet_tf_name) == 1:
-                    if len(subnet_tf_name[0]) == 0:
-                        pass
-                    elif subnet_tf_name != "":
-                        if ("ocid1.subnet.oc1" in str(subnet_tf_name[0]).strip()):
-                            worker_node_subnet = str(subnet_tf_name[0]).strip()
-                            network_compartment_id = ''
-                            vcn_name = ''
-                        else:
-                            try:
-                                key = region, str(subnet_tf_name[0]).strip()
-                                network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
-                                vcn_name = subnets.vcn_subnet_map[key][1]
-                                worker_node_subnet = subnets.vcn_subnet_map[key][2]
-                            except Exception as e:
-                                print("Invalid Subnet Name specified for row {} and column \"{}\". It Doesnt exist in Subnets sheet. Exiting!!!".format(i+3,columnname))
-                                exit(1)
+            if columnname == 'Worker Node Network Details':
+                columnvalue = columnvalue.strip()
+                if ("ocid1.subnet.oc" in columnvalue):
+                    subnet_id = columnvalue
+                    tempdict = {'worker_node_subnet': subnet_id}
+                elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                    if len(columnvalue.split("@")) == 2:
+                        network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                        vcn_subnet_name = columnvalue.split("@")[1].strip()
                     else:
-                        worker_node_subnet = ""
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'worker_node_subnet': worker_node_subnet}
-                elif len(subnet_tf_name) > 1:
-                    print("Invalid Subnet Values for row {} and column \"{}\". Only one subnet allowed".format(i+3,columnname))
-                    exit(1)
+                        network_compartment_id = commonTools.check_tf_variable(
+                            str(df.loc[i, 'Compartment Name']).strip())
+                        vcn_subnet_name = columnvalue
+                    if ("::" not in vcn_subnet_name):
+                        print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
+                        exit(1)
+                    else:
+                        vcn_name = vcn_subnet_name.split("::")[0].strip()
+                        subnet_id = vcn_subnet_name.split("::")[1].strip()
+                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,
+                            'worker_node_subnet': subnet_id}
 
-            if columnname == 'Pod Communication Subnet':
-                subnet_tf_name = columnvalue.strip()
-                if subnet_tf_name != "":
-                    if ("ocid1.subnet.oc1" in subnet_tf_name):
-                        pod_communication_subnet = subnet_tf_name
-                        network_compartment_id = ''
-                        vcn_name = ''
+            if columnname == 'Pod Communication Network Details':
+                columnvalue = columnvalue.strip()
+                if ("ocid1.subnet.oc" in columnvalue):
+                    subnet_id = columnvalue
+                    tempdict = {'pod_communication_subnet': subnet_id}
+                elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                    if len(columnvalue.split("@")) == 2:
+                        network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                        vcn_subnet_name = columnvalue.split("@")[1].strip()
                     else:
-                        try:
-                            key = region, subnet_tf_name
-                            network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
-                            vcn_name = subnets.vcn_subnet_map[key][1]
-                            pod_communication_subnet = subnets.vcn_subnet_map[key][2]
-                        except Exception as e:
-                            print("Invalid Subnet Name specified for row {} and column \"{}\". It Doesnt exist in Subnets sheet. Exiting!!!".format(i+3,columnname))
-                            exit(1)
-                else:
-                    pod_communication_subnet = ""
-                tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'pod_communication_subnet': pod_communication_subnet}
+                        network_compartment_id = commonTools.check_tf_variable(
+                            str(df.loc[i, 'Compartment Name']).strip())
+                        vcn_subnet_name = columnvalue
+                    if ("::" not in vcn_subnet_name):
+                        print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
+                        exit(1)
+                    else:
+                        vcn_name = vcn_subnet_name.split("::")[0].strip()
+                        subnet_id = vcn_subnet_name.split("::")[1].strip()
+                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,
+                            'pod_communication_subnet': subnet_id}
 
             if columnname == "API Endpoint NSGs":
                 if columnvalue != '' and columnvalue.strip().lower() != 'nan':
@@ -402,6 +416,7 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                 node_str[region] = node_str[region] + node.render(tempStr)
             elif nodepool_type=='virtual':
                 virtual_node_str[region] = virtual_node_str[region] + virtual_node.render(tempStr)
+
         if i!=0 and (df.loc[i, 'Cluster Name'] == df.loc[i-1, 'Cluster Name']) and (df.loc[i, 'Region'] == df.loc[i-1, 'Region']):
             continue
         cluster_str[region] = cluster_str[region] + cluster.render(tempStr)
@@ -417,7 +432,6 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
             cluster_str[reg] = cluster.render(skeleton=True, count=0, region=reg).replace(src,cluster_str[reg]+"\n"+src)
             cluster_str[reg] = "".join([s for s in cluster_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             resource = sheetName.lower()
-            commonTools.backup_file(reg_out_dir, resource, cluster_auto_tfvars_filename)
 
             # Write to TF file
             outfile = reg_out_dir + "/" + cluster_auto_tfvars_filename
@@ -433,7 +447,7 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
             node_str[reg] = node.render(skeleton=True, count=0, region=reg).replace(src,node_str[reg]+"\n"+src)
             node_str[reg] = "".join([s for s in node_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             resource = sheetName.lower()
-            commonTools.backup_file(reg_out_dir, resource, nodepool_auto_tfvars_filename)
+
 
             # Write to TF file
             outfile = reg_out_dir + "/" + nodepool_auto_tfvars_filename
@@ -449,7 +463,6 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
             virtual_node_str[reg] = virtual_node.render(skeleton=True, count=0, region=reg).replace(src,virtual_node_str[reg]+"\n"+src)
             virtual_node_str[reg] = "".join([s for s in virtual_node_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             resource = sheetName.lower()
-            commonTools.backup_file(reg_out_dir, resource, virtual_nodepool_auto_tfvars_filename)
 
             # Write to TF file
             outfile = reg_out_dir + "/" + virtual_nodepool_auto_tfvars_filename

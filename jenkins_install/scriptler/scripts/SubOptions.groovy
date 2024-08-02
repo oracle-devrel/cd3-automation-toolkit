@@ -14,7 +14,7 @@ List developer_services = ["<b>DEVELOPER SERVICES</b>:disabled","Add/Modify/Dele
 List security = ["<b>SECURITY</b>:disabled","Add/Modify/Delete KMS (Keys/Vaults)", "Enable Cloud Guard"]
 List logging_services = ["<b>LOGGING SERVICES</b>:disabled","Enable VCN Flow Logs", "Enable LBaaS Logs", "Enable Object Storage Buckets Logs", "Enable File Storage Logs", "Enable Network Firewall Logs"]
 List cd3_services = ["<b>CD3 SERVICES</b>:disabled","Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"]
-List utility_services = ["<b>3rd Party Services</b>:disabled","CIS Compliance Check Script", "ShowOCI Report"]
+List utility_services = ["<b>Other OCI Tools</b>:disabled","CIS Compliance Check Script", "ShowOCI Report", "OCI FSDR"]
 List ex_identity = ["<b>IDENTITY</b>:disabled","Export Compartments", "Export Groups", "Export Policies", "Export Users", "Export Network Sources"]
 List ex_governance  = ["<b>GOVERNANCE</b>:disabled","Export Tags", "Export Quotas"]
 List ex_cost_management  = ["<b>COST MANAGEMENT</b>:disabled","Export Budgets"]
@@ -79,7 +79,7 @@ final_list += logging_services
 if (item.equals("CD3 Services")){
 final_list += cd3_services
 }
-if (item.equals("3rd Party Services")){
+if (item.equals("Other OCI Tools")){
 final_list += utility_services
 }
 if (item.equals("Export Identity")){

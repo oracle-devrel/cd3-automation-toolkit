@@ -12,6 +12,7 @@ import oci
 import os
 import json
 import re
+import subprocess as sp
 from pathlib import Path
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -20,7 +21,7 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,values_for_column, ntk_compartment_name, db_servers):
+def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,values_for_column, ntk_compartment_name, db_servers,state,ct):
     exa_infra_tf_name = commonTools.check_tf_variable(exa_infra.display_name)
     exa_vmcluster_tf_name = commonTools.check_tf_variable(exa_vmcluster.display_name)
 
@@ -28,11 +29,23 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
     client_subnet_info = vnc_client.get_subnet(exa_vmcluster_client_subnet_id)
     client_subnet_name = client_subnet_info.data.display_name  # Subnet-Name
     client_vcn_name = vnc_client.get_vcn(client_subnet_info.data.vcn_id).data.display_name  # vcn-Name
+    ntk_compartment_id = vnc_client.get_vcn(client_subnet_info.data.vcn_id).data.compartment_id  # compartment-id
+    network_compartment_name = ntk_compartment_name
+    for comp_name, comp_id in ct.ntk_compartment_ids.items():
+        if comp_id == ntk_compartment_id:
+            network_compartment_name = comp_name
+    client_network = network_compartment_name + "@" + client_vcn_name + "::" + client_subnet_name
 
     exa_vmcluster_backup_subnet_id = exa_vmcluster.backup_subnet_id
     backup_subnet_info = vnc_client.get_subnet(exa_vmcluster_backup_subnet_id)
     backup_subnet_name = backup_subnet_info.data.display_name  # Subnet-Name
     backup_vcn_name = vnc_client.get_vcn(backup_subnet_info.data.vcn_id).data.display_name  # vcn-Name
+    ntk_compartment_id = vnc_client.get_vcn(backup_subnet_info.data.vcn_id).data.compartment_id  # compartment-id
+    network_compartment_name = ntk_compartment_name
+    for comp_name, comp_id in ct.ntk_compartment_ids.items():
+        if comp_id == ntk_compartment_id:
+            network_compartment_name = comp_name
+    backup_network = network_compartment_name + "@" + backup_vcn_name + "::" + backup_subnet_name
 
 
     NSGs = exa_vmcluster.nsg_ids
@@ -53,9 +66,9 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
 
 
     maintenance_window = exa_infra.maintenance_window
-
-
-    importCommands[region.lower()].write("\nterraform import \"module.exa-vmclusters[\\\"" + exa_vmcluster_tf_name + "\\\"].oci_database_cloud_vm_cluster.exa_vmcluster\" " + str(exa_vmcluster.id))
+    tf_resource = f'module.exa-vmclusters[\\"{exa_vmcluster_tf_name}\\"].oci_database_cloud_vm_cluster.exa_vmcluster'
+    if tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(exa_vmcluster.id)}'
 
     for col_header in values_for_column:
         if col_header == 'Region':
@@ -66,10 +79,10 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
             values_for_column[col_header].append(exa_infra.display_name)
         elif col_header == 'SSH Key Var Name':
             values_for_column[col_header].append(key_name)
-        elif col_header == 'Client Subnet Name':
-            values_for_column[col_header].append(client_vcn_name+"_"+client_subnet_name)
-        elif col_header == 'Backup Subnet Name':
-            values_for_column[col_header].append(backup_vcn_name + "_" + backup_subnet_name)
+        elif col_header == 'Client Network Details':
+            values_for_column[col_header].append(client_network)
+        elif col_header == 'Backup Network Detailse':
+            values_for_column[col_header].append(backup_network)
         elif (col_header == "NSGs"):
             values_for_column[col_header].append(nsg_names)
         elif (col_header == "Backup Network NSGs"):
@@ -91,14 +104,16 @@ def export_exa_vmclusters(inputfile, outdir, service_dir, config, signer, ct, ex
     global importCommands
     global cd3file
     global reg
-    global values_for_column
+    global values_for_column,tf_or_tofu
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
-
 
     sheetName = 'EXA-VMClusters'
 
@@ -118,17 +133,14 @@ def export_exa_vmclusters(inputfile, outdir, service_dir, config, signer, ct, ex
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
 
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
     # Fetch Block Volume Details
     print("\nFetching details of Exadata VM Clusters...")
@@ -136,8 +148,15 @@ def export_exa_vmclusters(inputfile, outdir, service_dir, config, signer, ct, ex
     for reg in export_regions:
         var_data[reg] = ""
 
-        importCommands[reg].write("\n\n######### Writing import for Exadata VM Clusters #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         region = reg.capitalize()
 
         db_client = oci.database.DatabaseClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
@@ -162,8 +181,9 @@ def export_exa_vmclusters(inputfile, outdir, service_dir, config, signer, ct, ex
                             for db_server in db_serverids:
                                 db_server_name = db_client.get_db_server(exa_infra.id, db_server).data.display_name
                                 db_servers = db_server_name +","+db_servers
+                            db_servers=db_servers.removesuffix(',')
 
-                        print_exa_vmcluster(region, vnc_client, exa_infra,exa_vmcluster,key_name, values_for_column, ntk_compartment_name_again,db_servers)
+                        print_exa_vmcluster(region, vnc_client, exa_infra,exa_vmcluster,key_name, values_for_column, ntk_compartment_name_again,db_servers,state,ct)
 
         file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
         # Read variables file data
@@ -183,11 +203,15 @@ def export_exa_vmclusters(inputfile, outdir, service_dir, config, signer, ct, ex
         with open(file, "w") as f:
             f.write(var_data[reg])
 
-
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
-
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-
     print("{0} Exadata VM Clusters exported into CD3.\n".format(len(values_for_column["Region"])))
+
+    # writing data
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        init_commands = f'\n######### Writing import for Exadata VM Clusters #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 

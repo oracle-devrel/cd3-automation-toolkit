@@ -17,7 +17,5 @@ resource "oci_file_storage_file_system" "file_system" {
   kms_key_id         = var.kms_key_id
   source_snapshot_id = var.source_snapshot_id
   filesystem_snapshot_policy_id = var.filesystem_snapshot_policy_id != null ? (length(regexall("ocid1.filesystemsnapshotpolicy.oc*", var.filesystem_snapshot_policy_id)) > 0 ? var.filesystem_snapshot_policy_id : data.oci_file_storage_filesystem_snapshot_policies.filesystem_snapshot_policies[0].filesystem_snapshot_policies[0].id) : null
-  lifecycle {
-    ignore_changes = [source_snapshot_id]
-  }
+
 }

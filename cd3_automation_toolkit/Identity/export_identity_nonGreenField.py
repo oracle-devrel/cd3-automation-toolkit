@@ -30,12 +30,12 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
 
 
     cd3file = inputfile
+    tf_or_tofu=ct.tf_or_tofu
 
     if('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    importCommands={}
     config.__setitem__("region", ct.region_dict[ct.home_region])
     idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
@@ -48,14 +48,12 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         sheet_dict_comps = ct.sheet_dict[sheetName_comps]
         print("Tabs- Compartments would be overwritten during export process!!!\n")
         # Create backup
-        resource = 'tf_import_' + sheetName_comps.lower()
-        file_name = 'tf_import_commands_' + sheetName_comps.lower() + '_nonGF.sh'
+        resource = 'import_' + sheetName_comps.lower()
+        file_name = 'import_commands_' + sheetName_comps.lower()+".sh"
         script_file = f'{outdir}/{ct.home_region}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + ct.home_region + "/" + service_dir, resource, file_name)
-        importCommands += "#!/bin/bash\n"
-        importCommands += "terraform init\n"
-        importCommands += "\n######### Writing import for Compartments #########\n\n"
+
 
         # Fetch Compartments
         print("\nFetching Compartments...")
@@ -68,13 +66,22 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         sub_comp_l4_index = 0
         sub_comp_l5_index = 0
 
+        compartments={}
+
         if ct.ntk_compartment_ids:
             compartments = ct.ntk_compartment_ids.items()
         else:
             ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
             compartments = ct.ntk_compartment_ids.items()
 
+        if compartments!={}:
+            importCommands += "\n######### Writing import for Compartments #########\n\n"
+            importCommands += "#!/bin/bash\n"
+            importCommands += tf_or_tofu+" init\n"
+
+        total_c = 0
         for c_name, c_id in compartments:
+            total_c = total_c+1
             c_details = idc.get_compartment(c_id).data
 
             # write child comps info
@@ -84,27 +91,27 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                 comp_parent_name = c_names[0]
                 tf_name = commonTools.check_tf_variable(c_name)
                 if len(c_name.split("::")) == 2:
-                    importCommands += "\nterraform import \"module.sub-compartments-level1[\\\"" + str(tf_name
+                    importCommands += "\n"+tf_or_tofu+" import \"module.sub-compartments-level1[\\\"" + str(tf_name
                                                                                          ) + "\\\"].oci_identity_compartment.compartment\" " + c_id
 
                     sub_comp_l1_index = sub_comp_l1_index + 1
                 if len(c_name.split("::")) == 3:
-                    importCommands += "\nterraform import \"module.sub-compartments-level2[\\\"" + str(tf_name
+                    importCommands += "\n"+tf_or_tofu +" import \"module.sub-compartments-level2[\\\"" + str(tf_name
                                                                                          ) + "\\\"].oci_identity_compartment.compartment\" " + c_id
 
                     sub_comp_l2_index = sub_comp_l2_index + 1
                 if len(c_name.split("::")) == 4:
-                    importCommands += "\nterraform import \"module.sub-compartments-level3[\\\"" + str(tf_name
+                    importCommands += "\n"+tf_or_tofu +" import \"module.sub-compartments-level3[\\\"" + str(tf_name
                                                                                          ) + "\\\"].oci_identity_compartment.compartment\" " + c_id
 
                     sub_comp_l3_index = sub_comp_l3_index + 1
                 if len(c_name.split("::")) == 5:
-                    importCommands += "\nterraform import \"module.sub-compartments-level4[\\\"" + str(tf_name
+                    importCommands += "\n"+tf_or_tofu +" import \"module.sub-compartments-level4[\\\"" + str(tf_name
                                                                                          ) + "\\\"].oci_identity_compartment.compartment\" " + c_id
 
                     sub_comp_l4_index = sub_comp_l4_index + 1
                 if len(c_name.split("::")) == 6:
-                    importCommands += "\nterraform import \"module.sub-compartments-level5[\\\"" + str(tf_name
+                    importCommands += "\n"+tf_or_tofu +" import \"module.sub-compartments-level5[\\\"" + str(tf_name
                                                                                          ) + "\\\"].oci_identity_compartment.compartment\" " + c_id
 
                     sub_comp_l5_index = sub_comp_l5_index + 1
@@ -117,7 +124,7 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                     comp_display_name = c_name
                     comp_parent_name = "root"
                     tf_name = commonTools.check_tf_variable(c_name)
-                    importCommands += "\nterraform import \"module.iam-compartments[\\\"" + str(
+                    importCommands += "\n"+tf_or_tofu +" import \"module.iam-compartments[\\\"" + str(
                         tf_name
                         ) + "\\\"].oci_identity_compartment.compartment\" " + c_id
 
@@ -143,12 +150,13 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                                                                                    sheet_dict_comps,
                                                                                    values_for_column_comps
                                                                                    )
-        importCommands += "\nterraform plan"
+
         if importCommands != "":
+            importCommands += "\n"+ tf_or_tofu+" plan"
             with open(script_file, 'a') as importCommandsfile:
                 importCommandsfile.write(importCommands)
         commonTools.write_to_cd3(values_for_column_comps, cd3file, sheetName_comps)
-        print("{0} Compartments exported into CD3.\n".format(len(values_for_column_comps["Region"])))
+        print("{0} Compartments exported into CD3.\n".format(total_c))
 
     elif resource == "IAM Policies":
         importCommands = ""
@@ -157,18 +165,16 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         sheet_dict_policies = ct.sheet_dict[sheetName_policies]
         print("Tabs- Policies would be overwritten during export process!!!\n")
         # Create backup
-        resource = 'tf_import_' + sheetName_policies.lower()
-        file_name = 'tf_import_commands_' + sheetName_policies.lower() + '_nonGF.sh'
+        resource = 'import_' + sheetName_policies.lower()
+        file_name = 'import_commands_' + sheetName_policies.lower() + '.sh'
         script_file = f'{outdir}/{ct.home_region}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + ct.home_region + "/" + service_dir, resource, file_name)
-        importCommands += "#!/bin/bash\n"
-        importCommands += "terraform init\n"
-        importCommands += "\n######### Writing import for Policies #########\n\n"
         # Fetch Policies
         print("\nFetching Policies...")
         comp_ocid_done = []
         index = 0
+        total_p = 0
         for ntk_compartment_name in export_compartments:
             if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
                 comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
@@ -176,7 +182,13 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                                                                     compartment_id=ct.ntk_compartment_ids[
                                                                         ntk_compartment_name]
                                                                     )
+                if policies.data!=[] and importCommands!='':
+                    importCommands += "#!/bin/bash\n"
+                    importCommands += tf_or_tofu+" init\n"
+                    importCommands += "\n######### Writing import for Policies #########\n\n"
+
                 for policy in policies.data:
+                    total_p = total_p+1
                     policy_name = policy.name
                     policy_comp_id = policy.compartment_id
                     if (policy_comp_id == config['tenancy']):
@@ -200,7 +212,7 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                         tf_name = policy_name
 
                     tf_name = commonTools.check_tf_variable(tf_name)
-                    importCommands += "\nterraform import \"module.iam-policies[\\\"" + str(tf_name
+                    importCommands += "\n"+tf_or_tofu+" import \"module.iam-policies[\\\"" + str(tf_name
                                                                                                                ) + "\\\"].oci_identity_policy.policy\" " + policy.id
 
                     index = index + 1
@@ -250,12 +262,12 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                                     values_for_column_policies[col_header].append("")
 
                         count = count + 1
-        importCommands += "\nterraform plan"
         if importCommands != "":
+            importCommands += "\n"+tf_or_tofu+" plan"
             with open(script_file, 'a') as importCommandsfile:
                 importCommandsfile.write(importCommands)
         commonTools.write_to_cd3(values_for_column_policies, cd3file, sheetName_policies)
-        print("{0} Policies exported into CD3.\n".format(len(values_for_column_policies["Region"])))
+        print("{0} Policies exported into CD3.\n".format(total_p))
 
     elif resource == "IAM Groups":
         importCommands = ""
@@ -268,14 +280,12 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
         # Create backup
-        resource = 'tf_import_'+ sheetName_groups.lower()
-        file_name = 'tf_import_commands_' + sheetName_groups.lower() + '_nonGF.sh'
+        resource = 'import_'+ sheetName_groups.lower()
+        file_name = 'import_commands_' + sheetName_groups.lower() + '.sh'
         script_file = f'{outdir}/{ct.home_region}/{service_dir}/' + file_name
         if os.path.exists(script_file):
             commonTools.backup_file(outdir + "/" + ct.home_region + "/" + service_dir, resource, file_name)
-        importCommands += "#!/bin/bash\n"
-        importCommands += "terraform init\n"
-        importCommands += "\n######### Writing import for Groups #########\n\n"
+
         # Fetch Groups
         print("\nFetching Groups...")
 
@@ -283,14 +293,22 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         dyngroups=oci.pagination.list_call_get_all_results(idc.list_dynamic_groups,compartment_id=config['tenancy'])
         index = 0
         groupsDict = {}
+        total_g =0
+
+        if groups.data!=[] or dyngroups.data!=[]:
+            importCommands += "#!/bin/bash\n"
+            importCommands += tf_or_tofu+" init\n"
+            importCommands += "\n######### Writing import for Groups #########\n\n"
+
 
         for group in groups.data:
+            total_g = total_g + 1
             grp_info=group
             if(grp_info.lifecycle_state == "ACTIVE"):
                 groupsDict[grp_info.id] = grp_info.name
                 grp_display_name=grp_info.name
                 tf_name=commonTools.check_tf_variable(grp_display_name)
-                importCommands += "\nterraform import \"module.iam-groups[\\\""+str(tf_name)+"\\\"].oci_identity_group.group[0]\" "+grp_info.id
+                importCommands += "\n"+tf_or_tofu+" import \"module.iam-groups[\\\""+str(tf_name)+"\\\"].oci_identity_group.group[0]\" "+grp_info.id
                 index = index + 1
                 for col_header in values_for_column_groups.keys():
                     if (col_header == "Region"):
@@ -302,12 +320,13 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                         values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_groups,values_for_column_groups)
 
         for group in dyngroups.data:
+            total_g = total_g + 1
             grp_info=group
             if(grp_info.lifecycle_state == "ACTIVE"):
                 groupsDict[grp_info.id] = grp_info.name
                 grp_display_name=grp_info.name
                 tf_name=commonTools.check_tf_variable(grp_display_name)
-                importCommands += "\nterraform import \"module.iam-groups[\\\""+str(tf_name)+"\\\"].oci_identity_dynamic_group.dynamic_group[0]\" "+grp_info.id
+                importCommands += "\n"+tf_or_tofu+" import \"module.iam-groups[\\\""+str(tf_name)+"\\\"].oci_identity_dynamic_group.dynamic_group[0]\" "+grp_info.id
                 index = index + 1
                 for col_header in values_for_column_groups.keys():
                     if (col_header == "Region"):
@@ -318,9 +337,9 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                         oci_objs=[grp_info]
                         values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_groups,values_for_column_groups)
 
-        importCommands += "\nterraform plan"
         if importCommands != "":
+            importCommands += "\n"+tf_or_tofu+" plan"
             with open(script_file, 'a') as importCommandsfile:
                 importCommandsfile.write(importCommands)
         commonTools.write_to_cd3(values_for_column_groups,cd3file,sheetName_groups)
-        print("{0} Groups exported into CD3.\n".format(len(values_for_column_groups["Region"])))
+        print("{0} rows exported into CD3 for Groups and Dynamic Groups.\n".format(total_g))
