@@ -1,6 +1,6 @@
-# Copyright 2017, 2021 Oracle Corporation and/or affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 resource "oci_containerengine_node_pool" "nodepool" {
   cluster_id         = var.cluster_name
   compartment_id     = var.compartment_id

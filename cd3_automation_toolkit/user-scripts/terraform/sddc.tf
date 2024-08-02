@@ -1,3 +1,6 @@
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 ############################################
 # Module Block SDDC
 # Create SDDC
@@ -14,38 +17,38 @@ locals {
     }
   ]])
 
-  ds_vols = flatten([ for key, val in var.sddcs : [
-  for item in concat(local.mgmt_vols[val.display_name],local.wkld_vols[val.display_name]): {
-  volume_display_name = item.volume_display_name
-  volume_compartment_id = item.volume_compartment_id
-  }
+  ds_vols = flatten([for key, val in var.sddcs : [
+    for item in concat(local.mgmt_vols[val.display_name], local.wkld_vols[val.display_name]) : {
+      volume_display_name   = item.volume_display_name
+      volume_compartment_id = item.volume_compartment_id
+    }
   ]])
 
   mgmt_vols = { for key, val in var.sddcs :
-     val.display_name =>  try([for item in val.management_datastore: {
-    volume_compartment_id = try(split("@", item)[0],null)
-    volume_display_name = try(split("@", item)[1],null)
-    }],[])}
+    val.display_name => try([for item in val.management_datastore : {
+      volume_compartment_id = try(split("@", item)[0], null)
+      volume_display_name   = try(split("@", item)[1], null)
+  }], []) }
 
   wkld_vols = { for key, val in var.sddcs :
-     val.display_name => try([ for item in val.workload_datastore:
-    {
-    volume_compartment_id = try(split("@", item)[0],null)
-    volume_display_name = try(split("@", item)[1],null)
-     }] ,[])}
+    val.display_name => try([for item in val.workload_datastore :
+      {
+        volume_compartment_id = try(split("@", item)[0], null)
+        volume_display_name   = try(split("@", item)[1], null)
+  }], []) }
 
- management_datastores = { for key,val in var.sddcs : key => (val.management_datastore != null ? [for value in val.management_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
+  management_datastores = { for key, val in var.sddcs : key => (val.management_datastore != null ? [for value in val.management_datastore : data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
   }
 
- workload_datastores = {for key,val in var.sddcs: key => (val.workload_datastore != null ? [for value in val.workload_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
-             }
- }
+  workload_datastores = { for key, val in var.sddcs : key => (val.workload_datastore != null ? [for value in val.workload_datastore : data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
+  }
+}
 
 data "oci_core_volumes" "ds_volumes" {
-    for_each = {for value in local.ds_vols : value.volume_display_name => value.volume_compartment_id if value.volume_display_name != null }
-    compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc1*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : var.compartment_ocids[each.value]
-    display_name = each.key
-    state = "AVAILABLE"
+  for_each       = { for value in local.ds_vols : value.volume_display_name => value.volume_compartment_id if value.volume_display_name != null }
+  compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc1*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : var.compartment_ocids[each.value]
+  display_name   = each.key
+  state          = "AVAILABLE"
 
 }
 
@@ -66,7 +69,7 @@ data "oci_core_subnets" "oci_subnets_sddc" {
 
 data "oci_core_vlans" "sddc_vlan_id" {
   #Required
-  for_each       = { for vlan in local.vlan_config : vlan.display_name => vlan if vlan.display_name != null}
+  for_each       = { for vlan in local.vlan_config : vlan.display_name => vlan if vlan.display_name != null }
   compartment_id = each.value.compartment_id
   display_name   = each.key
   vcn_id         = each.value.vcn_id
@@ -95,7 +98,7 @@ module "sddcs" {
   initial_host_shape_name               = each.value.initial_host_shape_name != "" ? each.value.initial_host_shape_name : null
   capacity_reservation_id               = each.value.capacity_reservation_id != "" ? each.value.capacity_reservation_id : null
   initial_cluster_display_name          = each.value.initial_cluster_display_name != "" ? each.value.initial_cluster_display_name : null #new addition
-  display_name                          = each.value.display_name != "" ? each.value.display_name : null #edited
+  display_name                          = each.value.display_name != "" ? each.value.display_name : null                                 #edited
   defined_tags                          = each.value.defined_tags != {} ? each.value.defined_tags : {}
   freeform_tags                         = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
   hcx_action                            = each.value.hcx_action != "" ? each.value.hcx_action : null
@@ -121,7 +124,7 @@ module "sddcs" {
 ############################################
 
 locals {
-  vlan_ids_sddc_cluster = ["nsx_edge_uplink1vlan_id", "nsx_edge_uplink2vlan_id","nsx_edge_vtep_vlan_id", "nsx_vtep_vlan_id", "vmotion_vlan_id", "vsan_vlan_id", "vsphere_vlan_id", "replication_vlan_id", "provisioning_vlan_id", "hcx_vlan_id"]
+  vlan_ids_sddc_cluster = ["nsx_edge_uplink1vlan_id", "nsx_edge_uplink2vlan_id", "nsx_edge_vtep_vlan_id", "nsx_vtep_vlan_id", "vmotion_vlan_id", "vsan_vlan_id", "vsphere_vlan_id", "replication_vlan_id", "provisioning_vlan_id", "hcx_vlan_id"]
   vlan_config_sddc_cluster = flatten([for index in local.vlan_ids_sddc_cluster : [
     for key, val in var.sddc-clusters : {
       #(index) = lookup(val, index, 0)
@@ -143,31 +146,31 @@ locals {
   deduplicated_vlan_list = values(local.deduplicated_vlan_config)
 
 
-  ds_vols_sddc_cluster = flatten([ for key, val in var.sddc-clusters : [
-  #for item in concat(local.mgmt_vols_sddc_cluster[val.display_name],local.wkld_vols_sddc_cluster[val.display_name]): {
-  for item in local.wkld_vols_sddc_cluster[val.display_name]: {
-  volume_display_name = item.volume_display_name
-  volume_compartment_id = item.volume_compartment_id
-  }
+  ds_vols_sddc_cluster = flatten([for key, val in var.sddc-clusters : [
+    #for item in concat(local.mgmt_vols_sddc_cluster[val.display_name],local.wkld_vols_sddc_cluster[val.display_name]): {
+    for item in local.wkld_vols_sddc_cluster[val.display_name] : {
+      volume_display_name   = item.volume_display_name
+      volume_compartment_id = item.volume_compartment_id
+    }
   ]])
 
   wkld_vols_sddc_cluster = { for key, val in var.sddc-clusters :
-     val.display_name => try([ for item in val.workload_datastore:
-    {
-    volume_compartment_id = try(split("@", item)[0],null)
-    volume_display_name = try(split("@", item)[1],null)
-     }] ,[])}
+    val.display_name => try([for item in val.workload_datastore :
+      {
+        volume_compartment_id = try(split("@", item)[0], null)
+        volume_display_name   = try(split("@", item)[1], null)
+  }], []) }
 
 
- workload_datastores_sddc_cluster = {for key,val in var.sddc-clusters: key => (val.workload_datastore != null ? [for value in val.workload_datastore: data.oci_core_volumes.ds_volumes_sddc_cluster[split("@", value)[1]].volumes.*.id[0]] : [])
-             }
- }
+  workload_datastores_sddc_cluster = { for key, val in var.sddc-clusters : key => (val.workload_datastore != null ? [for value in val.workload_datastore : data.oci_core_volumes.ds_volumes_sddc_cluster[split("@", value)[1]].volumes.*.id[0]] : [])
+  }
+}
 
 data "oci_core_volumes" "ds_volumes_sddc_cluster" {
-    for_each = {for value in local.ds_vols_sddc_cluster : value.volume_display_name => value.volume_compartment_id if value.volume_display_name != null }
-    compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc1*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : var.compartment_ocids[each.value]
-    display_name = each.key
-    state = "AVAILABLE"
+  for_each       = { for value in local.ds_vols_sddc_cluster : value.volume_display_name => value.volume_compartment_id if value.volume_display_name != null }
+  compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc1*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : var.compartment_ocids[each.value]
+  display_name   = each.key
+  state          = "AVAILABLE"
 
 }
 
@@ -189,18 +192,18 @@ data "oci_core_subnets" "oci_subnets_sddc_cluster" {
 data "oci_core_vlans" "sddc_cluster_vlan_id" {
   #depends_on = [module.vlans]
   #Required
-  for_each       = { for vlan in local.deduplicated_vlan_list: vlan.display_name => vlan if vlan.display_name != null}
+  for_each       = { for vlan in local.deduplicated_vlan_list : vlan.display_name => vlan if vlan.display_name != null }
   compartment_id = each.value.compartment_id
   display_name   = each.key
   vcn_id         = each.value.vcn_id
 }
 
 data "oci_ocvp_sddcs" "oci_sddcs" {
-    depends_on = [module.sddcs]
-    for_each       = var.sddc-clusters != null ? var.sddc-clusters : {}
-    compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-    display_name   = each.value.sddc_id
-    state          = "ACTIVE"
+  depends_on     = [module.sddcs]
+  for_each       = var.sddc-clusters != null ? var.sddc-clusters : {}
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  display_name   = each.value.sddc_id
+  state          = "ACTIVE"
 }
 
 module "sddc-clusters" {

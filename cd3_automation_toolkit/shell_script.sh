@@ -44,13 +44,14 @@ sudo dnf install -y wget
 sudo dnf install -y unzip
 #sudo wget https://releases.hashicorp.com/terraform/1.3.6/terraform_1.3.6_linux_amd64.zip
 sudo wget https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
-unzip terraform_1.3.6_linux_amd64.zip
+unzip terraform_1.5.7_linux_amd64.zip
 sudo mv terraform /usr/local/sbin/
-sudo rm terraform_1.3.6_linux_amd64.zip
+sudo rm terraform_1.5.7_linux_amd64.zip
 
 # Download and Install OpenTofu
 sudo wget --content-disposition "https://packagecloud.io/opentofu/tofu/packages/rpm_any/rpm_any/tofu-1.6.2-1.x86_64.rpm/download.rpm?distro_version_id=227"
 sudo rpm -i tofu-1.6.2-1.x86_64.rpm
+sudo rm tofu-1.6.2-1.x86_64.rpm
 
 # Download and install OPA
 curl -L -o opa https://openpolicyagent.org/downloads/v0.55.0/opa_linux_amd64_static

@@ -19,6 +19,8 @@ fi
 #cp ${JENKINS_INSTALL}/setUpOCI_config.xml "$JENKINS_HOME/jobs/setUpOCI/config.xml"
 #cp -r ${JENKINS_INSTALL}/scriptler $JENKINS_HOME
 
+cp ${JENKINS_INSTALL}/jcasc.yaml "$JENKINS_HOME/"
+
 # Read profiles from jenkins.properties only
 declare -A profiles
 current_profile=""

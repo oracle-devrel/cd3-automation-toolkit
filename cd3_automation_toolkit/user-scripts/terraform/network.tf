@@ -1,14 +1,15 @@
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 ################################
 # Data Block - Network
 # DRG Route Rules and DRG Route Distributions
 ################################
 
 locals {
-    all_route_tables = merge(var.route_tables,var.default_route_tables)
-    all_seclists = merge(var.seclists,var.default_seclists)
-    gateway_rt_status = {for k,v in local.all_route_tables : k => (v.gateway_route_table == null ? false : v.gateway_route_table )}
+  all_route_tables  = merge(var.route_tables, var.default_route_tables)
+  all_seclists      = merge(var.seclists, var.default_seclists)
+  gateway_rt_status = { for k, v in local.all_route_tables : k => (v.gateway_route_table == null ? false : v.gateway_route_table) }
 }
 
 
@@ -85,11 +86,11 @@ module "igws" {
   vcn_id         = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   #Optional
-  enabled       = each.value.enable_igw # Defaults to true by terraform hashicorp
-  defined_tags  = each.value.defined_tags
-  display_name  = each.value.igw_name != null ? each.value.igw_name : null
-  freeform_tags = each.value.freeform_tags
-  route_table_id = (each.value.route_table_id != "" && each.value.route_table_id != null) ?  (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.gateway-route-tables.*...)[each.value.route_table_id]["route_table_ids"]) : null
+  enabled        = each.value.enable_igw # Defaults to true by terraform hashicorp
+  defined_tags   = each.value.defined_tags
+  display_name   = each.value.igw_name != null ? each.value.igw_name : null
+  freeform_tags  = each.value.freeform_tags
+  route_table_id = (each.value.route_table_id != "" && each.value.route_table_id != null) ? (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.gateway-route-tables.*...)[each.value.route_table_id]["route_table_ids"]) : null
 
 }
 
@@ -115,9 +116,9 @@ module "ngws" {
   vcn_id         = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   #Optional
-  block_traffic = each.value.block_traffic # Defaults to false by terraform hashicorp
-  public_ip_id  = each.value.public_ip_id
-  route_table_id = (each.value.route_table_id != "" && each.value.route_table_id != null) ?  (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.gateway-route-tables.*...)[each.value.route_table_id]["route_table_ids"]) : null
+  block_traffic  = each.value.block_traffic # Defaults to false by terraform hashicorp
+  public_ip_id   = each.value.public_ip_id
+  route_table_id = (each.value.route_table_id != "" && each.value.route_table_id != null) ? (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.gateway-route-tables.*...)[each.value.route_table_id]["route_table_ids"]) : null
 
   defined_tags  = each.value.defined_tags
   display_name  = each.value.ngw_name
@@ -144,11 +145,11 @@ module "sgws" {
   vcn_id         = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   #Optional
-  defined_tags  = each.value.defined_tags
-  display_name  = each.value.sgw_name != null ? each.value.sgw_name : null
-  freeform_tags = each.value.freeform_tags
-  service       = each.value.service != "" ? (contains(split("-", each.value.service), "all") == true ? "all" : "objectstorage") : "all"
-  route_table_id = (each.value.route_table_id != "" && each.value.route_table_id != null) ?  (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.gateway-route-tables.*...)[each.value.route_table_id]["route_table_ids"]) : null
+  defined_tags   = each.value.defined_tags
+  display_name   = each.value.sgw_name != null ? each.value.sgw_name : null
+  freeform_tags  = each.value.freeform_tags
+  service        = each.value.service != "" ? (contains(split("-", each.value.service), "all") == true ? "all" : "objectstorage") : "all"
+  route_table_id = (each.value.route_table_id != "" && each.value.route_table_id != null) ? (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.gateway-route-tables.*...)[each.value.route_table_id]["route_table_ids"]) : null
 }
 
 /*
@@ -300,16 +301,16 @@ module "drg-attachments" {
   source   = "./modules/network/drg-attachment"
   for_each = (var.drg_attachments != null || var.drg_attachments != {}) ? var.drg_attachments : {}
 
-  drg_display_name          = each.value.display_name
-  defined_tags              = each.value.defined_tags
-  freeform_tags             = each.value.freeform_tags
-  drg_id                    = length(regexall("ocid1.drg.oc*", each.value.drg_id)) > 0 ? each.value.drg_id : ((each.value.drg_id != "" && each.value.drg_id != null) ? merge(module.drgs.*...)[each.value.drg_id]["drg_tf_id"] : each.value.drg_id)
-  drg_route_table_id        = length(regexall("ocid1.drgroutetable.oc*", each.value.drg_route_table_id)) > 0 ? each.value.drg_route_table_id : ((each.value.drg_route_table_id != "" && each.value.drg_route_table_id != null) ? merge(module.drg-route-tables.*...)[each.value.drg_route_table_id]["drg_route_table_tf_id"] : null)
-  vcns_tf_id                = merge(module.vcns.*...)
-  route_table_tf_id         = merge(module.route-tables.*...)
+  drg_display_name   = each.value.display_name
+  defined_tags       = each.value.defined_tags
+  freeform_tags      = each.value.freeform_tags
+  drg_id             = length(regexall("ocid1.drg.oc*", each.value.drg_id)) > 0 ? each.value.drg_id : ((each.value.drg_id != "" && each.value.drg_id != null) ? merge(module.drgs.*...)[each.value.drg_id]["drg_tf_id"] : each.value.drg_id)
+  drg_route_table_id = length(regexall("ocid1.drgroutetable.oc*", each.value.drg_route_table_id)) > 0 ? each.value.drg_route_table_id : ((each.value.drg_route_table_id != "" && each.value.drg_route_table_id != null) ? merge(module.drg-route-tables.*...)[each.value.drg_route_table_id]["drg_route_table_tf_id"] : null)
+  vcns_tf_id         = merge(module.vcns.*...)
+  route_table_tf_id  = merge(module.route-tables.*...)
   #default_route_table_tf_id = merge(module.default-route-tables.*...)
-  drg_attachments           = var.drg_attachments
-  key_name                  = each.key
+  drg_attachments = var.drg_attachments
+  key_name        = each.key
 }
 
 
@@ -404,9 +405,9 @@ module "security-lists" {
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
 
-  vcn_id = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
+  vcn_id                     = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
   manage_default_resource_id = merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]
-  default_seclist = var.default_seclists != {} ? contains(keys(var.default_seclists), each.key) ? true :  false : false
+  default_seclist            = var.default_seclists != {} ? contains(keys(var.default_seclists), each.key) ? true : false : false
 
   key_name        = each.key
   defined_tags    = each.value.defined_tags
@@ -427,15 +428,15 @@ output "seclist_id_map" {
 ############################
 
 module "route-tables" {
-  source   = "./modules/network/route-table"
+  source = "./modules/network/route-table"
   #for_each = {for k,v in local.all_route_tables : k => v if ! v.gateway_route_table}
-  for_each = {for k,v in local.all_route_tables : k => v if ! local.gateway_rt_status[k] }
+  for_each = { for k, v in local.all_route_tables : k => v if !local.gateway_rt_status[k] }
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   vcn_id         = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
-  default_route_table = var.default_route_tables != {} ? contains(keys(var.default_route_tables), each.key) ? true :  false : false
+  default_route_table        = var.default_route_tables != {} ? contains(keys(var.default_route_tables), each.key) ? true : false : false
   manage_default_resource_id = merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"]
 
   #Optional
@@ -457,23 +458,23 @@ module "route-tables" {
 
 
 module "gateway-route-tables" {
-  source   = "./modules/network/route-table"
+  source = "./modules/network/route-table"
   #for_each = {for k,v in local.all_route_tables : k => v if v.gateway_route_table }
-  for_each = {for k,v in local.all_route_tables : k => v if local.gateway_rt_status[k] }
+  for_each = { for k, v in local.all_route_tables : k => v if local.gateway_rt_status[k] }
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   vcn_id         = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
-  default_route_table = var.default_route_tables != {} ? contains(keys(var.default_route_tables), each.key) ? true :  false : false
+  default_route_table        = var.default_route_tables != {} ? contains(keys(var.default_route_tables), each.key) ? true : false : false
   manage_default_resource_id = merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"]
   #Optional
-  defined_tags    = each.value.defined_tags
-  display_name    = each.value.display_name != null ? each.value.display_name : null
-  freeform_tags   = each.value.freeform_tags
-  key_name        = each.key
-  drg_id          = merge(module.drgs.*...)
-  rt_details      = local.all_route_tables
+  defined_tags        = each.value.defined_tags
+  display_name        = each.value.display_name != null ? each.value.display_name : null
+  freeform_tags       = each.value.freeform_tags
+  key_name            = each.key
+  drg_id              = merge(module.drgs.*...)
+  rt_details          = local.all_route_tables
   gateway_route_table = each.value.gateway_route_table
 }
 
@@ -604,17 +605,17 @@ module "subnets" {
   cidr_block     = each.value.cidr_block
 
   #Optional
-  dns_label                    = each.value.dns_label
-  ipv6cidr_block               = each.value.ipv6cidr_block
-  defined_tags                 = each.value.defined_tags
-  display_name                 = each.value.display_name
-  freeform_tags                = each.value.freeform_tags
-  prohibit_internet_ingress    = each.value.prohibit_internet_ingress
-  prohibit_public_ip_on_vnic   = each.value.prohibit_public_ip_on_vnic
-  availability_domain          = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  dhcp_options_id              = each.value.dhcp_options_id == null || each.value.dhcp_options_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_dhcp_id"] : (length(regexall("ocid1.dhcpoptions.oc*", each.value.dhcp_options_id)) > 0 ? each.value.dhcp_options_id : merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_tf_id"])
+  dns_label                  = each.value.dns_label
+  ipv6cidr_block             = each.value.ipv6cidr_block
+  defined_tags               = each.value.defined_tags
+  display_name               = each.value.display_name
+  freeform_tags              = each.value.freeform_tags
+  prohibit_internet_ingress  = each.value.prohibit_internet_ingress
+  prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
+  availability_domain        = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
+  dhcp_options_id            = each.value.dhcp_options_id == null || each.value.dhcp_options_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_dhcp_id"] : (length(regexall("ocid1.dhcpoptions.oc*", each.value.dhcp_options_id)) > 0 ? each.value.dhcp_options_id : merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_tf_id"])
   #route_table_id              = each.value.route_table_id == null || each.value.route_table_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"] : (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : contains(keys(merge(module.gateway-route-tables.*...)), each.value.route_table_id) ? merge(module.gateway-route-tables.*...)[each.value.route_table_id] ["route_table_ids"] : merge(module.route-tables.*...)[each.value.route_table_id]["route_table_ids"])
-  route_table_id               = each.value.route_table_id == null || each.value.route_table_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"] : (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(merge(module.gateway-route-tables.*...),merge(module.route-tables.*...))[each.value.route_table_id]["route_table_ids"])
+  route_table_id = each.value.route_table_id == null || each.value.route_table_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"] : (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(merge(module.gateway-route-tables.*...), merge(module.route-tables.*...))[each.value.route_table_id]["route_table_ids"])
 
 
   security_list_ids            = length(each.value.security_list_ids) == 0 ? [merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]] : each.value.security_list_ids
@@ -656,8 +657,8 @@ output "vcn_log_group_map" {
 */
 
 module "vcn-logs" {
-  source     = "./modules/managementservices/log"
-  for_each   = (var.vcn_logs != null || var.vcn_logs != {}) ? var.vcn_logs : {}
+  source   = "./modules/managementservices/log"
+  for_each = (var.vcn_logs != null || var.vcn_logs != {}) ? var.vcn_logs : {}
 
   # Logs
   #Required

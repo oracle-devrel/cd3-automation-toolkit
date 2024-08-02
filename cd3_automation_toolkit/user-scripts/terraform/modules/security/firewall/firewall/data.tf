@@ -1,3 +1,6 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 data "oci_core_vcns" "firewall_vcn" {
   compartment_id = var.compartment_id != null ? var.compartment_id : var.compartment_id
   display_name = var.vcn_name != null ? var.vcn_name : var.vcn_name
