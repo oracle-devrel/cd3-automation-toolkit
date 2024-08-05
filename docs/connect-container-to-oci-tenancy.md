@@ -3,8 +3,8 @@
 
 !!! note 
 
-    * With the toolkit release v2024.1.0, the toolkit supports only a single **customer_name** per container when using Jenkins.
-    * When a new region is subscribed to the tenancy, rerun createTenancyConfig.py by using the same tenancyconfig.properties file that was originally used. It will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` without touching the existing ones and will commit the latest terraform_files folder to DevOps GIT repo.
+    * With the toolkit release v2024.1.0, the toolkit supports only a single **prefix** per container when using Jenkins.
+    * When a new region is subscribed to the tenancy, rerun createTenancyConfig.py by using the same tenancyconfig.properties file that was originally used. It will create new directory for the new region under `/cd3user/tenancies/<prefix>/terraform_files` without touching the existing ones and will commit the latest terraform_files folder to DevOps GIT repo.
 
 **Step 1 - Login (Exec) into the Container**:
 
@@ -35,7 +35,7 @@ _tenancyconfig.properties_
             <th>Example</th>
         </tr>
         <tr>
-            <td>customer_name</td>
+            <td>prefix</td>
             <td>Friendly name for the Customer Tenancy</td>
             <td>demo</td>
         </tr>
@@ -74,10 +74,17 @@ _tenancyconfig.properties_
             <td>The outdir_structure_file defines the grouping of the terraform auto.tf.vars for the various generated resources.To group resources into different directories within each region - specify the absolute path to the file.To have all the files generated in a single directory in the corresponding region, leave this variable blank.</td>
             <td>Defaults to /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties</td>
         </tr>
+
+        <tr>
+            <td>tf_or_tofu</td>
+            <td>IaC Tool to be configured - Terraform or OpenTofu</td>
+            <td>terraform</td>
+        </tr>
+        <tr>
         <tr>
             <td>ssh_public_key</td>
             <td>SSH Key for launched instances; Use '\n' as the delimiter to add multiple ssh keys.</td>
-            <td>"ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"</td>
+            <td>ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf</td>
         </tr>
     </table>
 </details>
@@ -104,7 +111,7 @@ _tenancyconfig.properties_
         </tr>
         <tr>
             <td>remote_state_bucket_name</td>
-            <td>Specify bucket name if you want to use existing bucket else leave empty.If left empty, Bucket with name ${customer_name}-automation-toolkit-bucket will be created/reused in ${region}.</td>
+            <td>Specify bucket name if you want to use existing bucket else leave empty.If left empty, Bucket with name ${prefix}-automation-toolkit-bucket will be created/reused in ${region}.</td>
             <td>demo_bucket</td>
         </tr>
         <tr>
@@ -114,7 +121,7 @@ _tenancyconfig.properties_
         </tr>
         <tr>
             <td>oci_devops_git_repo_name</td>
-            <td>Specify Repo name if you want to use existing OCI Devops GIT Repository else leave empty Format: <project_name/repo_name\>. If left empty, DevOps items  with names <b>${customer_name}-automation-toolkit-project/repo/topic</b> will be created/reused in ${region}.</td>
+            <td>Specify Repo name if you want to use existing OCI Devops GIT Repository else leave empty Format: <project_name/repo_name\>. If left empty, DevOps items  with names <b>${prefix}-automation-toolkit-project/repo/topic</b> will be created/reused in ${region}.</td>
             <td>demo_repo</td>
         </tr>
         <tr>
@@ -128,7 +135,7 @@ _tenancyconfig.properties_
         </tr>
         <tr>
             <td>oci_devops_git_key</td>
-            <td>When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to <b>/cd3user/tenancies/&lt;customer_name&gt;/</b> and used for GIT Operations. Make sure the api key file permissions are rw(600) for cd3user</td>
+            <td>When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to <b>/cd3user/tenancies/&lt;prefix&gt;/</b> and used for GIT Operations. Make sure the api key file permissions are rw(600) for cd3user</td>
             <td>/cd3user/tenancies/keys/oci_api_private.pem</td>
         </tr>
     </table>
@@ -139,6 +146,7 @@ _tenancyconfig.properties_
 
 !!! Important "Important"
     - Have the details ready for Authentication mechanism you are planning to use.<br>
+    - Choose whether the outdir needs to be configured with OpenTofu or Terraform. Its a one time selection for that prefix and cannot be modified later.<br>
     - Review **outdir_structure_file** parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources. <br>
     - Review Advanced Parameters Section for CI/CD setup. **The toolkit can be used either with CLI or with Jenkins.** If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI. Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
 
@@ -173,49 +181,49 @@ python createTenancyConfig.py tenancyconfig.properties
         </tr>
         <tr>
             <td>setUpOCI.properties</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name>_setUpOCI.properties</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/&lt;prefix>_setUpOCI.properties</td>
             <td>Customer Specific properties</td>
         </tr>
         <tr>
             <td>outdir_structure_file.properties</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_outdir_structure_file</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/&lt;prefix&gt;_outdir_structure_file</td>
             <td>Customer Specific properties file for outdir structure.
             This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir)in tenancyconfig.properties while running createTenancyConfig.py</td>
         </tr>
         <tr>
             <td>Region based directories</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/terraform_files</td>
             <td>Tenancy's subscribed regions based directories for the generation of terraform files.
                 Each region directorywill contain individual directory for each service based on the parameter 'outdir_structure_file'</td>
         </tr>
         <tr>
             <td>Variables File,Provider File, Root and Sub terraform modules</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region></td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/terraform_files/&lt;region></td>
             <td>Required for terraform to work. Variables file and Provider file willbe genrated based on authentication mechanism chosen.</td>
         </tr>
         <tr>
             <td>out file</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/createTenancyConfig.out</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/createTenancyConfig.out</td>
             <td>This file contains acopy of information displayed as the console output.</td>
         </tr>
         <tr>
             <td>OCI Config File</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_oci_config</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_oci_config</td>
             <td>Customer specific Config file for OCI API calls. This will havedata based on authentication mechanism chosen.</td>
         </tr>
         <tr>
             <td>Public and Private Key Pair</td>
-            <td>Copied from /cd3user/tenancies/keys/ to /cd3usertenancies/&lt;customer_name&gt;/.config_files</td>
+            <td>Copied from /cd3user/tenancies/keys/ to /cd3usertenancies/&lt;prefix&gt;/.config_files</td>
             <td>API Key for authentication mechanism as API_Key arecopied to customer specific out directory locations for easy access.</td>
         </tr>
         <tr>
             <td>GIT Config File</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_git_config</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_git_config</td>
             <td>Customer specific GIT Config file for OCI Dev Ops GIT operations.This is generated only if use_oci_devops_git is set to yes</td>
         </tr>
         <tr>
             <td>S3 Credentials File</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_s3_credentials</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_s3_credentials</td>
             <td>This file contains access key and secret for S3 compatible OSbucket to manage remote terraform state. This is generated only if use_remote_state is set to yes</td>
         </tr>
         <tr>
@@ -225,7 +233,7 @@ python createTenancyConfig.py tenancyconfig.properties
         </tr>
         <tr>
             <td>tenancyconfig.properties</td>
-            <td>/cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_tenancyconfig.properties</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_tenancyconfig.properties</td>
             <td>The input properties file used to execute the script is copied to custome folder to retain for future reference. This can be used when the script needs tobe re-run with same parameters at later stage.</td>
         </tr>
         
