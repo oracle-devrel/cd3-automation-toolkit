@@ -18,6 +18,7 @@ nav:
       - launch-container.md
       - Resource Manager Stack: launch-from-rmstack.md
       - Manual Container Launch: launch-from-local.md
+      - URL whitelisting(optional): url-whitelisting.md
     - Connect CD3 Container to OCI: connect-container-to-oci-tenancy.md
 
   - Use with CLI: 
