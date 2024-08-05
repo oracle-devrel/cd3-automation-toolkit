@@ -28,7 +28,7 @@
 [Policy Enforcement](opa-integration.md) | OPA - Open Policy Agent |
 [KMS](cd3exceltabs.md#security) | Vaults and Keys |
 [Cloud Guard](cd3exceltabs.md#security) | Cloud Guard |
-|**Third Party Services**||
-| [CIS Landing Zone Compliance](third-party-services.md#cis-compliance-checker-script) | Download and Execute CIS Compliance Check Script |
-| [Show OCI Report](third-party-services.md#showoci-script) | Download and Execute showOCI Script |
+|**Other OCI Tools**||
+| [CIS Landing Zone Compliance](other-oci-tools.md#cis-compliance-checker-script) | Download and Execute CIS Compliance Check Script |
+| [Show OCI Report](other-oci-tools.md#showoci-script) | Download and Execute showOCI Script | [OCI FSDR](other-oci-tools.md#oci-fsdr)
 
