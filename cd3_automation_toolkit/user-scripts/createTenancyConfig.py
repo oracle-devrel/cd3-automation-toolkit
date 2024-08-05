@@ -424,7 +424,7 @@ try:
     outdir_structure_file = config.get('Default', 'outdir_structure_file').strip()
     ssh_public_key = config.get('Default', 'ssh_public_key').strip()
 
-    tf_or_tofu = config.get('Default', 'tf_or_tofu').strip()
+    tf_or_tofu = config.get('Default', 'tf_or_tofu').strip().lower()
     if tf_or_tofu == "" or tf_or_tofu == "\n":
         tf_or_tofu = "terraform"
 

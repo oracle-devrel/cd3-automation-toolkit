@@ -1246,10 +1246,16 @@ def create_management_services(execute_all=False,prim_options=[]):
 
 
 def create_developer_services(execute_all=False,prim_options=[]):
-    options = [
-        Option("Upload current terraform files/state to Resource Manager", create_rm_stack, 'Creating RM Stack'),
-        Option("Add/Modify/Delete OKE Cluster and Nodepools", create_oke, 'Creating OKE cluster and Nodepool')
-    ]
+    if tf_or_tofu == 'terraform':
+        options = [
+            Option("Upload current terraform files/state to Resource Manager", create_rm_stack, 'Creating RM Stack'),
+            Option("Add/Modify/Delete OKE Cluster and Nodepools", create_oke, 'Creating OKE cluster and Nodepool')
+        ]
+    elif tf_or_tofu=='tofu':
+        options = [
+            Option("Add/Modify/Delete OKE Cluster and Nodepools", create_oke, 'Creating OKE cluster and Nodepool')
+        ]
+
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -1779,6 +1785,7 @@ try:
 
     inputfile = setUpOCI_props.get('Default','cd3file').strip()
     outdir = setUpOCI_props.get('Default', 'outdir').strip()
+    tf_or_tofu = setUpOCI_props.get('Default', 'tf_or_tofu').strip().lower()
     prefix = setUpOCI_props.get('Default', 'prefix').strip()
     auth_mechanism = setUpOCI_props.get('Default', 'auth_mechanism').strip().lower()
     config_file_path = setUpOCI_props.get('Default', 'config_file').strip() or DEFAULT_LOCATION
@@ -1821,6 +1828,7 @@ else:
 ct=None
 ct = commonTools()
 config,signer = ct.authenticate(auth_mechanism, config_file_path)
+ct.setInputParameters(prefix,outdir,inputfile,tf_or_tofu)
 
 if devops:
     # Set Export filters from devops
