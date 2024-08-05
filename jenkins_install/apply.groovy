@@ -52,7 +52,7 @@ pipeline {
             }
         }
 
-        stage('Terraform Plan') {
+        stage('Plan') {
             when {
                 expression {
                     return env.GIT_BRANCH == 'origin/develop';
@@ -65,8 +65,7 @@ pipeline {
                         def toolCmd = env.tf_or_tofu == 'terraform' ? 'terraform' : 'tofu'
                         sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} init -upgrade"
                         // Run Terraform plan and capture the output
-                        terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} plan -out=tfpla
-n.out", returnStdout: true).trim()
+                        terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} plan -out=tfplan.out", returnStdout: true).trim()
                         // Check if the plan contains any changes
                         if (terraformPlanOutput.contains('No changes.')) {
                             echo 'No changes in Terraform plan. Skipping further stages.'
@@ -96,11 +95,9 @@ n.out", returnStdout: true).trim()
                     script {
                         def toolCmd = env.tf_or_tofu == 'terraform' ? 'terraform' : 'tofu'
                         // Run Terraform show and capture the output
-                        sh "set +x && cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} show -json tfplan.out > tfplan.json
-"
+                        sh "set +x && cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} show -json tfplan.out > tfplan.json"
                         // Run OPA eval
-                        opaOutput = sh(script: "opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA/ -i \"$
-{WORKSPACE}/${env.Region}/${env.Service}/tfplan.json\" data.terraform.deny", returnStdout: true).trim()
+                        opaOutput = sh(script: "opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA/ -i \"${WORKSPACE}/${env.Region}/${env.Service}/tfplan.json\" data.terraform.deny", returnStdout: true).trim()
                         if (opaOutput == '[]') {
                             echo "No OPA rules are violated. Proceeding with the next stage."
                         } else {
@@ -136,7 +133,7 @@ n.out", returnStdout: true).trim()
         }
 
         // Terraform Apply
-        stage('Terraform Apply') {
+        stage('Apply') {
             when {
                 allOf {
                     expression { return env.GIT_BRANCH == 'origin/develop' }
