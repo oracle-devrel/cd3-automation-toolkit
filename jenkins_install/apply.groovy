@@ -51,7 +51,7 @@ pipeline {
                 }
             }
         }
-
+        // Terraform/Tofu Plan
         stage('Plan') {
             when {
                 expression {
@@ -64,15 +64,15 @@ pipeline {
                     script {
                         def toolCmd = env.tf_or_tofu == 'terraform' ? 'terraform' : 'tofu'
                         sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} init -upgrade"
-                        // Run Terraform plan and capture the output
-                        terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} plan -out=tfplan.out", returnStdout: true).trim()
+                        // Run Terraform/Tofu plan and capture the output
+                        planOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} plan -out=tfplan.out", returnStdout: true).trim()
                         // Check if the plan contains any changes
-                        if (terraformPlanOutput.contains('No changes.')) {
-                            echo 'No changes in Terraform plan. Skipping further stages.'
+                        if (planOutput.contains('No changes.')) {
+                            echo 'No changes in Plan. Skipping further stages.'
                             tf_plan = "No Changes"
                         } else {
                             // If there are changes, proceed with applying the plan
-                            echo "Changes detected in Terraform plan. Proceeding with apply. \n${terraformPlanOutput}"
+                            echo "Changes detected in Plan. Proceeding with apply. \n${planOutput}"
                         }
                     }
                 }
@@ -94,7 +94,7 @@ pipeline {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                     script {
                         def toolCmd = env.tf_or_tofu == 'terraform' ? 'terraform' : 'tofu'
-                        // Run Terraform show and capture the output
+                        // Run Terraform/Tofu show and capture the output
                         sh "set +x && cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} show -json tfplan.out > tfplan.json"
                         // Run OPA eval
                         opaOutput = sh(script: "opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA/ -i \"${WORKSPACE}/${env.Region}/${env.Service}/tfplan.json\" data.terraform.deny", returnStdout: true).trim()
@@ -132,7 +132,7 @@ pipeline {
             }
         }
 
-        // Terraform Apply
+        // Terraform/Tofu Apply
         stage('Apply') {
             when {
                 allOf {

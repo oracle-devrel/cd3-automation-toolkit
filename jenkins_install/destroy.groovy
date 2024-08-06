@@ -52,6 +52,7 @@ pipeline {
             }
         }
 
+        //Terraform/Tofu Destroy Plan
         stage('Destroy Plan') {
             when {
                 expression { return env.GIT_BRANCH == 'origin/develop'; }
@@ -94,6 +95,7 @@ pipeline {
             }
         }
 
+        // Terraforn/Tofu Destroy
         stage('Destroy') {
             when {
                 allOf {
