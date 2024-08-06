@@ -1518,7 +1518,7 @@ def export_update_dr_plan(outdir, prefix, config_file_path,option=''):
 
     if not os.path.isfile(cmdpath):
         print(cmdpath+" doesnt exist. Exiitng!!!")
-        exit()
+        exit(1)
 
     input3 = "Please enter FSDR OCID which needs to be exported/updated: "
 
@@ -1545,7 +1545,7 @@ def export_update_dr_plan(outdir, prefix, config_file_path,option=''):
         sheetname = 'FSDR-Plan'
     if fsdrocid == '':
         print("OCID cannot be empty. Exiting!!!")
-        exit()
+        exit(1)
 
     # Build command to execute
     if outdir[len(outdir) - 1] == "/":
