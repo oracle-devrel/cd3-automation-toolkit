@@ -25,7 +25,6 @@ When deploying CD3 VM in a VCN with restricted outbound connectivity via firewal
     sg.mirror.servanamanaged.com
     mirror.freedif.org
     mirrors.tuna.tsinghua.edu.cn
-    mirror.yandex.ru
     mirrors.hostico.ro
     ftp.yz.yamagata-u.ac.jp
     ftp.halifax.rwth-aachen.de
