@@ -22,7 +22,7 @@
     
     
       
-        <title>URL whitelisting - CD3 Documentation</title>
+        <title>URL whitelisting(optional) - CD3 Documentation</title>
       
     
     
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              URL whitelisting
+              URL whitelisting(optional)
             
           </span>
         </div>
@@ -786,7 +786,7 @@
         
   
   <span class="md-ellipsis">
-    URL whitelisting
+    URL whitelisting(optional)
   </span>
   
 
@@ -2137,9 +2137,9 @@
   
 
 
-  <h1>URL whitelisting</h1>
+  <h1>URL whitelisting(optional)</h1>
 
-<p>When deploying CD3 VM in a VCN with restricted outbound connectivity (i.e., 0.0.0.0/0 not allowed for NAT gateway), atleast the below URLs should be allowed for outbound connection.</p>
+<p>When deploying CD3 VM in a VCN with restricted outbound connectivity via firewall or proxy, the below URLs should be whitelisted for the successful deployment of the cd3 tool with full functionality,</p>
 <p><br></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    *.oracle.com                                                           
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    *.oraclecloud.com
@@ -2161,17 +2161,16 @@
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    sg.mirror.servanamanaged.com
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    mirror.freedif.org
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    mirrors.tuna.tsinghua.edu.cn
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    mirror.yandex.ru
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    mirrors.hostico.ro
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    ftp.yz.yamagata-u.ac.jp
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    ftp.halifax.rwth-aachen.de
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    ftp.belnet.be
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    mirrors.in.sahilister.net
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    pypi.python.org
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    pypi.org
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    *.pypi.org
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>    pythonhosted.org
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    files.pythonhosted.org
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    mirrors.hostico.ro
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    ftp.yz.yamagata-u.ac.jp
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    ftp.halifax.rwth-aachen.de
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    ftp.belnet.be
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    mirrors.in.sahilister.net
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    pypi.python.org
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    pypi.org
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    *.pypi.org
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    pythonhosted.org
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>    files.pythonhosted.org
 </span></code></pre></div>
 
 
