@@ -32,6 +32,17 @@ html_to_be_rendered = """
 """
 }
 for (item in SubOptions.split(",")) {
+    if (item in ["Export Users","Export Users"]) {
+        html_to_be_rendered = """
+        ${html_to_be_rendered}
+    <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"domain_filter=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter the ',' separated Identity Domain names to export the resources: : </label></td>
+    <td><input type=\"text\" class=\" \" name=\"value\" > (Enter 'all' to export from all domains OR leave it Blank to export from default domain )</br> </td>
+    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr><tr></tr><tr></tr><tr></tr>
+      """
+      }
+
     if (item.equals("Export Instances (excludes instances launched by OKE)")) {
         html_to_be_rendered = """
         ${html_to_be_rendered}
@@ -195,8 +206,9 @@ for (item in SubChildOptions.split(",")) {
       ${html_to_be_rendered}
 
 <tr>
-<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"dummy=\"></td>
+<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"dummy=[\"></td>
 <td><label title=\"service1-label\" class=\" \">Use Excel Template oci-fsdr-plan-template.xlsx at /cd3user/oci_tools/othertools/oci-fsdr for the export</label></td>
+<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
 </tr>
   <tr>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_ex_filename=[\"></td>

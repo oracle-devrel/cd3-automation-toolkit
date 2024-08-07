@@ -1,0 +1,66 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Identity
+# Groups - tfvars
+# Sample import command for groups:
+# terraform import "module.groups[\"<<groups terraform variable name>>\"].oci_identity_domains_group.group[0]" idcsEndpoint/<<idcsEndpoint>>/groups/<<groupId>>
+# terraform import "module.groups[\"<<dynamic group terraform variable name>>\"].oci_identity_domains_dynamic_resource_group.dynamic_group[0]" idcsEndpoint/<<idcsEndpoint>>/dynamicResourceGroups/<<dynamicResourceGroupId>>
+############################
+
+identity_domain_groups = {
+{% endif %}
+  {{ group_tf_name }} = {
+        group_name        = "{{ name }}"
+        group_description = "{{ description }}"
+        idcs_endpoint = "{{ domain }}"
+        compartment_id = "{{compartment_id}}"
+        {% if matching_rule != "" %}
+            {% if '\n' not in matching_rule %}
+        matching_rule     = "{{ matching_rule }}"
+            {% else %}
+        matching_rule = <<-EOF
+        {{ matching_rule }}
+                EOF
+            {% endif %}
+        {% endif %}
+        {% if members %}
+        members           = [
+          {% for member in members.split(',') %}
+            "{{ member | trim}}",
+          {% endfor %}
+        ]
+        {% endif %}
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+        defined_tags = [
+            {% for tag_string in defined_tags.split(';') %}
+              {% set parts = tag_string.split('=') %}
+              {% if parts|length == 2 %}
+                {
+                  key       = "{{ parts[0].split('.')[1] }}"
+                  namespace = "{{ parts[0].split('.')[0] }}"
+                  value     = "{{ parts[1] }}"
+                }{% if not loop.last %},
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          ]
+        {% endif %}
+
+        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+           {% if freeform_tags[0] %}
+            freeform_tags = {
+              key       = "{{ key }}"
+              value     = "{{ value }}"
+            }
+                {% endif %}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+    },
+
+  }

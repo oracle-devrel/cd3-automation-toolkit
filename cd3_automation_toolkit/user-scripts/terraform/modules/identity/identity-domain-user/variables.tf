@@ -1,6 +1,5 @@
-# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
 ############################
 # Variables Block - Identity
 # Create Users
@@ -16,10 +15,20 @@ variable "compartment_id" {
   default = null
 }
 
-
 variable "user_name" {
   type        = string
   description = "The name you assign to the user during creation. The name must be unique across all compartments in the tenancy."
+  default     = null
+}
+variable "user_id" {
+  description = "email id of the user"
+  type        = string
+  default     = null
+}
+
+variable "description" {
+  type        = string
+  description = "The description of the user."
   default     = null
 }
 
@@ -35,19 +44,24 @@ variable "group_id" {
   default     = null
 }
 
-variable "group_membership" {
+variable "groups" {
   type        = list(string)
   description = "The name of the group user is member of."
   default     = []
 }
 
-variable "user_description" {
+
+variable "family_name" {
+  description = "Family Name of the user"
   type        = string
-  description = "The description you assign to the User. Does not have to be unique, and it's changeable. "
-  default     = null
+  default     = "Default"
 }
 
-variable "user_email" {
+variable "identity_domain" {
+default = {}
+}
+
+variable "email" {
   type        = string
   description = "The email you assign to the User. Does not have to be unique, and it's changeable. "
   default     = null
@@ -60,19 +74,21 @@ variable "enabled_capabilities" {
 }
 
 variable "defined_tags" {
-  type = map(any)
-  default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
-    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
-  }
+  description = "Defined tags for the group"
+  type        = list(object({
+    key       = string
+    namespace = string
+    value     = string
+  }))
+  default     = []
 }
 
-variable "freeform_tags" {
-  type    = map(any)
-  default = {}
+variable "freeform_tags_key" {
+  type    = string
+  default = ""
 }
 
-
-variable "group_ids" {
-  type    = list(string)
-  default = []
+variable "freeform_tags_value" {
+  type    = string
+  default = ""
 }

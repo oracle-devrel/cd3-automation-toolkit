@@ -141,9 +141,9 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                             elif col_header == 'Curve Id':
                                                 values_for_column_kms[col_header].append(get_key_data.key_shape.curve_id if get_key_data.key_shape.algorithm == 'ECDSA' else '')
                                             elif col_header == 'Auto rotation':
-                                                values_for_column_kms[col_header].append("TRUE" if hasattr(get_key_data, 'is_auto_rotation_enabled') else "FALSE")
+                                                values_for_column_kms[col_header].append("TRUE" if get_key_data.is_auto_rotation_enabled==True else "FALSE")
                                             elif col_header == 'Rotation interval in days':
-                                                values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data,'is_auto_rotation_enabled') else '')
+                                                values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data.auto_key_rotation_details, 'rotation_interval_in_days') else '')
                                             elif str(col_header).lower() in ["key defined tags" , "key freeform tags"]:
                                                 if len(key.defined_tags) != 0:
                                                     values_for_column_kms = commonTools.export_tags(key, col_header, values_for_column_kms)
@@ -171,11 +171,9 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                                 values_for_column_kms[col_header].append(
                                                     get_key_data.key_shape.curve_id if get_key_data.key_shape.algorithm == 'ECDSA' else '')
                                             elif col_header == 'Auto rotation':
-                                                values_for_column_kms[col_header].append(
-                                                    "TRUE" if hasattr(get_key_data,'is_auto_rotation_enabled') else "FALSE")
+                                                values_for_column_kms[col_header].append("TRUE" if get_key_data.is_auto_rotation_enabled==True else "FALSE")
                                             elif col_header == 'Rotation interval in days':
-                                                values_for_column_kms[col_header].append(
-                                                    get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data,'is_auto_rotation_enabled') else '')
+                                                values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data.auto_key_rotation_details,'rotation_interval_in_days') else '')
                                             elif str(col_header).lower() in ["key defined tags", "key freeform tags"]:
                                                 if len(key.defined_tags) != 0:
                                                     values_for_column_kms = commonTools.export_tags(key, col_header,

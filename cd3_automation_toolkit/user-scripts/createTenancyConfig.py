@@ -485,8 +485,8 @@ if not os.path.exists(outdir_safe):
     os.makedirs(outdir_safe)
 if not os.path.exists(customer_tenancy_dir+'/othertools_files'):
     os.makedirs(customer_tenancy_dir+'/othertools_files')
-if not os.path.exists('/cd3user/tenancies/keys'):
-    os.makedirs('/cd3user/tenancies/keys')
+if not os.path.exists(user_dir+'/tenancies/keys'):
+    os.makedirs(user_dir+'/tenancies/keys')
 
 dir_values = []
 

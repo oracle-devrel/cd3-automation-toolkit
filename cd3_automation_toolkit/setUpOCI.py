@@ -361,8 +361,7 @@ def export_policies(inputfile, outdir,config, signer, ct):
 
 def export_groups(inputfile, outdir,config, signer, ct):
     resource = 'IAM Groups'
-    #selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
-    selected_domains_data = {}
+    selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
     Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_domains=selected_domains_data)
     create_identity(prim_options=['Add/Modify/Delete Groups'])
     print("\n\nExecute import_commands_groups.sh script created under home region directory to synch TF with OCI " +resource +"\n")
@@ -371,8 +370,8 @@ def export_groups(inputfile, outdir,config, signer, ct):
 def export_users(inputfile, outdir,config,signer, ct):
     resource = 'IAM Users'
     # check if tenancy is identity_domain enabled
-    #selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
-    Identity.Users.export_users(inputfile, outdir, service_dir_identity, config, signer, ct)
+    selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
+    Identity.Users.export_users(inputfile, outdir, service_dir_identity, config, signer, ct,export_domains=selected_domains_data)
     create_identity(prim_options=['Add/Modify/Delete Users'])
     print("\n\nExecute import_commands_users.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
@@ -896,6 +895,7 @@ def fetch_protocols(outdir, outdir_struct, ct):
 
 ################## Create Functions ##########################
 def create_identity(prim_options=[]):
+    ct.identity_domain_check(config,signer)
     options = [
         Option('Add/Modify/Delete Compartments', Identity.create_terraform_compartments, 'Processing Compartments Tab'),
         Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Processing Groups Tab'),

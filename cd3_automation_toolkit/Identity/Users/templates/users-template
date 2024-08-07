@@ -11,14 +11,11 @@
 users = {
 {% endif %}
   {{ user_tf_name }} = {
-        name        = "{{ name }}"
+        name        = "{{ user_name }}"
         description = "{{ description }}"
         email = "{{ email }}"
-        {% if groups_names %}
-        group_membership = [{{ groups_names }}]
-        {% endif %}
-        {% if capabilities_to_disable %}
-        disable_capabilities = [{{ capabilities_to_disable }}]
+        {% if enabled_capabilities %}
+        enabled_capabilities = {{ enabled_capabilities | tojson }}
         {% endif %}
 
     {#  ##Do not modify below this line##  #}

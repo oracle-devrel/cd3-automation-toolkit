@@ -20,22 +20,14 @@ resource "oci_identity_user" "user" {
 
 }
 
-resource "oci_identity_user_group_membership" "user_group_membership" {
-  count      = var.group_membership != null ? length(var.group_membership) : 0
-  depends_on = [oci_identity_user.user]
-  user_id    = oci_identity_user.user.id
-  group_id   = length(regexall("ocid1.group.oc*", var.group_membership[count.index])) > 0 ? var.group_membership[count.index] : data.oci_identity_groups.iam_groups.groups[index(data.oci_identity_groups.iam_groups.groups.*.name, var.group_membership[count.index])].id
-}
-
 resource "oci_identity_user_capabilities_management" "user_capabilities_management" {
-  count      = var.disable_capabilities != null ? 1 : 0
+  count      = var.enabled_capabilities != null ? 1 : 0
   depends_on = [oci_identity_user.user]
   user_id    = oci_identity_user.user.id
 
-  can_use_api_keys             = var.disable_capabilities != null && contains(var.disable_capabilities, "can_use_api_keys") ? false : true
-  can_use_auth_tokens          = var.disable_capabilities != null && contains(var.disable_capabilities, "can_use_auth_tokens") ? false : true
-  can_use_console_password     = var.disable_capabilities != null && contains(var.disable_capabilities, "can_use_console_password") ? false : true
-  can_use_customer_secret_keys = var.disable_capabilities != null && contains(var.disable_capabilities, "can_use_customer_secret_keys") ? false : true
-  can_use_smtp_credentials     = var.disable_capabilities != null && contains(var.disable_capabilities, "can_use_smtp_credentials") ? false : true
-
+  can_use_api_keys             = contains(var.enabled_capabilities, "api_keys") ? true :false
+  can_use_auth_tokens          = contains(var.enabled_capabilities, "auth_tokens") ? true :false
+  can_use_console_password     = contains(var.enabled_capabilities, "console_password") ? true :false
+  can_use_customer_secret_keys = contains(var.enabled_capabilities, "customer_secret_keys") ? true :false
+  can_use_smtp_credentials     = contains(var.enabled_capabilities, "smtp_credentials") ? true :false
 }

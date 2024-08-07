@@ -58,10 +58,13 @@ class commonTools():
         self.all_regions=[]
         self.home_region=""
         self.ntk_compartment_ids = {}
+        self.domain_data = {}
         self.region_dict={}
         self.region_ad_dict = {}
         self.protocol_dict={}
         self.sheet_dict={}
+        self.domain_filter = None
+        self.identity_domain_enabled = False
         self.reg_filter = None
         self.comp_filter = None
         self.default_dns = None
@@ -96,7 +99,7 @@ class commonTools():
         self.prefix=''
         self.outdir=''
         self.inputfile=''
-        self.tf_or_tofu = 'terraform'
+        self.tf_or_tofu = ''
 
         # When called from wthin OCSWorkVM or user-scripts
         dir=os.getcwd()
@@ -142,6 +145,10 @@ class commonTools():
             if 'comp_filter' in i:
                 self.comp_filter = (i.split("=")[1])[2:][:-2]
                 self.comp_filter = self.comp_filter if self.comp_filter else "null"
+
+            if 'domain_filter' in i:
+                self.domain_filter = (i.split("=")[1])[2:][:-2]
+                self.domain_filter = self.domain_filter if self.domain_filter else "null"
 
             if 'default_dns' in i:
                 self.default_dns = (i.split("=")[1])[2:][:-2]
@@ -405,14 +412,25 @@ class commonTools():
 
             return comp_list_fetch
 
+    def identity_domain_check(self,config, signer):
+        config.__setitem__("region", self.region_dict[self.home_region])
+        idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+        try:
+            domain = idc.list_domains(config["tenancy"]).data
+            self.identity_domain_enabled = True
+        except Exception as e:
+            print("Tenancy is not Identity Domain Enabled")
+            self.identity_domain_enabled = False
+
+
+
     def get_identity_domain_data(self,config, signer, resource,var_file):
 
         config.__setitem__("region",self.region_dict[self.home_region])
         selected_domains_data = {}
         idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
-        try:
-            domain = idc.list_domains(config["tenancy"]).data
-
+        self.identity_domain_check(config, signer)
+        if self.identity_domain_enabled:
             resource = "Identity Domain Resource"
             compartments = self.get_compartment_map(var_file, resource)
             domain_str = "Enter the ',' separated Domain names to export the groups OR Enter 'all' to export from all domains OR leave it Blank to export from default domain : "
@@ -429,9 +447,10 @@ class commonTools():
                     domain_key = compartment + "@" + d.display_name
                     if 'all' in domain_names or str(d.display_name).lower() in domain_names:
                         self.domain_data[domain_key] = d.url
+            if self.domain_data == {}:
+                print(f'Input domain does not match in input compartments')
 
-        except Exception as e:
-            print("Tenancy is not Identity Domain Enabled")
+        else:
             self.domain_data = {}
 
         return self.domain_data
