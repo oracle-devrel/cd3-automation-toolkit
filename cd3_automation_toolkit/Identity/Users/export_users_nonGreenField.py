@@ -197,5 +197,4 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
         importCommands += f'\n{tf_or_tofu} plan\n'
         with open(script_file, 'a') as importCommandsfile:
             importCommandsfile.write(init_commands + importCommands)
-            importCommandsfile.write(init_commands + importCommands)
 
