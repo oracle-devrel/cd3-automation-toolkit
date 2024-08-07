@@ -340,7 +340,7 @@ if environ.get('JENKINS_INSTALL') is not None:
 
 prefix = config.get('Default', 'prefix').strip()
 if prefix == "" or prefix == "\n":
-    print("Invalid Customer Name. Please try again......Exiting !!")
+    print("Invalid Prefix. Please try again......Exiting !!")
     exit(1)
 
 prefixes=[]
@@ -485,8 +485,6 @@ if not os.path.exists(outdir_safe):
     os.makedirs(outdir_safe)
 if not os.path.exists(customer_tenancy_dir+'/othertools_files'):
     os.makedirs(customer_tenancy_dir+'/othertools_files')
-if not os.path.exists(user_dir+'/tenancies/keys'):
-    os.makedirs(user_dir+'/tenancies/keys')
 
 dir_values = []
 
