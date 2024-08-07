@@ -319,7 +319,7 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                 elif col_header == "Name":
                     values_for_column_groups[col_header].append(group_name)
                 elif col_header == "Members":
-                    members_string = ', '.join(members_list)
+                    members_string = ','.join(members_list)
                     values_for_column_groups[col_header].append(members_string)
                 elif col_header == "Description":
                     values_for_column_groups[col_header].append(group_description)
