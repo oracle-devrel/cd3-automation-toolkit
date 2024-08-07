@@ -213,7 +213,7 @@ for (item in SubChildOptions.split(",")) {
   <tr>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_ex_filename=[\"></td>
      <td><label title=\"service1-label\" class=\" \">Excel File Name where DR plan will be exported : </label></td>
-     <td><input type=\"text\" class=\" \" name=\"value\" > (Default is 'prefix_oci-fsdr-plan.xlsx at /cd3user/tenancies/<prefix>/othertools_files)</br> </td>
+     <td><input type=\"text\" class=\" \" name=\"value\" > (Default is 'prefix_oci-fsdr-plan.xlsx at /cd3user/tenancies/<prefix>/othertools_files')</br> </td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
        </tr><tr></tr><tr></tr><tr></tr>
   <tr>
