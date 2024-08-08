@@ -497,7 +497,7 @@ pipeline {
             }
         }
         }
-        stage ('Trigger Terraform Pipelines'){
+        stage ('Trigger Pipelines'){
             when {
 			    allOf{
     				expression {return "${git_status}" > 0}
