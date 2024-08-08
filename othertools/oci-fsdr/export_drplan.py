@@ -11,8 +11,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-o", "--ocid", help="Provide the DR Plan OCID")
 parser.add_argument("-s", "--sheet", help="Provide the sheet name under which the value is stored")
 parser.add_argument("-f", "--file", help="Provide name of the file to be created/updated")
-parser.add_argument("-c", "--config", help="OCI config profile path")
-parser.add_argument("-i", "--instance_principal", help="OCI config profile path", nargs='?', const=1, type=int)
+parser.add_argument("-c", "--config", help="API_KEY")
+parser.add_argument("-i", "--instance_principal", help="INSTANCE_PRINCIPAL", nargs='?', const=1, type=int)
+parser.add_argument("-t", "--session_token", help="SESSION_TOKEN", nargs='?', const=1, type=int)
 args = parser.parse_args()
 
 # Define a function to extract the region from the OCID
@@ -39,6 +40,14 @@ if args.ocid:
 try:
     if args.instance_principal == 1:
         signer = oci.auth.signers.InstancePrincipalsSecurityTokenSigner()
+    elif args.session_token:
+        token_file = config['security_token_file']
+        token = None
+        with open(token_file, 'r') as f:
+            token = f.read()
+
+        private_key = oci.signer.load_private_key_from_file(config['key_file'])
+        signer = oci.auth.signers.SecurityTokenSigner(token, private_key)
     elif args.config != '':
         signer = oci.signer.Signer(config['tenancy'], config['user'], config['fingerprint'], config['key_file'])
 except Exception as e:

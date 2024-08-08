@@ -1558,10 +1558,10 @@ def export_update_dr_plan(outdir, prefix, config_file_path,option=''):
 
     if auth_mechanism == "instance_principal":
         cmd += " -i"
-    #elif auth_mechanism == "session_token":
-    #    cmd += " -is"
-    else:
-        cmd += " -c "+config_file_path
+    elif auth_mechanism == "session_token":
+        cmd += " -t"
+
+    cmd += " -c "+config_file_path
 
     cmd += " -o " + fsdrocid + " -s \"" + sheetname + "\" -f " + out_file
 

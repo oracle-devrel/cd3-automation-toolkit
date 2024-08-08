@@ -206,11 +206,6 @@ for (item in SubChildOptions.split(",")) {
       html_to_be_rendered = """
       ${html_to_be_rendered}
 
-<tr>
-<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"dummy=[\"></td>
-<td><label title=\"service1-label\" class=\" \">Use Excel Template oci-fsdr-plan-template.xlsx at /cd3user/oci_tools/othertools/oci-fsdr for the export</label></td>
-<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
-</tr>
   <tr>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_ex_filename=[\"></td>
      <td><label title=\"service1-label\" class=\" \">Excel File Name where DR plan will be exported : </label></td>
