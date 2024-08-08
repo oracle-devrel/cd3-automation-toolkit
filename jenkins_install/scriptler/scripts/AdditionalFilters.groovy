@@ -31,18 +31,19 @@ html_to_be_rendered = """
 
 """
 }
+domain_filter_val = "Unset"
 for (item in SubOptions.split(",")) {
-    if (item in ["Export Groups","Export Users"]) {
+    if ((item in ["Export Groups","Export Users"]) && (domain_filter_val.equals("Unset"))) {
         html_to_be_rendered = """
         ${html_to_be_rendered}
     <tr>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"domain_filter=[\"></td>
+    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"domain_filter=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Enter the ',' separated Identity Domain names to export the resources - NA for IDCS Tenancies : </label></td>
     <td><input type=\"text\" class=\" \" name=\"value\" > (Enter 'all' to export from all domains OR leave it Blank to export from default domain )</br> </td>
     <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr><tr></tr><tr></tr><tr></tr>
       """
-      }
-
+      domain_filter_val = "Set"
+    }
     if (item.equals("Export Instances (excludes instances launched by OKE)")) {
         html_to_be_rendered = """
         ${html_to_be_rendered}

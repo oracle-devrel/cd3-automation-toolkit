@@ -19,7 +19,11 @@ data "oci_certificates_management_certificates" "certificates_backendsets" {
 data "oci_core_instances" "instances" {
   # depends_on = [module.instances] # Uncomment to create Compute and Load Balancers together
   for_each = var.backends != null ? var.backends : {}
-  state    = "RUNNING"
+  #state    = "RUNNING"
+  filter {
+    name   = "state"
+    values = ["RUNNING","STOPPED"]
+  }
   #Required
   compartment_id = each.value.instance_compartment != null && each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid
 }

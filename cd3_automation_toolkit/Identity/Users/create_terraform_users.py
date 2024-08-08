@@ -137,7 +137,7 @@ def create_terraform_users(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == 'Enable Capabilities':
                 if columnvalue != '' and columnvalue.strip().lower() != 'nan':
-                    capabilities = columnvalue.split(",")
+                    capabilities = [x.strip() for x in columnvalue.split(',')]
                     tempdict = {'enabled_capabilities': capabilities}
                     tempStr.update(tempdict)
 

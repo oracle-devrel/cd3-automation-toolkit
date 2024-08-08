@@ -7,7 +7,11 @@
 #######################################
 
 data "oci_core_instances" "nlb_instances" {
-  state          = "RUNNING"
+  #state          = "RUNNING"
+  filter {
+    name   = "state"
+    values = ["RUNNING","STOPPED"]
+  }
   compartment_id = var.instance_compartment
 }
 

@@ -128,12 +128,12 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
                     group_tf_name = group_tf_name[1:]
                 tempdict = {'group_tf_name': group_tf_name,'domain': domain , 'compartment_id': compartment_id}
 
-            """# Check for members column in the DataFrame
-            if 'Members' in df.columns:
-                members = str(df.loc[i, 'Members']).strip()
-            else:
-                members = ""
-                tempdict = {'members': members}"""
+            if columnname == 'Members':
+                members=''
+                if columnvalue.lower()!='nan' and columnvalue!='':
+                    members=[x.strip() for x in columnvalue.split(',')]
+                    members = ','.join(members)
+                tempdict = {'members': members}
 
             # Process Defined and Freeform Tags based on columnname and 'Domain Name'
             if columnname.lower() in commonTools.tagColumns:

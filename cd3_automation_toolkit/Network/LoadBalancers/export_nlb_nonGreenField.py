@@ -272,7 +272,7 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
                 elif (col_header == "Reserved IP(Y|N|OCID)"):
                     values_for_column_lis[col_header].append(reserved_ip)
                 elif (col_header == "Is Private(True|False)"):
-                    values_for_column_lis[col_header].append(not(ips.is_public))
+                    values_for_column_lis[col_header].append(not(is_public))
                 # Process the Tag Columns
                 elif col_header.lower() in commonTools.tagColumns:
                     values_for_column_lis = commonTools.export_tags(eachnlb, col_header, values_for_column_lis)
