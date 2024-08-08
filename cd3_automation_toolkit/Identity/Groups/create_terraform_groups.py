@@ -164,7 +164,7 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
             tempStr.update(tempdict)
 
         # Write all info to TF string
-        tfStr[region]= tfStr[region][:-1] + selected_template.render(tempStr)
+        tfStr[region]= tfStr[region].rsplit('}',1)[0] + selected_template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     reg=ct.home_region

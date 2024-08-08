@@ -28,7 +28,7 @@ identity_domain_groups = {
         {% if members %}
         members           = [
           {% for member in members.split(',') %}
-            "{{ member | trim}}",
+            "{{ member }}",
           {% endfor %}
         ]
         {% endif %}
