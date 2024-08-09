@@ -247,9 +247,10 @@ pipeline {
                                         git config pull.rebase true
                                         git pull --no-edit origin main
                                         git push origin main
-                                    else {
+                                    else
                                         echo "Nothing to commit"
-                                    }
+                                    fi
+
                                     cd ${WORKSPACE}/..
                                     rm -rf ${WORKSPACE}/../${BUILD_NUMBER}
                                 '''
