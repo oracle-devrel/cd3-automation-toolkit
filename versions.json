@@ -1,13 +1,5 @@
 [
   {
-    "version": "vTest",
-    "title": "vTest",
-    "aliases": [],
-    "properties": {
-      "hidden": true
-    }
-  },
-  {
     "version": "v2024.3.0",
     "title": "v2024.3.0",
     "aliases": [
