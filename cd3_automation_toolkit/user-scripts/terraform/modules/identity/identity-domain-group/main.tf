@@ -15,6 +15,8 @@ resource "oci_identity_domains_group" "group" {
   count = (var.matching_rule == "" || var.matching_rule == null) ? 1 : 0
   #Required
   display_name  = var.group_name
+  attribute_sets = ["all"]
+  attributes = "members"
   idcs_endpoint = var.identity_domain.url
   schemas       = [
     "urn:ietf:params:scim:schemas:core:2.0:Group",
@@ -74,6 +76,8 @@ resource "oci_identity_domains_dynamic_resource_group" "dynamic_group" {
 
   #Required
   display_name  = var.group_name
+  attribute_sets = ["all"]
+  attributes = "matching_rule"
   idcs_endpoint = var.identity_domain.url
   matching_rule = var.matching_rule
   schemas       = [
