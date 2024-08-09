@@ -24,11 +24,12 @@
 | [Logging Services](cd3exceltabs.md#logging-services) | VCN Flow Logs, LBaaS access and error Logs, OSS Buckets Logs, Firewall logs, FSS logs |
 |**Developer Services**||
 | [Developer Services](cd3exceltabs.md#developer-services) | Upload to Resource Manager, Oracle Kubernetes Engine (OKE) |
-|**Security**|
+|**Security**||
 [Policy Enforcement](opa-integration.md) | OPA - Open Policy Agent |
 [KMS](cd3exceltabs.md#security) | Vaults and Keys |
 [Cloud Guard](cd3exceltabs.md#security) | Cloud Guard |
 |**Other OCI Tools**||
-| [CIS Landing Zone Compliance](other-oci-tools.md#cis-compliance-checker-script) | Download and Execute CIS Compliance Check Script |
-| [Show OCI Report](other-oci-tools.md#showoci-script) | Download and Execute showOCI Script | [OCI FSDR](other-oci-tools.md#oci-fsdr)
+|[CIS Landing Zone Compliance](other-oci-tools.md#cis-compliance-checker-script) | Download and Execute CIS Compliance Check Script |
+|[Show OCI Report](other-oci-tools.md#showoci-script) | Download and Execute showOCI Script |  
+|[OCI FSDR](other-oci-tools.md#oci-fsdr) | Export and Update DR Plans
 
