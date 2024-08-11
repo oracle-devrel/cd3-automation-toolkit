@@ -37,18 +37,18 @@ To enable independent service directories for the generated Terraform files, fol
   
  3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder.
   
- 4.	Go to ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.propertiesfile ``` and add the CD3 Excel path. 
+ 4.	Go to ```/cd3user/tenancies/<prefix>/<prefix>_setUpOCI.propertiesfile ``` and add the CD3 Excel path. 
       
      Change to the below directory
      <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
    
-     Run the script<br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+     Run the script<br>```python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties```
      
      Select required options. *(Here,"Network", "nsg" options have been selected to verify the files under the "demo_network", "demo_nsg" folders)*
    
      *auto.tfvars* for the respective services are created.
   
-  5. Go to the region directory ```/cd3user/tenancies/<customer_name>/terraform_files/<region>/``` . It is clear that all the service-specific folders have been created              successfully.
+  5. Go to the region directory ```/cd3user/tenancies/<prefix>/terraform_files/<region>/``` . It is clear that all the service-specific folders have been created              successfully.
   
      <img width="953" alt="image" src="../images/grouptf-3.png">
    

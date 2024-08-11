@@ -197,27 +197,28 @@ compartments = {
     
 **2. Groups/Dynamic Groups**
 
-   &#9432; The parameter that differentiate dynamic groups from normal groups is <b> matching_rule </b>. Normal Groups will be created when you <b>omit</b> this parameter or pass it as <b>""</b> or <b>null</b>. All the groups are created in the root compartment.
+   &#9432; The parameter that differentiates dynamic groups from normal groups is <b> matching_rule </b>. Normal Groups will be created when you <b>omit</b> this parameter or pass it as <b>""</b> or <b>null</b>. All the groups are created in the root compartment.
 
-- <b>Syntax</b>
+- <b>Syntax for IDCS</b>
   
-```
-groups = {
-     ## key - Is a unique value to reference the resources respectively
-     key = {
-        # Required
-        group_name            = string
-        group_description     = string
+  ```
+  groups = {
+      ## key - Is a unique value to reference the resources respectively
+      key = {
+          # Required
+          group_name            = string
+          group_description     = string
+    
+          # Optional
+          members               = list(string) 
+          matching_rule         = string  (Required only for Dynamic Group)
+          defined_tags          = map 
+          freeform_tags         = map 
+          },
+      }
+  ```
   
-        # Optional
-        matching_rule         = string  (Required only for Dynamic Group)
-        defined_tags          = map 
-        freeform_tags         = map 
-        },
-     }
-```
-  
-- <b>Example:</b>
+- <b>Example for IDCS:</b>
   ````
     ############################
     # Identity
@@ -238,10 +239,81 @@ groups = {
         group_description = "Group responsible for managing IAM resources in the tenancy."
         
         # Optional
+        members      = ["xyz@oracle.com", "bcd@oracle.com"]
         defined_tags = {
                 "Oracle-Tags.CreatedOn"= "2022-03-23T07:00:34.666Z" ,
                 "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
         }
+    },
+    # Dynamic Group
+    CD3_Instances = {
+        group_name        = "CD3_Instances"
+        group_description = "Instance Group for CD3 Instances"
+        
+        # Optional 
+        matching_rule     = "Any {Any {instance.compartment.id = 'ocid1.compartment.oc1..aaaaaaaasfwefuhwkjfew2rrcxx37d5ntq7r53wtaq'},Any {instance.compartment.id = 'ocid1.compartment.oc1..aaz2ylwikr5rg4slidxzec7aijanq'}}" # Can be null or "" for regular groups
+    },
+    }
+  ````
+  - <b>Syntax for IAM Domains</b>
+  
+   ````
+      identity_domain_groups = {
+          ## key - Is a unique value to reference the resources respectively
+          key = {
+              # Required
+              group_name            = string
+              group_description     = string
+              idcs_endpoint         = string
+              compartment_id        = string
+        
+              # Optional
+              members               = list(string) 
+              matching_rule         = string  (Required only for Dynamic Group)
+              defined_tags          = list(map) 
+              freeform_tags         = list(map) 
+              },
+          }
+          
+   ````
+  
+- <b>Example for IAM Domains:</b>
+  ````
+    ############################
+    # Identity
+    # Groups/Dynamic Groups - tfvars
+    ############################
+    
+    groups = {
+    # Normal Group
+    Administrators = {
+        # Required
+        group_name        = "Administrators"
+        group_description = "Administrators"
+        idcs_endpoint     = "default"
+        compartment_id    = "root"
+    },
+    # Normal Group
+    IAMAdmins = {
+        # Required
+        group_name        = "IAMAdmins"
+        group_description = "Group responsible for managing IAM resources in the tenancy."
+        idcs_endpoint     = "default"
+        compartment_id    = "root"
+        
+        # Optional
+        members      = ["xyz@oracle.com", "bcd@oracle.com"]
+        defined_tags =         defined_tags = [
+                {
+                  key       = "CreatedBy"
+                  namespace = "Oracle-Tags"
+                  value     = "default/abc@oracle.com"
+                },
+                {
+                  key       = "CreatedOn"
+                  namespace = "Oracle-Tags"
+                  value     = "2024-08-05T01:22:03.225Z"
+                }          ]
     },
     # Dynamic Group
     CD3_Instances = {
@@ -313,7 +385,7 @@ groups = {
  
 **4. Users**
 
-- <b>Syntax</b>
+- <b>Syntax for IDCS</b>
   
 ```
   users = {
@@ -323,8 +395,7 @@ groups = {
       name                  = string
       description           = string
       email                 = string
-      group_membership      = list(string)
-      disable_capabilities  = list(string)
+      enable_capabilities  = list(string)
 
       # Optional
       defined_tags          = map
@@ -332,7 +403,7 @@ groups = {
   }
 ```
     
-- <b>Example:</b>
+- <b>Example for IDCS:</b>
 
 ```
       ############################
@@ -345,8 +416,7 @@ groups = {
           name                 = "testUser"
           description          = "this is a test user"
           email                = "testUser@oracle.com"
-          group_membership     = ["OSAdmin","Administrators"]
-          disable_capabilities = ["can_use_console_password","can_use_customer_secret_keys"]
+          enable_capabilities = ["can_use_console_password","can_use_customer_secret_keys"]
 
           # Optional
               defined_tags = {
@@ -355,6 +425,59 @@ groups = {
                 }      
             }            
         }
+```
+
+- <b>Syntax for IAM Domains</b>
+  
+```
+  identity_domain_users = {
+     ## key - Is a unique value to reference the resources respectively
+      key = {
+      # Required
+      family_name           = string
+      idcs_endpoint         = string
+      user_name             = string
+      compartment_id        = string
+      description           = string
+      email                 = string
+      groups                = list(string)
+      enable_capabilities   = list(string)
+
+      # Optional
+      defined_tags          = map(list)
+      },
+  }
+```
+    
+- <b>Example for IAM Domain:</b>
+
+```
+      ############################
+      # Identity
+      # Users - tfvars
+      ############################
+      identity_domain_users = {
+        DEFAULT_testuser-test-com = {
+              family_name = "test"
+              idcs_endpoint = "DEFAULT"
+              description = "test"
+              user_name     = "testuser@test.com"
+              compartment_id = "root"
+              email           = "testuser@test.com"
+              enabled_capabilities = ["api_keys", "auth_tokens", "console_password", "customer_secret_keys", "db_credentials", "oauth2client_credentials", "smtp_credentials"]
+              defined_tags = [
+                      {
+                        key       = "CreatedBy"
+                        namespace = "Oracle-Tags"
+                        value     = "default/abc@oracle.com"
+                      },
+                      {
+                        key       = "CreatedOn"
+                        namespace = "Oracle-Tags"
+                        value     = "2024-07-16T15:24:28.572Z"
+                      }          ]
+          },
+      }
 ```
 
 

@@ -19,7 +19,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 ###<u> **CD3 Toolkit Process</u>**
 
 
-<img width="1049" alt="CD3 Toolkit Process" src="../images/CD3-Process.png">
+<img width="1500" height="700" alt="CD3 Toolkit Process" src="../images/CD3-Process.png">
 
 <br>
 The toolkit supports 2 workflows:<br>

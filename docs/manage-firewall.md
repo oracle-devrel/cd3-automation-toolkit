@@ -6,7 +6,7 @@ Below sub-options appear under _OCI Firewall_ option-
 
 - This is the validator for all tabs of CD3 Excel sheet for Firewall. It is a comprehensive list of validations performed on firewall tabs. 
 
-- Log file containing CD3 firewall validator checks is generated at: /cd3user/tenancies/<customer_name>/<customer_name>_cd3FirewallValidator.log 
+- Log file containing CD3 firewall validator checks is generated at: /cd3user/tenancies/<prefix>/<prefix>_cd3FirewallValidator.log 
 
 **2. Add/Modify/Delete Firewall Policy**<br>
 

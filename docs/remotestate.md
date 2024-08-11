@@ -22,10 +22,10 @@
   terraform {
   backend "s3" {
     key      = "<region_name>/<service_dir_name>/terraform.tfstate"
-    bucket   = "<customer_name>-automation-toolkit-bucket"
+    bucket   = "<prefix>-automation-toolkit-bucket"
     region   = "<region>"
     endpoint = "https://<namespace>.compat.objectstorage.<region>.oraclecloud.com"
-    shared_credentials_file     = "/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_s3_credentials"
+    shared_credentials_file     = "/cd3user/tenancies/<prefix>/.config_files/<prefix>_s3_credentials"
     skip_region_validation      = true
     skip_credentials_validation = true
     skip_metadata_api_check     = true

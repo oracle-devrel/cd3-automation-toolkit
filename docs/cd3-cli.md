@@ -11,7 +11,7 @@
 
 3. Use one of the templates from [Excel Templates](excel-templates.md) based on the workflow chosen.
 
-4. Review setUpOCI.properties file _/cd3user/tenancies/<customer_name\>/<customer_name\>_setUpOCI.properties_.
+4. Review setUpOCI.properties file _/cd3user/tenancies/<prefix\>/<prefix\>_setUpOCI.properties_.
 
 _setUpOCI.properties_
 ```ini
@@ -19,7 +19,7 @@ _setUpOCI.properties_
 
 #Input variables required to run setUpOCI script
 
-#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
+#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<prefix>/terraform_files
 outdir=
 
 #prefix for output terraform files eg <customer_name> like demotenancy
@@ -28,13 +28,16 @@ prefix=
 # auth mechanism for OCI APIs - api_key,instance_principal,session_token
 auth_mechanism=
 
-#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/.config_files/<customer_name>_config;
+#input config file for Python API communication with OCI eg /cd3user/tenancies/<prefix>/.config_files/<prefix>_config;
 config_file=
 
 # Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
 outdir_structure_file=
 
-#path to cd3 excel eg /cd3user/tenancies/<customer_name>\CD3-Customer.xlsx
+# IaC Tool to be configured - Terraform(specify terraform) or OpenTofu(specify tofu)
+tf_or_tofu=tofu
+
+#path to cd3 excel eg /cd3user/tenancies/<prefix>\CD3-Customer.xlsx
 cd3file=
 
 #specify create_resources to create new resources in OCI(greenfield workflow)
@@ -54,7 +57,7 @@ workflow_type=create_resources
         <tr>
             <td>outdir</td>
             <td>Path to output directory where terraform files will be generated</td>
-            <td>/cd3user/tenancies//terraform_files</td>
+            <td>/cd3user/tenancies/demo/terraform_files</td>
         </tr>
         <tr>
             <td>prefix</td>
@@ -69,7 +72,7 @@ workflow_type=create_resources
         <tr>
             <td>config_file</td>
             <td>Python config file	</td>
-            <td>/cd3user/tenancies//.config_files/_config</td>
+            <td>/cd3user/tenancies/demo/.config_files/_config</td>
         </tr>
         <tr>
             <td>outdir_structure_file</td>
@@ -77,9 +80,14 @@ workflow_type=create_resources
             <td>Blank or _outdir_structure_file.properties</td>
         </tr>
         <tr>
+            <td>tf_or_tofu</td>
+            <td>IaC Tool to be configured - Terraform or OpenTofu</td>
+            <td>terraform or tofu</td>
+        </tr>
+        <tr>
             <td>cd3file</td>
             <td>Path to the Excel input file</td>
-            <td>/cd3user/tenancies//testCD3. xlsx</td>
+            <td>/cd3user/tenancies/demo/CD3demo.xlsx</td>
         </tr>
         <tr>
             <td>workflow_type</td>
@@ -90,8 +98,8 @@ workflow_type=create_resources
 </details>
 
 ## **Copy CD3 Excel File**
-* While using the container launched using [RM Stack](launch-from-rmstack.md), local path _/cd3user/mount_path_ on the VM is mapped to _/cd3user/tenancies_ inside the container. So the file can be copied at _/cd3user/mount_path/<customer_name\>_ on the VM. Below is the sample command to copy the excel file from local system to container:
+* While using the container launched using [RM Stack](launch-from-rmstack.md), local path _/cd3user/mount_path_ on the VM is mapped to _/cd3user/tenancies_ inside the container. So the file can be copied at _/cd3user/mount_path/<prefix\>_ on the VM. Below is the sample command to copy the excel file from local system to container:
 ```
-scp -i <privaye key pushed to VM while creating stack> <path to excel file on local> cd3user@<Public/Private IP of the VM>:/cd3user/mount_path/<customer_name>
+scp -i <private key pushed to VM while creating stack> <path to excel file on local> cd3user@<Public/Private IP of the VM>:/cd3user/mount_path/<prefix>
 ``` 
 Note that cd3user can be used to connect to the VM because same key is pushed for opc as well as cd3user.

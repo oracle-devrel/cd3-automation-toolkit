@@ -17,14 +17,14 @@
 4. Install Terraform Binary
     - Make sure the Terraform binary is installed and accessible for the Jenkins user within the Jenkins instance. Installation guide: [Terraform Installation](https://developer.hashicorp.com/terraform/install)
 
-5. Update Optional Attribute Field inside Terraform Provider Block at `/cd3user/tenancies/<customer_name>/terraform_files/<region><service_dir>/provider.tf`
+5. Update Optional Attribute Field inside Terraform Provider Block at `/cd3user/tenancies/<prefix>/terraform_files/<region><service_dir>/provider.tf`
     - Include an  attribute as highlighted below within the Terraform provider block. This is optional but necessary in case Terraform plan encounters an error.
   
               experiments = [module_variable_optional_attrs]
       
         ![image](../images/migratejobs-2.png)
 
-6. Update the correct value for private_key_path variable in `/cd3user/tenancies/<customer_name>/terraform_files/<region><service_dir>/variables_<region>.tf`
+6. Update the correct value for private_key_path variable in `/cd3user/tenancies/<prefix>/terraform_files/<region><service_dir>/variables_<region>.tf`
 
 7. Configure S3 Backend Credentials in Customer Jenkins Instance
     - Update the correct path within the `backend.tf` file for Terraform.

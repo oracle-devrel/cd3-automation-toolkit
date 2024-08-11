@@ -18,7 +18,7 @@ Below is a list of checks done by the CD3 Validator:
 | **KMS** | <ul><li>Checks if the Columns - Region, Vault Compartment, Key Compartment, Vault display name, Key display name have valid entries</li><li>Checks if valid protection mode, Key algorithm and key length are provided.</li><li>Checks if auto rotation and rotation interval have valid values.</li></ul> |
 
 
-Log file containing CD3 validator checks is generated at: ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.log```. <br><br>
+Log file containing CD3 validator checks is generated at: ```/cd3user/tenancies/<prefix>/<prefix>_cd3validator.log```. <br><br>
 
 **Expected ERRORs in the log file:**
 
