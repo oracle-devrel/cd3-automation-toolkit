@@ -45,7 +45,7 @@ Remote execution should be used as the _last resort or only during initial provi
  - Running the CD3 automation toolkit will generate auto.tfvars.
  - Execute Terraform commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.
 
- The users can refer to the ```default.yaml``` file which is inside ```/cd3user/tenancies/<customer_name>/terraform_files/<region>/scripts``` dir for provisioning the custom playbooks.
+ The users can refer to the ```default.yaml``` file which is inside ```/cd3user/tenancies/<prefix>/terraform_files/<region>/scripts``` dir for provisioning the custom playbooks.
  
 
 <u>Managing Cloud Init</u>
@@ -121,7 +121,7 @@ Upon re-running the same option, the previously existing files will be backed up
 
 4. Execute the _setupOCI_ with _Workflow Type_ as _Export Resources_ <br>
    ```
-   python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties
+   python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 ``` 
 5. Provide the region from where the Instances have to be exported. Specify comma separated values for multiple regions. <br>
 
@@ -140,13 +140,13 @@ Specify the compartment name along with hierarchy in the below format:
 
 9. Upon executing, the "Instances" sheet in input CD3 Excel is populated with the VMs details. <br>
 
-10. The tf_import_commands_instances_nonGF.sh script, tfvars file are generated for the Instances under folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```. <br>
+10. The *import_commands_instances_nonGF.sh* script, tfvars file are generated for the Instances under folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```. <br>
 
 11. The associated ssh public keys are placed under variables_<region\>.tf under the "instance_ssh_keys" variable.  <br>
 
 12. While export of instances, it will fetch details for only the primary VNIC attached to the instance. <br>
 
-13. Execute the .sh file (*sh tf_import_commands_instances_nonGF.sh*) to generate terraform state file. <br>  **This will be automatically executed while using the toolkit with Jenkins.**
+13. Execute the .sh file (*sh import_commands_instances_nonGF.sh*) to generate terraform state file. <br>  **This will be automatically executed while using the toolkit with Jenkins.**
 
 14. Check out the [known behaviour of toolkit](knownbehaviour.md) for export of instances having multiple plugins.
 

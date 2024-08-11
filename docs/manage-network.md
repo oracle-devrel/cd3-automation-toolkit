@@ -31,9 +31,9 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 2. Execute _setupOCI_ with _Create Resources_ workflow.
    
  
-3. Choose option _'Validate CD3'_ and then _'Validate Networks'_ to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.log.``` If there are errors,  rectify them accordingly and proceed to the next step. <br>
+3. Choose option _'Validate CD3'_ and then _'Validate Networks'_ to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<prefix>/<prefix>_cd3validator.log.``` If there are errors,  rectify them accordingly and proceed to the next step. <br>
 
-4. Choose option _'Create Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer\_name>\_major-objects.auto.tfvars_ and more will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>``` <br>
+4. Choose option _'Create Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer\_name>\_major-objects.auto.tfvars_ and more will be generated under the folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>``` <br>
 
 5. Look at the terraform plan and apply. Running terraform apply completes the creation of Networking components in OCI. Verify the components in console. However the details of the security lists and route tables may not be available in the CD3 Excel sheet yet. In order to export that data, follow the below steps: <br>
 
@@ -77,7 +77,7 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
    Continue executing the remaining steps (from Step 6) of [Create Network](#create-network).
 
 !!! Note
-    When using the toolkit with Jenkins, the terraform-apply pipeline for network will need to be stopped before  running terraform import command for DRG. After terraform import cmd has been executed successfully, re-launch the terraform-apply pipeline for network folder.
+    When using the toolkit with Jenkins, the apply pipeline for network will need to be stopped before  running terraform import command for DRG. After terraform import cmd has been executed successfully, re-launch the apply pipeline for network folder.
 
 
 ### Modify Security Rules, Route Rules and DRG Route Rules
@@ -99,7 +99,7 @@ Follow the below steps to add, update or delete the following components:
     ```DRG Route Rules```
       <br> - Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)
 
-     Once the execution is successful, _<customer_name\>_seclists.auto.tfvars_, _<customer_name\>_routetables.auto.tfvars_ and _<customer_name\>_drg-routetables.auto.tfvars_ file will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>.``` Existing files will move into respective backup folders.
+     Once the execution is successful, _<prefix\>_seclists.auto.tfvars_, _<prefix\>_routetables.auto.tfvars_ and _<prefix\>_drg-routetables.auto.tfvars_ file will be generated under the folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>.``` Existing files will move into respective backup folders.
  
     !!! note 
         This will create TF for only those Security Lists and Route Tables in VCNs which are part of cd3 and skip any VCNs that have been created outside of cd3 execution.
@@ -121,9 +121,9 @@ Modifying the Networking components using Automation Toolkit involves three simp
 
 2. Execute _setupOCI_ with _Create Resources_ workflow.
 
-3. To Validate the CD3 excel Tabs - choose option _'Validate CD3'_ and _'Validate Networks'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.logs.``` If there are errors, rectify them accordingly and proceed to the next step. <br>
+3. To Validate the CD3 excel Tabs - choose option _'Validate CD3'_ and _'Validate Networks'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<prefix>/<prefix>_cd3validator.logs.``` If there are errors, rectify them accordingly and proceed to the next step. <br>
 
-4. Choose option _'Modify Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer_name\>_major-objects.auto.tfvars_ and more will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```. Existing files will move into respective backup folders.<br>
+4. Choose option _'Modify Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<prefix\>_major-objects.auto.tfvars_ and more will be generated under the folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```. Existing files will move into respective backup folders.<br>
    **Note-**: Make sure to export Sec Rules, Route Rules, DRG Route Rules to CD3 Excel Sheet before executing this option. <br>
 
 5. Look at the terraform plan and apply. Running terraform apply completes the modification of Networking components in OCI. Verify the components in console.
@@ -154,7 +154,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
    ```DRG Route Rules```
       <br> - Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)
 
-     Once the execution is successful, _<customer_name\>_seclists.auto.tfvars_,  _<customer_name\>_routetables.auto.tfvars_ and  _<customer_name\>drg-routetables.auto.tfvars_ files will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```
+     Once the execution is successful, _<prefix\>_seclists.auto.tfvars_,  _<prefix\>_routetables.auto.tfvars_ and  _<prefix\>drg-routetables.auto.tfvars_ files will be generated under the folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```
     
 4. Look at the terraform plan and apply. Running terraform apply completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
     
@@ -169,7 +169,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
    	```Network Security Groups```
       <br> - Add/Modify/Delete NSGs (Reads NSGs sheet)
     
-     Once the execution is successful,  ```<customer_name>_nsgs.auto.tfvars``` will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```. Existing files will move into respective backup folders.
+     Once the execution is successful,  ```<prefix>_nsgs.auto.tfvars``` will be generated under the folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```. Existing files will move into respective backup folders.
     
 4. Look at the terraform plan and apply. Running terraform apply completes the modification of NSGs in OCI. Verify the components in console.
 
@@ -186,7 +186,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
 4. Choose _'Network'_ from the displayed menu. Choose below sub-option: <br>
    ```- Add/Modify/Delete VLANs (Reads SubnetsVLANs sheet)```
     
-      Once the execution is successful, ```<customer_name>\_vlans.auto.tfvars``` will be generated under the folder   ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>.``` Existing files will move into respective backup folders.```<customer_name>_routetables.auto.tfvars``` file will also be updated with the route table information specified for each VLAN.
+      Once the execution is successful, ```<prefix>\_vlans.auto.tfvars``` will be generated under the folder   ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>.``` Existing files will move into respective backup folders.```<prefix>_routetables.auto.tfvars``` file will also be updated with the route table information specified for each VLAN.
     
 5. Look at the terraform plan and apply. Run terraform apply.
 
@@ -203,7 +203,7 @@ Remote VCN peering is the process of connecting two VCNs in different regions (b
    - Global directory which is inside the customer outdir will have all RPC related files and scripts.
    - The RPC resources(modules,provider configurations etc) are generated dynamically for the tenancy and can work along only with CD3 automation toolkit.
    - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in create_resources (GreenField) workflow.
-   - Output files are created under ```/cd3user/tenancies/<customer_name>/terraform_files/global/rpc``` directory
+   - Output files are created under ```/cd3user/tenancies/<prefix>/terraform_files/global/rpc``` directory
 
 ## Export Existing Network Resources from OCI (Non-Greenfield Workflow)
 
@@ -231,17 +231,20 @@ Follow the below steps to export the Networking components that includes VCNs, S
       - Export Network components for SubnetsVLANs Tab
       - Export Network components for NSGs Tab
    
-     Once the execution is successful, networking related *.auto.tfvars files and .sh files containing import statements will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```
+     Once the execution is successful, networking related *.auto.tfvars files and .sh files containing import statements will be generated under the folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```
    
-     Also,The RPC related .tfvars and .sh files containing import statements will be generated in global directory which is inside the ```/cd3user/tenancies/<customer_name>/terraform_files/``` folder. 
-4. Execute tf_import_commands_network_major-objects_nonGF.sh and then rest of the sh files. **These will be automatically executed while using the toolkit with Jenkins.**
+     Also,The RPC related .tfvars and .sh files containing import statements will be generated in global directory which is inside the ```/cd3user/tenancies/<prefix>/terraform_files/``` folder. 
+     
+4. Execute *import_commands_network_major-objects_nonGF.sh* and then rest of the sh files. **These will be automatically executed while using the toolkit with Jenkins.**
 
 !!! note
-       The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.
+      The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.
 
-<img width="870" alt="rpc" src="../images/clinetworkexport-1.png">
+   <img width="870" alt="rpc" src="../images/clinetworkexport-1.png">
     
-5. Running  terraform plan must show that all the components are in sync. This completes the export of Networking components from OCI.
+
+
+   5.Running  terraform plan must show that all the components are in sync. This completes the export of Networking components from OCI.
 
 **Sample of CD3 Excel after export:**
 <br>(DO NOT Modify the highlighted columns)

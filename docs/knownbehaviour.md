@@ -17,7 +17,7 @@
     4. Adding a new VCN as Hub and other new VCNs as Spoke/Peer is allowed. Gateways will be created as specified in VCNs sheet.
     5. Adding new VCNs as None is allowed. Gateways will be created as specified in VCNs sheet.
     6. The addition of new Subnets to exported VCNs and new VCNs is allowed.
-    7. You might come across below error during export of NSGs(while runnig terraform import commands for NSGs). It occurs when NSG and the VCN are in different compartments. In such cases,  modify \<customer_name\>_nsgs.auto.tfvars, specify the compartment name of the VCN in network_compartment_id field of the problematic NSG.
+    7. You might come across below error during export of NSGs(while runnig terraform import commands for NSGs). It occurs when NSG and the VCN are in different compartments. In such cases,  modify \<prefix\>_nsgs.auto.tfvars, specify the compartment name of the VCN in network_compartment_id field of the problematic NSG.
 
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/knownbehaviour-0.png" alt="image" width="600" height="auto">
 
@@ -150,10 +150,48 @@ Terraform ordering changes observed during plan phase for OCI compute plugins.
   It changes the order of plugin's in terraform state file and doesn't change anything in OCI console for compute resource.
 
 **9.**
-When exporting Virtual Private Vault's Replica to terraform, after executing the *tf_import_commands_kms_nonGF.sh* script, 
+When exporting Virtual Private Vault's Replica to terraform, after executing the *import_commands_kms_nonGF.sh* script, 
 the terraform plan indicates the creation of a new OCI vault replication resource. This happens because there is no terraform import command for replication resource. 
 
 As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove the *replica_region* parameter from the replica's source vault dictionary. This will allow users to add or modify other resources without creating a new replica. Check below image for reference.
 
 ![image](../images/vaults_known_behaviour.png)
 
+
+**10.**
+When exporting groups (normal and dynamic) to terraform from IAM domains, post executing the *tf_import_commands_groups_nonGF.sh* script, the terraform shows the changes for matching rules and members. This is because currently those values are not getting imported to the tfstate.
+
+Please ignore this and proceed with terraform apply as it will not change anything in the OCI console for groups.
+ 
+
+            # module.groups["default_CD3-Test-DG-Group"].oci_identity_domains_dynamic_resource_group.dynamic_group[0] will be updated in-place
+              ~ resource "oci_identity_domains_dynamic_resource_group" "dynamic_group" {
+                    id                        = "2b8b98646c2e40179a3ae4743ddfdfde"
+                  + matching_rule             = "Any {instance.compartment.id = 'ocid1.compartment.oc1..aaaaaaaaqu7vgfvtkvghrza3xs2qjogkgervv3pwrbdxf5tlcgdjkwwivnrq'}"
+                    # (14 unchanged attributes hidden)        # (2 unchanged blocks hidden)
+                } 
+
+            # module.groups["default_Domain_Administrators"].oci_identity_domains_group.group[0] will be updated in-place
+              ~ resource "oci_identity_domains_group" "group" {
+                    id                                                    = "6383c6a3c75c49289ec0bcc7042a83b7"
+                    # (12 unchanged attributes hidden)      + members {
+                      + type  = "User"
+                      + value = "69db38ed20b9438f94e2fca7bd39736a"
+                    }        # (3 unchanged blocks hidden)
+                }
+
+          Plan: 0 to add, 2 to change, 0 to destroy.
+
+When exporting groups (normal and dynamic) to terraform from IDCS, post executing the *tf_import_commands_groups_nonGF.sh* script, the terraform shows a replacement for group membership. 
+Please ignore this and proceed with terraform apply as it will not change anything in the OCI console for groups.
+
+          # module.iam-groups["grp1"].oci_identity_user_group_membership.user_group_membership["abc@oracle.com"] must be replaced
+          -/+ resource "oci_identity_user_group_membership" "user_group_membership" {
+                ~ compartment_id = "ocid1.tenancy.oc1..aaaaaaaa5ob2e73i4bavdqrbrch25oldljvpmbcuxiies2dgpwdinmrmel3a" -> (known after apply)
+                ~ id             = "ocid1.groupmembership.oc1..aaaaaaaaijpj3ezbultskrut4dnwworwuzn3htixjtpbt3cn3xkyq3oy4dka" -> (known after apply)
+                + inactive_state = (known after apply)
+                ~ state          = "ACTIVE" -> (known after apply)
+                ~ time_created   = "2024-08-07 09:54:16.596 +0000 UTC" -> (known after apply)
+                ~ user_id        = "ocid1.user.oc1..aaaaaaaawkqkcpjkmjsirt7vko6iwyhcdvubrwrcjae77zhv6gzz7t6yrpya" # forces replacement -> (known after apply) # forces replacement
+                  # (1 unchanged attribute hidden)
+              }

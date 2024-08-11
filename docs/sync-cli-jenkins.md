@@ -15,7 +15,7 @@ There can be scenarios when updating the terraform_files folder manually via CLI
 
 **Step 1:**
  ```
-   cd /cd3user/tenancies/<customer_name>/terraform_files
+   cd /cd3user/tenancies/<prefix>/terraform_files
  ```
 **Step 2:**
  ```

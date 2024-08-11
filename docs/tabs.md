@@ -24,13 +24,25 @@ On re-running the same option you will find the previously existing files being 
 
 Use this Tab to create groups and dynamic Groups in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups/dynamic groups in the OCI tenancy.
 
-The toolkit supports groups in IDCS or default domain as of now.
+The toolkit supports groups in IDCS, default and custom IAM domains now. 
+
+**Note:**
+
+1. Use this tab to assign users to different groups respectively. Mention the usernames as comma separated values under the column "Members".
+2. Domain details should be mentioned in column "Domain Name" in the format of compartment@domain.
+3. Entire path of the compartment can be mentioned with double column (::) separated. Format given below
+
+    ```root::subcompartment1:subcompartment2@domain```
+
+4. Domain Name can be left blank for group creation in IDCS and default domain.
+5. Name is a mandatory field.
   
 Output terraform file generated at:  ```<outdir>/<region>/<service_dir>/<prefix>_groups.auto.tfvars``` where *<region\>* directory is the home region.
 
 Once terraform apply is done, you can view the resources under *Identity -> Groups* in OCI console.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_groups/<Date>-<Month>-<Time>```.
+
 
 
 ## Policies Tab
@@ -47,14 +59,27 @@ On re-running the same option you will find the previously existing files being 
 
 Use this Tab to create local users in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Users" submenu will allow to create users in the OCI tenancy.
 
-The toolkit supports users in IDCS or default domain as of now.
+The toolkit supports users in IDCS, default and custom IAM domains now. 
+
+**Note:**
+
+1. Domain details should be mentioned in column "Domain Name" in the format of compartment@domain.
+2. Entire path of the compartment can be mentioned with double column (::) separated. Format given below
+
+      ```root::subcompartment1:subcompartment2@domain```
+
+3. Domain Name can be left blank for group creation in IDCS and default domain.
+4. User Name, Family Name and User Email are mandatory fields for IAM domains.
+5. User Name and Description are mandatory fields for IDCS. User Email is optional.
+6. Mention the capabilities which needs to be enabled under "Enable Capabilities" column and the rest will be disabled. Currently terraform doesn't support Database Passwords and Oauth 2.0 Client Credentials in IDCS, so by default those will be enabled.
 
 Output terraform file generated: ```<outdir>/<region>/<service_dir>/<prefix>_users.auto.tfvars``` where *<region\>* directory is the home region.
   
 Once terraform apply is done, you can view the resources under *Identity & Security -> Users* in OCI console.
   
 On re-running the same option you will find the previously existing files being backed up under directory → ```<outdir>/<region>/<service_dir>/backup_users/<Date>-<Month>-<Time>```.
-  
+
+
    
 ## Network Sources Tab
   

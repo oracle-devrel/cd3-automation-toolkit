@@ -3,31 +3,33 @@
 
 **Step 1**: 
 <br>Choose the appropriate excel sheet template from [Excel Templates](excel-templates.md).
-Fill the excel with appropriate values and copy at _/cd3user/tenancies/<customer_name\>_<br><br>
+Fill the excel with appropriate values and copy at _/cd3user/tenancies/<prefix\>_<br><br>
 **Step 2**:
-<br>Modify ```/cd3user/tenancies /<customer_name>/<customer_name>_setUpOCI.properties```.
+<br>Modify ```/cd3user/tenancies /<prefix>/<prefix>_setUpOCI.properties```.
 <br>Update parameters: **cd3file** parameter to the location of CD3 excel file and  **workflow_type**  to **create_resources** as shown below.
 <br> The other parameters are already updated with correct values.
 ```ini
 #Input variables required to run setUpOCI script
 
-#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
+#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<prefix>/terraform_files
 outdir=/cd3user/tenancies/demo/terraform_files/
 
 #prefix for output terraform files eg <customer_name> like demo
 prefix=demo
 
-# auth mechanism for OCI APIs - api_key,instance_principal,session_token
+#auth mechanism for OCI APIs - api_key,instance_principal,session_token
 auth_mechanism=api_key
 
-#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/.config_files/<customer_name>_config;
+#input config file for Python API communication with OCI eg /cd3user/tenancies/<prefix>/.config_files/<prefix>_config;
 config_file=/cd3user/tenancies/demo/.config_files/demo_oci_config
 
-# Leave the field blank if you want a single outdir or specify outdir_structure_file.properties containing the directory structure for OCI services.
-
+#Leave the field blank if you want a single outdir or specify outdir_structure_file.properties containing the directory structure for OCI services.
 outdir_structure_file=/cd3user/tenancies/demo/demo_outdir_structure_file.properties
 
-#path to cd3 excel eg /cd3user/tenancies/<customer_name>/CD3-Customer.xlsx
+#IaC Tool to be configured - Terraform(specify terraform) or OpenTofu(specify tofu)
+tf_or_tofu=terraform
+
+#path to cd3 excel eg /cd3user/tenancies/<prefix>/CD3-Customer.xlsx
 cd3file=/cd3user/tenancies/demo/CD3-demo.xlsx
 
 #specify create_resources to create new resources in OCI(greenfield workflow)
@@ -43,7 +45,7 @@ Command to Execute:
 cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```
 ```
-python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties
+python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 ```
          
 !!! example "Example Execution"
@@ -68,10 +70,10 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.
 
 **Expected Outputs:**
-<br>It will generate tfvars files for the services selected at _/cd3user/tenancies/<customer_name\>/terraform_files/<region_dir\>/<service_dir\>/_
+<br>It will generate tfvars files for the services selected at _/cd3user/tenancies/<prefix\>/terraform_files/<region_dir\>/<service_dir\>/_
 
 **Step 4:** 
-<br>Change the directory to  ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```  and Execute:
+<br>Change the directory to  ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```  and Execute:
 
 **terraform init**  - To initialize and prepare the working/out directory so Terraform can run the configuration.<br>
 

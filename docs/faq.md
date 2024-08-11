@@ -24,7 +24,7 @@ Follow below steps:
   - Modify the setUpOCI.properties file to set non_gf_tenancy to "true".
   - Choose "Export Compute".
   - Specify the filter - prefix of the instances or specific AD to export.
-  - Once the execution completes, take a backup of the files generated for instances in out directory( *<customer\_name\>\_instances.     tfvars* and _tf\_import\_cmds \_instances\_nonGF.sh_) and a backup of the 'Instances' tab of the Input CD3 Excel Sheet.
+  - Once the execution completes, take a backup of the files generated for instances in out directory( *<prefix\>\_instances.     tfvars* and _import\_cmds \_instances\_nonGF.sh_) and a backup of the 'Instances' tab of the Input CD3 Excel Sheet.
   - Repeat steps from 1 to 4 to export next set of Instances using another filter.
   - After exporting all the required instances using multiple filters, move the files from backup to the out directory, and then execute all the shell scripts generated for instances. Consolidate the data of exported instances from the Excel sheet backups.
 
@@ -32,10 +32,10 @@ Follow below steps:
 **6. How do I delete a compartment from OCI using the toolkit?**
 <br>
 
-Terraform destroy on compartments or removing the compartments details from *<customer\_name\>\_compartments.auto.tfvars* will not delete them from OCI Console by default. Inorder to destroy them from OCI . 
+Terraform destroy on compartments or removing the compartments details from *<prefix\>\_compartments.auto.tfvars* will not delete them from OCI Console by default. Inorder to destroy them from OCI . 
 Either - 
 <br>           - Add an additional column - _enable\_delete_ to Compartments Tab of CD3 Excel sheet with the value _TRUE_ for the compartments that needs to be deleted on terraform destroy. Execute the toolkit menu option to Create Compartments.</li>
   <br>(OR)
-<br>           - Add _enable\_delete = true_ parameter to each of the compartment that needs to be deleted in _<customer\_name\>\_compartments.auto.tfvars_
+<br>           - Add _enable\_delete = true_ parameter to each of the compartment that needs to be deleted in _<prefix\>\_compartments.auto.tfvars_
  
 
