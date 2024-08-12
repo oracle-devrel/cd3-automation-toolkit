@@ -16,9 +16,6 @@ parser.add_argument("-i", "--instance_principal", help="INSTANCE_PRINCIPAL", nar
 parser.add_argument("-t", "--session_token", help="SESSION_TOKEN", nargs='?', const=1, type=int)
 args = parser.parse_args()
 
-# Define a function to extract the region from the OCID
-
-
 try:
     region_file = os.path.dirname(os.path.abspath(__file__))+"/region_file.json"
     region_map = load_region_map(region_file)
@@ -148,13 +145,87 @@ try:
     # Write the combined data to an Excel file
     excel_file = args.file
     sheet = args.sheet
-    combined_data.to_excel(excel_file, index=False, sheet_name=sheet)
+    if sheet.startswith('"') and sheet.endswith('"'):
+        sheet = sheet[1:-1]
 
-    # Load the workbook and select the sheet
-    wb = load_workbook(excel_file)
+    # Check if the file exists and the sheet exists
+    if os.path.isfile(excel_file):
+        wb = load_workbook(excel_file)
+        if "Readme" not in wb.sheetnames:
+            # Create a new Readme sheet with instructions
+            readme_sheet = wb.create_sheet(title="Readme")
+            readme_content = """
+            Instructions to update columns in Excel sheet
+
+            For New Plan step update the row values as below:
+            - id, steps.id - leave these row values empty column empty 
+            - Display_name : Display name for Plan Group name (mandatory)
+              steps.display_name : Display name for the step (mandatory)
+              steps.error_mode : STOP_ON_ERROR/CONTINUE_ON_ERROR (mandatory)
+              steps.is_enabled : TRUE/FALSE (mandatory)
+              steps.timeout : timeout value in seconds (mandatory)
+              type: USER_DEFINED (mandatory)
+              steps.user_defined_step.step_type : RUN_LOCAL_SCRIPT/RUN_OBJECTSTORE_SCRIPT/INVOKE_FUNCTION
+
+              Based on the step type from above fill in the row values as mentioned : 
+                RUN_LOCAL_SCRIPT: 
+                                - steps.user_defined_step.run_as_user, (description: user as which the script needs to run)
+                                - steps.user_defined_step.run_on_instance_id,  (description: Instance OCID where the script is located)
+                                - steps.user_defined_step.script_command (description: script command which needs to run)
+                RUN_OBJECTSTORE_SCRIPT: 
+                                - steps.user_defined_step.run_on_instance_id, (description: Instance OCID where the script is located)
+                                - steps.user_defined_step.object_storage_script_location.bucket, (description: OCI Bucket name)
+                                - steps.user_defined_step.object_storage_script_location.namespace, (description: OCI Bucket namespace)
+                                - steps.user_defined_step.object_storage_script_location.object (description: object/scriptname name inside the bucket that needs to run)
+                INVOKE_FUNCTION : 
+                                - steps.user_defined_step.function_id, (description: OCI Functions OCID)
+                                - steps.user_defined_step.request_body (description: request which needs to be invoked)
+
+            Updating existing plan : 
+
+            - Change the required row values(except group id and step id - these should remain the same).
+            """
+
+            # Insert the content into a single cell (A1)
+            readme_sheet["A1"] = readme_content.strip()
+
+            # Expand the row height to accommodate the text
+            readme_sheet.row_dimensions[1].height = 750  # You can adjust this value
+
+            # Auto-adjust column width to fit the content
+            readme_sheet.column_dimensions['A'].width = 150  # You can adjust this value
+
+            # Set text wrapping for the cell
+            readme_sheet["A1"].alignment = Alignment(wrap_text=True, vertical='top')
+            readme_sheet["A1"].font = Font(size=14, color="FFFFFF", bold=True)  # Set font size to 14 and color to white
+            readme_sheet["A1"].fill = PatternFill(start_color="346EC9", end_color="346EC9", fill_type="solid")  # Set background to blue
+            readme_index = wb.sheetnames.index("Readme")
+            wb._sheets.insert(0, wb._sheets.pop(readme_index))
+
+            # Save the workbook with the new Readme sheet
+            wb.save(excel_file)
+
+        if sheet in wb.sheetnames:
+            with pd.ExcelWriter(excel_file, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+                print(f"Writing to sheet: {sheet}")
+                combined_data.to_excel(writer, sheet_name=sheet, index=False)
+                worksheet = writer.sheets[sheet]
+        else:
+            with pd.ExcelWriter(excel_file, engine='openpyxl', mode='a') as writer:
+                print(f"Writing to sheet: {sheet}")
+                combined_data.to_excel(writer, sheet_name=sheet, index=False)
+                worksheet = writer.sheets[sheet]
+    else:
+        with pd.ExcelWriter(excel_file, engine='openpyxl', mode='w') as writer:
+            print(f"Writing to Excel file: {excel_file} and sheet: {sheet}")
+            combined_data.to_excel(writer, sheet_name=sheet, index=False)
+            worksheet = writer.sheets[sheet]
+
+
+        wb = load_workbook(excel_file)
     ws = wb[sheet]
 
-    # Function to merge and center cells with the same values in a column
+
     def merge_and_center(ws, col):
         max_row = ws.max_row
         for row in range(2, max_row + 1):
@@ -168,20 +239,7 @@ try:
                 merged_cell = ws.cell(row=start_row, column=col)
                 merged_cell.alignment = Alignment(horizontal='center', vertical='center')
 
-    # Check if the file exists
-    if os.path.isfile(excel_file):
-        with pd.ExcelWriter(excel_file, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
-            combined_data.to_excel(writer, sheet_name=sheet, index=False)
-            workbook = writer.book
-            worksheet = writer.sheets[sheet]
-    else:
-        with pd.ExcelWriter(excel_file, engine='openpyxl', mode='w') as writer:
-            combined_data.to_excel(writer, sheet_name=sheet, index=False)
-            workbook = writer.book
-            worksheet = writer.sheets[sheet]
-
-    # Define the columns to merge and center (using 1-based index)
-    columns_to_merge = ['A', 'B']  # Example: 'display_name', 'id', 'type'
+    columns_to_merge = ['A', 'B']
 
     for col in columns_to_merge:
         col_index = column_index_from_string(col)
@@ -192,8 +250,7 @@ try:
     fill_purple = PatternFill(start_color="858491", end_color="858491", fill_type="solid")
     font_white = Font(color="FFFFFF", bold=True)
 
-    # Apply fill colors to headers
-    header_cells = ws[1]  # First row is header
+    header_cells = ws[1]
     for cell in header_cells:
         if cell.column_letter in ['A', 'B', 'T']:
             cell.fill = fill_blue
@@ -205,7 +262,7 @@ try:
     # Auto-adjust column widths
     for col in ws.columns:
         max_length = 0
-        column = col[0].column_letter  # Get the column name
+        column = col[0].column_letter
         for cell in col:
             try:
                 if len(str(cell.value)) > max_length:

@@ -1569,8 +1569,8 @@ def export_update_dr_plan(outdir, prefix, config_file_path,option=''):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     # Take backup of existing excel sheet
-    if option.lower().__contains__("export"):
-        commonTools.backup_file(outdir, tag, filename)
+    #if option.lower().__contains__("export"):
+    #    commonTools.backup_file(outdir, tag, filename)
 
     split = str.split(cmd)
     print("Executing: " + cmd)

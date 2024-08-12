@@ -319,7 +319,10 @@ def builtin_function(row, plan_groups_dict):
 
 try:
     workbook = openpyxl.load_workbook(args.file)
-    sheet = workbook[args.sheet]
+    sheet = args.sheet
+    if sheet.startswith('"') and sheet.endswith('"'):
+        sheet = sheet[1:-1]
+    sheet = workbook[sheet]
 except Exception as e:
     print(f"Error loading Excel file or sheet: {str(e)}")
     print(".....Exiting!!!")
