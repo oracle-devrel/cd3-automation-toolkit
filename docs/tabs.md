@@ -45,7 +45,7 @@ On re-running the same option you will find the previously existing files being 
 
 !!! Important
 
-    Check point no: **10** in the [Known issues](./knownbehaviour.md#terraform-behavior) section for details on Terraform's behavior when exporting both normal and dynamic groups from IAM domains."
+    Check point no: **10** in the [Known issues](./knownbehaviour.md#terraform-behavior) section for details on Terraform's behavior when exporting normal and dynamic groups.
 
 
 
