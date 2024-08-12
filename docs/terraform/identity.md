@@ -211,7 +211,7 @@ compartments = {
     
           # Optional
           members               = list(string) 
-          matching_rule         = string  (Required only for Dynamic Group)
+          matching_rule         = string  #Required only for Dynamic Group
           defined_tags          = map 
           freeform_tags         = map 
           },
@@ -269,7 +269,7 @@ compartments = {
         
               # Optional
               members               = list(string) 
-              matching_rule         = string  (Required only for Dynamic Group)
+              matching_rule         = string  #Required only for Dynamic Group
               defined_tags          = list(map) 
               freeform_tags         = list(map) 
               },

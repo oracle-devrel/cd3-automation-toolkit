@@ -13,7 +13,7 @@ Click on it. It has the corresponding **setupoci pipeline** and **terraform_file
 
 Click on the setupoci pipeline and select **Build with Parameters** from left side menu.
 
-<img width="1600" height="550" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="../images/jenkinsGF-1.jpg">
+<img width="2000" height="900" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="../images/jenkinsGF-1.jpg">
 
 !!! note
      Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
