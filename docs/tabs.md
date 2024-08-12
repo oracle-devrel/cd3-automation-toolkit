@@ -43,6 +43,10 @@ Once terraform apply is done, you can view the resources under *Identity -> Grou
 
 On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_groups/<Date>-<Month>-<Time>```.
 
+!!! Important
+
+    Check point no: **10** in the [Known issues](./knownbehaviour.md#terraform-behavior) section for details on Terraform's behavior when exporting both normal and dynamic groups from IAM domains."
+
 
 
 ## Policies Tab
@@ -143,21 +147,25 @@ This contains information about DHCP options to be created for each VCN.
 **Notes:**
 
 1. Name of the VCNs, subnets etc are all case-sensitive. Specify the same names in all required places. Avoid trailing spaces for a resource Name.
-2. A subnet or a vlan will be created based on the column - 'Subnet or VLAN'. When VLAN is specified, vlan tag can also be specified with sytanx as VLAN::<vlan_tag\>
+2. A subnet or a vlan will be created based on the column - 'Subnet or VLAN'. When VLAN is specified, vlan tag can also be specified with sytanx as ```VLAN::<vlan_tag>```
 3. Column NSGs is read only for type VLAN.
 4. Columns - DHCP Option Name, Seclist Names, Add Default Seclist and DNS Label are applicable only for type Subnet.
 5. Default Route Rules created are :
 
-   a. Based on the values entered in columns ‘configure SGW route’, ‘configure NGW route’, ‘configure IGW route’, 'configure Onprem route' and 'configure VCNPeering route'  in Subnets sheet; if the value entered is ‘y’, it will create a route for the object in that subnet eg if ‘configure IGW’ in Subnets sheet is ‘y’ then it will read parameter ‘igw_destination’ in VCN Info tab and create a rule in the subnet with destination object as IGW of the VCN and destination CIDR as value of igw_destnation field. If comma separated values are entered in the igw_destination in VCN Info tab then the tool creates route rule for each destination cidr for IGW in that subnet.Tool works similarly for ‘configure NGW’ in Subnets tab and ‘ngw_destination’ in VCN Info tab. For SGW, route rule is added either 'all services' or object storage in that region.
+    <b>a.</b> Based on the values entered in columns ‘configure SGW route’, ‘configure NGW route’, ‘configure IGW route’, 'configure Onprem route' and 'configure VCNPeering route'  in Subnets sheet; if the value entered is ‘y’, it will create a route for the object in that subnet.
+    
+      Eg if ‘configure IGW’ in Subnets sheet is ‘y’ then it will read parameter ‘igw_destination’ in VCN Info tab and create a rule in the subnet with destination object as IGW of the VCN and destination CIDR as value of igw_destnation field.
+        
+      If comma separated values are entered in the igw_destination in VCN Info tab then the tool creates route rule for each destination cidr for IGW in that subnet.Tool works similarly for ‘configure NGW’ in Subnets tab and ‘ngw_destination’ in VCN Info tab. For SGW, route rule is added either 'all services' or object storage in that region.
 
-   b.  For a hub spoke model, tool automatically creates route tables attached with the DRG and each LPG in the hub VCN peered with spoke VCN.
+    <b>b.</b>  For a hub spoke model, tool automatically creates route tables attached with the DRG and each LPG in the hub VCN peered with spoke VCN.
      ‘onprem_destinations’ in VCN Info tab specifies the On Prem Network CIDRs.
 
 6. The below Default Security Rules are created:
 
-   a.  Egress rule allowing all protocols for 0.0.0.0/0 is opened.
+      <b>a.</b>  Egress rule allowing all protocols for 0.0.0.0/0 is opened.
 
-   b.  Ingress rule allowing all protocols for subnet CIDR is opened. This is to allow communication between VMs with in the same subnet.
+      <b>b.</b>  Ingress rule allowing all protocols for subnet CIDR is opened. This is to allow communication between VMs with in the same subnet.
 
 7. Default Security List of the VCN is attached to the subnet if ‘add_default_seclist’ parameter in Subnets tab is set to ‘y’.
 
@@ -288,55 +296,54 @@ On re-running the same option you will find the previously existing files being 
 
 3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
 
- >Note:
-The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in *variables_<region\>.tf* file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
+    >Note:
+    The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in *variables_<region\>.tf* file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
 
->For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in *variables_<region\>.tf* file as shown below:
+    >For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in *variables_<region\>.tf* file as shown below:
 
-  
-    variable  'instance_ssh_keys'  {
-    type = map(any)
-    default = {
-    ssh_public_key = "<SSH PUB KEY STRING HERE>"
-    # Use '\n' as the delimiter to add multiple ssh keys.
-    # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
-    #START_instance_ssh_keys#
-    # exported instance ssh keys
-    #instance_ssh_keys_END#
-      }
-    }
+        
+          variable  'instance_ssh_keys'  {
+          type = map(any)
+          default = {
+          ssh_public_key = "<SSH PUB KEY STRING HERE>"
+          # Use '\n' as the delimiter to add multiple ssh keys.
+          # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+          #START_instance_ssh_keys#
+          # exported instance ssh keys
+          #instance_ssh_keys_END#
+            }
+          }
 
-6. Enter subnet name column value as: *<vcn-name\>_<subnet-name\>*
+4. Enter "Network Details" column value as: ```<compartment-name>@<vcn-name>::<subnet-name>```
 
-7. Enter remote execute script(Ansible/Shell) name. Shell scripts should be named with *.sh and ansible with *.yaml or *.yml inside 'scripts' folder within the region/service dir. This feature is tested against OL8.  
+5. Enter remote execute script(Ansible/Shell) name. Shell scripts should be named with *.sh and ansible with *.yaml or *.yml inside 'scripts' folder within the region/service dir. This feature is tested against OL8.  
 
-8. Create a column called 'Cloud Init Script' to execute scripts (located under 'scripts' folder within the region/service dir) as part of cloud-init.   
+6. Create a column called 'Cloud Init Script' to execute scripts (located under 'scripts' folder within the region/service dir) as part of cloud-init.   
 
-9. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
+7. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
 Format - 
+  ```
+    image::<variable containing ocid of image> or
+    bootVolume::<variable containing ocid of boot volume>
+  ```
 
-image::<variable containing ocid of image\> or
-bootVolume::<variable containing ocid of boot volume\>
-
-Make sure to have an entry in *variables_<region\>.tf* file for the value you enter in Source Details field of the Excel sheet.
-Ex: If you enter the Source Details as image::Linux, make an entry in *variables_<region\>.tf* file under the **instance_source_ocids** variable as shown below:
+ 8.  Make sure to have an entry in *variables_<region\>.tf* file for the value you enter in Source Details field of the Excel sheet.
+  Ex: If you enter the Source Details as image::Linux, make an entry in *variables_<region\>.tf* file under the **instance_source_ocids** variable as shown below:
 
 
-    variable 'instance_source_ocids' {
-     type = map(any)
-     Linux    = "<LATEST LINUX OCID HERE>"
-     Windows  = "<LATEST WINDOWS OCID HERE>"
-     PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
-     #START_instance_source_ocids#
-     # exported instance image ocids
-     #instance_source_ocids_END#
-    }
+        variable 'instance_source_ocids' {
+        type = map(any)
+        Linux    = "<LATEST LINUX OCID HERE>"
+        Windows  = "<LATEST WINDOWS OCID HERE>"
+        PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
+        #START_instance_source_ocids#
+        # exported instance image ocids
+        #instance_source_ocids_END#
+        }
 
-9. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
+9. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:```shape::ocpus```
 
-   ```shape::ocpus```
-
-eg: VM.Standard.E3.Flex::5
+      eg: ```VM.Standard.E3.Flex::5```
 
 
 10. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
@@ -352,6 +359,8 @@ Output terraform file generated: ```<outdir>/<region>/<service_dir>/<prefix>_ins
 Once the terraform apply is complete, view the resources under *Compute -> Instances* for the region.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_instances/<Date>-<Month>-<Time>```.
+
+
 
 ## BlockVolumes Tab
 
@@ -402,7 +411,7 @@ Automation Tool Kit allows you to create Load Balancers. Components that you can
 |Path Route Set|PathRouteSet|
 |Listeners|LB-Listeners|
 
-NOTE : While exporting and synching the tfstate file for LBR objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and Jinja2 Templates (as a non-default attribute) and re-run the export.
+  >NOTE : While exporting and synching the tfstate file for LBR objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and Jinja2 Templates (as a non-default attribute) and re-run the export.
 
 On choosing "Load Balancers" in the SetUpOCI menu will allow to create load balancers in OCI tenancy.
 
@@ -660,7 +669,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 
 - For source details column, the format should be as below
 
-  image::<variable containing ocid of image\> 
+  ```image::<variable containing ocid of image>```
 
   Make sure to have an entry in *variables_<region\>.tf* file for the value you enter in Source Details field of the Excel sheet.
 

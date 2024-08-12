@@ -159,7 +159,7 @@ As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove
 
 
 **10.**
-When exporting groups (normal and dynamic) to terraform from IAM domains, post executing the *tf_import_commands_groups_nonGF.sh* script, the terraform shows the changes for matching rules and members. This is because currently those values are not getting imported to the tfstate.
+When exporting groups (normal and dynamic) to terraform from IAM domains, post executing the *import_commands_groups_nonGF.sh* script, the terraform shows the changes for matching rules and members. This is because currently those values are not getting imported to the tfstate.
 
 Please ignore this and proceed with terraform apply as it will not change anything in the OCI console for groups.
  
@@ -182,7 +182,7 @@ Please ignore this and proceed with terraform apply as it will not change anythi
 
           Plan: 0 to add, 2 to change, 0 to destroy.
 
-When exporting groups (normal and dynamic) to terraform from IDCS, post executing the *tf_import_commands_groups_nonGF.sh* script, the terraform shows a replacement for group membership. 
+When exporting groups (normal and dynamic) to terraform from IDCS, post executing the *import_commands_groups_nonGF.sh* script, the terraform shows a replacement for group membership. 
 Please ignore this and proceed with terraform apply as it will not change anything in the OCI console for groups.
 
           # module.iam-groups["grp1"].oci_identity_user_group_membership.user_group_membership["abc@oracle.com"] must be replaced
