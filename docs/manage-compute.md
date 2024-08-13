@@ -3,7 +3,7 @@
 Provisioning of compute instances using Automation Toolkit involves the below steps:
 
 - Adding the VM details to the "Instances" Excel Sheet.
-- Updating the ```/cd3user/tenancies/<prefix>/terraform_files/<region>/variables_<region>.tf``` file with information about ssh key, source ocid. 
+- Updating the ```/cd3user/tenancies/<prefix>/terraform_files/<region>/<service_dir>/variables_<region>.tf``` file with information about ssh key, source ocid. 
 - Running the toolkit with 'Create Resources' workflow to generate *.auto.tfvars.
 - Executing Terraform/Tofu to provision the resources in OCI.
 
@@ -45,7 +45,7 @@ Remote execution should be used as the _last resort or only during initial provi
  - Running the CD3 automation toolkit will generate auto.tfvars.
  - Execute Terraform/Tofu commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.
 
- The users can refer to the ```default.yaml``` file which is inside ```/cd3user/tenancies/<prefix>/terraform_files/<region>/scripts``` dir for provisioning the custom playbooks.
+ The users can refer to the ```default.yaml``` file which is inside ```/cd3user/tenancies/<prefix>/terraform_files/<region>/<service_dir>/scripts``` dir for provisioning the custom playbooks.
  
 
 <u>Managing Cloud Init</u>
@@ -59,7 +59,7 @@ Remote execution should be used as the _last resort or only during initial provi
 
 **2. Update variables_<region\>.tf**
 
-- Location of the file - ```/cd3user/tenancies/<prefix>/terraform_files/<region>/variables_<region>.tf```
+- Location of the file - ```/cd3user/tenancies/<prefix>/terraform_files/<region>/<service_dir>/variables_<region>.tf```
 - The "SSH Key Var Name" column accepts either the SSH key value directly or the name of a variable declared in variables.tf under the **instance_ssh_keys** variable that contains the key value. Ensure there is an entry in the variables_<region\>.tf file with the name entered in the SSH Key Var Name field of the Excel sheet, and set the value to the SSH key value.
 
     !!! Example
