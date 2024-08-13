@@ -150,6 +150,11 @@ Terraform ordering changes observed during plan phase for OCI compute plugins.
   It changes the order of plugin's in terraform state file and doesn't change anything in OCI console for compute resource.
 
 **9.**
+After executing import_commands during export of service connectors, the terraform plan will show log-sources ordering as changes and it rearranges the order for log-sources for that service connector if source/target kind is logging. This can be ignored and you can proceed with terraform apply.
+
+ ![image](../images/tabs-2.png)
+
+**10.**
 When exporting Virtual Private Vault's Replica to terraform, after executing the *import_commands_kms_nonGF.sh* script, 
 the terraform plan indicates the creation of a new OCI vault replication resource. This happens because there is no terraform import command for replication resource. 
 
@@ -158,7 +163,7 @@ As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove
 ![image](../images/vaults_known_behaviour.png)
 
 
-**10.**
+**11.**
 When exporting groups (normal and dynamic) to terraform from IAM domains, post executing the *import_commands_groups_nonGF.sh* script, the terraform shows the changes for matching rules and members. This is because currently those values are not getting imported to the tfstate.
 
 Please ignore this and proceed with terraform apply as it will not change anything in the OCI console for groups.
@@ -166,15 +171,23 @@ Please ignore this and proceed with terraform apply as it will not change anythi
 
             # module.groups["default_CD3-Test-DG-Group"].oci_identity_domains_dynamic_resource_group.dynamic_group[0] will be updated in-place
               ~ resource "oci_identity_domains_dynamic_resource_group" "dynamic_group" {
+                    + attribute_sets          = [
+                    + "all",
+                      ]
+                    + attributes              = "matching_rule"
                     id                        = "2b8b98646c2e40179a3ae4743ddfdfde"
-                  + matching_rule             = "Any {instance.compartment.id = 'ocid1.compartment.oc1..aaaaaaaaqu7vgfvtkvghrza3xs2qjogkgervv3pwrbdxf5tlcgdjkwwivnrq'}"
+                    + matching_rule           = "Any {instance.compartment.id = 'ocid1.compartment.oc1..aaaaaaaaqu7vgfvtkvghrza3xs2qjogkgervv3pwrbdxf5tlcgdjkwwivnrq'}"
                     # (14 unchanged attributes hidden)        # (2 unchanged blocks hidden)
                 } 
 
-            # module.groups["default_Domain_Administrators"].oci_identity_domains_group.group[0] will be updated in-place
+            # module.groups["default_Test_Group"].oci_identity_domains_group.group[0] will be updated in-place
               ~ resource "oci_identity_domains_group" "group" {
-                    id                                                    = "6383c6a3c75c49289ec0bcc7042a83b7"
-                    # (12 unchanged attributes hidden)      + members {
+		          + attribute_sets      = [
+          	          + "all",
+        	          ]
+     	 	          + attributes           = "members"
+                      id  = "6383c6a3c75c49289ec0bcc7042a83b7"
+                      # (12 unchanged attributes hidden)      + members {
                       + type  = "User"
                       + value = "69db38ed20b9438f94e2fca7bd39736a"
                     }        # (3 unchanged blocks hidden)

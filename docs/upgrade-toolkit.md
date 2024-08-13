@@ -1,5 +1,10 @@
 # Steps to Upgrade Your Toolkit (For Existing Customers using older versions):
 
+## Upgrade to Release v2024.4.0
+1. Follow the steps in [Launch Docker Container](launch-container.md) to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
+2. Use export_resources(Non Greenfield) workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also. Make sure to use [latest](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx) CD3 Blank Template for this release.
+3. Once terraform is in synch, Switch to create_resources (Greenfield) workflow and use for any future modifications to the infra.
+
 ## Upgrade to Release v2024.3.0
 1. Follow the steps in [Launch Docker Container](launch-container.md) to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
 2. Use export_resources(Non Greenfield) workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also. Make sure to use [latest](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx) CD3 Blank Template for this release.

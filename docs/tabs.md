@@ -36,6 +36,7 @@ The toolkit supports groups in IDCS, default and custom IAM domains now.
 
 4. Domain Name can be left blank for group creation in IDCS and default domain.
 5. Name is a mandatory field.
+6. The Default Administrator groups ("Domain_Administrators", "All Domain Users", "Administrators")  are skipped while export of groups from Identity Domain tenancies.
   
 Output terraform file generated at:  ```<outdir>/<region>/<service_dir>/<prefix>_groups.auto.tfvars``` where *<region\>* directory is the home region.
 
@@ -45,7 +46,7 @@ On re-running the same option you will find the previously existing files being 
 
 !!! Important
 
-    Check point no: **10** in the [Known issues](./knownbehaviour.md#terraform-behavior) section for details on Terraform's behavior when exporting normal and dynamic groups.
+    Check point no: **11** in the [Known Behaviour](./knownbehaviour.md#terraform-behavior) section for details on Terraform's behavior when exporting normal and dynamic groups.
 
 
 
@@ -435,7 +436,7 @@ Once this is complete you will find the generated output terraform files in loca
 
 Once terraform apply is done, you can view the resources under *Networking → Load Balancers* for the region.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_LB-Hostname-Certs/<Date>-<Month>-<Time>```.
+On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_lb-hostname-certs/<Date>-<Month>-<Time>```.
 
 ## LB-Backend Set and Backend Servers Tab
 
@@ -447,51 +448,61 @@ Use the tab **LB-BackendSet-BackendServer** of CD3 Excel to create the following
 
 Once this is complete you will find the generated output terraform files in location :
 
- ```<outdir>/<region>/<service_dir>/<prefix>_backendset-backendserver.auto.tfvars```
+ ```<outdir>/<region>/<service_dir>/<prefix>_lb-backendset-backendserver.auto.tfvars```
 
 
 Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_BackendSet-BackendServer/<Date>-<Month>-<Time>```.
+On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_lb-backendset-backendserver/<Date>-<Month>-<Time>```.
 
 ## LB-RuleSet Tab
 
 Use the tab **LB-RuleSet** of CD3 Excel to create the following components of Load Balancer:
 
 - Rule Sets
-- RuleSet 
 
 Once this is complete you will find the generated output terraform files in location :
 
- ```<outdir>/<region>/<service_dir>/<prefix>_ruleset.auto.tfvars```
+ ```<outdir>/<region>/<service_dir>/<prefix>_lb-ruleset.auto.tfvars```
 
 
 Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_RuleSet/<Date>-<Month>-<Time>```.
+On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_lb-ruleset/<Date>-<Month>-<Time>```.
 
 ## LB-Path Route Set Tab
 
 Use the tab **LB-PathRouteSet** of CD3 Excel to create the following components of Load Balancer:
 
 - Path Route Sets
-- PathRouteSet:
 
 Once this is complete you will find the generated output terraform files in location :
 
- ```<outdir>/<region>/<service_dir>/<prefix>_pathrouteset.auto.tfvars```
+ ```<outdir>/<region>/<service_dir>/<prefix>_lb-pathrouteset.auto.tfvars```
 
 
 Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_PathRouteSet/<Date>-<Month>-<Time>```.
+## LB-Routing Policy Tab
+
+Use the tab **LB-RoutingPolicy** of CD3 Excel to create the following components of Load Balancer:
+
+- Routing Policies
+
+Once this is complete you will find the generated output terraform files in location :
+
+ ```<outdir>/<region>/<service_dir>/<prefix>_lb-routingpolicy.auto.tfvars```
+
+
+Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_lb-routingpolicy/<Date>-<Month>-<Time>```.
 
 ## LB-Listeners Tab
 
 Use the tab **LB-Listener** of CD3 Excel to create the following components of Load Balancer:
 
-- Path Route Sets
-- LB-Listener:
+- LB Listener
 
 Once this is complete you will find the generated output terraform files in location :
 
@@ -642,10 +653,11 @@ Note -
 ![image](../images/tabs-1.png)
 
 - Also, When the target kind is **'notifications'** the value for formatted messages parameter is set to **'true'** as default. Its set to **'false'** only when the source is 'streaming'.
-  
-- After executing tf_import_commands during export of service connectors, the terraform plan will show log-sources ordering as changes and it rearranges the order for log-sources for that service connector if source/target kind is logging. This can be ignored and you can proceed with terraform apply.
 
- ![image](../images/tabs-2.png)
+!!! Important
+
+    Check point no: **9** in the [Known Behaviour](./knownbehaviour.md#terraform-behavior) section for details on Terraform's behavior when exporting service connectors.
+
 
 ## OKE Tab
 
@@ -918,7 +930,7 @@ On re-running the option to create KMS, you will find the previously existing fi
 
 !!! Important
 
-    Check point no: **9** in [Known issues](./knownbehaviour.md#terraform-behavior) for OCI Vault Replication resource terraform import behaviour. 
+    Check point no: **10** in [Known Behaviour](./knownbehaviour.md#terraform-behavior) for OCI Vault Replication resource terraform import behaviour. 
    
  - Creation of Master Encryption Keys (MEKs) for all the OCI supported Key shapes: AES, RSA and ECDSA.
 

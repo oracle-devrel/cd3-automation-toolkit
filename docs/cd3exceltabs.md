@@ -98,6 +98,8 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
  - [LB-PathRouteSet](tabs.md#lb-path-route-set-tab)
  
+ - [LB-RoutingPolicy](tabs.md#lb-routing-policy-tab)
+ 
  - [LB-Listener](tabs.md#lb-listeners-tab)
 
 <a href="../terraform/loadbalancer">Click here to view sample auto.tfvars for all Load Balancer components- Cipher suits,Backend sets, rule sets etc.,</a>
