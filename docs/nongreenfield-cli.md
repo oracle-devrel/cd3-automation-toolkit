@@ -10,7 +10,7 @@
  and copy at _/cd3user/tenancies/<prefix\>/_<br><br>
 **Step 2:** 
 <br>Modify ```/cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties``` 
-<br>Update parameters: **cd3file** parameter to the location of CD3 excel file and **workflow_type** to **export_resources**  as shown below.
+<br>Add the location of CD3 excel file under **cd3file** parameter and set **workflow_type** to **export_resources**  as shown below.
 <br> The other parameters are already updated with correct values.
 ```ini
 #Input variables required to run setUpOCI script
@@ -42,7 +42,7 @@ workflow_type=export_resources
 ```
   
 **Step 3:** 
-<br>Execute the setUpOCI.py script to start exporting the resources to CD3 and creating the terraform configuration files.
+<br>Execute the setUpOCI.py script to start exporting the resources to CD3 and creating the terraform/tofu configuration files.
 
 Command to Execute:
 ```
@@ -60,13 +60,13 @@ python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
     Script to fetch the compartment OCIDs into variables file has not been executed.<br>
     Do you want to run it now? (y|n):
 
-→ This prompt appears when executing the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
+⬆️ The above prompt appears when executing the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
 
 !!! Note
 
     Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
 
-<br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
+<br>⬇️ After fetching the compartment details, the toolkit will display the menu options as shown below:
 
 
 !!! example  "Example Execution"
@@ -80,14 +80,14 @@ Choose the resources by specifying a single option (for choosing one of these re
 **Expected Outputs:**
 
 a. Excel sheet with the resource details from OCI.<br> 
-b. Terraform Configuration files - *.auto.tfvars  
-c. Shell Script with import commands - *import_commands_`<resource>`.sh* 
+b. Configuration files - <b><i>*.auto.tfvars</i></b> <br> 
+c. Shell Script with import commands - <b><i>import_commands_`<resource>`.sh</i></b>
 
 
 **Step 4:** 
 
-Execute the import_commands_`<resource>`.sh files that are generated in the outdir.
-<br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
+Execute the <b>*import_commands_`<resource>`.sh*</b> files that are generated in the outdir.
+<br>The terraform/tofu plan should show that infrastructure is up-to-date with no changes required for all regions.
   
 
 !!! note

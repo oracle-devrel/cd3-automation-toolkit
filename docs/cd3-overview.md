@@ -19,7 +19,8 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 ###<u> **CD3 Toolkit Process</u>**
 
 
-<img width="1500" height="700" alt="CD3 Toolkit Process" src="../images/CD3-Process.png">
+<img width="2000" height="1000" alt="CD3 Toolkit Process" src="../images/CD3-Process.png">
+
 
 <br>
 The toolkit supports 2 workflows:<br>
@@ -27,17 +28,17 @@ The toolkit supports 2 workflows:<br>
 **1. Create & Manage Resources in OCI (Greenfield Workflow):**
 
 - Use this workflow when there is empty OCI tenancy (or) need to create new resources without any requirement to modify / use any existing resources in tenancy.
-- The filled in input Excel file is fed to the toolkit and terraform tfvars files are generated for all resources.
-- Modifying the same excel sheet and re running the toolkit will generate modified terraform tfvars files.<br>
-- The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. <br>
+- The filled in input Excel file is fed to the toolkit and tfvars files are generated for all resources.
+- Modifying the same excel sheet and re running the toolkit will generate modified tfvars files.<br>
+- The generated tfvars files can be used to deploy resources in OCI by generating a plan and approving the plan for apply. <br>
 
 **2. Export & Manage Resources in OCI (Non-Greenfield Workflow):**
 
-- Use this workflow when there is need to use / manage existing resources with terraform which have not been created using CD3. Export these existing resources into CD3 & TF State. Once the export is complete, switch to the create_resources (greenfield) workflow to create new or manage existing resources .
+- Use this workflow when there is need to use / manage existing resources with terraform/tofu which have not been created using CD3. Export these existing resources into CD3 & TF State. Once the export is complete, switch to the create_resources (greenfield) workflow to create new or manage existing resources .
 - The input Excel (preferably the Blank template) is fed to the toolkit and resources are exported into CD3 Excel template. <br>
-- The toolkit then generates tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.<br>
+- The toolkit then generates tfvars from the exported data in Excel file and also generates shell scripts with import commands for all the resources.<br>
 - The shell scripts have to be executed in order to have the updated state file to manage the resources further.<br>
-- Modifying the same excel sheet and re running the toolkit will generate modified terraform tfvars files.<br>
+- Modifying the same excel sheet and re running the toolkit will generate modified tfvars files.<br>
 
 
 !!! tip
