@@ -1,7 +1,8 @@
 # Export and Manage Resources from OCI (Non-Greenfield Workflow)
 
-!!! note
-    - Make sure that service for which export is done does not have existing tfvars/state file.<br>
+!!! important
+    - Toolkit will **over-write** the data in specific tabs of CD3 Excel sheet with exported content from OCI while the other tabs remain intact.
+    - Differential state import of the objects will be performed, ie the import statements will be generated only for the objects which are not already there in state file.
 
 
 **Step 1:** 
@@ -63,7 +64,7 @@ python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 
 !!! Note
 
-    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. TThis step is required every time a compartment is created via the toolkit or via the OCI console.
+    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
 
 <br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
 
@@ -80,16 +81,14 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 a. Excel sheet with the resource details from OCI.<br> 
 b. Terraform Configuration files - *.auto.tfvars  
-c. Shell Script with import commands - *import_commands_`<resource>`_nonGF.sh* 
+c. Shell Script with import commands - *import_commands_`<resource>`.sh* 
 
-!!! info 
-    Toolkit will over-write the specific tabs of CD3 Excel sheet with exported data for that resource in OCI while the other tabs remain intact.
 
 **Step 4:** 
 
-Execute the *import_commands_`<resource>`_nonGF.sh* files that are generated in the outdir.
+Execute the import_commands_`<resource>`.sh files that are generated in the outdir.
 <br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   
 
 !!! note
-    - Once the export (including the execution of **import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the toolkit to modify these resources or create new ones on top of them.
+    - Once the export (including the execution of **import_commands_`<resource>`.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the toolkit to modify these resources or create new ones on top of them.

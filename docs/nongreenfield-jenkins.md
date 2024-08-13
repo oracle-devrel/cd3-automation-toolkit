@@ -1,7 +1,8 @@
 # Export and Manage Resources from OCI (Non-Greenfield Workflow)
 
-!!! Note
-    Make sure that the service for which export is done does not have existing tfvars/state file.
+!!! important
+    - Toolkit will **over-write** the data in specific tabs of CD3 Excel sheet with exported content from OCI while the other tabs remain intact.
+    - Differential state import of the objects will be performed, ie the import statements will be generated only for the objects which are not already there in state file.
 
 **Step 1**: 
 <br>Choose the Blank CD3 Excel sheet template from [Excel Templates](excel-templates.md).
@@ -51,7 +52,7 @@ Click on the setupoci pipeline and select **Build with Parameters** from left si
   <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Here are the <a href=../download-excel> <b>steps</b></a> to download the exported Excel file. </li>
   
   <li> Generates Terraform Configuration files - *.auto.tfvars.</li>
-  <li> Generates shell scripts with import commands - <b>import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
+  <li> Generates shell scripts with import commands - <b>import_commands_&lt;resource&gt;.sh</b> </li>
 </ul>
 </ol>
  
@@ -61,14 +62,14 @@ Click on the setupoci pipeline and select **Build with Parameters** from left si
 
 **Expected Output of 'Run Import Commands' stage:**<br>
 <ol type="a">
-  <li>Executes shell scripts with import commands(<b>import_commands_&lt;resource&gt;_nonGF.sh</b>) generated in the previous stage </li>
+  <li>Executes shell scripts with import commands(<b>import_commands_&lt;resource&gt;.sh</b>) generated in the previous stage </li>
 </ul>
 </ol>
 
 **Expected Output of Terraform Pipelines:**<br>
 <ol type="a">
   <li>Respective pipelines will get triggered automatically from setUpOCI pipeline based on the services chosen for export. You could also trigger manually when required.</li>
-  <li> If 'Run Import Commands' stage was successful (ie.. import_commands_&lt;resource&gt;_nonGF.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
+  <li> If 'Run Import Commands' stage was successful (ie.. import_commands_&lt;resource&gt;.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
 </ul>
 </ol>
     
@@ -76,4 +77,4 @@ Click on the setupoci pipeline and select **Build with Parameters** from left si
     
 !!! note
     - Make sure to execute **Fetch Compartments OCIDs to variables file** from **CD3 Services** in setUpOCI menu at least once. This will ensure that the variables file in outdir is updated with the OCID information of all the compartments.
-    - Once the export (including the execution of **import_commands_<resource>_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the toolkit to modify these resources or create new ones on top of them.
+    - Once the export (including the execution of **import_commands_<resource>.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the toolkit to modify these resources or create new ones on top of them.
