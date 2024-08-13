@@ -149,62 +149,8 @@ try:
         sheet = sheet[1:-1]
 
     # Check if the file exists and the sheet exists
-    if os.path.isfile(excel_file):
+    if os.path.exists(excel_file):
         wb = load_workbook(excel_file)
-        if "Readme" not in wb.sheetnames:
-            # Create a new Readme sheet with instructions
-            readme_sheet = wb.create_sheet(title="Readme")
-            readme_content = """
-            Instructions to update columns in Excel sheet
-
-            For New Plan step update the row values as below:
-            - id, steps.id - leave these row values empty column empty 
-            - Display_name : Display name for Plan Group name (mandatory)
-              steps.display_name : Display name for the step (mandatory)
-              steps.error_mode : STOP_ON_ERROR/CONTINUE_ON_ERROR (mandatory)
-              steps.is_enabled : TRUE/FALSE (mandatory)
-              steps.timeout : timeout value in seconds (mandatory)
-              type: USER_DEFINED (mandatory)
-              steps.user_defined_step.step_type : RUN_LOCAL_SCRIPT/RUN_OBJECTSTORE_SCRIPT/INVOKE_FUNCTION
-
-              Based on the step type from above fill in the row values as mentioned : 
-                RUN_LOCAL_SCRIPT: 
-                                - steps.user_defined_step.run_as_user, (description: user as which the script needs to run)
-                                - steps.user_defined_step.run_on_instance_id,  (description: Instance OCID where the script is located)
-                                - steps.user_defined_step.script_command (description: script command which needs to run)
-                RUN_OBJECTSTORE_SCRIPT: 
-                                - steps.user_defined_step.run_on_instance_id, (description: Instance OCID where the script is located)
-                                - steps.user_defined_step.object_storage_script_location.bucket, (description: OCI Bucket name)
-                                - steps.user_defined_step.object_storage_script_location.namespace, (description: OCI Bucket namespace)
-                                - steps.user_defined_step.object_storage_script_location.object (description: object/scriptname name inside the bucket that needs to run)
-                INVOKE_FUNCTION : 
-                                - steps.user_defined_step.function_id, (description: OCI Functions OCID)
-                                - steps.user_defined_step.request_body (description: request which needs to be invoked)
-
-            Updating existing plan : 
-
-            - Change the required row values(except group id and step id - these should remain the same).
-            """
-
-            # Insert the content into a single cell (A1)
-            readme_sheet["A1"] = readme_content.strip()
-
-            # Expand the row height to accommodate the text
-            readme_sheet.row_dimensions[1].height = 750  # You can adjust this value
-
-            # Auto-adjust column width to fit the content
-            readme_sheet.column_dimensions['A'].width = 150  # You can adjust this value
-
-            # Set text wrapping for the cell
-            readme_sheet["A1"].alignment = Alignment(wrap_text=True, vertical='top')
-            readme_sheet["A1"].font = Font(size=14, color="FFFFFF", bold=True)  # Set font size to 14 and color to white
-            readme_sheet["A1"].fill = PatternFill(start_color="346EC9", end_color="346EC9", fill_type="solid")  # Set background to blue
-            readme_index = wb.sheetnames.index("Readme")
-            wb._sheets.insert(0, wb._sheets.pop(readme_index))
-
-            # Save the workbook with the new Readme sheet
-            wb.save(excel_file)
-
         if sheet in wb.sheetnames:
             with pd.ExcelWriter(excel_file, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
                 print(f"Writing to sheet: {sheet}")
@@ -221,8 +167,7 @@ try:
             combined_data.to_excel(writer, sheet_name=sheet, index=False)
             worksheet = writer.sheets[sheet]
 
-
-        wb = load_workbook(excel_file)
+    wb = load_workbook(excel_file)
     ws = wb[sheet]
 
 
@@ -238,6 +183,7 @@ try:
                 ws.merge_cells(start_row=start_row, start_column=col, end_row=end_row, end_column=col)
                 merged_cell = ws.cell(row=start_row, column=col)
                 merged_cell.alignment = Alignment(horizontal='center', vertical='center')
+
 
     columns_to_merge = ['A', 'B']
 
@@ -275,6 +221,64 @@ try:
     # Save the modified workbook
     wb.save(excel_file)
     print("Excel file updated successfully.")
+
+    if "Readme" not in wb.sheetnames:
+        readme_sheet = wb.create_sheet(title="Readme")
+        readme_content = """
+        Instructions to update columns in Excel sheet
+
+        For New Plan step update the row values as below:
+        - id, steps.id - leave these row values empty column empty 
+        - Display_name : Display name for Plan Group name (mandatory)
+          steps.display_name : Display name for the step (mandatory)
+          steps.error_mode : STOP_ON_ERROR/CONTINUE_ON_ERROR (mandatory)
+          steps.is_enabled : TRUE/FALSE (mandatory)
+          steps.timeout : timeout value in seconds (mandatory)
+          type: USER_DEFINED (mandatory)
+          steps.user_defined_step.step_type : RUN_LOCAL_SCRIPT/RUN_OBJECTSTORE_SCRIPT/INVOKE_FUNCTION
+
+          Based on the step type from above fill in the row values as mentioned : 
+            RUN_LOCAL_SCRIPT: 
+                            - steps.user_defined_step.run_as_user, (description: user as which the script needs to run)
+                            - steps.user_defined_step.run_on_instance_id,  (description: Instance OCID where the script is located)
+                            - steps.user_defined_step.script_command (description: script command which needs to run)
+            RUN_OBJECTSTORE_SCRIPT: 
+                            - steps.user_defined_step.run_on_instance_id, (description: Instance OCID where the script is located)
+                            - steps.user_defined_step.object_storage_script_location.bucket, (description: OCI bucket name)
+                            - steps.user_defined_step.object_storage_script_location.namespace, (description: OCI bucket namespace name)
+                            - steps.user_defined_step.object_storage_script_location.object, (description: script name)
+                            - steps.user_defined_step.run_on_instance_region, (description: Instance region name)
+                            - steps.user_defined_step.script_command (description: script command which needs to run)
+            INVOKE_FUNCTION: 
+                            - steps.user_defined_step.function_id (description: OCI Function OCID which needs to be invoked)
+                            - steps.user_defined_step.function_region (description: OCI Function region)
+                            - steps.user_defined_step.request_body (description: OCI Function request body)
+        """
+
+        # Insert the content into a single cell (A1)
+        readme_sheet["A1"] = readme_content.strip()
+
+        # Expand the row height to accommodate the text
+        readme_sheet.row_dimensions[1].height = 750  # You can adjust this value
+
+        # Auto-adjust column width to fit the content
+        readme_sheet.column_dimensions['A'].width = 150  # You can adjust this value
+
+        # Set text wrapping for the cell
+        readme_sheet["A1"].alignment = Alignment(wrap_text=True, vertical='top')
+        readme_sheet["A1"].font = Font(size=14, color="FFFFFF", bold=True)  # Set font size to 14 and color to white
+        readme_sheet["A1"].fill = PatternFill(start_color="346EC9", end_color="346EC9",
+                                              fill_type="solid")  # Set background to blue
+        readme_index = wb.sheetnames.index("Readme")
+        wb._sheets.insert(0, wb._sheets.pop(readme_index))
+
+        # Save the workbook with the new Readme sheet
+        wb.save(excel_file)
+
+
+
+    wb.save(excel_file)
+    wb.close()
+
 except Exception as e:
-    print(f"An error occurred: {str(e)}")
-    exit(1)
+    print(f"Error: {str(e)}")
