@@ -664,7 +664,82 @@ Comments preceed with <b>##</b>.
   }
 ```
 
-**10. Listeners**
+**10. Routing Policies**
+
+- <b>Syntax</b>
+```
+  lb_routing_policies = {
+      ## key - Is a unique value to reference the resources respectively
+      key = {
+  		    name                       = string
+		    load_balancer_id           = string
+		    condition_language_version = optional(string)
+		    rules                      = optional(list(map(any)))
+      },      
+   }
+```
+
+- <b>Example</b>
+```
+  // Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+	#############################
+	# Network
+	# Routing Policy - tfvars
+	# Allowed Values:
+	# load_balancer_id can be the ocid or the key of load_balancers (map)
+	# Sample import command for Routing Policy:
+	# terraform import "module.routing-policy\"<<routing policy terraform variable name>>\"].oci_load_balancer_load_balancer_routing_policy.load_balancer_routing_policy" <<routing policy ocid>>
+	#############################
+	lb_routing_policies = {
+	  lbr2_test_routing_policy  = {
+	    condition_language_version   = "V1"
+	    load_balancer_id             = "lbr2"
+	    name                         = "test_routing_policy"
+	    rules = [
+	          {
+	            condition        = "any(http.request.url.path eq (i '/documents'))"
+	            name             = "test_rule_1"
+	            backend_set_name = "BS1"
+	          },
+	          {
+	            condition        = "any(http.request.url.path eq (i '/documents'))"
+	            name             = "test_rule_2"
+	            backend_set_name = "BS1-2"
+	          },
+	          {
+	            condition        = "any(http.request.url.path eq (i '/documents'))"
+	            name             = "test_rule_3"
+	            backend_set_name = "BS1"
+	          }
+	        ]
+	        },
+	  lbr2_test_routing_policy_2  = {
+	    condition_language_version   = "V1"
+	    load_balancer_id             = "br2"
+	    name                         = "test_routing_policy_2"
+	    rules = [
+	          {
+	            condition        = "all(http.request.headers[(i 'user-agent')] eq (i 'mobile'), http.request.url.query['department'] eq 'HR')"
+	            name             = "test_rule_11"
+	            backend_set_name = "BS1"
+	          },
+	          {
+	            condition        = "any(http.request.url.path eq (i '/api/v1/products'), http.request.url.query['category'] eq 'electronics')"
+	            name             = "test_rule_22"
+	            backend_set_name = "BS1"
+	          },
+	          {
+	            condition        = "http.request.url.path eq (i '/api/v1/orders')"
+	            name             = "test_rule_33"
+	            backend_set_name = "BS1"
+	          }
+	        ]
+	        },
+	##Add New Routing Policy for phoenix here##
+	}
+```
+
+**11. Listeners**
 
 - <b>Syntax</b>
 ```
