@@ -38,7 +38,7 @@ workflow_type=create_resources
 ```
 
 **Step 3**:
-<br>Execute the setUpOCI.py script to start creating the terraform configuration files.
+<br>Execute the setUpOCI.py script to start creating the terraform/tofu configuration files.
     
 Command to Execute:
 ```
@@ -73,11 +73,22 @@ Choose the resources by specifying a single option (for choosing one of these re
 <br>It will generate tfvars files for the services selected at _/cd3user/tenancies/<prefix\>/terraform_files/<region_dir\>/<service_dir\>/_
 
 **Step 4:** 
-<br>Change the directory to  ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```  and Execute:
+<br>Change the directory to  ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>``` .
 
-**terraform init**  - To initialize and prepare the working/out directory so Terraform can run the configuration.<br>
+  - If **terraform** is selected as the IaC tool initially, execute:
 
-**terraform plan**  - To preview any changes before applying them. Run the plan against [OPA policies](opa-integration.md) for compliance against CIS.
 
-**terraform apply** - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.
+    ```terraform init```  - *To initialize and prepare the working/out directory so Terraform can run the configuration.*<br>
+
+    ```terraform plan```  - *To preview any changes before applying them. Run the plan against [OPA policies](opa-integration.md) for compliance against CIS.*
+
+    ```terraform apply``` - *To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.*
+
   
+- If **tofu** is selected, execute:
+
+    ```tofu init```  - *To initialize and prepare the working/out directory so tofu can run the configuration.*<br>
+
+    ```tofu plan```  - *To preview any changes before applying them. Run the plan against [OPA policies](opa-integration.md) for compliance against CIS.*
+
+    ```tofu apply``` - *To make the changes defined by tofu configuration to create, update, or destroy resources in OCI.*

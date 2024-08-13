@@ -235,7 +235,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
    
      Also,The RPC related .tfvars and .sh files containing import statements will be generated in global directory which is inside the ```/cd3user/tenancies/<prefix>/terraform_files/``` folder. 
      
-4. Execute *import_commands_network_major-objects_nonGF.sh* and then rest of the sh files. **These will be automatically executed while using the toolkit with Jenkins.**
+4. Execute *import_commands_network_major-objects.sh* and then rest of the sh files. **These will be automatically executed while using the toolkit with Jenkins.**
 
 !!! note
       The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.

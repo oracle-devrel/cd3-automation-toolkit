@@ -155,7 +155,7 @@ After executing import_commands during export of service connectors, the terrafo
  ![image](../images/tabs-2.png)
 
 **10.**
-When exporting Virtual Private Vault's Replica to terraform, after executing the *import_commands_kms_nonGF.sh* script, 
+When exporting Virtual Private Vault's Replica to terraform, after executing the *import_commands_kms.sh* script, 
 the terraform plan indicates the creation of a new OCI vault replication resource. This happens because there is no terraform import command for replication resource. 
 
 As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove the *replica_region* parameter from the replica's source vault dictionary. This will allow users to add or modify other resources without creating a new replica. Check below image for reference.
@@ -164,7 +164,7 @@ As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove
 
 
 **11.**
-When exporting groups (normal and dynamic) to terraform from IAM domains, post executing the *import_commands_groups_nonGF.sh* script, the terraform shows the changes for matching rules and members. This is because currently those values are not getting imported to the tfstate.
+When exporting groups (normal and dynamic) to terraform from IAM domains, post executing the *import_commands_groups.sh* script, the terraform shows the changes for matching rules and members. This is because currently those values are not getting imported to the tfstate.
 
 Please ignore this and proceed with terraform apply as it will not change anything in the OCI console for groups.
  
@@ -195,7 +195,7 @@ Please ignore this and proceed with terraform apply as it will not change anythi
 
           Plan: 0 to add, 2 to change, 0 to destroy.
 
-When exporting groups (normal and dynamic) to terraform from IDCS, post executing the *import_commands_groups_nonGF.sh* script, the terraform shows a replacement for group membership. 
+When exporting groups (normal and dynamic) to terraform from IDCS, post executing the *import_commands_groups.sh* script, the terraform shows a replacement for group membership. 
 Please ignore this and proceed with terraform apply as it will not change anything in the OCI console for groups.
 
           # module.iam-groups["grp1"].oci_identity_user_group_membership.user_group_membership["abc@oracle.com"] must be replaced
