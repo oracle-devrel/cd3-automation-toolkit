@@ -3,9 +3,9 @@
 Provisioning of compute instances using Automation Toolkit involves the below steps:
 
 - Adding the VM details to the "Instances" Excel Sheet.
-- Updating the variables_<region\>.tf file with information about ssh key, source ocid. 
+- Updating the ```/cd3user/tenancies/<prefix>/terraform_files/<region>/variables_<region>.tf``` file with information about ssh key, source ocid. 
 - Running the toolkit with 'Create Resources' workflow to generate *.auto.tfvars.
-- Executing Terraform to provision the resources in OCI.
+- Executing Terraform/Tofu to provision the resources in OCI.
 
 **1. Update Excel Sheet**
 
@@ -15,7 +15,7 @@ Provisioning of compute instances using Automation Toolkit involves the below st
 
 - Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu. <br>
 
-- Enter subnet name column value as: <vcn-name\>_<subnet-name\> <br>
+- Enter subnet name column value as: <network-compartment-name\>@<vcn-name\>::<subnet-name\> <br>
 
 - Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False. <br>
 
@@ -43,7 +43,7 @@ Remote execution should be used as the _last resort or only during initial provi
  - For block-volume attachment configuration via ansible playbook the device name is must, and it's currently set to _"/dev/oracleoci/oraclevdb"_ in the sample ansible playbook.
  - Common scenarios like security hardening and other common shell scripts can be executed against the OCI instances during provisioning.
  - Running the CD3 automation toolkit will generate auto.tfvars.
- - Execute Terraform commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.
+ - Execute Terraform/Tofu commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.
 
  The users can refer to the ```default.yaml``` file which is inside ```/cd3user/tenancies/<prefix>/terraform_files/<region>/scripts``` dir for provisioning the custom playbooks.
  
@@ -59,6 +59,7 @@ Remote execution should be used as the _last resort or only during initial provi
 
 **2. Update variables_<region\>.tf**
 
+- Location of the file - ```/cd3user/tenancies/<prefix>/terraform_files/<region>/variables_<region>.tf```
 - The "SSH Key Var Name" column accepts either the SSH key value directly or the name of a variable declared in variables.tf under the **instance_ssh_keys** variable that contains the key value. Ensure there is an entry in the variables_<region\>.tf file with the name entered in the SSH Key Var Name field of the Excel sheet, and set the value to the SSH key value.
 
     !!! Example
@@ -100,13 +101,13 @@ Ensure there is an entry in the variables_<region\>.tf file for the value entere
     !!! Important
         Execute GIT commands to sync these variables_<region\>.tf file changes  with DevOps GIT Repo in case **toolkit is being used with Jenkins,** Here are the [Steps](sync-cli-jenkins.md).
 
-**3.  Execute setUpOCI and terraform apply**
+**3.  Execute setUpOCI and terraform/tofu apply**
 
 On choosing _"Compute"_ in the SetUpOCI menu and _"Add/Modify/Delete Instances/Boot Backup Policy"_ submenu will allow to launch the VM on OCI tenancy.
 
-Output terraform file generated: ```<outdir>/<region_dir>/<service_dir><prefix>_instances.auto.tfvars``` and ```<outdir>/<region_dir>/<service_dir>/<prefix>_boot-backup-policy.auto.tfvars```  
+Output tfvars file generated: ```<outdir>/<region_dir>/<service_dir><prefix>_instances.auto.tfvars``` and ```<outdir>/<region_dir>/<service_dir>/<prefix>_boot-backup-policy.auto.tfvars```  
 
-Once the terraform apply is complete, view the resources under Compute -> Instances for the region.
+Once the terraform/tofu apply is complete, view the resources under Compute -> Instances for the region.
 
 Upon re-running the same option, the previously existing files will be backed up under the directory →   ```<outdir>/<region_dir>/<service_dir>/backup_instances/<Date>-<Month>-<Time>.```
 
@@ -140,13 +141,13 @@ Specify the compartment name along with hierarchy in the below format:
 
 9. Upon executing, the "Instances" sheet in input CD3 Excel is populated with the VMs details. <br>
 
-10. The *import_commands_instances_nonGF.sh* script, tfvars file are generated for the Instances under folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```. <br>
+10. The *import_commands_instances.sh* script, tfvars file are generated for the Instances under folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```. <br>
 
 11. The associated ssh public keys are placed under variables_<region\>.tf under the "instance_ssh_keys" variable.  <br>
 
 12. While export of instances, it will fetch details for only the primary VNIC attached to the instance. <br>
 
-13. Execute the .sh file (*sh import_commands_instances_nonGF.sh*) to generate terraform state file. <br>  **This will be automatically executed while using the toolkit with Jenkins.**
+13. Execute the .sh file (*sh import_commands_instances.sh*) to generate terraform state file. <br>  **This will be automatically executed while using the toolkit with Jenkins.**
 
 14. Check out the [known behaviour of toolkit](knownbehaviour.md) for export of instances having multiple plugins.
 
