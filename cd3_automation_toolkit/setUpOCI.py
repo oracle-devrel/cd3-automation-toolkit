@@ -1520,7 +1520,7 @@ def export_update_dr_plan(outdir, prefix, config_file_path,option=''):
         print(cmdpath+" doesnt exist. Exiitng!!!")
         exit(1)
 
-    input3 = "Please enter FSDR OCID which needs to be exported/updated: "
+    input3 = "Please enter DR Plan OCID which needs to be exported/updated: "
 
 
     if not devops:

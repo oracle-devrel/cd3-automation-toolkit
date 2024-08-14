@@ -220,7 +220,7 @@ for (item in SubChildOptions.split(",")) {
        </tr><tr></tr><tr></tr><tr></tr>
    <tr>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_ex_ocid=[\"></td>
-     <td><label title=\"service1-label\" class=\" \">FSDR OCID which needs to be exported : </label></td>
+     <td><label title=\"service1-label\" class=\" \">DR Plan OCID which needs to be exported : </label></td>
          <td><input type=\"text\" class=\" \" name=\"value\" > (Mandatory) </br></td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
        </tr><tr></tr><tr></tr><tr></tr>
@@ -242,7 +242,7 @@ for (item in SubChildOptions.split(",")) {
     <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr><tr></tr><tr></tr><tr></tr>
   <tr>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fsdr_up_ocid=[\"></td>
-    <td><label title=\"service1-label\" class=\" \">FSDR OCID which needs to be updated : </label></td>
+    <td><label title=\"service1-label\" class=\" \">DR Plan OCID which needs to be updated : </label></td>
     <td><input type=\"text\" class=\" \" name=\"value\" > (Mandatory)</br></td>
     <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr><tr></tr><tr></tr><tr></tr>
 
