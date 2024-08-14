@@ -65,7 +65,7 @@ Click on 'Logs' for Stage: ashburn/identity and click on the pipeline link.
 <img width="830" height="450" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="../images/jenkinsGF-6.jpg"><br>
 
 **Step 3**:
-<br>Review Logs for Terraform Plan and OPA stages by clicking on the stage and then 'Logs'. 
+<br>Review Logs for Plan and OPA stages by clicking on the stage and then 'Logs'. 
 
 <img width="1503" alt="Screenshot 2024-01-17 at 12 13 57 PM" src="../images/jenkinsGF-7.jpg"><br>
 
