@@ -742,11 +742,15 @@ def validate_dns(filename,comp_ids):
         rtype = str(dfdns.loc[i, 'RType']).strip()
         rdata = str(dfdns.loc[i, 'RDATA']).strip()
         ttl = str(dfdns.loc[i, 'TTL']).strip()
-        if zone_name.lower() != 'nan' and (domain_name.lower() == 'nan' or rtype.lower() == 'nan' or rdata.lower() == 'nan' or ttl.lower() == 'nan'):
-            log(f'ROW {i + 3} : Please validate domain, rtype, rdata and ttl for zone {zone_name}. It can not be null')
+        nan_count = 0
+        for item in [domain_name,rtype,rdata,ttl]:
+            if item.lower() == 'nan':
+                nan_count +=1
+        if nan_count in [1,2,3]:
+            log(f'ROW {i + 3} : one or more of the required( Domain, RType, RDATA and TTL) parameter is missing for a record creation')
             mandat_val_check = True
 
-        if (domain_name.lower() != 'nan' or rtype.lower() != 'nan' or rdata.lower() != 'nan' or ttl.lower() != 'nan') and zone_name.lower == 'nan':
+        if 'nan' not in [domain_name.lower(),rtype.lower(),rdata.lower(),ttl.lower()] and zone_name.lower() == 'nan':
             log(f'ROW {i + 3} : Zone name can not be null')
             mandat_val_check = True
 
