@@ -12,7 +12,7 @@
 <br>
 
 
-CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources by converting Excel templates to fully functional Terraform modules within minutes ⚡️⚡️ .
+CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastructure) resources by converting Excel templates to fully functional Terraform modules within minutes ⚡️⚡️ .
 
 Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.
 
