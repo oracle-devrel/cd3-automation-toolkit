@@ -37,7 +37,7 @@ Below table shows the stages executed in this pipeline along with their descript
 | <b>Execute setupoci</b> | Executes python code to generate required <br> tfvars files. The console output for this <br> stage is similar to setupoci.py execution via CLI. <br>Multiple options selected will <br> be processed <i>sequentially</i> in this stage. The Excel sheet can be downloaded from **Build artifacts** of the setupoci pipeline. | Displays Failed if any issue occurs  <br> during its execution. Further stages <br> are skipped in that case. |
 | <b>Run Import Commands</b> | Based on the workflow_type as 'Export Existing Resources from OCI', <br> this stage invokes execution of <br> import_commands_<resource\>.sh <br> shell scripts which will import the  <br> exported objects into tfstate. import_commands for <br> multiple options selected will be  <br> processed <i>sequentially</i> in this stage. <br><b> This stage is skipped for 'Create New Resources in OCI' workflow </b>| Displays Failed if any issue occurs during its execution.  <br> Further stages are skipped in that case. |
 | <b>Git Commit to develop</b> | Commits the terraform_files folder to OCI DevOps GIT Repo develop branch. <br> This will trigger respective terraform pipelines| Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, <br> navigate to  **apply** pipeline and trigger that manually </b>|
-| <b>Trigger Terraform Pipelines</b> | Corresponding **apply** pipelines <br> are auto triggered based on the service chosen | |
+| <b>Trigger Pipelines</b> | Corresponding terraform/tofu **apply** pipelines <br> are auto triggered based on the service chosen | |
 
 #### a. Download CD3 Excel File
  <a href=../download-excel> <b>Click here for the steps</b></a> to download excel file after successful completion of 'Execute setupoci' stage of the pipeline. The Excel file is available as an artifact for each build of the setupoci pipeline.
@@ -47,9 +47,9 @@ Below table shows the stages executed in this pipeline along with their descript
 
 This is equivalent to **```/cd3user/tenancies/<prefix>/terraform_files```** folder on your local system.
 The region directories along with all service directories, are present under this terraform_files folder. The toolkit will generate the .tfvars files for all resources under the service directory.
-Inside each service directory, pipelines for **apply** and **destroy** are present.
+Inside each service directory, pipelines for terraform/tofu **apply** and **destroy** are present.
 
-The terraform pipelines are either triggered automatically from setupoci pipeline or they can be triggered manually by navigating to any service directory path. 
+The pipelines are either triggered automatically from setupoci pipeline or they can be triggered manually by navigating to any service directory path. 
 
 
 <b><i><b>apply</b> Pipeline Stages</I></b>
@@ -80,4 +80,4 @@ The terraform pipelines are either triggered automatically from setupoci pipelin
 
 
 ### <b>3. Region Based Views</b>
-Clicking on any of the views displays all **apply** and **destroy** pipelines in a single screen. This can also be used to trigger the terraform pipelines. This also includes Global view for global services like RPC.
+Clicking on any of the views displays all **apply** and **destroy** pipelines in a single screen. This can also be used to trigger the terraform/tofu pipelines. This also includes Global view for global services like RPC.
