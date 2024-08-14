@@ -14,7 +14,7 @@ When using CLI, report can be copied to local system using -<br>
 ```scp -i <private_key> cd3user@<workVM IP>:/cd3user/mount_path/<prefix>/othertools_files/<prefix>_cis_report .```<br>
 When using Jenkins, the report is available under Build Artifacts of the setUpOCI build 
 
-
+<br>
 
 ### showOCI script
 
@@ -28,41 +28,53 @@ When using CLI, report can be copied to local system using -<br>
 ```scp -i <private_key> cd3user@<workVM IP>:/cd3user/mount_path/<prefix>/othertools_files/<prefix>_showoci_report .```<br>
 When using Jenkins, the report is available under Build Artifacts of the setUpOCI build.
 
+<br>
 
-### OCI FSDR script
+### OCI FSDR 
 
-Now using CD3 you can export and update your DR plans using an excel spreadsheet.<br>
-Export all your plans into separate tabs of the excel.<br>
-Update your changes in excel itself and import that back to update in OCI.
 
-<u>Common Use cases:</u>
+CD3 enables users to export and update DR plans. Export plans into separate tabs of the Excel.<br>
 
-- Clone user defined steps from one plan to another plan within the same region or across regions.
-- Manage user defined steps in DR plans with Excel Spreadsheet.
-- As of today if we update a member of an existing DR Protection group then the plan steps gets deleted(Product group is actively working to fix it) so we can export all the user-defined steps to excel and update it with the newly created DR plan when a member is updated.
+<i>Plan Step</i> updates can be made in Excel and then applied to the console using the updated Excel sheet.
 
-<u>Features:</u>
 
-- Easy to manage and update user defined steps.
-- Plan step’s order is also maintained in the excel sheet. we can create steps in excel sheet in the same order we want it on the console.
-- 1 Excel spreadsheet for maintaining all your DR switchover plans and Failover plans.
+<b>Common Use cases:</b>
 
-<u>IAM Policies to update DR plans in OCI:</u>
+- Clone <i>User-Defined Steps</i> from one plan to another within the same region or across regions.
+- Manage <i>User-Defined Steps</i> in DR plans with Excel Spreadsheet.
+- As of today, if a member of an existing Disaster Recovery (DR) Protection group is updated in the OCI FSDR service, the Plan Steps are deleted (the product team is actively working on a fix for this issue). To handle this, export all user-defined steps to CD3 Excel and use this data to recreate the new DR plan after updating a member.
 
-- Allow group <group-name> to manage dr-protection-groups in compartment <compartment-name>
-- Allow group <group-name> to manage instances in compartment <compartment-name>
-- Allow group <group-name> to read buckets in compartment <compartment-name>
+<b>Features:</b>
 
-<u>Steps to execute:</u>
+- Easy to manage and update <i>User-Defined Steps</i>.
+- The order of <i>Plan Steps</i> is preserved in the Excel sheet, allowing Steps to be created in the same sequence as desired in the console.
+- Single Excel sheet can manage all DR Switchover and Failover plans.
 
-1. In the setupoci Greenfield menu, select **Other OCI Tools --> OCI FSDR**.
+<b>IAM Policies to update DR plans in OCI:</b>
+
+```
+    Allow group <group-name> to manage dr-protection-groups in compartment <compartment-name>
+    Allow group <group-name> to manage instances in compartment <compartment-name>
+    Allow group <group-name> to read buckets in compartment <compartment-name>
+
+```
+
+<b>Steps to execute:</b>
+
+1. In the setupoci menu for the *create_resources* workflow, select **Other OCI Tools --> OCI FSDR**.
 
 2. Fill in the required details 
 
-3. The excel file is created at ```/cd3user/tenancies/<prefix>/othertools_files```.
-When using CLI, excel can be copied to local system using -<br>
-```scp -i <private_key> cd3user@<workVM IP>:/cd3user/mount_path/<prefix>/othertools_files/<excel_file_name> .```<br>
-When using Jenkins, the excel file is available under Build Artifacts of the setUpOCI build.
+3. The Excel file is created at ```/cd3user/tenancies/<prefix>/othertools_files```.
+
+    - When using CLI, Excel can be copied to local system using -<br>
+
+        ```
+        scp -i <private_key> cd3user@<workVM IP>:/cd3user/mount_path/<prefix>/othertools_files/<excel_file_name> 
+        
+        ```
+
+    - When using Jenkins, the Excel file is available under Build Artifacts of the corresponding setupoci build.
 
 
 

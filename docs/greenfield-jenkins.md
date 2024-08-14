@@ -40,12 +40,13 @@ Click on **Build** at the bottom.
 
 **Step 5:** 
 <br>setUpOCI pipeline is triggered and stages are executed as shown below.<br>
-This will run the python script to generate the terraform auto.tfvars.  Once created, it will commit to the OCI Devops GIT Repo and then it will also launch terraform **apply** pipelines for the services chosen (Stage:ashburn/identity and Stage:ashburn/tagging in the below screenshot).
+This will run the python script to generate the auto.tfvars.  Once created, it will commit to the OCI Devops GIT Repo and then it will also launch **apply** pipelines for the services chosen (Stage:ashburn/identity and Stage:ashburn/tagging in the below screenshot).
 
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="../images/jenkinsGF-4.jpg">
 
-## Execute terraform Pipelines
-Terraform pipelines are auto triggered parallely from setUpOCI pipeline based on the services selected (the last two stages in above screenshot show trigger of terraform pipelines). <br>
+## Execute terraform/tofu Pipelines
+
+Terraform/tofu pipelines are auto triggered parallely from setupoci pipeline based on the services selected (shown in the last two stages of the above screenshot). <br>
 
 **Step 1**: 
 
@@ -59,7 +60,7 @@ Click on 'Logs' for Stage: ashburn/identity and click on the pipeline link.
 > &emsp; ***cd3toolkit-demo » terraform_files » ashburn » tagging » apply*** <br>
 
 **Step 2**: 
-<br>Stages of the terraform pipeline for apply are shown below:
+<br>Stages of the terraform/tofu pipeline for apply are shown below:
 
 <img width="830" height="450" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="../images/jenkinsGF-6.jpg"><br>
 
@@ -70,7 +71,7 @@ Click on 'Logs' for Stage: ashburn/identity and click on the pipeline link.
 
 
 **Step 4**: 
-<br>'Get Approval' stage has timeout of 24 hours, if no action is taken the pipeline will be aborted after 24 hours. Click on this stage and click 'Proceed' to proceed with terraform apply or 'Abort' to cancel the terraform apply.
+<br>'Get Approval' stage has timeout of 24 hours, if no action is taken the pipeline will be aborted after 24 hours. Click on this stage and click 'Proceed' to proceed with apply or 'Abort' to cancel the apply.
 
 
 <img width="920" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/jenkinsGF-8.jpg"><br>
@@ -82,7 +83,7 @@ Click on 'Logs' for Stage: ashburn/identity and click on the pipeline link.
 <img width="920" height="360" alt="Screenshot 2024-01-17 at 12 13 15 PM" src="../images/jenkinsGF-9.jpg"><br>
 
 **Step 6**:
-<br>Similarly click on 'Logs' for Stage: ashburn/tagging and click on the pipeline link and 'Proceed' or 'Abort' the terraform apply<br><br>
+<br>Similarly click on 'Logs' for Stage: ashburn/tagging and click on the pipeline link and 'Proceed' or 'Abort' the apply<br><br>
 
 
 <br><br>
