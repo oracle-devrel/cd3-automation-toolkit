@@ -33,9 +33,9 @@ When using Jenkins, the report is available under Build Artifacts of the setUpOC
 ### OCI FSDR 
 
 
-CD3 enables users to export and update DR plans. Export plans into separate tabs of the Excel.<br>
+CD3 enables users to export and update DR plans. Different DR plans can be exported into separate tabs of the Excel.<br>
 
-<i>Plan Step</i> updates can be made in Excel and then applied to the console using the updated Excel sheet.
+DR Plan's steps can be updated in Excel and then applied to the console using the toolkit.
 
 
 <b>Common Use cases:</b>
@@ -47,7 +47,7 @@ CD3 enables users to export and update DR plans. Export plans into separate tabs
 <b>Features:</b>
 
 - Easy to manage and update <i>User-Defined Steps</i>.
-- The order of <i>Plan Steps</i> is preserved in the Excel sheet, allowing Steps to be created in the same sequence as desired in the console.
+- The order of  DR Plan's steps is preserved in the Excel sheet, allowing Steps to be created in the same sequence as desired in the console.
 - Single Excel sheet can manage all DR Switchover and Failover plans.
 
 <b>IAM Policies to update DR plans in OCI:</b>
@@ -63,14 +63,14 @@ CD3 enables users to export and update DR plans. Export plans into separate tabs
 
 1. In the setupoci menu for the *create_resources* workflow, select **Other OCI Tools --> OCI FSDR**.
 
-2. Fill in the required details 
+2. Fill in the required details for excel file name, sheet name and DR Plan OCID.
 
 3. The Excel file is created at ```/cd3user/tenancies/<prefix>/othertools_files```.
 
     - When using CLI, Excel can be copied to local system using -<br>
 
         ```
-        scp -i <private_key> cd3user@<workVM IP>:/cd3user/mount_path/<prefix>/othertools_files/<excel_file_name> 
+        scp -i <private_key> cd3user@<workVM IP>:/cd3user/mount_path/<prefix>/othertools_files/<excel_file_name> .
         
         ```
 
