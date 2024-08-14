@@ -14,7 +14,7 @@ As part of CD3, we have meticulously developed an initial set of policies. These
         opa --help
     Currently CD3 container has OPA version 0.55.0 installed.
 
- 2. Generate the terraform plan output in json format since OPA accepts that format alone for evaluation.
+ 2. Generate the terraform/tofu plan output in json format since OPA accepts that format alone for evaluation. Use **tofu** command instead of **terraform** if OpenTofu is configured as the IaC tool.
  
    
          terraform plan -out tfplan.binary
