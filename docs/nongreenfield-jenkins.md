@@ -2,7 +2,7 @@
 
 !!! important
     - Toolkit will **over-write** the data in specific tabs of CD3 Excel sheet with exported content from OCI while the other tabs remain intact.
-    - Differential state import of the objects will be performed, ie the import statements will be generated only for the objects which are not already there in state file.
+    - Differential state import of the objects will be performed, i.e., the import statements will be generated only for the objects not already present in state file.
 
 **Step 1**: 
 <br>Choose the Blank CD3 Excel sheet template from [Excel Templates](excel-templates.md).
@@ -51,7 +51,7 @@ Click on the setupoci pipeline and select **Build with Parameters** from left si
 <ol type="a">
   <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Here are the <a href=../download-excel> <b>steps</b></a> to download the exported Excel file. </li>
   
-  <li> Generates Terraform Configuration files - *.auto.tfvars.</li>
+  <li> Generates Configuration files - *.auto.tfvars.</li>
   <li> Generates shell scripts with import commands - <b>import_commands_&lt;resource&gt;.sh</b> </li>
 </ul>
 </ol>
@@ -66,10 +66,10 @@ Click on the setupoci pipeline and select **Build with Parameters** from left si
 </ul>
 </ol>
 
-**Expected Output of Terraform Pipelines:**<br>
+**Expected Output of terraform/tofu Pipelines:**<br>
 <ol type="a">
   <li>Respective pipelines will get triggered automatically from setUpOCI pipeline based on the services chosen for export. You could also trigger manually when required.</li>
-  <li> If 'Run Import Commands' stage was successful (ie.. import_commands_&lt;resource&gt;.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
+  <li> If 'Run Import Commands' stage was successful (ie.. import_commands_&lt;resource&gt;.sh ran successfully for all services chosen for export), respective pipelines triggered should have 'Plan' stage show as 'No Changes'  </li>
 </ul>
 </ol>
     
