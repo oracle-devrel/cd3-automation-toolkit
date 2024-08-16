@@ -45,9 +45,12 @@ def create_terraform_budgets(inputfile, outdir, service_dir, prefix,ct):
     dfcolumns = df.columns.values.tolist()
 
     # Take backup of files
-    for eachregion in ct.all_regions:
+    for eachregion in [ct.home_region]:
         tfStr_budget[eachregion] = ''
         tfStr_budget_alert_rule[eachregion] = ''
+        resource = sheetName.lower()
+        srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
+        commonTools.backup_file(srcdir + "/", resource, auto_tfvars_filename)
 
 
     for i in df.index:
@@ -181,9 +184,6 @@ def create_terraform_budgets(inputfile, outdir, service_dir, prefix,ct):
             tfStr_budget[reg] = budget_template.render(count=0, region=reg).replace(budget_str,tfStr_budget[reg])
             tfStr_budget[reg] += budget_alert_template.render(count=0, region=reg).replace(budget_alert_Str,tfStr_budget_alert_rule[reg])
             tfStr_budget[reg] = "".join([s for s in tfStr_budget[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-
-            resource=sheetName.lower()
-            commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
             oname = open(outfile, "w+")
             oname.write(tfStr_budget[reg])

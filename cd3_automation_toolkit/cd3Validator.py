@@ -742,11 +742,15 @@ def validate_dns(filename,comp_ids):
         rtype = str(dfdns.loc[i, 'RType']).strip()
         rdata = str(dfdns.loc[i, 'RDATA']).strip()
         ttl = str(dfdns.loc[i, 'TTL']).strip()
-        if zone_name.lower() != 'nan' and (domain_name.lower() == 'nan' or rtype.lower() == 'nan' or rdata.lower() == 'nan' or ttl.lower() == 'nan'):
-            log(f'ROW {i + 3} : Please validate domain, rtype, rdata and ttl for zone {zone_name}. It can not be null')
+        nan_count = 0
+        for item in [domain_name,rtype,rdata,ttl]:
+            if item.lower() == 'nan':
+                nan_count +=1
+        if nan_count in [1,2,3]:
+            log(f'ROW {i + 3} : one or more of the required( Domain, RType, RDATA and TTL) parameter is missing for a record creation')
             mandat_val_check = True
 
-        if (domain_name.lower() != 'nan' or rtype.lower() != 'nan' or rdata.lower() != 'nan' or ttl.lower() != 'nan') and zone_name.lower == 'nan':
+        if 'nan' not in [domain_name.lower(),rtype.lower(),rdata.lower(),ttl.lower()] and zone_name.lower() == 'nan':
             log(f'ROW {i + 3} : Zone name can not be null')
             mandat_val_check = True
 
@@ -886,20 +890,23 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
                     log(f'ROW {i+3} : Empty value at column Display Name')
                     inst_empty_check = True
 
-            if columnname == 'Subnet Name':
+            if columnname == 'Network Details':
                 if columnvalue.lower()=='nan':
-                    log(f'ROW {i+3} : Empty value at column Subnet Name.')
+                    log(f'ROW {i+3} : Empty value at column Network Details.')
                     inst_empty_check = True
                 else:
                     # Cross check the VCN names in Instances and VCNs sheet
-                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Subnet Name', 'SubnetsVLANs'])
+                    #vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Subnet Name', 'SubnetsVLANs'])
+                    if ("::" not in columnvalue):
+                        vcn_subnet_check = True
+
 
             if columnname == 'Source Details':
                 if columnvalue.lower()== 'nan':
                     log(f'ROW {i+3} : Empty value at column "Source Details".')
                     inst_empty_check = True
 
-                elif (not columnvalue.startswith("image::") and not columnvalue.startswith("bootVolume::")):
+                elif (not columnvalue.startswith("image::") and not columnvalue.startswith("bootVolume::") and not columnvalue.startswith("ocid1.image.oc")):
                     log(f'ROW {i+3} : Wrong value at column Source Details - {columnvalue}. Valid format is image::<var_name> or bootVolume::<var_name>.')
                     inst_invalid_check = True
 
@@ -918,10 +925,11 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
                             log(f'ROW {i+3} : Wrong value at column Shape - {columnvalue}.Valid format for Flex Shapes is VM.Standard.E3.Flex::<ocpus>.')
                             inst_invalid_check = True
 
-            if vcn_subnet_check==False and columnname == "NSGs":
-                subnet_name = str(dfinst.loc[i, "Display Name"]).strip()
-                if(columnvalue!='nan'):
-                    vcn_nsg_check = validate_nsgs_column(i,region,columnvalue,subnet_name,subnetobj,vcn_nsg_list)
+
+            #if vcn_subnet_check==False and columnname == "NSGs":
+            #    subnet_name = str(dfinst.loc[i, "Display Name"]).strip()
+            #    if(columnvalue!='nan'):
+            #        vcn_nsg_check = validate_nsgs_column(i,region,columnvalue,subnet_name,subnetobj,vcn_nsg_list)
 
     if any([inst_empty_check, inst_comp_check, inst_invalid_check, vcn_subnet_check,vcn_nsg_check]):
         print("Null or Wrong value Check failed!!")
@@ -1100,13 +1108,13 @@ def validate_fss(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list):
         comp_name = str(df_fss.loc[i, 'Compartment Name']).strip()
         ad_name = str(df_fss.loc[i, 'Availability Domain(AD1|AD2|AD3)']).strip()
         mt_name = str(df_fss.loc[i, 'MountTarget Name']).strip()
-        mt_subnet_name = str(df_fss.loc[i, 'MountTarget SubnetName']).strip()
+        mt_subnet_name = str(df_fss.loc[i, 'Network Details']).strip()
         my_list = [region, comp_name.lower(),ad_name.lower(),mt_name.lower(),mt_subnet_name.lower()]
 
         if all(j == 'nan' for j in my_list):
             pass
         elif 'nan' in my_list:
-            log(f'ROW {i + 3} : Empty value for any of the columns "Region", "Compartment Name", "Availability Domain(AD1|AD2|AD3)", "MountTarget Name", "MountTarget SubnetName"')
+            log(f'ROW {i + 3} : Empty value for any of the columns "Region", "Compartment Name", "Availability Domain(AD1|AD2|AD3)", "MountTarget Name", "Network Details"')
             fss_empty_check = True
 
         if region!='nan' and region not in ct.all_regions:
@@ -1129,15 +1137,17 @@ def validate_fss(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list):
                     log(f'ROW {i+3} : Wrong value at column "Availability Domain" - {columnvalue}.')
                     fss_invalid_check = True
 
-            if columnname == 'MountTarget SubnetName':
+            if columnname == 'Network Details':
                 # Cross check the VCN names in Instances and VCNs sheet
                 if(columnvalue!='nan'):
-                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Display Name <vcn-name_subnet-name>', 'SubnetsVLANs'])
+                    # vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Display Name <vcn-name_subnet-name>', 'SubnetsVLANs'])
+                    if ("::" not in columnvalue):
+                        vcn_subnet_check = True
 
-            if vcn_subnet_check==False and columnname == "NSGs":
-                subnet_name = str(df_fss.loc[i, "MountTarget SubnetName"]).strip()
-                if (columnvalue != 'nan'):
-                    vcn_nsg_check = validate_nsgs_column(i,region,columnvalue,subnet_name,subnetobj,vcn_nsg_list)
+            #if vcn_subnet_check==False and columnname == "NSGs":
+            #    subnet_name = str(df_fss.loc[i, "MountTarget SubnetName"]).strip()
+            #    if (columnvalue != 'nan'):
+            #        vcn_nsg_check = validate_nsgs_column(i,region,columnvalue,subnet_name,subnetobj,vcn_nsg_list)
 
     if any([fss_empty_check, fss_comp_check, fss_invalid_check, vcn_subnet_check,vcn_nsg_check]):
         print("Null or Wrong value Check failed!!")

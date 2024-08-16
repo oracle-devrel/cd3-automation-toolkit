@@ -43,10 +43,14 @@ def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix,
         beset_str[reg] = ''
         beserver_str[reg] = ''
         nlb_names[reg] = []
+        srcdir = outdir + "/" + reg + "/" + service_dir + "/"
+        resource = sheetName.lower()
+        commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
     prevreg = ''
+    prevcomp=''
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -60,9 +64,16 @@ def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix,
         if region in commonTools.endNames:
             break
 
+
         if region != 'nan' and region not in ct.all_regions:
             print("\nInvalid Region; It should be one of the values mentioned in VCN Info tab...Exiting!!")
             exit(1)
+        compname = str(df.loc[i, 'Compartment Name'])
+
+        if compname.lower() != 'nan':
+            compname = compname.strip()
+            prevcomp = compname
+
 
         # temporary dictionaries
         tempStr= {}
@@ -120,7 +131,7 @@ def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix,
             if columnname == "Backend HealthCheck Interval In Millis":
                 columnname = 'interval_in_millis'
 
-            if columnname == "Backend ServerComp&ServerName:Port":
+            if columnname == "Backend ServerComp@ServerName:Port":
                 columnname = "backend_server"
 
             columnname = commonTools.check_column_headers(columnname)
@@ -135,25 +146,38 @@ def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix,
         cnt = 0
 
         #beserver_str = ''
-        columnvalue = str(df.loc[i,'Backend ServerComp&ServerName:Port']).strip().split(',')
+        columnvalue = str(df.loc[i,'Backend ServerComp@ServerName:Port']).strip().split(',')
         for nlb_be_server in columnvalue:
+
+            nlb_be_server = nlb_be_server.strip()
+
             if (nlb_be_server != "" and nlb_be_server != "nan"):
                 cnt = cnt + 1
-                serverinfo = nlb_be_server.strip().split("&")
-                servername = serverinfo[1].split(":")[0].strip()
 
-                backend_server_tf_name = commonTools.check_tf_variable(servername+"-"+str(cnt))
-                serverport = serverinfo[1].split(":")[1].strip()
-                inst_compartment_tf_name = ''
+                inst_compartment_tf_name = commonTools.check_tf_variable(prevcomp).strip()
+                #inst_compartment_tf_name = tempStr['compartment_tf_name']
+                if len(nlb_be_server.split("@")) == 2:
+                    if (len(nlb_be_server.split("@")[0].strip()) != 0):
+                        inst_compartment_tf_name = commonTools.check_tf_variable(nlb_be_server.split("@")[0].strip())
+                    serverinfo = nlb_be_server.split("@")[1]
+                else:
+                    serverinfo = nlb_be_server
+                if (":" not in serverinfo):
+                    print("Invalid Backend ServerComp@ServerName:Port format specified for row " + str(
+                        i + 3) + ". Exiting!!!")
+                    exit(1)
+                else:
+                    servername = serverinfo.split(":")[0].strip()
+                    serverport = serverinfo.split(":")[1].strip()
+
+                backend_server_tf_name = commonTools.check_tf_variable(servername + "-" + str(cnt))
                 e = servername.count(".")
                 if (e == 3):
-                    backend_server_ip_address = "IP:"+servername
+                    backend_server_ip_address = "IP:" + servername
                     servername = ""
                 else:
                     backend_server_ip_address = "NAME:" + servername
 
-                if serverinfo[0].strip() != "":
-                    inst_compartment_tf_name = commonTools.check_tf_variable(serverinfo[0].strip())
                 tempback = {'backend_server_tf_name': backend_set_tf_name+"_"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address, 'instance_tf_compartment': inst_compartment_tf_name, 'servername': servername }
                 tempStr.update(tempback)
 
@@ -175,9 +199,8 @@ def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix,
         finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
 
         if finalstring != "":
-            resource = sheetName.lower()
+
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
-            commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             # Write to TF file
             outfile = srcdir + lb_auto_tfvars_filename

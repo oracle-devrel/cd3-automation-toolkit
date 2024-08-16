@@ -56,8 +56,9 @@ def fwpolicy_create_servicelist(inputfile, outdir, service_dir, prefix, ct):
     for reg in ct.all_regions:
         servicelist_str[reg] = ''
         servicelist_names[reg] = []
-
-
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
+        resource = sheetName.lower()
+        commonTools.backup_file(reg_out_dir, resource, servicelist_auto_tfvars_filename)
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
@@ -156,12 +157,11 @@ def fwpolicy_create_servicelist(inputfile, outdir, service_dir, prefix, ct):
         servicelist_str[region] = servicelist_str[region] + servicelist.render(tempStr)
 
     for reg in region_list:
-        resource = sheetName.lower()
         reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + servicelist_auto_tfvars_filename
-        commonTools.backup_file(reg_out_dir, resource, servicelist_auto_tfvars_filename)
+
         if servicelist_str[reg] != '':
             # Generate Final String
             src = "##Add New service list for " + reg.lower() + " here##"

@@ -1,5 +1,6 @@
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 #######################################
 # Module Block - OKE
 # Create OKE clusters and Nodepools
@@ -135,26 +136,26 @@ module "nodepools" {
 }
 
 module "virtual-nodepools" {
-  source                              = "./modules/oke/virtual-nodepool"
-  for_each                            = var.virtual-nodepools
-  tenancy_ocid                        = var.tenancy_ocid
-  display_name                        = each.value.display_name
-  availability_domain                 = each.value.availability_domain
-  fault_domains                       = each.value.fault_domains
-  cluster_name                        = length(regexall("ocid1.cluster.oc*", each.value.cluster_name)) > 0 ? each.value.cluster_name : merge(module.clusters.*...)[each.value.cluster_name]["cluster_tf_id"]
-  compartment_id                      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  network_compartment_id              = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
-  vcn_names                           = [each.value.vcn_name]
-  node_shape                          = each.value.node_shape
-  initial_virtual_node_labels         = each.value.initial_virtual_node_labels
-  taints                              = each.value.taints
-  subnet_id                           = length(regexall("ocid1.subnet.oc*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets_virtual_worker[each.key].subnets.*.id[0]
-  size                                = each.value.size
-  pod_nsg_ids                         = each.value.pod_nsg_ids
-  pod_subnet_id                      = (length(regexall("ocid1.subnet.oc*", each.value.pod_subnet_id)) > 0 ? each.value.pod_subnet_id : data.oci_core_subnets.oci_subnets_virtual_pod[each.key].subnets.*.id[0])
-  worker_nsg_ids                      = each.value.worker_nsg_ids
-  node_defined_tags                   = each.value.node_defined_tags
-  node_freeform_tags                  = each.value.node_freeform_tags
-  nodepool_defined_tags               = each.value.nodepool_defined_tags
-  nodepool_freeform_tags              = each.value.nodepool_freeform_tags
+  source                      = "./modules/oke/virtual-nodepool"
+  for_each                    = var.virtual-nodepools
+  tenancy_ocid                = var.tenancy_ocid
+  display_name                = each.value.display_name
+  availability_domain         = each.value.availability_domain
+  fault_domains               = each.value.fault_domains
+  cluster_name                = length(regexall("ocid1.cluster.oc*", each.value.cluster_name)) > 0 ? each.value.cluster_name : merge(module.clusters.*...)[each.value.cluster_name]["cluster_tf_id"]
+  compartment_id              = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  network_compartment_id      = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
+  vcn_names                   = [each.value.vcn_name]
+  node_shape                  = each.value.node_shape
+  initial_virtual_node_labels = each.value.initial_virtual_node_labels
+  taints                      = each.value.taints
+  subnet_id                   = length(regexall("ocid1.subnet.oc*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets_virtual_worker[each.key].subnets.*.id[0]
+  size                        = each.value.size
+  pod_nsg_ids                 = each.value.pod_nsg_ids
+  pod_subnet_id               = (length(regexall("ocid1.subnet.oc*", each.value.pod_subnet_id)) > 0 ? each.value.pod_subnet_id : data.oci_core_subnets.oci_subnets_virtual_pod[each.key].subnets.*.id[0])
+  worker_nsg_ids              = each.value.worker_nsg_ids
+  node_defined_tags           = each.value.node_defined_tags
+  node_freeform_tags          = each.value.node_freeform_tags
+  nodepool_defined_tags       = each.value.nodepool_defined_tags
+  nodepool_freeform_tags      = each.value.nodepool_freeform_tags
 }

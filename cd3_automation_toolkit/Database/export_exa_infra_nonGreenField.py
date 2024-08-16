@@ -10,18 +10,19 @@
 
 import oci
 import os
+import subprocess as sp
 from commonTools import *
 
 importCommands = {}
 oci_obj_names = {}
 
 
-def print_exa_infra(region, exa_infra, values_for_column, ntk_compartment_name):
+def print_exa_infra(region, exa_infra, values_for_column, ntk_compartment_name,state):
     exa_infra_tf_name = commonTools.check_tf_variable(exa_infra.display_name)
     maintenance_window = exa_infra.maintenance_window
-
-    #importCommands[region.lower()].write("\nterraform import oci_database_cloud_exadata_infrastructure." + exa_infra_tf_name + " " + str(exa_infra.id))
-    importCommands[region.lower()].write("\nterraform import \"module.exa-infra[\\\"" + exa_infra_tf_name + "\\\"].oci_database_cloud_exadata_infrastructure.exa_infra\" " + str(exa_infra.id))
+    tf_resource = f'module.exa-infra[\\"{exa_infra_tf_name}\\"].oci_database_cloud_exadata_infrastructure.exa_infra'
+    if tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(exa_infra.id)}'
 
     for col_header in values_for_column:
         if col_header == 'Region':
@@ -53,7 +54,10 @@ def export_exa_infra(inputfile, outdir, service_dir, config, signer, ct, export_
     global importCommands
     global cd3file
     global reg
-    global values_for_column
+    global values_for_column,tf_or_tofu
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
 
     cd3file = inputfile
@@ -72,24 +76,28 @@ def export_exa_infra(inputfile, outdir, service_dir, config, signer, ct, export_
     print("Tabs- EXA-Infra  will be overwritten during export process!!!\n")
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
 
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
     # Fetch Block Volume Details
     print("\nFetching details of Exadata Infra...")
 
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Exadata Infra #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         region = reg.capitalize()
 
         db_client = oci.database.DatabaseClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
@@ -97,13 +105,19 @@ def export_exa_infra(inputfile, outdir, service_dir, config, signer, ct, export_
         for ntk_compartment_name in export_compartments:
             exa_infras = oci.pagination.list_call_get_all_results(db_client.list_cloud_exadata_infrastructures,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
             for exa_infra in exa_infras.data:
-                print_exa_infra(region, exa_infra,values_for_column, ntk_compartment_name)
+                print_exa_infra(region, exa_infra,values_for_column, ntk_compartment_name,state)
 
+
+    commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
+    print("{0} Exadata Infra exported into CD3.\n".format(len(values_for_column["Region"])))
+
+    # writing data
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
-    commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
+        init_commands = f'\n######### Writing import for Exadata Infra #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 
-    print("{0} Exadata Infra exported into CD3.\n".format(len(values_for_column["Region"])))
 

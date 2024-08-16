@@ -47,6 +47,9 @@ def fwpolicy_create_secrules(inputfile, outdir, service_dir, prefix, ct):
     for reg in ct.all_regions:
         secrules_str[reg] = ''
         secrules_names[reg] = []
+        resource = sheetName.lower()
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
+        commonTools.backup_file(reg_out_dir, resource, secrules_auto_tfvars_filename)
 
 
     # List of the column headers
@@ -248,12 +251,11 @@ def fwpolicy_create_secrules(inputfile, outdir, service_dir, prefix, ct):
 
 
     for reg in region_list:
-        resource = sheetName.lower()
         reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + secrules_auto_tfvars_filename
-        commonTools.backup_file(reg_out_dir, resource, secrules_auto_tfvars_filename)
+
         if secrules_str[reg] != '':
             # Generate Final String
             src = "##Add New Security rules for " + reg.lower() + " here##"

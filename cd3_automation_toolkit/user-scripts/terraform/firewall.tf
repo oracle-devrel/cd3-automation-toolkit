@@ -1,3 +1,6 @@
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 data "oci_core_vcns" "firewall_vcns" {
   for_each       = var.firewalls != null ? var.firewalls : {}
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
@@ -194,8 +197,8 @@ output "vcn_log_group_map" {
 */
 
 module "fw-logs" {
-  source     = "./modules/managementservices/log"
-  for_each   = (var.fw_logs != null || var.fw_logs != {}) ? var.fw_logs : {}
+  source   = "./modules/managementservices/log"
+  for_each = (var.fw_logs != null || var.fw_logs != {}) ? var.fw_logs : {}
 
   # Logs
   #Required

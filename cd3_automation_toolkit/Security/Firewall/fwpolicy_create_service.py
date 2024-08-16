@@ -55,8 +55,9 @@ def fwpolicy_create_service(inputfile, outdir, service_dir, prefix, ct):
         service_str[reg] = ''
         service_names[reg] = []
         service_str_02[reg] = ''
-
-
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
+        resource = "firewall-policy-services"
+        commonTools.backup_file(reg_out_dir, resource, service_auto_tfvars_filename)
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
     region_seen_so_far = []
@@ -190,12 +191,11 @@ def fwpolicy_create_service(inputfile, outdir, service_dir, prefix, ct):
         #print(service_str_02[region])
 
     for reg in region_list:
-        resource = "firewall-policy-services"
         reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + service_auto_tfvars_filename
-        commonTools.backup_file(reg_out_dir, resource, service_auto_tfvars_filename)
+
         if service_str_02[reg] != '':
             # Generate Final String
             src = "##Add New service policy for " + reg.lower() + " here##"

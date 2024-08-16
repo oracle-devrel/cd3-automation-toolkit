@@ -1,0 +1,62 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Routing Policy - tfvars
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
+# Sample import command for Routing Policy:
+# terraform import "module.routing-policy\"<<routing policy terraform variable name>>\"].oci_load_balancer_load_balancer_routing_policy.load_balancer_routing_policy" <<routing policy ocid>>
+#############################
+
+lb_routing_policies = {
+##Add New Routing Policy for {{ region|lower }} here##
+}{% else %}
+  {{ lbr_tf_name }}_{{ routing_policy_tf_name }}  = {
+    condition_language_version   = "V1"
+    load_balancer_id             = "{{ load_balancer_id }}"
+    name                         = "{{ routing_policy_name }}"
+    rules = [
+          {% for rule in rules %}
+          {
+            condition        = "{{ rule.condition }}"
+            name             = "{{ rule.name }}"
+            backend_set_name = "{{ rule.backend_set_name }}"
+          }{% if not loop.last %},{% endif %}
+          {% endfor %}
+        ]
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% endif %}
+     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+        },
+
+{% endif %}

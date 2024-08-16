@@ -56,6 +56,9 @@ def create_path_route_set(inputfile, outdir, service_dir, prefix, ct):
         prs_str[reg] = ''
         rule_str[reg] = ''
         path_route_set_list[reg] = []
+        resource = sheetName.lower()
+        srcdir = outdir + "/" + reg + "/" + service_dir + "/"
+        commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -156,9 +159,7 @@ def create_path_route_set(inputfile, outdir, service_dir, prefix, ct):
             prs_str[reg] = prs.render(skeleton=True, count=0, region=reg).replace(src,prs_str[reg]+"\n"+src)
             finalstring = "".join([s for s in prs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-            resource=sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
-            commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             # Write to TF file
             outfile = srcdir + lb_auto_tfvars_filename

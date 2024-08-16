@@ -10,6 +10,7 @@
 import sys
 import oci
 import os
+import subprocess as sp
 
 from oci.network_firewall import NetworkFirewallClient
 from oci.core.virtual_network_client import VirtualNetworkClient
@@ -21,11 +22,13 @@ importCommands = {}
 oci_obj_names = {}
 AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else ("AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else " NULL"))
 
-def print_firewall(region, ct, values_for_column_fw, fws, fw_compartment_name, vcn, fw):
+def print_firewall(region, ct, values_for_column_fw, fws, fw_compartment_name, vcn, fw,state):
     for eachfw in fws.data:
         fw_display_name = eachfw.display_name
         tf_name = commonTools.check_tf_variable(fw_display_name)
-        importCommands[reg].write("\nterraform import \"module.firewalls[\\\"" + str(tf_name) + "\\\"].oci_network_firewall_network_firewall.network_firewall\" "+eachfw.id)
+        tf_resource = f'module.firewalls[\\"{str(tf_name)}\\"].oci_network_firewall_network_firewall.network_firewall'
+        if tf_resource not in state["resources"]:
+            importCommands[reg] += f'\n{tf_or_tofu} import "{tf_resource}" {eachfw.id}'
         # Fetch subnet and Compartment name
         comp_done_ids = []
         subnet_ocid = eachfw.subnet_id
@@ -110,8 +113,9 @@ def export_firewall(inputfile, _outdir, service_dir, config, signer, ct, export_
     global values_for_column_fwpolicy
     global sheet_dict_fwpolicy
     global sheet_dict_fwaddress
-    global listener_to_cd3
-
+    global listener_to_cd3,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -127,25 +131,29 @@ def export_firewall(inputfile, _outdir, service_dir, config, signer, ct, export_
     print("Tabs- Firewall will be overwritten during export process!!!\n")
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
+
+    # Create backups
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-
         if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource,
-                                    file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
+        importCommands[reg] = ''
 
     # Fetch Network firewall Policy Details
     print("\nFetching details of Network Firewall...")
 
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Network Firewall Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         fw = NetworkFirewallClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         vcn = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
@@ -157,14 +165,17 @@ def export_firewall(inputfile, _outdir, service_dir, config, signer, ct, export_
             fws = oci.pagination.list_call_get_all_results(fw.list_network_firewalls, compartment_id=ct.ntk_compartment_ids[compartment_name], lifecycle_state="ACTIVE")
             # fwpolicies = oci.pagination.list_call_get_all_results(fwpolicy.list_network_firewall_policies,compartment_id=ct.ntk_compartment_ids[compartment_name],lifecycle_state = "ACTIVE")
 
-            values_for_column_fw = print_firewall(region, ct, values_for_column_fw, fws, compartment_name, vcn, fw)
+            values_for_column_fw = print_firewall(region, ct, values_for_column_fw, fws, compartment_name, vcn, fw,state)
 
-    commonTools.write_to_cd3(values_for_column_fw, cd3file, sheetName)
-    # commonTools.write_to_cd3(values_for_column_bss, cd3file, "NLB-BackendSets-BackendServers")
-
-    print("Firewalls exported to CD3\n")
-        # writing data
+    # writing data
+    init_commands = f'\n######### Writing import for Network Firewall Objects #########\n\n#!/bin/bash\n{tf_or_tofu} init'
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
+
+    commonTools.write_to_cd3(values_for_column_fw, cd3file, sheetName)
+    print("{0} Firewalls exported into CD3.\n".format(len(values_for_column_fw["Region"])))
+

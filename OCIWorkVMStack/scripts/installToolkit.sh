@@ -75,7 +75,7 @@ user_id=$(echo "$metadata" | jq -r '.metadata.current_user_ocid')
 cust_name=$(echo "$metadata" | jq -r '.metadata.tenancy_name')
 tenancy_id=$(echo "$metadata" | jq -r '.metadata.tenancy_ocid')
 config_region=$(echo "$metadata" | jq -r '.metadata.config_region')
-sudo sed -c -i "s/customer_name=.*/customer_name=$cust_name/" $tenancyconfig_properties
+sudo sed -c -i "s/prefix=.*/prefix=$cust_name/" $tenancyconfig_properties
 sudo sed -c -i "s/tenancy_ocid=.*/tenancy_ocid=$tenancy_id/" $tenancyconfig_properties
 sudo sed -c -i "s/region=.*/region=$config_region/" $tenancyconfig_properties
 sudo sed -c -i "s/user_ocid=.*/user_ocid=$user_id/" $tenancyconfig_properties

@@ -1,5 +1,6 @@
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 ############################
 # Provider Block 
 # OCI
@@ -17,8 +18,8 @@ provider "oci" {
 terraform {
   required_providers {
     oci = {
-      source = "oracle/oci"
-      version = "5.40.0"
+      source  = "oracle/oci"
+      version = "6.3.0"
     }
   }
 }

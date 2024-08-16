@@ -19,21 +19,26 @@ from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 from dateutil import parser
+import subprocess as sp
 
 
 importCommands = {}
 oci_obj_names = {}
 
-def print_buckets(region, outdir, service_dir, bucket_data, values_for_column, ntk_compartment_name,namespace_name, rp_id, retention_rule_data, rp_details, rp_name,lf_name_list,lf_name,lf_mapping,lf_excl,lf_incl,lf_prefix,ta_map,tgt_map):
+def print_buckets(region, outdir, service_dir,state, bucket_data, values_for_column, ntk_compartment_name,namespace_name, rp_id, retention_rule_data, rp_details, rp_name,lf_name_list,lf_name,lf_mapping,lf_excl,lf_incl,lf_prefix,ta_map,tgt_map):
 
     buckets_tf_name = commonTools.check_tf_variable(bucket_data.name)
-    importCommands[region.lower()].write(f'\nterraform import "module.oss-buckets[\\"{buckets_tf_name}\\"].oci_objectstorage_bucket.bucket" 'f'n/{namespace_name}/b/{bucket_data.name}')
+    tf_resource = f'module.oss-buckets[\\"{buckets_tf_name}\\"].oci_objectstorage_bucket.bucket'
+    if tf_resource not in state["resources"]:
+        importCommands[region.lower()]+=f'\n{tf_or_tofu} import "{tf_resource}" n/{namespace_name}/b/{bucket_data.name}'
 
-    if rp_name:
-     importCommands[region.lower()].write(f'\nterraform import "module.oss-buckets[\\"{buckets_tf_name}\\"].oci_objectstorage_replication_policy.replication_policy[0]" 'f'n/{namespace_name}/b/{bucket_data.name}/replicationPolicies/{rp_id}')
+    tf_resource = f'module.oss-buckets[\\"{buckets_tf_name}\\"].oci_objectstorage_replication_policy.replication_policy[0]'
+    if rp_name and tf_resource not in state["resources"]:
+        importCommands[region.lower()]+=f'\n{tf_or_tofu} import "{tf_resource}" n/{namespace_name}/b/{bucket_data.name}/replicationPolicies/{rp_id}'
 
-    if bucket_data.object_lifecycle_policy_etag != None:
-     importCommands[region.lower()].write(f'\nterraform import "module.oss-buckets[\\"{buckets_tf_name}\\"].oci_objectstorage_object_lifecycle_policy.lifecycle_policy[0]" 'f'n/{namespace_name}/b/{bucket_data.name}/l')
+    tf_resource = f'module.oss-buckets[\\"{buckets_tf_name}\\"].oci_objectstorage_object_lifecycle_policy.lifecycle_policy[0]'
+    if bucket_data.object_lifecycle_policy_etag != None and tf_resource not in state["resources"]:
+        importCommands[region.lower()]+=f'\n{tf_or_tofu} import "{tf_resource}" n/{namespace_name}/b/{bucket_data.name}/l'
 
     lf_names = lf_name_list if lf_name_list else ['']
     for lf_name in lf_names:
@@ -155,8 +160,10 @@ def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_co
     global importCommands
     global cd3file
     global reg
-    global values_for_column
+    global values_for_column,tf_or_tofu
 
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
     cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
@@ -175,41 +182,49 @@ def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_co
     print("Tabs- Buckets  will be overwritten during export process!!!\n")
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
 
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
         # Fetch Bucket Details
     print("\nFetching details of Buckets...")
 
     lifecycle_map = {}
+    total_resources=0
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Buckets #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
         buckets_client = ObjectStorageClient(config=config, retry_strategy = oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         namespace = buckets_client.get_namespace().data
         namespace_name = namespace
+        state = {'path':f'{outdir}/{reg}/{service_dir}','resources':[]}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"],stderr=sp.DEVNULL )
+            output =  byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"","\\\""))
+        except Exception as e:
+            pass
+
         for ntk_compartment_name in export_compartments:
             ossbuckets = oci.pagination.list_call_get_all_results(buckets_client.list_buckets,namespace,compartment_id = ct.ntk_compartment_ids[ntk_compartment_name])
             for bucket in ossbuckets.data:
+
                 bucket_name = bucket.name
                 ##buckets info##
                 try:
                     bucket_data = buckets_client.get_bucket(namespace_name, bucket_name, fields=['autoTiering']).data
                 except Exception as e:
                     print("Skipping Bucket "+bucket_name +" because of some issue. Check OCI console for details")
+                    bucket_data=None
                     continue
 
-
+                total_resources+=1
                 #Get Retention Policies for bucket
                 retention_policies = buckets_client.list_retention_rules(namespace_name, bucket_name).data
                 retention_rule_data_list = []
@@ -315,13 +330,17 @@ def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_co
                         else:
                             lf_prefix[lf_name] = [lf_inclusion_prefixes]
 
-                print_buckets(region, outdir, service_dir,bucket_data, values_for_column, ntk_compartment_name, namespace_name,rp_id,retention_rule_data,rp_details,rp_name,lf_name_list,lf_name,lf_mapping,lf_excl,lf_incl,lf_prefix,ta_map,tgt_map)
+                print_buckets(region, outdir, service_dir,state,bucket_data, values_for_column, ntk_compartment_name, namespace_name,rp_id,retention_rule_data,rp_details,rp_name,lf_name_list,lf_name,lf_mapping,lf_excl,lf_incl,lf_prefix,ta_map,tgt_map)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-    print("{0} Buckets exported into CD3.\n".format(len(values_for_column["Region"])))
+    print("{0} Buckets exported into CD3.\n".format(total_resources))
 
 
+    # writing data
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        init_commands = f'\n######### Writing import for Buckets #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands+importCommands[reg])

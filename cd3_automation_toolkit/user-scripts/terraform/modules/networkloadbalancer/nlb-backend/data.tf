@@ -1,12 +1,17 @@
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 #######################################
 # Data Block - Network Load Balancer
 # Create Network Load Balancer Backend
 #######################################
 
 data "oci_core_instances" "nlb_instances" {
-  state          = "RUNNING"
+  #state          = "RUNNING"
+  filter {
+    name   = "state"
+    values = ["RUNNING","STOPPED"]
+  }
   compartment_id = var.instance_compartment
 }
 

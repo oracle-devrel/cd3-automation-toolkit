@@ -9,6 +9,7 @@
 import sys
 import oci
 import os
+import subprocess as sp
 from commonTools import *
 
 sys.path.append(os.getcwd()+"/..")
@@ -35,9 +36,11 @@ def export_quotas_nongreenfield(inputfile, outdir, service_dir, config, signer, 
     global tf_import_cmd
     global values_for_column_quotas
     global sheet_dict_quotas
-    global importCommands
+    global importCommands,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
     sheet_name = 'Quotas'
-    script_file = f'{outdir}/{ct.home_region}/{service_dir}/tf_import_commands_'+sheet_name.lower()+'_nonGF.sh'
+    script_file = f'{outdir}/{ct.home_region}/{service_dir}/import_commands_'+sheet_name.lower()+'.sh'
     cd3file = inputfile
     importCommands = ""
     if ('.xls' not in cd3file):
@@ -55,21 +58,26 @@ def export_quotas_nongreenfield(inputfile, outdir, service_dir, config, signer, 
 
     # Create backups
     if os.path.exists(script_file):
-        commonTools.backup_file(os.path.dirname(script_file), "tf_import_"+sheet_name.lower(), os.path.basename(script_file))
+        commonTools.backup_file(os.path.dirname(script_file), "import_"+sheet_name.lower(), os.path.basename(script_file))
 
     # Fetch quotas
     print("\nFetching quotas...")
-    config.__setitem__("region", ct.region_dict[ct.home_region])
+    reg = (ct.home_region).lower()
+    config.__setitem__("region", ct.region_dict[reg])
+    state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+    try:
+        byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+        output = byteOutput.decode('UTF-8').rstrip()
+        for item in output.split('\n'):
+            state["resources"].append(item.replace("\"", "\\\""))
+    except Exception as e:
+        pass
     tenancy_id = config["tenancy"]
     quotas_client = oci.limits.QuotasClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     region = ct.home_region.lower()
 
     quotas_list = oci.pagination.list_call_get_all_results(quotas_client.list_quotas,compartment_id=tenancy_id,lifecycle_state="ACTIVE")
     if quotas_list.data != []:
-        importCommands += "\n######### Writing import for quotas #########\n\n"
-        importCommands += "#!/bin/bash"
-        importCommands += "\n"
-        importCommands += "terraform init"
         for quota_info in quotas_list.data:
             quota_policy = ""
             quota = quotas_client.get_quota(quota_id=quota_info.id).data
@@ -78,14 +86,17 @@ def export_quotas_nongreenfield(inputfile, outdir, service_dir, config, signer, 
 
             print_quotas(values_for_column_quotas, region, quota,quota_policy[1:])
             quota_tf_name = commonTools.check_tf_variable(quota_info.name)
-            importCommands += "\nterraform import \"module.quota_policies[\\\"" + quota_tf_name+ "\\\"].oci_limits_quota.quota\" " + str(quota_info.id)
+            tf_resource = f'module.quota_policies[\\"{quota_tf_name}\\"].oci_limits_quota.quota'
+            if tf_resource not in state["resources"]:
+                importCommands += f'\n{tf_or_tofu} import "{tf_resource}" {str(quota_info.id)}'
 
-        importCommands += "\nterraform plan"
 
     commonTools.write_to_cd3(values_for_column_quotas, cd3file, sheet_name)
     print("{0} quotas exported into CD3.\n".format(len(values_for_column_quotas["Region"])))
 
+    init_commands = f'\n######### Writing import for Quota #########\n\n#!/bin/bash\n{tf_or_tofu} init'
     if importCommands != "":
+        importCommands += f'\n{tf_or_tofu} plan\n'
         with open(script_file, 'a') as importCommandsfile:
-            importCommandsfile.write(importCommands)
+            importCommandsfile.write(init_commands + importCommands)
 

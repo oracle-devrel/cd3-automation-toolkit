@@ -6,7 +6,7 @@
 #
 # Author: Suruchi Singla
 # Oracle Consulting
-# Modified (TF Upgrade): Shruthi Subramanian
+# Modified by: Ranjini Rajendran
 #
 import os
 from pathlib import Path
@@ -33,6 +33,9 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     groups_template = env.get_template('groups-template')
+    identity_domain_groups_template = env.get_template('identity-domain-groups-template')
+
+    selected_template = identity_domain_groups_template if ct.identity_domain_enabled else groups_template
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -46,7 +49,6 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
 
     # Initialise empty TF string for each region
     tfStr[ct.home_region] = ''
-
 
     # Take backup of files
     srcdir = outdir + "/" + ct.home_region + "/" + service_dir + "/"
@@ -76,10 +78,37 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
             print("\nThe values for Region and Name cannot be left empty. Please enter a value and try again !!")
             exit(1)
 
-        for columnname in dfcolumns:
+        # Initialize domain variable
+        domain = str(df.loc[i, 'Domain Name']).strip()
+        compartment_id = ""
 
+        if not ct.identity_domain_enabled:
+            domain=''
+        if ct.identity_domain_enabled and domain.lower() == 'nan':
+            domain = 'DEFAULT'
+            compartment_id = 'root'
+        if ct.identity_domain_enabled and domain.lower() != 'nan':
+            domain = str(domain).strip()
+            split_domain = domain.split('@', 1)
+            if len(split_domain) == 2:
+                compartmentVarName, domain = split_domain
+                if compartmentVarName.lower() == 'root' or compartmentVarName == '':
+                    compartment_id = 'root'
+                else:
+                    if compartmentVarName.startswith('root::'):
+                        compartmentVarName = compartmentVarName[len('root::'):]
+                    compartment_id = compartmentVarName.strip()
+                    compartment_id = commonTools.check_tf_variable(compartment_id)
+                    compartment_id = str(compartment_id)
+                if domain.lower() == 'default':
+                    domain = 'DEFAULT'
+            else:
+                domain = domain
+                compartment_id = 'root'
+
+        for columnname in dfcolumns:
             # Column value
-            if 'description' in columnname.lower():
+            if 'Description' in columnname.lower():
                 columnvalue = str(df[columnname][i])
                 tempdict = {'description': columnvalue}
             else:
@@ -93,18 +122,39 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == 'Name':
-                columnvalue = columnvalue.strip()
-                group_tf_name = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'group_tf_name': group_tf_name}
+                #columnvalue = columnvalue.strip()
+                group_tf_name = f"{domain}_{commonTools.check_tf_variable(columnvalue)}"
+                if group_tf_name.startswith('_'):
+                    group_tf_name = group_tf_name[1:]
+                tempdict = {'group_tf_name': group_tf_name,'domain': domain , 'compartment_id': compartment_id}
 
-            # If description field is empty; put name as description
-            if columnname == 'Description':
-                if columnvalue == "" or columnvalue == 'nan':
-                    columnvalue = df.loc[i,'Name']
-                    tempdict = {'description': columnvalue }
+            if columnname == 'Members':
+                members=''
+                if columnvalue.lower()!='nan' and columnvalue!='':
+                    members=[x.strip() for x in columnvalue.split(',')]
+                    members = ','.join(members)
+                tempdict = {'members': members}
+
+            # Process Defined and Freeform Tags based on columnname and 'Domain Name'
+            if columnname.lower() in commonTools.tagColumns:
+                # for IDCS tenancies
+                if not ct.identity_domain_enabled:
+                    # Process tags using the existing code
+                    tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
                 else:
-                    columnvalue = commonTools.check_columnvalue(columnvalue)
-                    tempdict = {'description': columnvalue}
+                    if columnname == 'Defined Tags':
+                        defined_tags = columnvalue.strip()
+                        tag_strings = defined_tags.split(';')
+
+                        defined_tags_list = []
+                        for tag_string in tag_strings:
+                            parts = tag_string.split('=')
+                            if len(parts) == 2:
+                                namespace_key = parts[0]
+                                value = parts[1]
+                                namespace, key = namespace_key.split('.')
+                                tempdict = {'namespace': namespace, 'key': key, 'value': value}
+                                defined_tags_list.append(tempdict)
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -114,7 +164,7 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
             tempStr.update(tempdict)
 
         # Write all info to TF string
-        tfStr[region]= tfStr[region][:-1] + groups_template.render(tempStr)
+        tfStr[region]= tfStr[region].rsplit('}',1)[0] + selected_template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     reg=ct.home_region

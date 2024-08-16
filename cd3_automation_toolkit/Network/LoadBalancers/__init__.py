@@ -4,6 +4,7 @@ from .create_terraform_lbr_hostname_certs import create_terraform_lbr_hostname_c
 from .create_backendset_backendservers import create_backendset_backendservers
 from .create_listener import create_listener
 from .create_path_route_set import create_path_route_set
+from .create_routing_policy import create_lb_routing_policy
 from .create_ruleset import create_ruleset
 from .export_lbr_nonGreenField import export_lbr
 from .export_nlb_nonGreenField import export_nlb

@@ -314,9 +314,6 @@ def create_terraform_keyvaults(inputfile, outdir, service_dir, prefix, ct):
             vaultStr[reg] += key_template.render(count=0, region=reg).replace(key_str, keyStr[reg] + "\n" + key_str)
             vaultStr[reg] = "".join([s for s in vaultStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-            resource = sheetName.lower()
-            commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
-
             oname = open(outfile, "w+")
             oname.write(vaultStr[reg])
             oname.close()

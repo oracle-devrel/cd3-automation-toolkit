@@ -1,5 +1,6 @@
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 ############################
 # Module Block - Identity
 # Create Compartments
@@ -158,13 +159,15 @@ output "sub_compartments_level5_map" {
 ############################
 
 module "iam-groups" {
+
   source   = "./modules/identity/iam-group"
   for_each = var.groups
-
+  depends_on       = [module.iam-users]
   tenancy_ocid      = var.tenancy_ocid
   group_name        = each.value.group_name
   group_description = each.value.group_description
   matching_rule     = each.value.matching_rule
+  members           = lookup(each.value, "members", [])
 
   #Optional
   defined_tags  = each.value.defined_tags
@@ -217,16 +220,13 @@ output "policies_id_map" {
 
 module "iam-users" {
   source           = "./modules/identity/iam-user"
-  depends_on       = [module.iam-groups]
+  #depends_on       = [module.iam-groups]
   for_each         = var.users
   user_name        = each.value.name
   user_description = each.value.description
   user_email       = each.value.email
-  group_membership = each.value.group_membership != null ? each.value.group_membership : null
-  #group_membership    = each.value.group_membership != null ? length(regexall("ocid1.groupmembership.oc*", each.value.group_membership.0)) > 0 ? each.value.group_membership.0 : merge(module.iam-groups.*...)[each.value.group_membership.0]["group_tf_id"] : null
   tenancy_ocid         = var.tenancy_ocid
-  disable_capabilities = each.value.disable_capabilities != null ? each.value.disable_capabilities : null
-
+  enabled_capabilities = each.value.enabled_capabilities != null ? each.value.enabled_capabilities : null
 
   #Optional
   defined_tags  = each.value.defined_tags
@@ -277,4 +277,64 @@ module "iam-network-sources" {
   #vcn_comp_map = each.value.vcn_comp_map != null ? each.value.vcn_comp_map : null
   defined_tags  = try(each.value.defined_tags, null)
   freeform_tags = try(each.value.freeform_tags, null)
+}
+############################
+# Module Block - Identity
+# Create Identity Domain Groups
+############################
+data "oci_identity_domains" "iam_domains" {
+  for_each = merge(var.identity_domain_groups,var.identity_domain_users)
+  # Required
+  compartment_id = var.compartment_ocids[each.value.compartment_id]
+  # Optional
+  display_name = each.value.idcs_endpoint
+}
+
+module "groups" {
+
+  depends_on = [module.users]
+
+  source   = "./modules/identity/identity-domain-group"
+  for_each = var.identity_domain_groups
+
+  group_name               = each.value.group_name
+  group_description        = each.value.group_description
+  matching_rule            = each.value.matching_rule
+  compartment_id           = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  identity_domain          = data.oci_identity_domains.iam_domains[each.key].domains[0]
+  tenancy_ocid             = var.tenancy_ocid
+  members                  = each.value.members != null ? each.value.members : []
+
+  #Optional
+  defined_tags             = each.value.defined_tags
+  freeform_tags_key        = each.value.freeform_tags != null ? each.value.freeform_tags.key : null
+  freeform_tags_value      = each.value.freeform_tags != null ? each.value.freeform_tags.value : null
+
+}
+
+############################
+# Module Block - Identity
+# Create Identity Domain Users
+############################
+
+module "users" {
+  source           = "./modules/identity/identity-domain-user"
+  #depends_on       = [module.iam-groups]
+  for_each         = var.identity_domain_users
+  user_name        = each.value.user_name
+  family_name      = each.value.family_name
+  identity_domain  = data.oci_identity_domains.iam_domains[each.key].domains[0]
+  compartment_id   = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  description      = each.value.description
+  email            = each.value.email
+  tenancy_ocid     = var.tenancy_ocid
+  groups           = each.value.groups != null ? each.value.groups : null
+
+  enabled_capabilities = each.value.enabled_capabilities
+
+  #Optional
+  defined_tags             = each.value.defined_tags
+  freeform_tags_key        = each.value.freeform_tags != null ? each.value.freeform_tags.key : null
+  freeform_tags_value      = each.value.freeform_tags != null ? each.value.freeform_tags.value : null
+
 }

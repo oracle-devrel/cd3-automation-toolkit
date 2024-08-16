@@ -10,6 +10,7 @@
 
 import oci
 import os
+import subprocess as sp
 
 from oci.config import DEFAULT_LOCATION
 from commonTools import *
@@ -18,9 +19,11 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def print_dedicatedvmhosts(region, dedicatedvmhost, values_for_column, ntk_compartment_name):
+def print_dedicatedvmhosts(region, dedicatedvmhost, values_for_column, ntk_compartment_name,state):
     dedicatedvmhost_tf_name = commonTools.check_tf_variable(dedicatedvmhost.display_name)
-    importCommands[region.lower()].write("\nterraform import \"module.dedicated-hosts[\\\"" +dedicatedvmhost_tf_name+ "\\\"].oci_core_dedicated_vm_host.dedicated_vm_host\" " + str(dedicatedvmhost.id))
+    tf_resource = f'module.dedicated-hosts[\\"{dedicatedvmhost_tf_name}\\"].oci_core_dedicated_vm_host.dedicated_vm_host'
+    if tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(dedicatedvmhost.id)}'
 
     for col_header in values_for_column:
         if col_header == 'Region':
@@ -50,7 +53,10 @@ def export_dedicatedvmhosts(inputfile, outdir, service_dir, config, signer, ct, 
     global importCommands
     global cd3file
     global reg
-    global values_for_column
+    global values_for_column,tf_or_tofu
+
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
 
     cd3file = inputfile
@@ -69,39 +75,48 @@ def export_dedicatedvmhosts(inputfile, outdir, service_dir, config, signer, ct, 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- DedicatedVMHosts  will be overwritten during export process!!!\n")
 
+    # Fetch DVH Details
+    print("\nFetching details of Dedicated VM Hosts...")
+
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
+
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/'+file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + reg+"/"+service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
-    # Fetch Block Volume Details
-    print("\nFetching details of Dedicated VM Hosts...")
-
-    for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Dedicated VM Hosts #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         region = reg.capitalize()
 
         compute_client = oci.core.ComputeClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
         for ntk_compartment_name in export_compartments:
             dedicatedvmhosts = oci.pagination.list_call_get_all_results(compute_client.list_dedicated_vm_hosts,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="ACTIVE")
+
             for dedicatedvmhost in dedicatedvmhosts.data:
                 dedicatedvmhost=compute_client.get_dedicated_vm_host(dedicatedvmhost.id).data
-                print_dedicatedvmhosts(region, dedicatedvmhost,values_for_column, ntk_compartment_name)
+                print_dedicatedvmhosts(region, dedicatedvmhost,values_for_column, ntk_compartment_name,state)
 
-    # write data into file
+    # writing data
     for reg in export_regions:
-        script_file = f'{outdir}/{reg}/{service_dir}/'+file_name
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+
+        init_commands = f'\n######### Writing import for Dedicated VM Hosts #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+        if importCommands[reg] != "":
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 
     commonTools.write_to_cd3(values_for_column, cd3file, "DedicatedVMHosts")
 

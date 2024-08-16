@@ -49,6 +49,9 @@ def firewallpolicy_create(inputfile, outdir, service_dir, prefix, ct):
     for reg in ct.all_regions:
         policy_str[reg] = ''
         policy_names[reg] = []
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
+        resource = sheetName.lower()
+        commonTools.backup_file(reg_out_dir, resource, policy_auto_tfvars_filename)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -107,12 +110,12 @@ def firewallpolicy_create(inputfile, outdir, service_dir, prefix, ct):
             policy_str[region] = policy_str[region] + policy.render(tempStr)
 
     for reg in region_list:
-        resource = sheetName.lower()
+
         reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + policy_auto_tfvars_filename
-        commonTools.backup_file(reg_out_dir, resource, policy_auto_tfvars_filename)
+
         if policy_str[reg] != '':
             # Generate Final String
             src = "##Add New firewall policy for " + reg.lower() + " here##"

@@ -10,6 +10,7 @@
 
 import oci
 import os
+import subprocess as sp
 from commonTools import *
 
 
@@ -19,7 +20,7 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_name,ct):
+def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_name,ct,state):
     alarm_tf_name = commonTools.check_tf_variable(alarm.display_name)
     comp_tf_name = commonTools.check_tf_variable(ntk_compartment_name)
     suppression = alarm.suppression
@@ -65,9 +66,9 @@ def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_nam
             oci_objs = [alarm,suppression]
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
-    if(skip_row == 0):
-        #importCommands[region.lower()].write("\nterraform import oci_monitoring_alarm." + alarm_tf_name + " " + str(alarm.id))
-        importCommands[region.lower()].write("\nterraform import \"module.alarms[\\\"" + str(comp_tf_name+"_"+alarm_tf_name) + "\\\"].oci_monitoring_alarm.alarm\" " + str(alarm.id))
+    tf_resource = f'module.alarms[\\"{comp_tf_name}_{alarm_tf_name}\\"].oci_monitoring_alarm.alarm'
+    if skip_row == 0  and tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {alarm.id}'
 
 # Execution of the code begins here
 def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
@@ -76,7 +77,9 @@ def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_com
     global importCommands
     global cd3file
     global reg
-    global values_for_column
+    global values_for_column,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
 
     cd3file = inputfile
@@ -97,23 +100,27 @@ def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_com
     print("Tabs- Alarms  will be overwritten during export process!!!\n")
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
             commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
     # Fetch Block Volume Details
     print("\nFetching details of Alarms...")
 
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Alarms #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         region = reg.capitalize()
 
         mclient = oci.monitoring.MonitoringClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -124,13 +131,18 @@ def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_com
 
             for alarmSummary in alarms.data:
                 alarm=mclient.get_alarm(alarmSummary.id).data
-                print_alarms(region, alarm,ncpclient,values_for_column, ntk_compartment_name,ct)
-
-
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+                print_alarms(region, alarm,ncpclient,values_for_column, ntk_compartment_name,ct,state)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print("{0} Alarms exported into CD3.\n".format(len(values_for_column["Region"])))
+
+    # writing data
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        if importCommands[reg] != "":
+            init_commands = f'\n######### Writing import for Alarms #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 
 

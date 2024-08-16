@@ -10,19 +10,20 @@
 import sys
 import oci
 import json
+import subprocess as sp
+import os
 from oci.ons import NotificationControlPlaneClient
 from oci.events import EventsClient
 from oci.ons import NotificationDataPlaneClient
 from oci.functions import FunctionsManagementClient
 from oci.config import DEFAULT_LOCATION
-import os
-sys.path.append(os.getcwd() + "/..")
 from commonTools import *
+sys.path.append(os.getcwd() + "/..")
 
 compartment_ids={}
 importCommands={}
 
-def  print_notifications(values_for_column_notifications,region, ntk_compartment_name, sbpn, nftn_info, i, fun):
+def  print_notifications(values_for_column_notifications,region, ntk_compartment_name, sbpn, nftn_info, i, fun,state):
 
     tf_name_nftn = commonTools.check_tf_variable(str(nftn_info.name))
     sbpn_name = nftn_info.name + "_" + "sub" + str(i)
@@ -61,16 +62,16 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
         else:
             oci_objs = [nftn_info,sbpn]
             values_for_column_notifications = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_notifications,values_for_column_notifications)
+    tf_resource = f'module.notifications-topics[\\"{tf_name_nftn}\\"].oci_ons_notification_topic.topic'
+    if (i ==0 or i == 1) and tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(nftn_info.topic_id)}'
 
-    if (i ==0 or i == 1):
-       importCommands[region.lower()].write("\nterraform import \"module.notifications-topics[\\\"" + str(tf_name_nftn) + "\\\"].oci_ons_notification_topic.topic\" " + str(nftn_info.topic_id))
-
-    if(i!=0):
-        importCommands[region.lower()].write("\nterraform import \"module.notifications-subscriptions[\\\"" + str(tf_name_sbpn) + "\\\"].oci_ons_subscription.subscription\" " + str(sbpn.id))
+    tf_resource = f'module.notifications-subscriptions[\\"{tf_name_sbpn}\\"].oci_ons_subscription.subscription'
+    if(i!=0) and tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(sbpn.id)}'
 
 
-
-def print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun):
+def print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun,state):
     tf_name = commonTools.check_tf_variable(str(event.display_name))
     event_name = event.display_name
     action_type = ""
@@ -131,9 +132,9 @@ def print_events(values_for_column_events, region, ntk_compartment_name, event, 
           if ( i > 0 and action_name != ""):
              events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,data,  event_is_enabled, action_name, event, event_info)
           i = i + 1
-    if ( action_name != "" ):
-       #importCommands[region.lower()].write("\nterraform import oci_events_rule." + tf_name + " " + str(event.id))
-       importCommands[region.lower()].write("\nterraform import \"module.events[\\\"" + str(tf_name) + "\\\"].oci_events_rule.event\" " + str(event.id))
+    tf_resource = f'module.events[\\"{tf_name}\\"].oci_events_rule.event'
+    if ( action_name != "" ) and tf_resource not in state["resources"]:
+        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {event.id}'
 
 def events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,data,  event_is_enabled, action_name, event, event_info):
     for col_header in values_for_column_events.keys():
@@ -175,7 +176,9 @@ def export_events(inputfile, outdir, service_dir, config, signer, ct,export_comp
     global values_for_column_notifications
     global sheet_dict_events
     global sheet_dict_notifications
-    global importCommands
+    global importCommands,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     sheetName = "Events"
 
@@ -195,23 +198,27 @@ def export_events(inputfile, outdir, service_dir, config, signer, ct,export_comp
     print("Tabs- Events would be overwritten during export process!!!\n")
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
 
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
                 commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
     # Fetch Events
     print("\nFetching Events...")
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Events #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         # comp_ocid_done = []
         ncpc = NotificationControlPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         fun = FunctionsManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -220,21 +227,29 @@ def export_events(inputfile, outdir, service_dir, config, signer, ct,export_comp
         for ntk_compartment_name in export_compartments:
             evts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
                 ntk_compartment_name], lifecycle_state="ACTIVE")
+
             for event in evts.data:
                 event_info = evt.get_rule(event.id).data
-                print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun)
+                print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun,state)
+
             ievts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
                 ntk_compartment_name], lifecycle_state="INACTIVE")
+
             for event in ievts.data:
                 event_info = evt.get_rule(event.id).data
-                print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun)
+                print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun,state)
 
     commonTools.write_to_cd3(values_for_column_events, cd3file, sheetName)
     print("{0} Events exported into CD3.\n".format(len(values_for_column_events["Region"])))
 
+    # writing data
     for reg in export_regions:
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        if importCommands[reg] != "":
+            init_commands = f'\n######### Writing import for Events #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
 
 # Execution for Notifications export starts here
 def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
@@ -244,7 +259,9 @@ def export_notifications(inputfile, outdir, service_dir, config, signer, ct, exp
     global values_for_column_notifications
     global sheet_dict_events
     global sheet_dict_notifications
-    global importCommands
+    global importCommands,tf_or_tofu
+    tf_or_tofu = ct.tf_or_tofu
+    tf_state_list = [tf_or_tofu, "state", "list"]
 
     sheetName = "Notifications"
 
@@ -263,42 +280,48 @@ def export_notifications(inputfile, outdir, service_dir, config, signer, ct, exp
     print("Tabs- Notifications would be overwritten during export process!!!\n")
 
     # Create backups
-    resource = 'tf_import_' + sheetName.lower()
-    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+    resource = 'import_' + sheetName.lower()
+    file_name = 'import_commands_' + sheetName.lower() + '.sh'
 
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
                 commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, resource, file_name)
-        importCommands[reg] = open(script_file, "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+        importCommands[reg] = ''
 
     # Fetch Notifications & Subscriptions
     print("\nFetching Notifications - Topics & Subscriptions...")
+    total_resources=0
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Notifications #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
+        state = {'path': f'{outdir}/{reg}/{service_dir}', 'resources': []}
+        try:
+            byteOutput = sp.check_output(tf_state_list, cwd=state["path"], stderr=sp.DEVNULL)
+            output = byteOutput.decode('UTF-8').rstrip()
+            for item in output.split('\n'):
+                state["resources"].append(item.replace("\"", "\\\""))
+        except Exception as e:
+            pass
         ncpc = NotificationControlPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         ndpc = NotificationDataPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         fun = FunctionsManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         for ntk_compartment_name in export_compartments:
-                topics = oci.pagination.list_call_get_all_results(ncpc.list_topics,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+                topics = oci.pagination.list_call_get_all_results(ncpc.list_topics,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state='ACTIVE')
 
                 #sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 for topic in topics.data:
+                    total_resources+=1
                     #subscriptions get created in same comp as topic
                     sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],topic_id = topic.topic_id)
                     i=0
                     sbpn = None
                     for sbpn in sbpns.data:
                         i=i+1
-                        print_notifications(values_for_column_notifications, region, ntk_compartment_name, sbpn,topic, i, fun)
+                        print_notifications(values_for_column_notifications, region, ntk_compartment_name, sbpn,topic, i, fun,state)
                     # Empty Topic - No Subscription in the same compartment as Topic's
                     if(i==0):
-                        print_notifications(values_for_column_notifications, region, ntk_compartment_name, sbpn, topic,i, fun)
+                        print_notifications(values_for_column_notifications, region, ntk_compartment_name, sbpn, topic,i, fun,state)
 
 
                 '''
@@ -319,9 +342,14 @@ def export_notifications(inputfile, outdir, service_dir, config, signer, ct, exp
 
 
     commonTools.write_to_cd3(values_for_column_notifications, cd3file, sheetName)
-    print("{0} Notifications exported into CD3.\n".format(len(values_for_column_notifications["Region"])))
+    print("{0} Notifications exported into CD3.\n".format(total_resources))
 
-
+    # writing data
     for reg in export_regions:
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        if importCommands[reg] != "":
+            init_commands = f'\n######### Writing import for Notifications #########\n\n#!/bin/bash\n{tf_or_tofu} init'
+            importCommands[reg] += f'\n{tf_or_tofu} plan\n'
+            with open(script_file, 'a') as importCommandsfile:
+                importCommandsfile.write(init_commands + importCommands[reg])
+

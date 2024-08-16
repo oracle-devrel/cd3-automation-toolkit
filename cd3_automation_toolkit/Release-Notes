@@ -1,4 +1,18 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2024.4.0
+Aug 16th, 2024
+-------------------------------------
+1. Differential state import - Import commands during CD3 export process will only be written for the OCI objects which are not already in state file.
+   This will considerably reduce the time taken to run import commands.
+2. Users/Groups for Custom Identity Domains
+3. Routing Policies for Load Balancers.
+4. Terraform version upgrade to 1.5.7 on the container. OCI RM stack version also upgraded to 1.5.x
+5. Support for OpenTofu 1.6.2. Update tenancyconfig.properties to specify the IaC tool to be configured for a particular prefix.
+6. Independence from Network Tabs while exporting all other OCI resources. ie network tabs do not need to have data to export instances/databases etc.
+7. Inclusion of OCI FSDR export and update functionality (using python) under 'OCI Other Tools'. Output files generated are made available at
+   /cd3user/tenancies/<prefix>/othertools_files and also under artifacts in Jenkins console.
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2024.3.2
 Jun 26th, 2024
 -------------------------------------

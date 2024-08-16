@@ -5,6 +5,7 @@ List drg_route_rules = ["<b>DRG ROUTE RULES</b>:disabled","Export DRG Route Rule
 List nsg = ["<b>NSGs</b>:disabled","Export NSGs (From OCI into NSGs sheet)", "Add/Modify/Delete NSGs (Reads NSGs sheet)"]
 List cis =  ["<b>CIS</b>:disabled","Download latest compliance checking script", "Execute compliance checking script"]
 List showoci =  ["<b>SHOW OCI</b>:disabled","Download Latest ShowOCI Script", "Execute ShowOCI Script"]
+List ocifsdr = ["<b>OCI FSDR</b>:disabled","Export DR Plan", "Update DR Plan"]
 List customer_connectivity = ["<b>Connectivity</b>:disabled","Create Remote Peering Connections"]
 List final_list = []
 
@@ -27,10 +28,13 @@ for (item in SubOptions.split(",")) {
     if (item.equals("ShowOCI Report")){
         final_list += showoci
     }
-      if (item.equals("Add/Modify/Delete Firewall Policy")){
+    if (item.equals("OCI FSDR")){
+        final_list += ocifsdr
+    }
+    if (item.equals("Add/Modify/Delete Firewall Policy")){
         final_list += firewall_policy
     }
-  if (item.equals("Customer Connectivity")){
+    if (item.equals("Customer Connectivity")){
         final_list += customer_connectivity
     }
 }

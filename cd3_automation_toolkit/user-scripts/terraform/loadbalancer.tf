@@ -1,5 +1,6 @@
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 ############################
 # Module Block - Network
 # Create Load Balancers
@@ -18,7 +19,11 @@ data "oci_certificates_management_certificates" "certificates_backendsets" {
 data "oci_core_instances" "instances" {
   # depends_on = [module.instances] # Uncomment to create Compute and Load Balancers together
   for_each = var.backends != null ? var.backends : {}
-  state    = "RUNNING"
+  #state    = "RUNNING"
+  filter {
+    name   = "state"
+    values = ["RUNNING","STOPPED"]
+  }
   #Required
   compartment_id = each.value.instance_compartment != null && each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid
 }
@@ -245,6 +250,24 @@ output "rule_sets_id_map" {
 }
 */
 
+module "routing-policies" {
+  source   = "./modules/loadbalancer/lb-routing-policy"
+  for_each = var.lb_routing_policies != null ? var.lb_routing_policies : {}
+
+  condition_language_version = each.value.condition_language_version != null ? each.value.condition_language_version : null
+  load_balancer_id           = length(regexall("ocid1.loadbalancer.oc*", each.value.load_balancer_id)) > 0 ? each.value.load_balancer_id : merge(module.load-balancers.*...)[each.value.load_balancer_id]["load_balancer_tf_id"]
+  name                       = each.value.name != null ? each.value.name : null
+  #backend_set_name           = each.value.backend_set_name != null ? merge(module.backend-sets.*...)[each.value.backend_set_name].backend_set_tf_name : null
+  rules = each.value.rules != null ? each.value.rules : []
+
+}
+
+/*
+output "routing_policy_tf_id_map" {
+    value = [ for k,v in merge(module.routing-policies.*...) : v.routing_policy_tf_id ]
+}
+*/
+
 #############################
 # Module Block - LBaaS Logging
 # Create Log Groups and Logs
@@ -273,8 +296,8 @@ output "log_group_map" {
 */
 
 module "loadbalancer-logs" {
-  source     = "./modules/managementservices/log"
-  for_each   = (var.loadbalancer_logs != null || var.loadbalancer_logs != {}) ? var.loadbalancer_logs : {}
+  source   = "./modules/managementservices/log"
+  for_each = (var.loadbalancer_logs != null || var.loadbalancer_logs != {}) ? var.loadbalancer_logs : {}
 
   # Logs
   #Required

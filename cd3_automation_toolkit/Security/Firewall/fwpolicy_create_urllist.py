@@ -51,7 +51,9 @@ def fwpolicy_create_urllist(inputfile, outdir, service_dir, prefix, ct):
     for reg in ct.all_regions:
         urllist_str[reg] = ''
         urllist_names[reg] = []
-
+        resource = sheetName.lower()
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
+        commonTools.backup_file(reg_out_dir, resource, urllist_auto_tfvars_filename)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -138,12 +140,11 @@ def fwpolicy_create_urllist(inputfile, outdir, service_dir, prefix, ct):
 
 
     for reg in region_list:
-        resource = sheetName.lower()
         reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + urllist_auto_tfvars_filename
-        commonTools.backup_file(reg_out_dir, resource, urllist_auto_tfvars_filename)
+
         if urllist_str[reg] != '':
             # Generate Final String
             src = "##Add New urllist for " + reg.lower() + " here##"

@@ -17,7 +17,7 @@ return[
 "Logging Services",
 "Software-Defined Data Centers - OCVS",
 "CD3 Services",
-"3rd Party Services"
+"Other OCI Tools"
 ]
 }
 else if(Workflow.toLowerCase().contains("export")) {

@@ -1,5 +1,7 @@
 import argparse
 import configparser
+import re
+
 import Database
 import Identity
 import Compute
@@ -133,7 +135,8 @@ def execute_options(options, *args, **kwargs):
         menu = 'm' in options
         quit = 'q' in options
     else:
-        pattern = re.compile("Enable(.*)Logs")
+        pattern1 = re.compile("Enable(.*)Logs")
+        pattern2 = re.compile("(.*)DR Plan")
         for option in options:
             if option.name == "Execute All":
                 continue
@@ -141,7 +144,10 @@ def execute_options(options, *args, **kwargs):
                 with section(option.text):
                     option.callback(*args, **kwargs,sub_options=sub_child_options)
             # Logging function
-            elif pattern.match(str(option.name)) !=None:
+            elif pattern1.match(str(option.name)) !=None:
+                with section(option.text):
+                    option.callback(*args, **kwargs, option=option.name)
+            elif pattern2.match(str(option.name)) !=None:
                 with section(option.text):
                     option.callback(*args, **kwargs, option=option.name)
             else:
@@ -344,38 +350,37 @@ def export_compartments(inputfile, outdir,config, signer, ct):
     resource = 'Compartments'
     Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct)
     create_identity(prim_options=['Add/Modify/Delete Compartments'])
-    print("\n\nExecute tf_import_commands_compartments_nonGF.sh script created under home region directory to synch TF with OCI Identity Compartments\n")
+    print("\n\nExecute import_commands_compartments.sh script created under home region directory to synch TF with OCI Identity Compartments\n")
 
 def export_policies(inputfile, outdir,config, signer, ct):
     resource = 'IAM Policies'
     compartments = ct.get_compartment_map(var_file, resource)
     Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_compartments=compartments)
     create_identity(prim_options=['Add/Modify/Delete Policies'])
-    print("\n\nExecute tf_import_commands_policies_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
+    print("\n\nExecute import_commands_policies.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 def export_groups(inputfile, outdir,config, signer, ct):
     resource = 'IAM Groups'
-    #selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
-    selected_domains_data = {}
+    selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
     Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_domains=selected_domains_data)
     create_identity(prim_options=['Add/Modify/Delete Groups'])
-    print("\n\nExecute tf_import_commands_groups_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
+    print("\n\nExecute import_commands_groups.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
 def export_users(inputfile, outdir,config,signer, ct):
     resource = 'IAM Users'
     # check if tenancy is identity_domain enabled
-    #selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
-    Identity.Users.export_users(inputfile, outdir, service_dir_identity, config, signer, ct)
+    selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
+    Identity.Users.export_users(inputfile, outdir, service_dir_identity, config, signer, ct,export_domains=selected_domains_data)
     create_identity(prim_options=['Add/Modify/Delete Users'])
-    print("\n\nExecute tf_import_commands_users_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
+    print("\n\nExecute import_commands_users.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
 def export_networkSources(inputfile, outdir, config, signer, ct):
     resource = 'Network Sources'
     Identity.NetworkSources.export_networkSources(inputfile, outdir, service_dir_identity, config, signer, ct)
     create_identity(prim_options=['Add/Modify/Delete Network Sources'])
-    print("\n\nExecute tf_import_commands_networkSources_nonGF.sh script created under home region directory to synch TF with OCI " +resource +"\n")
+    print("\n\nExecute import_commands_networkSources.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 def export_governance(prim_options=[]):
     options = [
@@ -400,7 +405,7 @@ def export_budget(prim_options=[]):
     compartments = ct.get_compartment_map(var_file, 'Budgets')
     CostManagement.export_budgets_nongreenfield(inputfile, outdir, service_dir_budget, config, signer, ct,export_regions)
     create_budgets()
-    print("\n\nExecute tf_import_commands_budgets_nonGF.sh script created under each region directory to synch TF with OCI Tags\n")
+    print("\n\nExecute import_commands_budgets.sh script created under each region directory to synch TF with OCI Tags\n")
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_budget])
 
@@ -408,14 +413,14 @@ def export_tags(prim_options=[]):
     compartments = ct.get_compartment_map(var_file, 'Tagging Objects')
     Governance.export_tags_nongreenfield(inputfile, outdir, service_dir_tagging, config, signer, ct, export_compartments=compartments)
     create_tags()
-    print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Tags\n")
+    print("\n\nExecute import_commands_tags.sh script created under home region directory to synch TF with OCI Tags\n")
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_tagging])
 
 def export_quotas(prim_options=[]):
     Governance.export_quotas_nongreenfield(inputfile, outdir, service_dir_quota, config, signer, ct)
     create_quotas()
-    print("\n\nExecute tf_import_commands_quotas_nonGF.sh script created under home region directory to synch TF with OCI Quota\n")
+    print("\n\nExecute import_commands_quotas.sh script created under home region directory to synch TF with OCI Quota\n")
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_quota])
 
@@ -444,7 +449,7 @@ def export_network(prim_options=[]):
     execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
 
     print("=====================================================================================================================")
-    print("NOTE: Make sure to execute tf_import_commands_network_major-objects_nonGF.sh before executing the other scripts.")
+    print("NOTE: Make sure to execute import_commands_network_major-objects.sh before executing the other scripts.")
     print("=====================================================================================================================")
 
     # Update modified path list
@@ -486,7 +491,7 @@ def export_networking(inputfile, outdir,config, signer, ct, export_regions):
 
     options = [ Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'), ]
     execute_options(options, inputfile, outdir, service_dir_nsg, prefix, ct)
-    print("\n\nExecute tf_import_commands_network_*_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    print("\n\nExecute import_commands_network_*.sh script created under each region directory to synch TF with OCI Network objects\n")
     for service in [service_dir_network,service_dir_vlan,service_dir_nsg]:
         service_dirs.append(service_dir_network) if service_dir_network not in service_dirs else service_dirs
 
@@ -509,7 +514,7 @@ def export_major_objects(inputfile, outdir, config, signer, ct, export_regions):
     ]
     execute_options(options, inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy,network_connectivity_in_setupoci='', modify_network=False)
 
-    print("\n\nExecute tf_import_commands_network_major-objects_nonGF.sh and tf_import_commands_network_drg_routerules_nonGF.sh scripts created under each region directory to synch TF with OCI Network objects\n")
+    print("\n\nExecute import_commands_network_major-objects.sh and import_commands_network_drg_routerules.sh scripts created under each region directory to synch TF with OCI Network objects\n")
 
 def export_dhcp(inputfile, outdir,config,signer,ct,export_regions):
     compartments = ct.get_compartment_map(var_file,'DHCP')
@@ -518,7 +523,7 @@ def export_dhcp(inputfile, outdir,config,signer,ct,export_regions):
         Option(None, Network.create_terraform_dhcp_options, 'Processing DHCP Tab'),
         ]
     execute_options(options, inputfile, outdir, service_dir_network,prefix, ct, non_gf_tenancy)
-    print("\n\nExecute tf_import_commands_network_dhcp_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    print("\n\nExecute import_commands_network_dhcp.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 def export_secrules(inputfile, outdir,config,signer,ct,export_regions):
     compartments = ct.get_compartment_map(var_file,'SecRulesInOCI')
@@ -527,7 +532,7 @@ def export_secrules(inputfile, outdir,config,signer,ct,export_regions):
         Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         ]
     execute_options(options, inputfile, outdir,service_dir_network, prefix, ct, non_gf_tenancy)
-    print("\n\nExecute tf_import_commands_network_secrules_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    print("\n\nExecute import_commands_network_secrules.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 def export_routerules(inputfile, outdir,config,signer,ct,export_regions):
     compartments = ct.get_compartment_map(var_file,'RouteRulesInOCI')
@@ -536,7 +541,7 @@ def export_routerules(inputfile, outdir,config,signer,ct,export_regions):
         Option(None, Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
         ]
     execute_options(options, inputfile, outdir, service_dir_network,prefix, ct, non_gf_tenancy)
-    print("\n\nExecute tf_import_commands_network_routerules_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    print("\n\nExecute import_commands_network_routerules.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
 def export_subnets_vlans(inputfile, outdir,config,signer,ct,export_regions):
@@ -555,8 +560,8 @@ def export_subnets_vlans(inputfile, outdir,config,signer,ct,export_regions):
     execute_options(options, inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy,
                     network_vlan_in_setupoci='vlan')
 
-    print("\n\nExecute tf_import_commands_network_subnets_nonGF.sh script created under each region directory to synch TF with OCI Network objects")
-    print("\nExecute tf_import_commands_network_vlans_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    print("\n\nExecute import_commands_network_subnets.sh script created under each region directory to synch TF with OCI Network objects")
+    print("\nExecute import_commands_network_vlans.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
 def export_nsg(inputfile, outdir,config,signer,ct,export_regions):
@@ -566,7 +571,7 @@ def export_nsg(inputfile, outdir,config,signer,ct,export_regions):
         Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'),
         ]
     execute_options(options, inputfile, outdir, service_dir_nsg,prefix, ct)
-    print("\n\nExecute tf_import_commands_network_nsg_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    print("\n\nExecute import_commands_network_nsg.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
 def export_firewall_policies(prim_options=[]):
@@ -582,7 +587,7 @@ def export_firewall_policies(prim_options=[]):
 
 def export_firewallpolicy(inputfile, outdir, config, signer, ct, export_regions,name_filter=""):
     compartments = ct.get_compartment_map(var_file, 'Firewall Policies')
-    filter_str1 = "Enter comma separated list of display name patterns of the Policies or press \"ENTER\" to export all policies:: "
+    filter_str1 = "Enter comma separated list of display name patterns of the Policies or press \"ENTER\" to export all policies: "
     if not devops:
         policy_name_str = input(filter_str1)
     else:
@@ -591,13 +596,13 @@ def export_firewallpolicy(inputfile, outdir, config, signer, ct, export_regions,
     policies = list(map(lambda x: x.strip(), policy_name_str.split(','))) if policy_name_str else None
     Security.export_firewallpolicy(inputfile, outdir, service_dir_firewall, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_policies=policies)
     create_firewall_policy(inputfile, outdir, service_dir_firewall, prefix, ct,execute_all=True)
-    print("\n\nExecute tf_import_commands_firewallpolicy_nonGF.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
+    print("\n\nExecute import_commands_firewallpolicy.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
 
 def export_firewalls(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file, 'Firewalls')
     Security.export_firewall(inputfile, outdir, service_dir_firewall, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     create_firewall(inputfile, outdir, service_dir_firewall, prefix, ct)
-    print("\n\nExecute tf_import_commands_firewall_nonGF.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
+    print("\n\nExecute import_commands_firewall.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
 
 
 def export_compute(prim_options=[]):
@@ -614,7 +619,7 @@ def export_dedicatedvmhosts(inputfile, outdir, config, signer, ct, export_region
     compartments = ct.get_compartment_map(var_file,'Dedicated VM Hosts')
     Compute.export_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, config, signer, ct, export_compartments=compartments, export_regions=export_regions)
     create_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, prefix, ct)
-    print("\n\nExecute tf_import_commands_dedicatedvmhosts_nonGF.sh script created under each region directory to synch TF with OCI Dedicated VM Hosts\n")
+    print("\n\nExecute import_commands_dedicatedvmhosts.sh script created under each region directory to synch TF with OCI Dedicated VM Hosts\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dedicated_vm_host])
 
@@ -636,7 +641,7 @@ def export_instances(inputfile, outdir,config,signer, ct, export_regions):
 
     Compute.export_instances(inputfile, outdir, service_dir_instance,config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
     create_instances(inputfile, outdir, service_dir_instance, prefix, ct)
-    print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
+    print("\n\nExecute import_commands_instances.sh script created under each region directory to synch TF with OCI Instances\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_instance])
 
@@ -669,7 +674,7 @@ def export_block_volumes(inputfile, outdir,config,signer,ct, export_regions):
     Storage.export_blockvolumes(inputfile, outdir, service_dir_block_volume, config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
     Storage.create_terraform_block_volumes(inputfile, outdir, service_dir_block_volume, prefix, ct)
     print(
-        "\n\nExecute tf_import_commands_blockvolumes_nonGF.sh script created under each region directory to synch TF with OCI Block Volume Objects\n")
+        "\n\nExecute import_commands_blockvolumes.sh script created under each region directory to synch TF with OCI Block Volume Objects\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_block_volume])
 
@@ -679,7 +684,7 @@ def export_fss(inputfile, outdir,config, signer, ct, export_regions):
     Storage.export_fss(inputfile, outdir, service_dir_fss, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     Storage.create_terraform_fss(inputfile, outdir, service_dir_fss, prefix, ct)
     print(
-        "\n\nExecute tf_import_commands_fss_nonGF.sh script created under each region directory to synch TF with OCI FSS objects\n")
+        "\n\nExecute import_commands_fss.sh script created under each region directory to synch TF with OCI FSS objects\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_fss])
 
@@ -688,7 +693,7 @@ def export_buckets(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file, 'Buckets')
     Storage.export_buckets(inputfile, outdir, service_dir_object_storage, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     Storage.create_terraform_oss(inputfile, outdir, service_dir_object_storage, prefix, ct)
-    print("\n\nExecute tf_import_commands_buckets_nonGF.sh script created under each region directory to synch TF with OCI Object Storage Buckets\n")
+    print("\n\nExecute import_commands_buckets.sh script created under each region directory to synch TF with OCI Object Storage Buckets\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_object_storage])
 
@@ -715,7 +720,7 @@ def export_kms(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file, 'KMS')
     Security.export_keyvaults(inputfile, outdir, service_dir_kms, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     Security.create_terraform_keyvaults(inputfile, outdir, service_dir_kms, prefix, ct)
-    print("\n\nExecute tf_import_commands_kms_nonGF.sh script created under each region directory to synch TF with OCI Key Vaults\n")
+    print("\n\nExecute import_commands_kms.sh script created under each region directory to synch TF with OCI Key Vaults\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_kms])
 
@@ -723,7 +728,7 @@ def export_lbr(inputfile, outdir,config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'LBR objects')
     Network.export_lbr(inputfile, outdir, service_dir_loadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     create_lb(inputfile, outdir, prefix, ct)
-    print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
+    print("\n\nExecute import_commands_lbr.sh script created under each region directory to synch TF with OCI LBR objects\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_loadbalancer])
 
@@ -732,7 +737,7 @@ def export_nlb(inputfile, outdir,config,signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'NLB objects')
     Network.export_nlb(inputfile, outdir, service_dir_networkloadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     create_nlb(inputfile, outdir, prefix, ct)
-    print("\n\nExecute tf_import_commands_nlb_nonGF.sh script created under each region directory to synch TF with OCI NLB objects\n")
+    print("\n\nExecute import_commands_nlb.sh script created under each region directory to synch TF with OCI NLB objects\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_networkloadbalancer])
 
@@ -751,7 +756,7 @@ def export_dbsystems_vm_bm(inputfile, outdir,config,signer, ct,export_regions):
     compartments = ct.get_compartment_map(var_file,'VM and BM DB Systems')
     Database.export_dbsystems_vm_bm(inputfile, outdir, service_dir_dbsystem_vm_bm, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
     Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, service_dir_dbsystem_vm_bm, prefix, ct)
-    print("\n\nExecute tf_import_commands_dbsystems-vm-bm_nonGF.sh script created under each region directory to synch TF with DBSystems\n")
+    print("\n\nExecute import_commands_dbsystems-vm-bm.sh script created under each region directory to synch TF with DBSystems\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dbsystem_vm_bm])
 
@@ -761,7 +766,7 @@ def export_exa_infra_vmclusters(inputfile, outdir,config, signer, ct, export_reg
     Database.export_exa_infra(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
     Database.export_exa_vmclusters(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
     create_exa_infra_vmclusters(inputfile, outdir, prefix,ct)
-    print("\n\nExecute tf_import_commands_exa-infra_nonGF.sh and tf_import_commands_exa-vmclusters_nonGF.sh scripts created under each region directory to synch TF with Exa-Infra and Exa-VMClusters\n")
+    print("\n\nExecute import_commands_exa-infra.sh and import_commands_exa-vmclusters.sh scripts created under each region directory to synch TF with Exa-Infra and Exa-VMClusters\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_database_exacs])
 
@@ -770,7 +775,7 @@ def export_adbs(inputfile, outdir,config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'ADBs')
     Database.export_adbs(inputfile, outdir, service_dir_adb, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
     Database.create_terraform_adb(inputfile, outdir, service_dir_adb, prefix, ct)
-    print("\n\nExecute tf_import_commands_adb_nonGF.sh script created under each region directory to synch TF with OCI ADBs\n")
+    print("\n\nExecute import_commands_adb.sh script created under each region directory to synch TF with OCI ADBs\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_adb])
 
@@ -792,25 +797,25 @@ def export_notifications(inputfile, outdir, service_dir, config, signer, ct, exp
     compartments = ct.get_compartment_map(var_file,'Notifications')
     ManagementServices.export_notifications(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     ManagementServices.create_terraform_notifications(inputfile, outdir, service_dir, prefix, ct)
-    print("\n\nExecute tf_import_commands_notifications_nonGF.sh script created under each region directory to synch TF with OCI Notifications\n")
+    print("\n\nExecute import_commands_notifications.sh script created under each region directory to synch TF with OCI Notifications\n")
 
 def export_events(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Events')
     ManagementServices.export_events(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     ManagementServices.create_terraform_events(inputfile, outdir, service_dir, prefix, ct)
-    print("\n\nExecute tf_import_commands_events_nonGF.sh script created under each region directory to synch TF with OCI Events\n")
+    print("\n\nExecute import_commands_events.sh script created under each region directory to synch TF with OCI Events\n")
 
 def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Alarms')
     ManagementServices.export_alarms(inputfile, outdir, service_dir, config,signer,ct,  export_compartments=compartments, export_regions=export_regions)
     ManagementServices.create_terraform_alarms(inputfile, outdir,service_dir, prefix, ct)
-    print("\n\nExecute tf_import_commands_alarms_nonGF.sh script created under each region directory to synch TF with OCI Alarms\n")
+    print("\n\nExecute import_commands_alarms.sh script created under each region directory to synch TF with OCI Alarms\n")
 
 def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Service Connectors')
     ManagementServices.export_service_connectors(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     ManagementServices.create_service_connectors(inputfile, outdir, service_dir, prefix, ct)
-    print("\n\nExecute tf_import_commands_serviceconnectors_nonGF.sh script created under each region directory to synch TF with OCI Service Connectors\n")
+    print("\n\nExecute import_commands_serviceconnectors.sh script created under each region directory to synch TF with OCI Service Connectors\n")
 
 def export_developer_services(prim_options=[]):
     options = [Option("Export OKE cluster and Nodepools", export_oke, 'Exporting OKE'),
@@ -825,7 +830,7 @@ def export_oke(inputfile, outdir, config,signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'OKE')
     DeveloperServices.export_oke(inputfile, outdir, service_dir_oke,config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     DeveloperServices.create_terraform_oke(inputfile, outdir, service_dir_oke,prefix, ct)
-    print("\n\nExecute tf_import_commands_oke_nonGF.sh script created under each region directory to synch TF with OKE\n")
+    print("\n\nExecute import_commands_oke.sh script created under each region directory to synch TF with OKE\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_oke])
 
@@ -834,7 +839,7 @@ def export_sddc(prim_options=[]):
     compartments = ct.get_compartment_map(var_file,'SDDCs')
     SDDC.export_sddc(inputfile, outdir, service_dir_sddc,config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     SDDC.create_terraform_sddc(inputfile, outdir, service_dir_sddc, prefix, ct)
-    print("\n\nExecute tf_import_commands_sddcs_nonGF.sh script created under each region directory to synch TF with SDDC\n")
+    print("\n\nExecute import_commands_sddcs.sh script created under each region directory to synch TF with SDDC\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_sddc])
 
@@ -890,6 +895,7 @@ def fetch_protocols(outdir, outdir_struct, ct):
 
 ################## Create Functions ##########################
 def create_identity(prim_options=[]):
+    ct.identity_domain_check(config,signer)
     options = [
         Option('Add/Modify/Delete Compartments', Identity.create_terraform_compartments, 'Processing Compartments Tab'),
         Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Processing Groups Tab'),
@@ -1171,6 +1177,7 @@ def create_lb(inputfile, outdir, prefix, ct):
          Option(None, Network.create_listener, 'Creating Listeners'),
          Option(None, Network.create_path_route_set, 'Creating Path Route Sets'),
          Option(None, Network.create_ruleset, 'Creating Rule Sets'),
+         Option(None, Network.create_lb_routing_policy, 'Creating Routing Policies'),
     ]
     execute_options(options, inputfile, outdir, service_dir_loadbalancer, prefix, ct)
     # Update modified path list
@@ -1215,7 +1222,7 @@ def create_exa_infra_vmclusters(inputfile, outdir, prefix,ct):
 
 
 def create_terraform_adb(inputfile, outdir, prefix,ct):
-    Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, service_dir_adb, prefix, ct)
+    Database.create_terraform_adb(inputfile, outdir, service_dir_adb, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_adb])
 
@@ -1239,10 +1246,16 @@ def create_management_services(execute_all=False,prim_options=[]):
 
 
 def create_developer_services(execute_all=False,prim_options=[]):
-    options = [
-        Option("Upload current terraform files/state to Resource Manager", create_rm_stack, 'Creating RM Stack'),
-        Option("Add/Modify/Delete OKE Cluster and Nodepools", create_oke, 'Creating OKE cluster and Nodepool')
-    ]
+    if tf_or_tofu == 'terraform':
+        options = [
+            Option("Upload current terraform files/state to Resource Manager", create_rm_stack, 'Creating RM Stack'),
+            Option("Add/Modify/Delete OKE Cluster and Nodepools", create_oke, 'Creating OKE cluster and Nodepool')
+        ]
+    elif tf_or_tofu=='tofu':
+        options = [
+            Option("Add/Modify/Delete OKE Cluster and Nodepools", create_oke, 'Creating OKE cluster and Nodepool')
+        ]
+
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -1335,7 +1348,8 @@ def create_security_services(prim_options=[]):
 
 def run_utility(prim_options=[]):
     options = [Option('CIS Compliance Check Script', initiate_cis_scan, 'CIS Compliance Check Script'),
-               Option('ShowOCI Report', run_showoci, 'ShowOCI Report')
+               Option('ShowOCI Report', run_showoci, 'ShowOCI Report'),
+               Option('OCI FSDR', run_oci_fsdr, 'OCI FSDR')
     ]
     if prim_options:
         options = match_options(options, prim_options)
@@ -1377,15 +1391,21 @@ def initiate_cis_scan(outdir, prefix, config_file,sub_options=[]):
     execute_options(options, outdir, prefix, config_file)
 
 def start_cis_download(outdir, prefix, config_file):
-    print("Downloading the script file as 'cis_reports.py' at location "+os.getcwd())
+    current_dir=os.path.dirname(os.path.abspath(__file__))
+    print("Downloading the script file as 'cis_reports.py' at location "+current_dir+"/../othertools/")
     resp = requests.get("https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py")
     resp_contents = resp.text
-    with open("cis_reports.py", "w", encoding="utf-8") as fd:
+    with open(current_dir+"/../othertools/cis_reports.py", "w", encoding="utf-8") as fd:
         fd.write(resp_contents)
+
+    #cmdpath = os.path.dirname(os.path.abspath(__file__)) + "/../"
+    #shutil.move(os.getcwd()+"/../othertools/cis_reports.py", os.getcwd()+"/../othertools/cis_reports.py")
     print("Download complete!!")
 
 def start_cis_scan(outdir, prefix, config_file):
-    cmd = "python cis_reports.py"
+    cmdpath =  os.path.dirname(os.path.abspath(__file__))+ "/../othertools/"
+    cmd = "python "+cmdpath+"cis_reports.py"
+
     if auth_mechanism == "instance_principal":
         cmd += " -ip"
     elif auth_mechanism == "session_token":
@@ -1399,14 +1419,16 @@ def start_cis_scan(outdir, prefix, config_file):
     split = str.split(cmd)
     dirname = prefix + "_cis_report"
     resource = "cis_report"
+    if outdir[len(outdir)-1]=="/":
+        outdir=outdir.rsplit("/",2)[0]+"/othertools_files"
+    else:
+        outdir = outdir.rsplit("/", 1)[0] + "/othertools_files"
     out_rep = outdir + '/'+ dirname
     #config = "--config "+ config
-    commonTools.backup_file(outdir, resource, dirname)
 
+    commonTools.backup_file(outdir, resource, dirname)
     if not os.path.exists(out_rep):
         os.makedirs(out_rep)
-    else:
-        commonTools.backup_file(outdir, resource, out_rep)
 
     out = ['--report-directory', out_rep]
     cmd = cmd +" "+ out[0] + " "+out[1]
@@ -1416,22 +1438,28 @@ def start_cis_scan(outdir, prefix, config_file):
     execute(split, config_file)
 
 def get_latest_showoci(outdir, prefix,config_file):
-    print("Getting latest showoci report script")
-    if (os.path.isdir("/tmp/oci-python-sdk")):
-        shutil.rmtree("/tmp/oci-python-sdk")
-    cmd = "git clone https://github.com/oracle/oci-python-sdk /tmp/oci-python-sdk"
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    print("Getting latest showoci report script at location "+current_dir+"/../othertools/")
+
+    cmdpath=os.path.dirname(os.path.abspath(__file__)) + "/../othertools/"
+    tag= "oci-python-sdk"
+
+    if (os.path.isdir(cmdpath+tag)):
+        shutil.rmtree(cmdpath+tag)
+    cmd = "git clone https://github.com/oracle/oci-python-sdk "+cmdpath+tag
     split = str.split(cmd)
-    execute(split,config_file)
-    if (os.path.isdir("/cd3user/oci_tools/oci-python-sdk")):
-        shutil.rmtree("/cd3user/oci_tools/oci-python-sdk")
-    shutil.move("/tmp/oci-python-sdk", "/cd3user/oci_tools/oci-python-sdk")
+    execute(split, config_file)
+    #shutil.move("/tmp/oci-python-sdk", cmdpath+tag)
     print("Download complete!!")
 
 
 def execute_showoci(outdir, prefix, config_file_path):
-    if not os.path.isfile("/cd3user/oci_tools/oci-python-sdk/examples/showoci/showoci.py"):
+    cmdpath = os.path.dirname(os.path.abspath(__file__)) + "/../othertools/"
+    tag = "oci-python-sdk"
+    if not os.path.isfile(cmdpath+tag+"/examples/showoci/showoci.py"):
         get_latest_showoci(outdir, prefix, config_file=config_file_path)
-    cmd = "python /cd3user/oci_tools/oci-python-sdk/examples/showoci/showoci.py -a"
+    cmd = "python "+cmdpath+tag+"/examples/showoci/showoci.py -a"
+
     if auth_mechanism == "instance_principal":
         cmd += " -ip"
     elif auth_mechanism == "session_token":
@@ -1439,16 +1467,19 @@ def execute_showoci(outdir, prefix, config_file_path):
     else:
         cmd += " -cf "+config_file_path
     split = str.split(cmd)
+
     dirname = prefix + "_showoci_report"
     resource = "showoci_report"
+    if outdir[len(outdir) - 1] == "/":
+        outdir = outdir.rsplit("/", 2)[0] + "/othertools_files"
+    else:
+        outdir = outdir.rsplit("/", 1)[0] + "/othertools_files"
     out_rep = outdir + '/' + dirname
     # config = "--config "+ config
-    commonTools.backup_file(outdir, resource, dirname)
 
+    commonTools.backup_file(outdir, resource, dirname)
     if not os.path.exists(out_rep):
         os.makedirs(out_rep)
-    else:
-        commonTools.backup_file(outdir, resource, out_rep)
     out_file = out_rep+"/"+prefix
     out = ['-csv', out_file]
     cmd = cmd + " " + out[0] + " " + out[1]
@@ -1462,6 +1493,94 @@ def run_showoci(outdir, prefix, config_file,sub_options=[]):
     options = [
         Option("Download Latest ShowOCI Script", get_latest_showoci, 'Downloading ShowOCI Script'),
         Option("Execute ShowOCI Script", execute_showoci, 'Executing ShowOCI Script'),
+    ]
+    if sub_options:
+        options = match_options(options, sub_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, outdir, prefix, config_file)
+
+def export_update_dr_plan(outdir, prefix, config_file_path,option=''):
+    print("Use Excel Template oci-fsdr-plan-template.xlsx at /cd3user/oci_tools/othertools/oci-fsdr for the export")
+    tag = "oci-fsdr"
+
+    if option.lower().__contains__("export"):
+        c="export"
+        input1 = "Please enter excel file name where DR plan will be exported; Leave blank to create with name '$prefix_" + tag + "-plan.xlsx at /cd3user/tenancies/<prefix>/othertools_files: ': "
+        input2 = "Please enter sheet name in the excel where DR plan will be exported(without spaces); Leave blank to create with name 'FSDR-Plan': "
+
+    elif option.lower().__contains__("update"):
+        c="update"
+        input1 = "Please enter excel file name from where DR plan will be updated; Leave blank to read file with name '$prefix_" + tag + "-plan.xlsx': "
+        input2 = "Please enter sheet name in the excel from where DR plan will be updated(without spaces); Leave blank to read sheet with name 'FSDR-Plan': "
+
+    cmdpath = os.path.dirname(os.path.abspath(__file__))+"/../othertools/"+tag+"/"+c+"_drplan.py"
+
+    if not os.path.isfile(cmdpath):
+        print(cmdpath+" doesnt exist. Exiitng!!!")
+        exit(1)
+
+    input3 = "Please enter DR Plan OCID which needs to be exported/updated: "
+
+
+    if not devops:
+        filename = input(input1)
+        sheetname = input(input2)
+        fsdrocid = input(input3)
+
+    else:
+        if option.lower().__contains__("export"):
+            filename = ct.fsdr_ex_filename
+            sheetname = ct.fsdr_ex_sheet
+            fsdrocid = ct.fsdr_ex_ocid
+        elif option.lower().__contains__("update"):
+            filename = ct.fsdr_up_filename
+            sheetname = ct.fsdr_up_sheet
+            fsdrocid = ct.fsdr_up_ocid
+
+
+    if filename == '':
+        filename = prefix + "_"+tag+"-plan.xlsx"
+    if sheetname == '':
+        sheetname = 'FSDR-Plan'
+    if fsdrocid == '':
+        print("OCID cannot be empty. Exiting!!!")
+        exit(1)
+
+    # Build command to execute
+    if outdir[len(outdir) - 1] == "/":
+        outdir = outdir.rsplit("/", 2)[0] + "/othertools_files"
+    else:
+        outdir = outdir.rsplit("/", 1)[0] + "/othertools_files"
+    out_file = outdir + '/' + filename
+
+    cmd = "python "+cmdpath+ " "
+
+    if auth_mechanism == "instance_principal":
+        cmd += " -i"
+    elif auth_mechanism == "session_token":
+        cmd += " -t"
+
+    cmd += " -c "+config_file_path
+
+    cmd += " -o " + fsdrocid + " -s \"" + sheetname + "\" -f " + out_file
+
+
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+    # Take backup of existing excel sheet
+    #if option.lower().__contains__("export"):
+    #    commonTools.backup_file(outdir, tag, filename)
+
+    split = str.split(cmd)
+    print("Executing: " + cmd)
+    execute(split, config_file_path)
+
+
+def run_oci_fsdr(outdir, prefix, config_file,sub_options=[]):
+    options = [
+        Option("Export DR Plan", export_update_dr_plan, 'Exporting DR Plan'),
+        Option("Update DR Plan", export_update_dr_plan, 'Updating DR Plan'),
     ]
     if sub_options:
         options = match_options(options, sub_options)
@@ -1572,7 +1691,7 @@ def clone_firewall_policy( inputfile, outdir, service_dir, config, signer, ct):
     #Security.clone_firewallpolicy(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions=export_regions,  export_firewall=firewall, export_policy=policy)
     print("Proceeding with tfvars generation...")
     create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_all=True)
-    #print("\n\nExecute tf_import_commands_Firewallpolicy_nonGF.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
+    #print("\n\nExecute import_commands_Firewallpolicy.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
 
 
 def delete_firewall_policy(inputfile, outdir, service_dir, config, signer, ct):
@@ -1666,6 +1785,7 @@ try:
 
     inputfile = setUpOCI_props.get('Default','cd3file').strip()
     outdir = setUpOCI_props.get('Default', 'outdir').strip()
+    tf_or_tofu = setUpOCI_props.get('Default', 'tf_or_tofu').strip().lower()
     prefix = setUpOCI_props.get('Default', 'prefix').strip()
     auth_mechanism = setUpOCI_props.get('Default', 'auth_mechanism').strip().lower()
     config_file_path = setUpOCI_props.get('Default', 'config_file').strip() or DEFAULT_LOCATION
@@ -1708,6 +1828,7 @@ else:
 ct=None
 ct = commonTools()
 config,signer = ct.authenticate(auth_mechanism, config_file_path)
+ct.setInputParameters(prefix,outdir,inputfile,tf_or_tofu)
 
 if devops:
     # Set Export filters from devops
@@ -1732,7 +1853,8 @@ ct.get_region_ad_dict(config,signer)
 # If single outdir, get service names from /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties
 if len(outdir_struct.items())==0:
     single_outdir_config = configparser.RawConfigParser()
-    single_outdir_config.read("/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties")
+    outdir_config_file = os.path.dirname(os.path.abspath(__file__))+"/user-scripts/.outdir_structure_file.properties"
+    single_outdir_config.read(outdir_config_file)
     for item,val in single_outdir_config.items("Default"):
         varname = "service_dir_" + str(item.replace("-", "_")).strip()
         exec(varname + "= \"\"",globals())
@@ -1823,7 +1945,7 @@ else:
         Option('Logging Services', create_logging, 'Logging Services'),
         Option('Software-Defined Data Centers - OCVS', create_sddc, 'Processing SDDC Tabs'),
         Option('CD3 Services', cd3_services, 'CD3 Services'),
-        Option('3rd Party Services', run_utility,'3rd Party Services')
+        Option('Other OCI Tools', run_utility,'Other OCI Tools')
     ]
     export_regions = ct.all_regions
 

@@ -79,6 +79,9 @@ def create_terraform_dns_rrsets(inputfile, outdir, service_dir, prefix, ct):
         zone_name = str(df["Zone"][i]).strip()
         domain = str(df["Domain"][i]).strip()
         rtype = str(df["RType"][i]).strip()
+        if 'nan' in [view_name,zone_name,domain,rtype]:
+            print(f'Required parameters for record creation are missing. Skipping record creation for row : {i+3}')
+            continue
         rrset_tf_name = str(view_name + "_" + zone_name+ "_" + domain+ "_" + rtype).replace(".", "_")
         # Assign value to item key variable in template
         tempStr['rrset_tf_name'] = rrset_tf_name

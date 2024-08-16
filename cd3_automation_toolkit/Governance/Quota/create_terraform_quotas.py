@@ -45,6 +45,10 @@ def create_terraform_quotas(inputfile, outdir, service_dir, prefix, ct):
 
     # Initialise empty TF string for each region
     tfStr[ct.home_region] = ''
+    resource = sheetName.lower()
+    reg = ct.home_region
+    reg_out_dir = outdir + "/" + reg + "/" + service_dir
+    commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
     # Iterate over rows
     for i in df.index:
@@ -125,10 +129,6 @@ def create_terraform_quotas(inputfile, outdir, service_dir, prefix, ct):
         src = "##Add New quota-policy for "+reg.lower()+" here##"
         tfStr[reg] = quota_template.render(count=0, region=reg).replace(src, tfStr[reg])
         tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-
-        resource = sheetName.lower()
-        commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
-
         tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
         oname[reg] = open(outfile[reg], 'w')
         oname[reg].write(tfStr[reg])

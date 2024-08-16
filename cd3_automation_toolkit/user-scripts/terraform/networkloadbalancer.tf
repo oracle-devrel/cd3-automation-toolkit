@@ -1,5 +1,6 @@
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 #######################################
 # Module Block - Network Load Balancer
 # Create Network Load Balancer
@@ -60,11 +61,11 @@ module "nlb-backend-sets" {
   ip_version               = each.value.ip_version
   is_preserve_source       = each.value.is_preserve_source
   #healthcheck parameters
-  domain_name              = each.value.domain_name
-  query_class              = each.value.query_class
-  query_type               = each.value.query_type
-  rcodes                   = each.value.rcodes
-  transport_protocol       = each.value.transport_protocol
+  domain_name        = each.value.domain_name
+  query_class        = each.value.query_class
+  query_type         = each.value.query_type
+  rcodes             = each.value.rcodes
+  transport_protocol = each.value.transport_protocol
 
   protocol            = each.value.protocol
   interval_in_millis  = each.value.interval_in_millis
@@ -79,7 +80,7 @@ module "nlb-backend-sets" {
 }
 
 module "nlb-backends" {
-  source                   = "./modules/networkloadbalancer/nlb-backend"
+  source = "./modules/networkloadbalancer/nlb-backend"
   # depends_on = [module.instances] # Uncomment to create Network and NLBs together
   for_each                 = var.nlb_backends != null ? var.nlb_backends : {}
   backend_set_name         = merge(module.nlb-backend-sets.*...)[each.value.backend_set_name]["nlb_backend_set_tf_name"]

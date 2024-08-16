@@ -106,7 +106,7 @@
     },
     "LB-BackendSet-BackendServer" :
     {
-        "Backend ServerComp&ServerName:Port" : "backend_server_name:port",
+        "Backend ServerComp@ServerName:Port" : "backend_server_name:port",
         "Backend Set Name" : "backend_set_name",
         "Certificate Name or OCID" : "certificates",
         "Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)" : "policy",
@@ -145,6 +145,10 @@
     {
         "Path Route Set Name" : "name"
     },
+     "LB-RoutingPolicy":
+    {
+       "Display Name" : "display_name"
+    },
     "Common-LBR-Headers" :
     {
         "Region" : "region",
@@ -165,7 +169,7 @@
         "Service CIDR Block" : "services_cidr",
         "Pod CIDR Block" : "pods_cidr",
         "API Endpoint NSGs" : "nsg_ids",
-        "CompartmentName&Node Pool Name" : "nodepool_display_name",
+        "CompartmentName@Node Pool Name" : "nodepool_display_name",
         "Policy KMS Key ID" : "image_policy_config.key_details.kms_key_id"
     },
 
@@ -236,7 +240,7 @@
     "NLB-BackendSets-BackendServers" :
     {
         "Is Preserve Source(True|False)" : "is_preserve_source",
-        "Backend ServerComp&ServerName:Port" : "backend_server_name:port",
+        "Backend ServerComp@ServerName:Port" : "backend_server_name:port",
         "Backend Set Name" : "backend_set_name",
         "Backend Policy(FIVE_TUPLE|THREE_TUPLE|TWO_TUPLE)" : "policy",
         "Backend HealthCheck Protocol(HTTP|HTTPS|TCP|UDP|DNS)" : "protocol",

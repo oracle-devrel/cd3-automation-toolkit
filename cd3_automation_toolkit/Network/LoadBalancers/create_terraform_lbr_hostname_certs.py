@@ -74,6 +74,9 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
         certificate_str[reg] = ''
         cipher_suites[reg] = ''
         hostname_str_02[reg] = ''
+        resource = sheetName.lower()
+        srcdir = outdir + "/" + reg + "/" + service_dir + "/"
+        commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
     def certificate_templates(dfcert):
 
@@ -181,7 +184,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    subnets = parseSubnets(filename)
+    #subnets = parseSubnets(filename)
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -254,35 +257,52 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
             lbr_subnets_list = []
             network_compartment_id = ''
             vcn_name = ''
-            if columnname == 'LBR Subnets':
+            if columnname == 'Network Details':
                 lbr_subnets = str(columnvalue).strip().split(",")
                 if len(lbr_subnets) == 1:
-                    if ("ocid1.subnet.oc1" in str(lbr_subnets[0]).strip()):
-                        lbr_subnets_list.append(str(lbr_subnets[0]).strip())
-                    else:
-                        try:
-                            key = region, str(lbr_subnets[0]).strip()
-                            network_compartment_id = subnets.vcn_subnet_map[key][0]
-                            vcn_name = subnets.vcn_subnet_map[key][1]
-                            lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
-                        except Exception as e:
-                            print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                    columnvalue=str(lbr_subnets[0]).strip()
+                    if ("ocid1.subnet.oc" in columnvalue):
+                        network_compartment_id = "root"
+                        vcn_name = ""
+                        subnet_id = columnvalue
+                    elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                        if len(columnvalue.split("@")) == 2:
+                            network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                            vcn_subnet_name = columnvalue.split("@")[1].strip()
+                        else:
+                            network_compartment_id = commonTools.check_tf_variable(str(df.loc[i, 'Compartment Name']).strip())
+                            vcn_subnet_name = columnvalue
+                        if ("::" not in vcn_subnet_name):
+                            print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
                             exit(1)
-                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
+                        else:
+                            vcn_name = vcn_subnet_name.split("::")[0].strip()
+                            subnet_id = vcn_subnet_name.split("::")[1].strip()
+
+                    lbr_subnets_list.append(subnet_id)
+                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
                 elif len(lbr_subnets) == 2:
                     for subnet in lbr_subnets:
-                        if "ocid1.subnet.oc1" in subnet:
-                            lbr_subnets_list.append(str(subnet).strip())
-                        else:
-                            try:
-                                key = region, str(subnet).strip()
-                                network_compartment_id = subnets.vcn_subnet_map[key][0]
-                                vcn_name = subnets.vcn_subnet_map[key][1]
-                                lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
-                            except Exception as e:
-                                print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        columnvalue=subnet
+                        if ("ocid1.subnet.oc" in columnvalue):
+                            network_compartment_id = "root"
+                            vcn_name = ""
+                            subnet_id = columnvalue
+                        elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                            if len(columnvalue.split("@")) == 2:
+                                network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                                vcn_subnet_name = columnvalue.split("@")[1].strip()
+                            else:
+                                network_compartment_id = commonTools.check_tf_variable(str(df.loc[i, 'Compartment Name']).strip())
+                                vcn_subnet_name = columnvalue
+                            if ("::" not in vcn_subnet_name):
+                                print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
                                 exit(1)
-                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list) }
+                            else:
+                                vcn_name = vcn_subnet_name.split("::")[0].strip()
+                                subnet_id = vcn_subnet_name.split("::")[1].strip()
+                        lbr_subnets_list.append(subnet_id)
+                        tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
 
             if columnname == "NSGs":
                 if columnvalue != '':
@@ -386,9 +406,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
         finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
 
         if finalstring != "":
-            resource = sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
-            commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             # Write to TF file
             outfile = srcdir + lb_auto_tfvars_filename

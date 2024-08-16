@@ -65,6 +65,9 @@ def create_ruleset(inputfile, outdir, service_dir, prefix, ct):
     # Take backup of files
     for reg in ct.all_regions:
         rs_str[reg] = ''
+        resource = sheetName.lower()
+        srcdir = outdir + "/" + reg + "/" + service_dir + "/"
+        commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -307,9 +310,7 @@ def create_ruleset(inputfile, outdir, service_dir, prefix, ct):
             rs_str[reg] = rs.render(skeleton=True, count=0, region=reg).replace(src,rs_str[reg]+"\n"+src)
             finalstring = "".join([s for s in rs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-            resource=sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
-            commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             outfile = srcdir + lb_auto_tfvars_filename
 

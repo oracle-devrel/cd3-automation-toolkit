@@ -120,7 +120,7 @@ def create_devops_resources(config,signer):
             repo_state = item.lifecycle_state
             repo_id = item.id
         if repo_state != "ACTIVE":
-            print("Repository exists with name("+repo_name+") but is not in ACTIVE state. Please retry with different customer_name. Exiting...")
+            print("Repository exists with name("+repo_name+") but is not in ACTIVE state. Please retry with different prefix. Exiting...")
             exit(1)
         else:
             repo_url = item.ssh_url
@@ -190,15 +190,36 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     else:
         dir_structure = "Single_Outdir"
 
-    file = open(jenkins_properties_file_path, "w+")
-    file.write("git_url= \""+repo_ssh_url+"\"\n"
-                "regions="+str(ct.all_regions)+"\n"
-                "services="+str(dir_values)+"\n"
-                "outdir_structure=[\""+dir_structure+"\"]\n")
+    try:
+        jenkins_config = configparser.RawConfigParser()
+        jenkins_config.read(jenkins_properties_file_path)
+
+        # Added this to restrict to single prefix for current release.
+        num_of_sections = jenkins_config.sections()
+        if len(num_of_sections)<1:
+            if (prefix in jenkins_config.sections()):
+                jenkins_config.set(prefix,'regions',str(ct.all_regions))
+                jenkins_config.set(prefix, 'services', str(dir_values))
+            else:
+                jenkins_config.add_section(prefix)
+                jenkins_config.set(prefix, 'git_url', "\""+repo_ssh_url+"\"")
+                jenkins_config.set(prefix, 'regions', str(ct.all_regions))
+                jenkins_config.set(prefix, 'services', str(dir_values))
+                jenkins_config.set(prefix, 'outdir_structure', "[\""+dir_structure+"\"]")
+                jenkins_config.set(prefix, 'tf_or_tofu', "\"" + tf_or_tofu + "\"")
+
+        # Dont do anything for multiple prefixes in this release
+
+        file = open(jenkins_properties_file_path, "w")
+        jenkins_config.write(file)
+
+    except Exception as e:
+        print(e)
+
     file.close()
 
     # Update Environment variable for jenkins
-    yaml_file_path = jenkins_dir + "/jcasc.yaml"
+    yaml_file_path = jenkins_install + "/jcasc.yaml"
     if (os.path.exists(yaml_file_path)):
         with open(yaml_file_path) as yaml_file:
             cfg = yaml.load(yaml_file, Loader=yaml.FullLoader)
@@ -210,7 +231,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
     subprocess.run(['git', 'config', '--global', 'safe.directory', devops_dir], cwd=devops_dir)
     f = open(devops_dir + ".gitignore", "w")
-    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\ntf_import_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
+    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\nimport_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
     f.write(git_ignore_file_data)
     f.close()
     # Cleanup existing "origin" remote and create required one
@@ -229,7 +250,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         f.close()
         exit(1)
 
-    for f in glob.glob(jenkins_dir + "/*.groovy"):
+    for f in glob.glob(jenkins_install + "/*.groovy"):
         shutil.copy2(f, devops_dir)
     # Create local branch "main" from remote "main"
     subprocess.run(['git', 'checkout', '-B', 'main','-q'], cwd=devops_dir,stdout=DEVNULL)
@@ -312,14 +333,14 @@ modules_dir = toolkit_dir + "/user-scripts/terraform"
 variables_example_file = modules_dir + "/variables_example.tf"
 setupoci_props_toolkit_file_path = toolkit_dir + "/setUpOCI.properties"
 
-jenkins_dir = ''
+jenkins_install = toolkit_dir + "/../jenkins_install"
 #if hasattr(os.environ,'JENKINS_INSTALL'):
 if environ.get('JENKINS_INSTALL') is not None:
-    jenkins_dir = os.environ['JENKINS_INSTALL']
+    jenkins_install = os.environ['JENKINS_INSTALL']
 
-prefix = config.get('Default', 'customer_name').strip()
+prefix = config.get('Default', 'prefix').strip()
 if prefix == "" or prefix == "\n":
-    print("Invalid Customer Name. Please try again......Exiting !!")
+    print("Invalid Prefix. Please try again......Exiting !!")
     exit(1)
 
 prefixes=[]
@@ -332,11 +353,11 @@ if os.path.exists(safe_file):
 
 if prefixes !=[]:
     if prefix in prefixes:
-        print("WARNING!!! Container has already been successfuly connected to the tenancy with same customer_name. Please proceed only if you re-running the script for new region subscription")
+        print("WARNING!!! Container has already been successfuly connected to the tenancy with same prefix. Please proceed only if you re-running the script for new region subscription")
     else:
-        print("WARNING!!! Container has already been successfully connected to the tenancy with these values of customer_name: "+str(list(set(prefixes))))
-        print("WARNING!!! Toolkit usage with Jenkins has not been tested with running this script multiple times with different values of customer_name in the properties file")
-        print("Jenkins is configured for the customer_name used for the first successful execution of the script.")
+        print("WARNING!!! Container has already been successfully connected to the tenancy with these values of prefixes: "+str(list(set(prefixes))))
+        print("WARNING!!! Toolkit usage with Jenkins has not been tested with running this script multiple times with different values of prefix in the properties file")
+        print("Jenkins is configured for the prefix used for the first successful execution of the script.")
     inp = input("\nDo you want to proceed (y/n):")
     if inp.lower()=="n":
         exit(1)
@@ -403,6 +424,10 @@ try:
     outdir_structure_file = config.get('Default', 'outdir_structure_file').strip()
     ssh_public_key = config.get('Default', 'ssh_public_key').strip()
 
+    tf_or_tofu = config.get('Default', 'tf_or_tofu').strip().lower()
+    if tf_or_tofu == "" or tf_or_tofu == "\n":
+        tf_or_tofu = "terraform"
+
     ## Advanced parameters ##
     remote_state = config.get('Default', 'use_remote_state').strip().lower()
     remote_state_bucket = config.get('Default', 'remote_state_bucket_name').strip()
@@ -458,6 +483,8 @@ if not os.path.exists(config_files):
     os.makedirs(config_files)
 if not os.path.exists(outdir_safe):
     os.makedirs(outdir_safe)
+if not os.path.exists(customer_tenancy_dir+'/othertools_files'):
+    os.makedirs(customer_tenancy_dir+'/othertools_files')
 
 dir_values = []
 
@@ -491,7 +518,6 @@ if (outdir_structure_file != '' and outdir_structure_file != "\n"):
     print("\nUsing different directories for OCI services as per the input outdir_structure_file..........")
 else:
     print("\nUsing single out directory for resources..........")
-    ################ Get service names here only ########################
 
 # 2. Move Private PEM key and Session Token file
 _session_token_file=''
@@ -723,6 +749,7 @@ setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("pre
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("auth_mechanism=", "auth_mechanism=" + auth_mechanism)
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("config_file=", "config_file="+config_file_path)
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("outdir_structure_file=", "outdir_structure_file="+_outdir_structure_file)
+setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("tf_or_tofu=", "tf_or_tofu="+tf_or_tofu)
 
 f = open(setupoci_props_file_path, "w+")
 f.write(setupoci_props_toolkit_file_data)
@@ -859,12 +886,15 @@ for region in ct.all_regions:
         #remove depends_on for single outdir
         region_dir = terraform_files + "/" + region + "/"
         single_outdir_config = configparser.RawConfigParser()
-        single_outdir_config.read("/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties")
+        outdir_config_file = os.path.dirname(os.path.abspath(__file__)) + "/.outdir_structure_file.properties"
+
+        single_outdir_config.read(outdir_config_file)
         keys = []
         for key, val in single_outdir_config.items("Default"):
             keys.append(key)
         for file in os.listdir(region_dir):
-            name=file.removesuffix(".tf")
+            #name=file.removesuffix(".tf")
+            name = file[:-len(".tf")]
             if name in keys:
                 file=region_dir+"/"+file
                 with open(file, 'r+') as tf_file:
