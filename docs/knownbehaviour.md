@@ -209,3 +209,7 @@ As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove
                 ~ user_id        = "ocid1.user.oc1..aaaaaaaawkqkcpjkmjsirt7vko6iwyhcdvubrwrcjae77zhv6gzz7t6yrpya" # forces replacement -> (known after apply) # forces replacement
                   # (1 unchanged attribute hidden)
               }
+
+**12.**
+  - When exporting events, post executing the *import_commands_events.sh* script, the plan shows changes as below. Ignore this and proceed with *apply* as it will not change anything in the OCI console for events.
+    ![image](../images/events_tfplan.png)
