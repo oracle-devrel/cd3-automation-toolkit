@@ -37,14 +37,12 @@ def createRegionViews() {
                 def view = profileFolder.getView(viewName)
 
                 if (view == null) {
-                    println("Creating view: $viewName in profile: $profileName")
+                    // println("Creating view: $viewName in profile: $profileName")
                     def newView = new ListView(viewName)
                     profileFolder.addView(newView)
                     newView.save()
-                    println("View '$viewName' created successfully in profile '$profileName'.")
+                    // println("View '$viewName' created successfully in profile '$profileName'.")
                     view = newView
-                } else {
-                    println("View '$viewName' already exists in profile '$profileName'.")
                 }
 
                 // Clear the view to remove any existing jobs

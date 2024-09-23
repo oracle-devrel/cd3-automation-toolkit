@@ -20,3 +20,8 @@ file-parameters:latest
 scriptler:latest
 ansicolor:latest
 pipeline-graph-view:latest
+javax-mail-api:latest
+jdk-tool:latest
+trilead-api:latest
+command-launcher:latest
+labelled-steps:latest

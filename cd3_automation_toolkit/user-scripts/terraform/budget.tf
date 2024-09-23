@@ -15,7 +15,7 @@
 
 
 module "budget-alert-rules" {
-  source   = "./modules/costmanagement/budget-alert-rule"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/costmanagement/budget-alert-rule?ref=v2024.4.1"
   for_each = var.budget_alert_rules
 
   #Required
@@ -34,7 +34,7 @@ module "budget-alert-rules" {
 }
 
 module "budgets" {
-  source   = "./modules/costmanagement/budget"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/costmanagement/budget?ref=v2024.4.1"
   for_each = var.budgets
 
   #Required

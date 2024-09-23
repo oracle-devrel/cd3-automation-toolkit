@@ -71,7 +71,7 @@ data "oci_core_vcns" "oci_vcns_virtual_nodepool" {
 }
 
 module "clusters" {
-  source                          = "./modules/oke/cluster"
+  source                          = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/oke/cluster?ref=v2024.4.1"
   for_each                        = var.clusters
   display_name                    = each.value.display_name
   compartment_id                  = length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]
@@ -101,7 +101,7 @@ module "clusters" {
 }
 
 module "nodepools" {
-  source                              = "./modules/oke/nodepool"
+  source                              = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/oke/nodepool?ref=v2024.4.1"
   for_each                            = var.nodepools
   tenancy_ocid                        = var.tenancy_ocid
   display_name                        = each.value.display_name
@@ -136,7 +136,7 @@ module "nodepools" {
 }
 
 module "virtual-nodepools" {
-  source                      = "./modules/oke/virtual-nodepool"
+  source                      = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/oke/virtual-nodepool?ref=v2024.4.1"
   for_each                    = var.virtual-nodepools
   tenancy_ocid                = var.tenancy_ocid
   display_name                = each.value.display_name

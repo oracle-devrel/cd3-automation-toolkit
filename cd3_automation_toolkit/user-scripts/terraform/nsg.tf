@@ -16,7 +16,7 @@ data "oci_core_vcns" "oci_vcns_nsgs" {
 
 
 module "nsgs" {
-  source   = "./modules/network/nsg"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/nsg?ref=v2024.4.1"
   for_each = (var.nsgs != null || var.nsgs != {}) ? var.nsgs : {}
 
   #Required
@@ -34,7 +34,7 @@ output "nsg_id_map" {
 */
 
 module "nsg-rules" {
-  source     = "./modules/network/nsg-rule"
+  source     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/nsg-rule?ref=v2024.4.1"
   for_each   = (var.nsg_rules != null || var.nsg_rules != {}) ? var.nsg_rules : {}
   depends_on = [module.nsgs]
 

@@ -16,7 +16,7 @@ data "oci_core_instances" "instance" {
 */
 
 module "block-volumes" {
-  source             = "./modules/storage/block-volume"
+  source             = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/storage/block-volume?ref=v2024.4.1"
   for_each           = var.blockvolumes != null ? var.blockvolumes : {}
   attachment_type    = each.value.attachment_type
   attach_to_instance = each.value.attach_to_instance != null ? length(regexall("ocid1.instance.oc*", each.value.attach_to_instance)) > 0 ? each.value.attach_to_instance : merge(module.instances.*...)[each.value.attach_to_instance]["instance_tf_id"] : null

@@ -23,7 +23,7 @@ data "oci_core_vcns" "oci_vcns_adb" {
 }
 
 module "adb" {
-  source   = "./modules/database/adb"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/database/adb?ref=v2024.4.1"
   for_each = var.adb != null ? var.adb : {}
   # depends_on = [module.nsgs]
   admin_password             = each.value.admin_password

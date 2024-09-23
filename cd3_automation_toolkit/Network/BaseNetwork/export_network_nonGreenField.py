@@ -357,11 +357,12 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
 
     # Fetch Source Data
     for new_rpc in SOURCE_RPC_LIST.data:
+        is_cross_tenancy_peering = new_rpc.is_cross_tenancy_peering
         source_rpc_id = new_rpc.id
         source_rpc_peer_id = new_rpc.peer_id
 
         # Check peering is alive
-        if source_rpc_peer_id is not None and new_rpc.peering_status == "PEERED":
+        if source_rpc_peer_id is not None and new_rpc.peering_status == "PEERED" and not is_cross_tenancy_peering:
             source_rpc_display_name = new_rpc.display_name
             source_rpc_drg_id = new_rpc.drg_id
             dest_rpc_id = new_rpc.peer_id

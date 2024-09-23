@@ -57,6 +57,12 @@ variable "instance_ocpus" {
   default     = 1
 }
 
+variable "boot_volume_size" {
+  description = "Boot volume size"
+  type        = number
+  default     = 50
+}
+
 variable "instance_ad" {
   description = "The Availability domain in which instance will be provisioned."
   type        = string

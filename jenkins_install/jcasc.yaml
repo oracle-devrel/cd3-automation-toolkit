@@ -3,11 +3,11 @@ jenkins:
   disableRememberMe: false
   disabledAdministrativeMonitors:
   - "jenkins.diagnostics.RootUrlNotSetMonitor"
-  globalNodeProperties:
-    - envVars:
-        env:
-          - key: "customer_prefix"
-            value: ""
+  #globalNodeProperties:
+  #  - envVars:
+  #      env:
+  #        - key: "customer_prefix"
+  #          value: ""
   labelAtoms:
   - name: "master"
   markupFormatter: "plainText"
@@ -48,6 +48,7 @@ security:
       - "new java.io.File java.lang.String"
       - "staticMethod org.codehaus.groovy.runtime.ResourceGroovyMethods readLines java.io.File"
       - "method java.io.File listFiles"
+      - "staticMethod groovy.util.Eval me java.lang.String"
 unclassified:
   buildDiscarders:
     configuredBuildDiscarders:

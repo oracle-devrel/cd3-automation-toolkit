@@ -146,26 +146,52 @@ def create_devops_resources(config,signer):
     return repo_url,files_in_repo
 
 
-def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_values,devops_user,devops_user_key,devops_dir,ct):
+def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_user,devops_user_key,devops_dir,ct):
+
+    repo_ssh_url = repo_ssh_url.replace("ssh://","")
+    repo_ssh_url_parts = repo_ssh_url.split("/",1)
+
     # create git config file
-    file = open(git_config_file, "w")
-    file.write("Host devops.scmservice.*.oci"+cloud_domain+"\n "
-               "StrictHostKeyChecking no\n "
-               "User " + str(devops_user) + "\n "
-                                            "IdentityFile " + str(devops_user_key) + "\n")
+    new_data = "Host "+prefix+"\n " \
+               "Hostname "+repo_ssh_url_parts[0]+"\n " \
+               "StrictHostKeyChecking no\n " \
+               "User " + str(devops_user) + "\n " \
+               "IdentityFile " + str(devops_user_key) + "\n"
 
-    file.close()
-
-    # copy to cd3user home dir
     user_ssh_dir = os.path.expanduser("~") + "/.ssh"
     if not os.path.exists(user_ssh_dir):
         os.makedirs(user_ssh_dir)
 
-    shutil.copyfile(git_config_file, user_ssh_dir + '/config')
+    ssh_config_file = user_ssh_dir + '/config'
+
+    #if /cd3user/.ssh/config file exists
+    if os.path.exists(ssh_config_file):
+        f = open(ssh_config_file,"r")
+        config_file_data = f.read()
+        f.close()
+
+        # new prefix config
+        if prefix not in config_file_data:
+            f = open(ssh_config_file,"a")
+            config_file_data =  "\n\n" + new_data
+            f.write(config_file_data)
+            f.close()
+        # existing prefix - no changes to be done
+        else:
+            pass
+
+    # file doesnot exist
+    else:
+        f = open(ssh_config_file, "w")
+        config_file_data = new_data
+        f.write(config_file_data)
+        f.close()
+
+    #shutil.copyfile(git_config_file, user_ssh_dir + '/config')
     # change permissions of private key file and config file for GIT
     os.chmod(devops_user_key, 0o600)
     os.chmod(user_ssh_dir + '/config', 0o600)
-    os.chmod(git_config_file, 0o600)
+    #os.chmod(git_config_file, 0o600)
 
     '''
     # create symlink for Git Config file for SSH operations.
@@ -194,21 +220,16 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         jenkins_config = configparser.RawConfigParser()
         jenkins_config.read(jenkins_properties_file_path)
 
-        # Added this to restrict to single prefix for current release.
-        num_of_sections = jenkins_config.sections()
-        if len(num_of_sections)<1:
-            if (prefix in jenkins_config.sections()):
-                jenkins_config.set(prefix,'regions',str(ct.all_regions))
-                jenkins_config.set(prefix, 'services', str(dir_values))
-            else:
-                jenkins_config.add_section(prefix)
-                jenkins_config.set(prefix, 'git_url', "\""+repo_ssh_url+"\"")
-                jenkins_config.set(prefix, 'regions', str(ct.all_regions))
-                jenkins_config.set(prefix, 'services', str(dir_values))
-                jenkins_config.set(prefix, 'outdir_structure', "[\""+dir_structure+"\"]")
-                jenkins_config.set(prefix, 'tf_or_tofu', "\"" + tf_or_tofu + "\"")
-
-        # Dont do anything for multiple prefixes in this release
+        if (prefix in jenkins_config.sections()):
+            jenkins_config.set(prefix, 'regions', str(ct.all_regions))
+            jenkins_config.set(prefix, 'services', str(dir_values))
+        else:
+            jenkins_config.add_section(prefix)
+            jenkins_config.set(prefix, 'git_url', "\"" + prefix+":/"+repo_ssh_url_parts[1] + "\"")
+            jenkins_config.set(prefix, 'regions', str(ct.all_regions))
+            jenkins_config.set(prefix, 'services', str(dir_values))
+            jenkins_config.set(prefix, 'outdir_structure', "\"" + dir_structure + "\"")
+            jenkins_config.set(prefix, 'tf_or_tofu', "\"" + tf_or_tofu + "\"")
 
         file = open(jenkins_properties_file_path, "w")
         jenkins_config.write(file)
@@ -218,15 +239,15 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
 
     file.close()
 
-    # Update Environment variable for jenkins
+    """# Update Environment variable for jenkins
     yaml_file_path = jenkins_install + "/jcasc.yaml"
     if (os.path.exists(yaml_file_path)):
         with open(yaml_file_path) as yaml_file:
             cfg = yaml.load(yaml_file, Loader=yaml.FullLoader)
         cfg["jenkins"]["globalNodeProperties"] = [{'envVars': {'env': [{'key': 'customer_prefix', 'value': prefix}]}}]
         with open(yaml_file_path, "w") as yaml_file:
-            cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)
-        # Clean repo config if exists and initiate git repo
+            cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)"""
+    # Clean repo config if exists and initiate git repo
     subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
     subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
     subprocess.run(['git', 'config', '--global', 'safe.directory', devops_dir], cwd=devops_dir)
@@ -239,7 +260,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     existing_remote = str(existing_remote).split('\'')[1][:-2]
     if existing_remote == "origin":
         subprocess.run(['git', 'remote','remove','origin'], cwd=devops_dir,stdout=DEVNULL)
-    subprocess.run(['git', 'remote', 'add', 'origin',repo_ssh_url], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'remote', 'add', 'origin',"ssh://"+prefix+":/"+repo_ssh_url_parts[1]], cwd=devops_dir,stdout=DEVNULL)
     try:
         subprocess.run(['git', 'fetch','-q'], cwd=devops_dir,stdout=DEVNULL)
     except Exception as e:
@@ -255,7 +276,6 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     # Create local branch "main" from remote "main"
     subprocess.run(['git', 'checkout', '-B', 'main','-q'], cwd=devops_dir,stdout=DEVNULL)
     subprocess.run(['git', 'pull', 'origin', 'main','-q'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
-
     subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
 
     current_status = subprocess.run(['git', 'status','--porcelain'], cwd=devops_dir,capture_output=True).stdout
@@ -354,13 +374,13 @@ if os.path.exists(safe_file):
 if prefixes !=[]:
     if prefix in prefixes:
         print("WARNING!!! Container has already been successfuly connected to the tenancy with same prefix. Please proceed only if you re-running the script for new region subscription")
-    else:
-        print("WARNING!!! Container has already been successfully connected to the tenancy with these values of prefixes: "+str(list(set(prefixes))))
-        print("WARNING!!! Toolkit usage with Jenkins has not been tested with running this script multiple times with different values of prefix in the properties file")
-        print("Jenkins is configured for the prefix used for the first successful execution of the script.")
-    inp = input("\nDo you want to proceed (y/n):")
-    if inp.lower()=="n":
-        exit(1)
+    #else:
+        #print("WARNING!!! Container has already been successfully connected to the tenancy with these values of prefixes: "+str(list(set(prefixes))))
+        #print("WARNING!!! Toolkit usage with Jenkins has not been tested with running this script multiple times with different values of prefix in the properties file")
+        #print("Jenkins is configured for the prefix used for the first successful execution of the script.")
+        inp = input("\nDo you want to proceed (y/n):")
+        if inp.lower()=="n":
+            exit(1)
 
 # Initialize Tenancy Variables
 customer_tenancy_dir = user_dir + "/tenancies/" + prefix
@@ -827,14 +847,17 @@ for region in ct.all_regions:
     try:
         for image in paginate(cc.list_images, compartment_id=tenancy_id, operating_system='Oracle Linux',
                               sort_by='TIMECREATED'):
-            if ("Gen2-GPU" not in image.display_name):
+
+            if ("Gen2-GPU" not in image.display_name and "aarch" not in image.display_name and "Minimal" not in image.display_name):
                 linux_image_id = image.id
                 break
+
         for image in paginate(cc.list_images, compartment_id=tenancy_id, operating_system='Windows',
                               sort_by='TIMECREATED'):
-            if ("Gen2-GPU" not in image.display_name):
+            if ("Gen2" not in image.display_name and "Datacenter" not in image.display_name):
                 windows_image_id= image.id
                 break
+
     except Exception as e:
         print(e)
         print("!!! Could not fetch the list of images for Windows and Oracle Linux to write to variables_"+region+".tf file!!!\n"
@@ -926,6 +949,8 @@ for region in ct.all_regions:
                     if(os.path.isdir(region_service_dir+'/scripts')):
                         shutil.rmtree(region_service_dir+'/scripts')
                     shutil.move(region_dir + 'scripts',region_service_dir+'/')
+
+                '''
                 with open(region_dir + service + ".tf", 'r+') as tf_file:
                     module_data = tf_file.read().rstrip()
                     module_data = module_data.replace("\"./modules", "\"../modules")
@@ -935,6 +960,8 @@ for region in ct.all_regions:
                 f.close()
                 os.remove(region_dir + service + ".tf")
 
+                '''
+                shutil.move(region_dir + service + ".tf",region_service_dir + "/" + service + ".tf")
                 shutil.copyfile(region_dir + "variables_" + region + ".tf", region_service_dir + "/" + "variables_" + region + ".tf")
                 shutil.copyfile(region_dir + "provider.tf", region_service_dir + "/" + "provider.tf")
                 shutil.copyfile(region_dir + "oci-data.tf", region_service_dir + "/" + "oci-data.tf")
@@ -1004,7 +1031,7 @@ if use_devops == 'yes':
     if environ.get('JENKINS_HOME') is not None:
         jenkins_home = os.environ['JENKINS_HOME']
 
-    git_config_file = config_files + "/" + prefix + "_git_config"
+    #git_config_file = config_files + "/" + prefix + "_git_config"
 
     #Get Username from $user_ocid if $oci_devops_git_user is left empty
     if "ocid1.user.oc" in devops_user:
@@ -1015,7 +1042,7 @@ if use_devops == 'yes':
         tenancy_data=identity_client.get_tenancy(tenancy_id=tenancy).data
         devops_user=user_data.name+"@"+tenancy_data.name
 
-    commit_id = update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo, dir_values, devops_user, devops_user_key, devops_dir, ct)
+    commit_id = update_devops_config(prefix, repo_ssh_url,files_in_repo, dir_values, devops_user, devops_user_key, devops_dir, ct)
 
 del ct, config, signer
 # Logging information

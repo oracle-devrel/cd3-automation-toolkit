@@ -12,7 +12,7 @@ data "oci_objectstorage_namespace" "bucket_namespace" {
 }
 
 module "oss-policies" {
-  source   = "./modules/identity/iam-policy"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-policy?ref=v2024.4.1"
   for_each = var.oss_policies != null ? var.oss_policies : {}
 
   tenancy_ocid          = var.tenancy_ocid
@@ -39,7 +39,7 @@ output "oss_policies_id_map" {
 #############################
 
 module "oss-buckets" {
-  source   = "./modules/storage/object-storage"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/storage/object-storage?ref=v2024.4.1"
   for_each = var.buckets != null ? var.buckets : {}
 
   #Required
@@ -79,7 +79,7 @@ data "oci_objectstorage_bucket" "buckets" {
 }
 
 module "oss-log-groups" {
-  source   = "./modules/managementservices/log-group"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/log-group?ref=v2024.4.1"
   for_each = var.oss_log_groups != null ? var.oss_log_groups : {}
 
   # Log Groups
@@ -101,7 +101,7 @@ output "oss_log_group_map" {
 */
 
 module "oss-logs" {
-  source   = "./modules/managementservices/log"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/log?ref=v2024.4.1"
   for_each = var.oss_logs != null ? var.oss_logs : {}
 
   # Logs

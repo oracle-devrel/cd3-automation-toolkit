@@ -1,6 +1,7 @@
 {% if count == 0 %}
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 ############################
 # Identity
 # Users - tfvars
@@ -11,12 +12,37 @@
 identity_domain_users = {
 {% endif %}
   {{ user_tf_name }} = {
-        family_name = "{{last_name}}"
-        idcs_endpoint = "{{ domain }}"
-        description = "{{ description }}"
-        user_name     = "{{user_name}}"
-        compartment_id = "{{compartment_id}}"
-        email           = "{{email}}"
+    name = {
+        family_name = "{{family_name}}"
+        {% if first_name %}
+        given_name  = "{{first_name}}"
+        {% endif %}
+        {% if middle_name %}
+        middle_name = "{{middle_name}}"
+        {% endif %}
+        {% if prefix %}
+        honorific_prefix = "{{prefix}}"
+        {% endif %}
+        }
+        idcs_endpoint  = "{{ domain }}"
+        domain_compartment_id = "{{compartment_id}}"
+        user_name      = "{{user_name}}"
+        email          = "{{user_email}}"
+        {% if description %}
+        description    = "{{ description }}"
+        {% endif %}
+        {% if display_name %}
+        display_name   = "{{ display_name }}"
+        {% endif %}
+        {% if recovery_email %}
+        recovery_email = "{{recovery_email}}"
+        {% endif %}
+        {% if home_phone_number %}
+        home_phone_number = "{{home_phone_number}}"
+        {% endif %}
+        {% if mobile_phone_number %}
+        mobile_phone_number = "{{mobile_phone_number}}"
+        {% endif %}
         {% if groups_names %}
         groups = [{{ groups_names }}]
         {% endif %}

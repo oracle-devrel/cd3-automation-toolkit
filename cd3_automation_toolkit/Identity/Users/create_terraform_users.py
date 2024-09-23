@@ -7,7 +7,7 @@
 # Author: Gaurav Goyal
 # Oracle Consulting
 # Modified by: Ranjini Rajendran
-#
+
 import os
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
@@ -127,13 +127,11 @@ def create_terraform_users(inputfile, outdir, service_dir, prefix, ct):
                     user_tf_name = user_tf_name[1:]
                 tempdict = {'user_tf_name': user_tf_name, 'domain': domain, 'compartment_id':compartment_id}
 
-            if columnname == 'Family Name':
-                columnvalue = columnvalue.strip()
-                tempdict = {'last_name': columnvalue}
-
             if columnname == 'User Email':
-                email = commonTools.check_columnvalue(columnvalue)
-                tempdict['email'] = email
+                user_email = columnvalue.strip()
+                if not user_email or user_email.lower() == 'nan':
+                    user_email = df.loc[i, 'User Name'].strip()
+                tempdict['user_email'] = user_email
 
             if columnname == 'Enable Capabilities':
                 if columnvalue != '' and columnvalue.strip().lower() != 'nan':

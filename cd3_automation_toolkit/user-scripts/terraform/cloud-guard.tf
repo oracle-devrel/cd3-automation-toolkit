@@ -7,7 +7,7 @@
 ############################
 
 module "cloud-guard-configurations" {
-  source   = "./modules/security/cloud-guard-configuration"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/cloud-guard-configuration?ref=v2024.4.1"
   for_each = var.cloud_guard_configs != null ? var.cloud_guard_configs : {}
 
   #Required
@@ -20,7 +20,7 @@ module "cloud-guard-configurations" {
 }
 
 module "cloud-guard-targets" {
-  source   = "./modules/security/cloud-guard-target"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/cloud-guard-target?ref=v2024.4.1"
   for_each = var.cloud_guard_targets != null ? var.cloud_guard_targets : {}
 
   depends_on = [module.cloud-guard-configurations]

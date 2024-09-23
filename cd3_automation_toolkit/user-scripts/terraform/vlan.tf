@@ -21,7 +21,7 @@ data "oci_core_vcns" "oci_vcns_vlans" {
 }
 
 module "vlans" {
-  source   = "./modules/network/vlan"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/vlan?ref=v2024.4.1"
   for_each = var.vlans != null ? var.vlans : {}
 
   compartment_id         = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null

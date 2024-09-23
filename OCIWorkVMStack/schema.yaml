@@ -29,9 +29,11 @@ variableGroups:
    - instance_shape
    - instance_ocpus
    - instance_ram
+   - boot_volume_size
    - instance_ad
    - instance_fd
    - ssh_public_key
+
 
 - title : "Networking Details for CD3 Automation Toolkit WorkVM"
   variables:
@@ -165,7 +167,16 @@ variables:
     maximum: 1024
     multipleOf: 1
     required: true
-
+  boot_volume_size:
+    visible:
+    type: integer
+    title: Boot volume size in GBs
+    description: Boot volume size in GBs. Default is 50 GB and value should be multiple of 1.
+    default: 50
+    minimum: 50
+    maximum: 32768
+    multipleOf: 1
+    required: true
   instance_ad:
     type: oci:identity:availabilitydomain:name
     title: Select Availability domain

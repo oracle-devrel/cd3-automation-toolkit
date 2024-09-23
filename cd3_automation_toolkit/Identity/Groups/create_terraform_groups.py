@@ -122,7 +122,6 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == 'Name':
-                #columnvalue = columnvalue.strip()
                 group_tf_name = f"{domain}_{commonTools.check_tf_variable(columnvalue)}"
                 if group_tf_name.startswith('_'):
                     group_tf_name = group_tf_name[1:]

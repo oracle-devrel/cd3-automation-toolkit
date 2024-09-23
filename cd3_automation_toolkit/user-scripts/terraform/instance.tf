@@ -22,7 +22,9 @@ data "oci_core_vcns" "oci_vcns" {
 }
 
 module "instances" {
-  source = "./modules/compute/instance"
+  #source = "./modules/compute/instance"
+  source = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/compute/instance?ref=v2024.4.1"
+
   # depends_on = [module.nsgs] # Uncomment to create NSG and Instances together
   for_each               = var.instances != null ? var.instances : {}
   availability_domain    = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""

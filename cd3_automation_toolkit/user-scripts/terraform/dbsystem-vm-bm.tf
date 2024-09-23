@@ -21,7 +21,7 @@ data "oci_core_vcns" "oci_dbsystems_vcns" {
 }
 
 module "dbsystems-vm-bm" {
-  source = "./modules/database/dbsystem-vm-bm"
+  source = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/database/dbsystem-vm-bm?ref=v2024.4.1"
   # depends_on = [module.nsgs] # Uncomment to create NSG and DB Systems together
   for_each            = var.dbsystems_vm_bm != null ? var.dbsystems_vm_bm : {}
   availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""

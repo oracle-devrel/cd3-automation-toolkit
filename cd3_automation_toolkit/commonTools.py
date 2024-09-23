@@ -67,12 +67,15 @@ class commonTools():
         self.identity_domain_enabled = False
         self.reg_filter = None
         self.comp_filter = None
+        self.vizoci_comp_filter = None
         self.default_dns = None
+        self.generate_graphs = None
         self.ins_pattern_filter = None
         self.ins_ad_filter = None
         self.bv_pattern_filter = None
         self.bv_ad_filter = None
         self.orm_reg_filter = None
+        self.vizoci_reg_filter = None
         self.orm_comp_filter = None
         self.vault_region = None
         self.vault_comp = None
@@ -146,12 +149,19 @@ class commonTools():
                 self.comp_filter = (i.split("=")[1])[2:][:-2]
                 self.comp_filter = self.comp_filter if self.comp_filter else "null"
 
+            if 'vizoci_comp_filter' in i:
+                self.vizoci_comp_filter = (i.split("=")[1])[2:][:-2]
+                self.vizoci_comp_filter = self.vizoci_comp_filter if self.vizoci_comp_filter else "null"
+
             if 'domain_filter' in i:
                 self.domain_filter = (i.split("=")[1])[2:][:-2]
                 self.domain_filter = self.domain_filter if self.domain_filter else "null"
 
             if 'default_dns' in i:
                 self.default_dns = (i.split("=")[1])[2:][:-2]
+
+            if 'generate_graphs' in i:
+                self.generate_graphs = (i.split("=")[1])[2:][:-2]
 
             if 'ins_pattern_filter' in i:
                 self.ins_pattern_filter = (i.split("=")[1])[2:][:-2]
@@ -167,6 +177,9 @@ class commonTools():
 
             if 'orm_region' in i:
                 self.orm_reg_filter = (i.split("=")[1])[2:][:-2]
+
+            if 'vizoci_reg_filter' in i:
+                self.vizoci_reg_filter = (i.split("=")[1])[2:][:-2]
 
             if 'orm_compartments' in i:
                 self.orm_comp_filter = (i.split("=")[1])[2:][:-2]
@@ -374,12 +387,21 @@ class commonTools():
                 if self.fwl_del_comp == "null":
                     compartments = None
                 else:
-                    compartments = self.fwl_del_comp if self.fwl_del_comp else input(
-                        compartment_list_str.format(resource_name))
+                    compartments = self.fwl_del_comp if self.fwl_del_comp else input(compartment_list_str.format(resource_name))
                 input_compartment_names = list(
                     map(lambda x: x.strip(), compartments.split(','))) if compartments else None
+
+            elif resource_name == "VizOCI":
+                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) for which you want to run {};\nPress 'Enter' to run for all the Compartments: "
+                if self.vizoci_comp_filter == "null":
+                    compartments = None
+                else:
+                    compartments = self.vizoci_comp_filter if self.vizoci_comp_filter else input(compartment_list_str.format(resource_name))
+                input_compartment_names = list(
+                    map(lambda x: x.strip(), compartments.split(','))) if compartments else None
+
             else:
-                compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
+                compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple) for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
                 if self.comp_filter == "null":
                     compartments = None
                 else:

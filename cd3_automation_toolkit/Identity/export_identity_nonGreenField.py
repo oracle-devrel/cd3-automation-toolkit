@@ -8,7 +8,6 @@
 # Updated by Ranjini Rajendran
 # Users export code updated by Gaurav Goyal
 # Oracle Consulting
-#
 
 import sys
 import oci
@@ -278,6 +277,7 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         total_g = 0
         def process_group(grp_info, members_list,membership_id_list, domain_name, is_dynamic=False, importCommands="", values_for_column_groups={}, non_domain=False):
             group_description = ""
+            user_can_request_access = ""
             if non_domain:
                 group_name = grp_info.name
                 group_description = grp_info.description
@@ -304,6 +304,10 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                     resource_id = f"idcsEndpoint/{idcs_endpoint}/dynamicResourceGroups/{grp_info.id}"
                     tf_resource = f'module.groups[\\"{str(tf_name)}\\"].oci_identity_domains_dynamic_resource_group.dynamic_group[0]'
                 else:
+                    requestable_group = grp_info
+                    requestable = getattr(requestable_group,
+                                          'urn_ietf_params_scim_schemas_oracle_idcs_extension_requestable_group', None)
+                    user_can_request_access = "" if requestable is None else requestable.requestable
                     if hasattr(grp_info, 'urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group'):
                         group_description = getattr(grp_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group,
                                               'description', "")
@@ -327,6 +331,8 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                     values_for_column_groups[col_header].append(domain_key)
                 elif col_header == "Matching Rule":
                     values_for_column_groups[col_header].append(grp_info.matching_rule if is_dynamic else "")
+                elif col_header == "User Can Request Access":
+                    values_for_column_groups[col_header].append(str(user_can_request_access))
                 elif col_header == "Defined Tags" and not non_domain:
                     defined_tags_info = grp_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags
                     grp_defined_tags = []

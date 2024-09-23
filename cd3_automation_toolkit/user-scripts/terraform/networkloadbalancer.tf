@@ -23,7 +23,7 @@ data "oci_core_vcns" "oci_vcns_nlb" {
 
 module "network-load-balancers" {
   # depends_on = [module.nsgs] # Uncomment to create NSG and NLBs together
-  source                         = "./modules/networkloadbalancer/nlb"
+  source                         = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/networkloadbalancer/nlb?ref=v2024.4.1"
   for_each                       = var.network_load_balancers != null ? var.network_load_balancers : {}
   network_compartment_id         = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   compartment_id                 = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -42,7 +42,7 @@ module "network-load-balancers" {
 }
 
 module "nlb-listeners" {
-  source                   = "./modules/networkloadbalancer/nlb-listener"
+  source                   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/networkloadbalancer/nlb-listener?ref=v2024.4.1"
   for_each                 = var.nlb_listeners != null ? var.nlb_listeners : {}
   name                     = each.value.name
   default_backend_set_name = merge(module.nlb-backend-sets.*...)[each.value.default_backend_set_name].nlb_backend_set_tf_name
@@ -53,7 +53,7 @@ module "nlb-listeners" {
 }
 
 module "nlb-backend-sets" {
-  source                   = "./modules/networkloadbalancer/nlb-backendset"
+  source                   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/networkloadbalancer/nlb-backendset?ref=v2024.4.1"
   for_each                 = var.nlb_backend_sets != null ? var.nlb_backend_sets : {}
   name                     = each.value.name
   network_load_balancer_id = length(regexall("ocid1.networkloadbalancer.oc*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]
@@ -80,7 +80,7 @@ module "nlb-backend-sets" {
 }
 
 module "nlb-backends" {
-  source = "./modules/networkloadbalancer/nlb-backend"
+  source = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/networkloadbalancer/nlb-backend?ref=v2024.4.1"
   # depends_on = [module.instances] # Uncomment to create Network and NLBs together
   for_each                 = var.nlb_backends != null ? var.nlb_backends : {}
   backend_set_name         = merge(module.nlb-backend-sets.*...)[each.value.backend_set_name]["nlb_backend_set_tf_name"]
@@ -109,7 +109,7 @@ module "nlb-backends" {
 ############################################
 
 module "nlb-reserved-ips" {
-  source   = "./modules/ip/reserved-public-ip"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/ip/reserved-public-ip?ref=v2024.4.1"
   for_each = var.nlb_reserved_ips != null && var.nlb_reserved_ips != {} ? var.nlb_reserved_ips : {}
 
   #Required

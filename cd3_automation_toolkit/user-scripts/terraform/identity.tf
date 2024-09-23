@@ -7,7 +7,7 @@
 ############################
 
 module "iam-compartments" {
-  source   = "./modules/identity/iam-compartment"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
   for_each = var.compartments.root != null ? var.compartments.root : {}
 
   # insert the 4 required variables here
@@ -23,7 +23,7 @@ module "iam-compartments" {
 }
 
 module "sub-compartments-level1" {
-  source   = "./modules/identity/iam-compartment"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
   for_each = var.compartments.compartment_level1 != null ? var.compartments.compartment_level1 : {}
 
   depends_on = [module.iam-compartments]
@@ -40,7 +40,7 @@ module "sub-compartments-level1" {
 }
 
 module "sub-compartments-level2" {
-  source   = "./modules/identity/iam-compartment"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
   for_each = var.compartments.compartment_level2 != null ? var.compartments.compartment_level2 : {}
 
   depends_on = [module.sub-compartments-level1]
@@ -58,7 +58,7 @@ module "sub-compartments-level2" {
 }
 
 module "sub-compartments-level3" {
-  source   = "./modules/identity/iam-compartment"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
   for_each = var.compartments.compartment_level3 != null ? var.compartments.compartment_level3 : {}
 
   depends_on = [module.sub-compartments-level2]
@@ -75,7 +75,7 @@ module "sub-compartments-level3" {
 }
 
 module "sub-compartments-level4" {
-  source   = "./modules/identity/iam-compartment"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
   for_each = var.compartments.compartment_level4 != null ? var.compartments.compartment_level4 : {}
 
   depends_on = [module.sub-compartments-level3]
@@ -92,7 +92,7 @@ module "sub-compartments-level4" {
 }
 
 module "sub-compartments-level5" {
-  source   = "./modules/identity/iam-compartment"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
   for_each = var.compartments.compartment_level5 != null ? var.compartments.compartment_level5 : {}
 
   depends_on = [module.sub-compartments-level4]
@@ -113,42 +113,42 @@ output "root_compartments_map" {
   description = "Compartment ocid"
   // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
   #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
-  value = [ for k,v in merge(module.iam-compartments.*...) : v.compartment_id]
+  value = [ for k,v in merge(module.iam-compartments.*...) : v.compartment_tf_id]
 }
 
 output "sub_compartments_level1_map" {
   description = "Compartment ocid"
   // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
   #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
-  value = [ for k,v in merge(module.sub-compartments-level1.*...) : v.compartment_id]
+  value = [ for k,v in merge(module.sub-compartments-level1.*...) : v.compartment_tf_id]
 }
 
 output "sub_compartments_level2_map" {
   description = "Compartment ocid"
   // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
   #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
-  value = [ for k,v in merge(module.sub-compartments-level2.*...) : v.compartment_id]
+  value = [ for k,v in merge(module.sub-compartments-level2.*...) : v.compartment_tf_id]
 }
 
 output "sub_compartments_level3_map" {
   description = "Compartment ocid"
   // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
   #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
-  value = [ for k,v in merge(module.sub-compartments-level3.*...) : v.compartment_id]
+  value = [ for k,v in merge(module.sub-compartments-level3.*...) : v.compartment_tf_id]
 }
 
 output "sub_compartments_level4_map" {
   description = "Compartment ocid"
   // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
   #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
-  value = [ for k,v in merge(module.sub-compartments-level4.*...) : v.compartment_id]
+  value = [ for k,v in merge(module.sub-compartments-level4.*...) : v.compartment_tf_id]
 }
 
 output "sub_compartments_level5_map" {
   description = "Compartment ocid"
   // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
   #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
-  value = [ for k,v in merge(module.sub-compartments-level5.*...) : v.compartment_id]
+  value = [ for k,v in merge(module.sub-compartments-level5.*...) : v.compartment_tf_id]
 }
 */
 
@@ -160,7 +160,7 @@ output "sub_compartments_level5_map" {
 
 module "iam-groups" {
 
-  source   = "./modules/identity/iam-group"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-group?ref=v2024.4.1"
   for_each = var.groups
   depends_on       = [module.iam-users]
   tenancy_ocid      = var.tenancy_ocid
@@ -191,7 +191,7 @@ output "dynamic_group_id_map" {
 ############################
 
 module "iam-policies" {
-  source   = "./modules/identity/iam-policy"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-policy?ref=v2024.4.1"
   for_each = var.policies
 
   depends_on            = [module.iam-groups]
@@ -219,7 +219,7 @@ output "policies_id_map" {
 ############################
 
 module "iam-users" {
-  source           = "./modules/identity/iam-user"
+  source           = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-user?ref=v2024.4.1"
   #depends_on       = [module.iam-groups]
   for_each         = var.users
   user_name        = each.value.name
@@ -260,7 +260,7 @@ module "iam-users" {
 #}
 
 module "iam-network-sources" {
-  source       = "./modules/identity/iam-network-sources"
+  source       = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-network-sources?ref=v2024.4.1"
   for_each     = var.networkSources
   name         = each.value.name
   description  = each.value.description
@@ -285,7 +285,7 @@ module "iam-network-sources" {
 data "oci_identity_domains" "iam_domains" {
   for_each = merge(var.identity_domain_groups,var.identity_domain_users)
   # Required
-  compartment_id = var.compartment_ocids[each.value.compartment_id]
+  compartment_id = var.compartment_ocids[each.value.domain_compartment_id]
   # Optional
   display_name = each.value.idcs_endpoint
 }
@@ -294,18 +294,19 @@ module "groups" {
 
   depends_on = [module.users]
 
-  source   = "./modules/identity/identity-domain-group"
+  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/identity-domain-group?ref=v2024.4.1"
   for_each = var.identity_domain_groups
 
   group_name               = each.value.group_name
   group_description        = each.value.group_description
   matching_rule            = each.value.matching_rule
-  compartment_id           = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  compartment_id           = each.value.domain_compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.domain_compartment_id)) > 0 ? each.value.domain_compartment_id : var.compartment_ocids[each.value.domain_compartment_id]) : var.tenancy_ocid
   identity_domain          = data.oci_identity_domains.iam_domains[each.key].domains[0]
   tenancy_ocid             = var.tenancy_ocid
   members                  = each.value.members != null ? each.value.members : []
 
   #Optional
+  user_can_request_access  = each.value.user_can_request_access
   defined_tags             = each.value.defined_tags
   freeform_tags_key        = each.value.freeform_tags != null ? each.value.freeform_tags.key : null
   freeform_tags_value      = each.value.freeform_tags != null ? each.value.freeform_tags.value : null
@@ -318,23 +319,30 @@ module "groups" {
 ############################
 
 module "users" {
-  source           = "./modules/identity/identity-domain-user"
+  source           = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/identity-domain-user?ref=v2024.4.1"
   #depends_on       = [module.iam-groups]
   for_each         = var.identity_domain_users
   user_name        = each.value.user_name
-  family_name      = each.value.family_name
+  family_name      = each.value.name.family_name
+  given_name       = each.value.name.given_name
+  middle_name      = each.value.name.middle_name
+  honorific_prefix = each.value.name.honorific_prefix
+  display_name     = each.value.display_name
   identity_domain  = data.oci_identity_domains.iam_domains[each.key].domains[0]
-  compartment_id   = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  compartment_id   = each.value.domain_compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.domain_compartment_id)) > 0 ? each.value.domain_compartment_id : var.compartment_ocids[each.value.domain_compartment_id]) : var.tenancy_ocid
   description      = each.value.description
   email            = each.value.email
+  recovery_email   = each.value.recovery_email
   tenancy_ocid     = var.tenancy_ocid
   groups           = each.value.groups != null ? each.value.groups : null
-
+  home_phone_number = each.value.home_phone_number
+  mobile_phone_number = each.value.mobile_phone_number
   enabled_capabilities = each.value.enabled_capabilities
 
   #Optional
   defined_tags             = each.value.defined_tags
   freeform_tags_key        = each.value.freeform_tags != null ? each.value.freeform_tags.key : null
   freeform_tags_value      = each.value.freeform_tags != null ? each.value.freeform_tags.value : null
+
 
 }

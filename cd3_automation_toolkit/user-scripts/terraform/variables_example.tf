@@ -94,10 +94,10 @@ variable "dbsystem_ssh_keys" {
   }
 }
 
-#################################
-# Platform Image OCIDs and
-# Market Place Images
-#################################
+###################################
+# Platform Image OCIDs, Source OCIDS
+# and Market Place Images
+###################################
 
 variable "instance_source_ocids" {
   type = map(any)
@@ -264,11 +264,12 @@ variable "identity_domain_groups" {
     group_name        = string
     group_description = string
     idcs_endpoint     = string
-    compartment_id    = string
+    domain_compartment_id    = string
     matching_rule     = optional(string)
     defined_tags      = optional(list(map(any)))
     freeform_tags     = optional(list(map(any)))
     members           = optional(list(string))
+    user_can_request_access = optional(bool)
   }))
   default = {}
 }
@@ -289,19 +290,29 @@ variable "users" {
 
 variable "identity_domain_users" {
   type = map(object({
-    family_name      = string
+    name = object({
+      family_name = string
+      given_name  = optional(string)
+      middle_name = optional(string)
+      honorific_prefix      = optional(string)
+    })
+    display_name         = optional(string)
     idcs_endpoint        = string
     user_name            = string
+    domain_compartment_id    = string
     description          = optional(string)
-    compartment_id    = string
     groups               = optional(list(string))
     email                = string
+    recovery_email       = optional(string)
+    home_phone_number    = optional(string)
+    mobile_phone_number  = optional(string)
     enabled_capabilities = list(string)
     defined_tags      = optional(list(map(any)))
     freeform_tags     = optional(list(map(any)))
   }))
   default = {}
 }
+
 
 
 variable "networkSources" {
@@ -1656,10 +1667,10 @@ variable "oss_policies" {
   default = {}
 }
 
+
 #########################
 ## Management Services ##
 #########################
-
 variable "alarms" {
   type = map(object({
     compartment_id                                = string
@@ -1927,7 +1938,7 @@ variable "sddc-clusters" {
 
 
 ############################
-## Key Management Service ##
+## KMS (Keys/Vauts) ##
 ############################
 
 variable "vaults" {

@@ -6,68 +6,64 @@
 
 # Author: Gaurav
 # Oracle Consulting
-#Modified By: Ranjini Rajendran
+# Modified By: Ranjini Rajendran
 
 import sys
 import oci
 from oci.identity import IdentityClient
 import os
 import subprocess as sp
-
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
-
-def append_user_info(values_for_column_users, ct, user_info, username, family_name, description, email, domain_key, user_defined_tags):
-    capabilities = []
-    if hasattr(user_info, 'urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user'):
-        cap_ext = user_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user
-    elif hasattr(user_info, 'capabilities'):
-        cap_ext = user_info.capabilities
-    else:
-        cap_ext = None
-
-    if cap_ext:
-        if cap_ext.can_use_api_keys:
-            capabilities.append("api_keys")
-        if cap_ext.can_use_auth_tokens:
-            capabilities.append("auth_tokens")
-        if cap_ext.can_use_console_password:
-            capabilities.append("console_password")
-        if cap_ext.can_use_customer_secret_keys:
-            capabilities.append("customer_secret_keys")
-        if cap_ext.can_use_db_credentials:
-            capabilities.append("db_credentials")
-        if cap_ext.can_use_o_auth2_client_credentials:
-            capabilities.append("oauth2client_credentials")
-        if cap_ext.can_use_smtp_credentials:
-            capabilities.append("smtp_credentials")
+def append_user_info(values_for_column_users,sheet_dict_users, ct, user_info, username, family_name, given_name, recovery_email, display_name, description, email, domain_key, user_defined_tags):
+    def add_capabilities(user_info):
+        capabilities = []
+        cap_ext = getattr(user_info, 'urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user',
+                          getattr(user_info, 'capabilities', None))
+        if cap_ext:
+            capability_map = {
+                "can_use_api_keys": "api_keys",
+                "can_use_auth_tokens": "auth_tokens",
+                "can_use_console_password": "console_password",
+                "can_use_customer_secret_keys": "customer_secret_keys",
+                "can_use_db_credentials": "db_credentials",
+                "can_use_o_auth2_client_credentials": "oauth2client_credentials",
+                "can_use_smtp_credentials": "smtp_credentials"
+            }
+            for attr, cap in capability_map.items():
+                if getattr(cap_ext, attr, False):
+                    capabilities.append(cap)
+        return ",".join(capabilities)
+    def map_columns(col_header):
+        column_map = {
+            "Region": ct.home_region.capitalize(),
+            "User Name": username,
+            "Family Name": family_name,
+            "First Name": given_name,
+            "Description": description,
+            "Display Name": display_name,
+            "User Email": email,
+            "Recovery Email": recovery_email,
+            "Domain Name": domain_key,
+            "Defined Tags": str(user_defined_tags) if user_defined_tags else "",
+            "Enable Capabilities": add_capabilities(user_info),
+            "Middle Name": user_info.name.middle_name,
+            "Prefix": user_info.name.honorific_prefix,
+            "Home Phone Number": next((phone.value for phone in user_info.phone_numbers if phone.type == "home"), None) if user_info.phone_numbers else None,
+            "Mobile Phone Number": next((phone.value for phone in user_info.phone_numbers if phone.type == "mobile"), None) if user_info.phone_numbers else None
+        }
+        return column_map.get(col_header, None)
 
     for col_header in values_for_column_users.keys():
-        if col_header == "Region":
-            values_for_column_users[col_header].append(ct.home_region.capitalize())
-        elif col_header == "User Name":
-            values_for_column_users[col_header].append(username)
-        elif col_header == "Family Name":
-            values_for_column_users[col_header].append(family_name)
-        elif col_header == "Description":
-            values_for_column_users[col_header].append(description)
-        elif col_header == "User Email":
-            values_for_column_users[col_header].append(email)
-        elif col_header == "Domain Name":
-            values_for_column_users[col_header].append(domain_key)
-        elif col_header == "Defined Tags" and user_defined_tags:
-            values_for_column_users[col_header].append(str(user_defined_tags))
-        elif col_header == "Enable Capabilities":
-            values_for_column_users[col_header].append(",".join(capabilities))
-
+        value = map_columns(col_header)
+        if value is not None:
+            values_for_column_users[col_header].append(value)
+        else:
+            oci_objs = [user_info]
+            values_for_column_users = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_users, values_for_column_users)
 # Execution start here
 def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domains={}):
-    global values_for_column_comps
-    global values_for_column_groups
-    global values_for_column_policies
-    global sheet_dict_comps
-    global sheet_dict_groups
-    global sheet_dict_policies
+    global sheet_dict_users
     global cd3file,tf_or_tofu
     tf_or_tofu = ct.tf_or_tofu
     tf_state_list = [tf_or_tofu, "state", "list"]
@@ -84,6 +80,7 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
 
     # Read CD3 Identity Sheets
     df, values_for_column_users = commonTools.read_cd3(cd3file, sheetName_users)
+    sheet_dict_users = ct.sheet_dict[sheetName_users]
 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tab - Users would be overwritten during export process!!!\n")
@@ -110,12 +107,9 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
     if ct.identity_domain_enabled:
         for domain_key, idcs_endpoint in export_domains.items():
             domain_name = domain_key.split("@")[1]
-
-            # retrieve group information. This is required to get group name for user-group membership
             domain_client = oci.identity_domains.IdentityDomainsClient(config, idcs_endpoint)
             users = domain_client.list_users()
             index = 0
-
             for user in users.data.resources:
                 defined_tags_info = user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags
                 user_defined_tags = []
@@ -129,19 +123,24 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
                         if namespace is not None and key is not None and value is not None:
                             user_defined_tags.append(f"{namespace}.{key}={value}")
 
-                    user_defined_tags = ";".join(user_defined_tags)
+                user_defined_tags = ";".join(user_defined_tags) if user_defined_tags else ""
 
                 user_info = user
                 if user_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user != "True" and user_info.active !="False":
                     username = user_info.user_name
                     family_name = user_info.name.family_name
+                    given_name  = user_info.name.given_name
                     description = user_info.description
+                    display_name = user_info.display_name
                     email = None
+                    recovery_email = None
 
                     for email_info in user_info.emails:
                         if email_info.primary:
                             email = email_info.value
-                            break
+                        elif email_info.type == "recovery":
+                            recovery_email = email_info.value
+
 
                     tf_name = commonTools.check_tf_variable(username)
                     if domain_name == "Default" or domain_name == "default":
@@ -152,7 +151,7 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
                     if tf_resource not in state["resources"]:
                         importCommands += f'\n{tf_or_tofu} import "{tf_resource}" "{import_user_id}"'
                     count_u += 1
-                    append_user_info(values_for_column_users, ct, user_info, username, family_name, description, email, domain_key,user_defined_tags)
+                    append_user_info(values_for_column_users,sheet_dict_users, ct, user_info, username, family_name, given_name,recovery_email, display_name,description, email, domain_key,user_defined_tags)
 
     else:
         users = oci.pagination.list_call_get_all_results(idc.list_users, compartment_id=config['tenancy']).data
@@ -171,9 +170,8 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
                 if tf_resource not in state["resources"]:
                     importCommands += f'\n{tf_or_tofu} import "{tf_resource}" "{import_user_id}"'
 
-                # Pass empty strings for domain_name and domain_key
                 count_u += 1
-                append_user_info(values_for_column_users, ct, user_info, username, "", description, email, "", [])
+                append_user_info(values_for_column_users,sheetName_users, ct, user_info, username, "", description, email, "", [])
 
             if user.capabilities:
                 tf_resource = f'module.iam-users[\\"{str(tf_name)}\\"].oci_identity_user_capabilities_management.user_capabilities_management[0]'
