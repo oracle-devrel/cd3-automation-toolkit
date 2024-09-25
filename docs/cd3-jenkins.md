@@ -17,6 +17,14 @@ The configurations are done when executing createTenancyConfig.py in [Connect co
 * Execute below cmd to start Jenkins - <br>
 ```/usr/share/jenkins/jenkins.sh &```
 
+!!! Important
+      - If createTenancyConfig.py has been run again for a new prefix, then first kill the existing jenkins process and start new after that.
+      -  Command to get Jenkins process id -  ```ps -ef | grep jenkins```
+      -  Command to kill - ```kill -9 <process_id>```
+      -  Start Jenkins using - ```/usr/share/jenkins/jenkins.sh &```
+	
+
+
 * Access Jenkins URL using: ```https://<IP of the Jenkins Host>:<Port>``` 
   <br>
 !!! note
@@ -24,9 +32,9 @@ The configurations are done when executing createTenancyConfig.py in [Connect co
       -  Network Connectivity should be allowed on this host and port.
       -  Please make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available).
 
-  - It will prompt to create the first user to access Jenkins URL. This will be the admin user.
+  - It will prompt to create the first user to access Jenkins URL if accessing for the first time. This will be the admin user.
   - The Automation Toolkit only supports a single user Jenkins setup in this release.
-  - After logging in, Jenkins Dashboard will be displayed.
+  - After logging in, Jenkins Dashboard will be displayed with folders as <\prefix> values.
 
 ## **High Level Steps to use toolkit with Jenkins**
 
