@@ -43,12 +43,16 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
     To maintain a secure environment, provide a specific source CIDR range to access the VM. Do not use 0.0.0.0/0.
 
 !!! Note
-    In case existing network is chosen to launch Work VM, it needs to have outbound internet connectivity.
+    In case existing network is chosen to launch Work VM, it needs to have outbound internet connectivity.<br>
+    See [URLs](url-whitelisting.md) that need to be whitelisted for outbound connectivity.
 
 - [x] After the Apply job is successful, click on it and scroll down to the end of logs and find the details for the created VM, and commands to be executed to login to the toolkit container.<br>
 <img width="1124" src="../images/launch-from-stack-1.png">
 <img width="1124" src="../images/launch-from-stack-2.png">
 <br><br>
+
+!!! Note
+    The VM launched using RM stack will have v1 IMDS endpoints disabled, PV encryption and the bastion plugin enabled.
 - [X] Login to the VM using private key corresponding to the public key provided during stack creation. Use 'cd3user' or 'opc' user to connect to the VM. Same key has been copied for both the users.
 - [X] Follow [these](cd3-cli.md#copy-cd3-excel-file) to copy the excel file to and from the container while executing the toolkit.
 - [X] Verify if container is launched using below command. If this command does not return any running container, wait for the stack to finish processing. The progress logs are available at /cd3user/mount_path/installToolkit.log
