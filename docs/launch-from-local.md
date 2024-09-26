@@ -48,13 +48,22 @@ git clone https://github.com/oracle-devrel/cd3-automation-toolkit
 **Step 2 - Build an image**
 
 * Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).
+* **Optional** - Edit **Dockerfile** to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues later.
+``` 
+vi Dockerfile
+```
+
+     Search for the line ```ARG USER_UID=1001``` and replace ```1001``` with uid of the user on local host eg 503 for Mac users.
+
+
+
 * Run 
 ```
 docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
 ```
 
 !!! Note
-	${image_tag} should be replaced with suitable tag as per your requirements/standards. eg v2024.1.0
+	${image_tag} should be replaced with suitable tag as per your requirements/standards. eg v2024.4.1
 	The period (.) at the end of the docker build command is required.
 
 **Step 3 - Save the image (Optional)**
