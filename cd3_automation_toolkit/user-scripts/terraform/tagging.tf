@@ -7,7 +7,7 @@
 ############################
 
 module "tag-namespaces" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/governance/tagging/tag-namespace?ref=v2024.4.1"
+  source   = "./modules/governance/tagging/tag-namespace"
   for_each = (var.tag_namespaces != null || var.tag_namespaces != {}) ? var.tag_namespaces : {}
 
   #Required
@@ -23,7 +23,7 @@ module "tag-namespaces" {
 }
 
 module "tag-keys" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/governance/tagging/tag-key?ref=v2024.4.1"
+  source   = "./modules/governance/tagging/tag-key"
   for_each = (var.tag_keys != null || var.tag_keys != {}) ? var.tag_keys : {}
 
   #Required
@@ -41,7 +41,7 @@ module "tag-keys" {
 }
 
 module "tag-defaults" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/governance/tagging/tag-default?ref=v2024.4.1"
+  source   = "./modules/governance/tagging/tag-default"
   for_each = (var.tag_defaults != null || var.tag_defaults != {}) ? var.tag_defaults : {}
 
   #Required

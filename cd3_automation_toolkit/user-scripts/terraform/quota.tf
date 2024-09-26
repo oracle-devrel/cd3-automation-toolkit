@@ -7,7 +7,7 @@
 #######################################
 
 module "quota_policies" {
-  source            = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/governance/quota-policy?ref=v2024.4.1"
+  source            = "./modules/governance/quota-policy"
   for_each          = var.quota_policies
   tenancy_ocid      = var.tenancy_ocid
   quota_description = each.value.quota_description

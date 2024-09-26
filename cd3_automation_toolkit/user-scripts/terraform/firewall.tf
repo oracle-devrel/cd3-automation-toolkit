@@ -14,7 +14,7 @@ data "oci_core_subnets" "firewall_subnets" {
 }
 
 module "firewalls" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/firewall?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/firewall"
   for_each                   = var.firewalls != null ? var.firewalls : {}
   depends_on                 = [module.policies, module.address_lists, module.application_groups, module.applications, module.services, module.service_lists, module.url_lists, module.decryption_profiles, module.secrets, module.security_rules, module.decryption_rules]
   compartment_id             = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
@@ -32,7 +32,7 @@ module "firewalls" {
 }
 
 module "policies" {
-  source         = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/firewall-policy?ref=v2024.4.1"
+  source         = "./modules/security/firewall/firewall-policy"
   for_each       = var.fw-policies != null ? var.fw-policies : {}
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
   display_name   = each.value.display_name
@@ -41,7 +41,7 @@ module "policies" {
 }
 
 module "services" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/service?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/service"
   for_each                   = var.services != null ? var.services : {}
   depends_on                 = [module.policies]
   service_name               = each.value.service_name
@@ -51,7 +51,7 @@ module "services" {
 }
 
 module "service_lists" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/service-list?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/service-list"
   for_each                   = var.service_lists != null ? var.service_lists : {}
   depends_on                 = [module.services, module.policies]
   service_list_name          = each.value.service_list_name
@@ -60,7 +60,7 @@ module "service_lists" {
 }
 
 module "address_lists" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/address-list?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/address-list"
   for_each                   = var.address_lists != null ? var.address_lists : {}
   depends_on                 = [module.policies]
   address_list_name          = each.value.address_list_name
@@ -70,7 +70,7 @@ module "address_lists" {
 }
 
 module "applications" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/application?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/application"
   for_each                   = var.applications != null ? var.applications : {}
   depends_on                 = [module.policies]
   icmp_type                  = each.value.icmp_type
@@ -81,7 +81,7 @@ module "applications" {
 }
 
 module "application_groups" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/application-group?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/application-group"
   for_each                   = var.application_groups != null ? var.application_groups : {}
   depends_on                 = [module.policies, module.applications]
   app_group_name             = each.value.app_group_name
@@ -90,7 +90,7 @@ module "application_groups" {
 }
 
 module "url_lists" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/url-list?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/url-list"
   for_each                   = var.url_lists != null ? var.url_lists : {}
   depends_on                 = [module.policies]
   urllist_name               = each.value.urllist_name
@@ -100,7 +100,7 @@ module "url_lists" {
 }
 
 module "security_rules" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/security-rules?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/security-rules"
   for_each                   = var.security_rules != null ? var.security_rules : {}
   depends_on                 = [module.policies, module.address_lists, module.application_groups, module.applications, module.services, module.service_lists, module.url_lists]
   action                     = each.value.action
@@ -122,7 +122,7 @@ module "security_rules" {
 }
 
 module "secrets" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/secret?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/secret"
   for_each                   = var.secrets != null || var.secrets != {} ? var.secrets : {}
   depends_on                 = [module.policies]
   secret_name                = each.value.secret_name
@@ -136,7 +136,7 @@ module "secrets" {
 }
 
 module "decryption_profiles" {
-  source                                = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/decryption-profile?ref=v2024.4.1"
+  source                                = "./modules/security/firewall/decryption-profile"
   for_each                              = var.decryption_profiles != null || var.decryption_profiles != {} ? var.decryption_profiles : {}
   depends_on                            = [module.policies, module.secrets]
   profile_name                          = each.value.profile_name
@@ -154,7 +154,7 @@ module "decryption_profiles" {
 }
 
 module "decryption_rules" {
-  source                     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/firewall/decryption-rules?ref=v2024.4.1"
+  source                     = "./modules/security/firewall/decryption-rules"
   for_each                   = var.decryption_rules != null ? var.decryption_rules : {}
   depends_on                 = [module.policies, module.decryption_profiles, module.secrets, module.address_lists]
   action                     = each.value.action
@@ -175,7 +175,7 @@ module "decryption_rules" {
 #############################
 
 module "fw-log-groups" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/log-group?ref=v2024.4.1"
+  source   = "./modules/managementservices/log-group"
   for_each = (var.fw_log_groups != null || var.fw_log_groups != {}) ? var.fw_log_groups : {}
 
   # Log Groups
@@ -197,7 +197,7 @@ output "vcn_log_group_map" {
 */
 
 module "fw-logs" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/log?ref=v2024.4.1"
+  source   = "./modules/managementservices/log"
   for_each = (var.fw_logs != null || var.fw_logs != {}) ? var.fw_logs : {}
 
   # Logs

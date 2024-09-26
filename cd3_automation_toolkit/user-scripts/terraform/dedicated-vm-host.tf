@@ -7,7 +7,7 @@
 ###################################
 
 module "dedicated-hosts" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/compute/dedicated-vm-host?ref=v2024.4.1"
+  source   = "./modules/compute/dedicated-vm-host"
   for_each = var.dedicated_hosts != null ? var.dedicated_hosts : {}
 
   availability_domain = each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : null

@@ -91,7 +91,7 @@ data "oci_dns_views" "resolver_views_data" {
 
 ### Module ###
 module "dns-resolvers" {
-  source = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/dns/dns_resolver?ref=v2024.4.1"
+  source = "./modules/network/dns/dns_resolver"
   # depends_on = [module.nsgs] # Uncomment to create NSG and DNS Resolvers together
   for_each              = var.resolvers != null ? var.resolvers : {}
   target_resolver_id    = data.oci_core_vcn_dns_resolver_association.resolver_vcn_dns_resolver_association[each.key].*.dns_resolver_id[0]
@@ -152,7 +152,7 @@ data "oci_dns_zones" "rrset_zones_data" {
 }
 
 module "dns-rrsets" {
-  source     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/dns/rrset?ref=v2024.4.1"
+  source     = "./modules/network/dns/rrset"
   for_each   = var.rrsets != null ? var.rrsets : {}
   depends_on = [module.dns-views, module.dns-zones]
   rrset_zone = try(data.oci_dns_zones.rrset_zones_data[each.key].zones.*.id[0], module.dns-zones[join("_", [each.value.view_id, replace(each.value.zone_id, ".", "_")])]["dns_zone_id"])
@@ -187,7 +187,7 @@ data "oci_dns_views" "zone_views_data" {
 }
 
 module "dns-zones" {
-  source              = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/dns/zone?ref=v2024.4.1"
+  source              = "./modules/network/dns/zone"
   depends_on          = [module.dns-views]
   for_each            = { for k, v in var.zones : k => v if var.zones != null }
   zone_compartment_id = length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]
@@ -205,7 +205,7 @@ module "dns-zones" {
 #################
 
 module "dns-views" {
-  source              = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/dns/view?ref=v2024.4.1"
+  source              = "./modules/network/dns/view"
   for_each            = var.views != null ? var.views : {}
   view_compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   view_display_name   = each.value.display_name

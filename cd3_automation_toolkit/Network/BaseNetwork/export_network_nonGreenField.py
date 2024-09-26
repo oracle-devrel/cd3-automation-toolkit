@@ -1051,6 +1051,10 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
         if (os.path.exists(outdir + "/" + reg + "/" + service_dir_vlan + "/"+vlan_file_name)):
             commonTools.backup_file(outdir + "/" + reg + "/" + service_dir_vlan, "import_network",vlan_file_name)
         importCommands_vlan[reg] = open(outdir + "/" + reg + "/" + service_dir_vlan + "/" + vlan_file_name, "w")
+        importCommands_vlan[reg].write("\n#!/bin/bash")
+        importCommands_vlan[reg].write("\n")
+        importCommands_vlan[reg].write(f'{tf_or_tofu} init')
+        importCommands_vlan[reg].write("\n\n######### Writing import for VLANs #########\n\n")
 
     print("Tab- 'SubnetsVLANs' would be overwritten during export process!!!")
     for reg in export_regions:
@@ -1124,10 +1128,6 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                     # VLAN Data
                     if skip_vlans['reg'] == 1:
                         continue
-                    importCommands_vlan[reg].write("#!/bin/bash")
-                    importCommands_vlan[reg].write("\n")
-                    importCommands_vlan[reg].write(f'{tf_or_tofu} init')
-                    importCommands_vlan[reg].write("\n\n######### Writing import for VLANs #########\n\n")
                     # check resources in vlan state
                     state_vlan = {'path': f'{outdir}/{reg}/{service_dir_vlan}', 'resources': []}
                     try:

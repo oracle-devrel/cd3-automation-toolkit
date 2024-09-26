@@ -13,7 +13,8 @@ resource "oci_network_load_balancer_backend" "backend" {
   port                     = var.port
 
   #Optional
-  ip_address = var.ip_address != "" ? (length(regexall("IP:", var.ip_address)) > 0 ? split("IP:", var.ip_address)[1] : data.oci_core_instance.nlb_instance_ip[0].private_ip) : null
+  #ip_address = var.ip_address != "" ? (length(regexall("IP:", var.ip_address)) > 0 ? split("IP:", var.ip_address)[1] : data.oci_core_instance.nlb_instance_ip[0].private_ip) : null
+  ip_address = var.ip_address != "" ? (length(regexall("IP:", var.ip_address)) > 0 ? split("IP:", var.ip_address)[1] : data.oci_core_private_ips.private_ips_by_ip_address[0].private_ips[0].ip_address) : null
   is_drain   = var.is_drain
   is_backup  = var.is_backup
   is_offline = var.is_offline

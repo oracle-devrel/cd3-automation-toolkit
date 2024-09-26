@@ -42,7 +42,7 @@ locals {
 
 module "load-balancers" {
   # depends_on = [module.vcns, module.subnets,module.nsgs] # Uncomment to execute Networking and Load Balancer together
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-load-balancer?ref=v2024.4.1"
+  source   = "./modules/loadbalancer/lb-load-balancer"
   for_each = var.load_balancers != null ? var.load_balancers : {}
 
   #Required
@@ -73,7 +73,7 @@ output "load_balancer_id_map" {
 */
 
 module "hostnames" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-hostname?ref=v2024.4.1"
+  source   = "./modules/loadbalancer/lb-hostname"
   for_each = var.hostnames != null ? var.hostnames : {}
 
   #Required
@@ -89,7 +89,7 @@ output "hostnames_id_map" {
 */
 
 module "certificates" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-certificate?ref=v2024.4.1"
+  source   = "./modules/loadbalancer/lb-certificate"
   for_each = var.certificates != null ? var.certificates : {}
 
   #Required
@@ -110,7 +110,7 @@ output "certificates_id_map" {
 */
 
 module "cipher-suites" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-cipher-suite?ref=v2024.4.1"
+  source   = "./modules/loadbalancer/lb-cipher-suite"
   for_each = var.cipher_suites != null ? var.cipher_suites : {}
 
   #Required
@@ -127,7 +127,7 @@ output "cipher_suites_id_map" {
 */
 
 module "backend-sets" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-backend-set?ref=v2024.4.1"
+  source   = "./modules/loadbalancer/lb-backend-set"
   for_each = var.backend_sets != null ? var.backend_sets : {}
 
   #Required
@@ -161,7 +161,7 @@ output "backend_sets_id_map" {
 
 module "backends" {
   depends_on = [module.backend-sets]
-  source     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-backend?ref=v2024.4.1"
+  source     = "./modules/loadbalancer/lb-backend"
   for_each   = var.backends != null ? var.backends : {}
 
   #Required
@@ -184,7 +184,7 @@ output "backends_id_map" {
 */
 
 module "listeners" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-listener?ref=v2024.4.1"
+  source   = "./modules/loadbalancer/lb-listener"
   for_each = var.listeners != null ? var.listeners : {}
 
   #Required
@@ -213,7 +213,7 @@ output "listeners_id_map" {
 
 module "path-route-sets" {
   depends_on = [module.backend-sets]
-  source     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-path-route-set?ref=v2024.4.1"
+  source     = "./modules/loadbalancer/lb-path-route-set"
   for_each   = var.path_route_sets != null ? var.path_route_sets : {}
 
   #Required
@@ -232,7 +232,7 @@ output "path_route_sets_id_map" {
 */
 
 module "rule-sets" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-rule-set?ref=v2024.4.1"
+  source   = "./modules/loadbalancer/lb-rule-set"
   for_each = var.rule_sets != null ? var.rule_sets : {}
 
   #Required
@@ -251,7 +251,7 @@ output "rule_sets_id_map" {
 */
 
 module "routing-policies" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/loadbalancer/lb-routing-policy?ref=v2024.4.1"
+  source   = "./modules/loadbalancer/lb-routing-policy"
   for_each = var.lb_routing_policies != null ? var.lb_routing_policies : {}
 
   condition_language_version = each.value.condition_language_version != null ? each.value.condition_language_version : null
@@ -274,7 +274,7 @@ output "routing_policy_tf_id_map" {
 #############################
 
 module "loadbalancer-log-groups" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/log-group?ref=v2024.4.1"
+  source   = "./modules/managementservices/log-group"
   for_each = (var.loadbalancer_log_groups != null || var.loadbalancer_log_groups != {}) ? var.loadbalancer_log_groups : {}
 
   # Log Groups
@@ -296,7 +296,7 @@ output "log_group_map" {
 */
 
 module "loadbalancer-logs" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/log?ref=v2024.4.1"
+  source   = "./modules/managementservices/log"
   for_each = (var.loadbalancer_logs != null || var.loadbalancer_logs != {}) ? var.loadbalancer_logs : {}
 
   # Logs
@@ -335,7 +335,7 @@ output "logs_id" {
 ############################################
 
 module "lbr-reserved-ips" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/ip/reserved-public-ip?ref=v2024.4.1"
+  source   = "./modules/ip/reserved-public-ip"
   for_each = var.lbr_reserved_ips != null && var.lbr_reserved_ips != {} ? var.lbr_reserved_ips : {}
 
   #Required

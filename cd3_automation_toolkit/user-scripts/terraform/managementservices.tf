@@ -7,7 +7,7 @@
 ############################
 
 module "alarms" {
-  source = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/alarm?ref=v2024.4.1"
+  source = "./modules/managementservices/alarm"
 
   depends_on = [module.notifications-topics]
   for_each   = var.alarms != null ? var.alarms : {}
@@ -42,7 +42,7 @@ output "alarms_id" {
 ############################
 
 module "events" {
-  source     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/event?ref=v2024.4.1"
+  source     = "./modules/managementservices/event"
   depends_on = [module.notifications-topics]
   for_each   = var.events != null ? var.events : {}
 
@@ -72,7 +72,7 @@ output "events_id" {
 ############################
 
 module "notifications-topics" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/notification-topic?ref=v2024.4.1"
+  source   = "./modules/managementservices/notification-topic"
   for_each = var.notifications_topics != null ? var.notifications_topics : {}
 
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -85,7 +85,7 @@ module "notifications-topics" {
 }
 
 module "notifications-subscriptions" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/notification-subscription?ref=v2024.4.1"
+  source   = "./modules/managementservices/notification-subscription"
   for_each = var.notifications_subscriptions != null ? var.notifications_subscriptions : {}
 
   depends_on     = [module.notifications-topics]
@@ -110,7 +110,7 @@ output "notifications-topics" {
 ####################################
 
 module "service-connectors" {
-  source = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/service-connector?ref=v2024.4.1"
+  source = "./modules/managementservices/service-connector"
 
   for_each = var.service_connectors
 

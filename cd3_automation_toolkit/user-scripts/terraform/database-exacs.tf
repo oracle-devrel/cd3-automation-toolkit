@@ -30,7 +30,7 @@ data "oci_core_vcns" "oci_exacs_vcns" {
 }
 
 module "exa-infra" {
-  source              = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/database/exa-infra?ref=v2024.4.1"
+  source              = "./modules/database/exa-infra"
   for_each            = var.exa_infra != null ? var.exa_infra : {}
   availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -59,7 +59,7 @@ module "exa-infra" {
 
 module "exa-vmclusters" {
   depends_on = [module.exa-infra]
-  source     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/database/exa-vmcluster?ref=v2024.4.1"
+  source     = "./modules/database/exa-vmcluster"
 
   for_each                  = var.exa_vmclusters != null ? var.exa_vmclusters : {}
   backup_subnet_id          = each.value.backup_subnet_id != "" ? (length(regexall("ocid1.subnet.oc*", each.value.backup_subnet_id)) > 0 ? each.value.backup_subnet_id : data.oci_core_subnets.oci_exacs_backup_subnets[each.key].subnets.*.id[0]) : null

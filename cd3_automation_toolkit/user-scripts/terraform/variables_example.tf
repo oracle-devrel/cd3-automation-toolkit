@@ -1532,6 +1532,7 @@ variable "nlb_backends" {
     backend_set_name         = string
     network_load_balancer_id = string
     port                     = number
+    #vnic_vlan                = optional(string)
     ip_address               = string
     instance_compartment     = string
     is_drain                 = optional(bool)

@@ -31,6 +31,12 @@ variable "port" {
   default     = null
 }
 
+variable "vnic_vlan" {
+  type        = string
+  description = " The VNIC the backend server."
+  default     = null
+}
+
 variable "ip_address" {
   type        = string
   description = " The IP address of the backend server."

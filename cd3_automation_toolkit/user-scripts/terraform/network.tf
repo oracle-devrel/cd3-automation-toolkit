@@ -44,7 +44,7 @@ data "oci_core_drg_route_distributions" "drg_route_distributions" {
 ############################
 
 module "vcns" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/vcn?ref=v2024.4.1"
+  source   = "./modules/network/vcn"
   for_each = var.vcns != null ? var.vcns : {}
 
   #Required
@@ -76,7 +76,7 @@ output "vcn_id_map" {
 ############################
 
 module "igws" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/igw?ref=v2024.4.1"
+  source   = "./modules/network/igw"
   for_each = (var.igws != null || var.igws != {}) ? var.igws : {}
 
   depends_on = [module.vcns] #,module.route-tables]
@@ -106,7 +106,7 @@ output "igw_id_map" {
 ############################
 
 module "ngws" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/ngw?ref=v2024.4.1"
+  source   = "./modules/network/ngw"
   for_each = (var.ngws != null || var.ngws != {}) ? var.ngws : {}
 
   depends_on = [module.vcns]
@@ -137,7 +137,7 @@ output "ngw_id_map" {
 ############################
 
 module "sgws" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/sgw?ref=v2024.4.1"
+  source   = "./modules/network/sgw"
   for_each = (var.sgws != null || var.sgws != {}) ? var.sgws : {}
 
   #Required
@@ -165,7 +165,7 @@ output "sgw_id_map" {
 ############################
 
 module "hub-lpgs" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/lpg?ref=v2024.4.1"
+  source   = "./modules/network/lpg"
   for_each = (var.lpgs.hub-lpgs != null || var.lpgs.hub-lpgs != {}) ? var.lpgs.hub-lpgs : {}
 
   depends_on = [module.vcns, module.spoke-lpgs, module.none-lpgs, module.exported-lpgs, module.peer-lpgs]
@@ -183,7 +183,7 @@ module "hub-lpgs" {
 }
 
 module "spoke-lpgs" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/lpg?ref=v2024.4.1"
+  source   = "./modules/network/lpg"
   for_each = (var.lpgs.spoke-lpgs != null || var.lpgs.spoke-lpgs != {}) ? var.lpgs.spoke-lpgs : {}
 
   depends_on = [module.vcns]
@@ -201,7 +201,7 @@ module "spoke-lpgs" {
 }
 
 module "peer-lpgs" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/lpg?ref=v2024.4.1"
+  source   = "./modules/network/lpg"
   for_each = (var.lpgs.peer-lpgs != null || var.lpgs.peer-lpgs != {}) ? var.lpgs.peer-lpgs : {}
 
   depends_on = [module.vcns, module.none-lpgs]
@@ -219,7 +219,7 @@ module "peer-lpgs" {
 }
 
 module "none-lpgs" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/lpg?ref=v2024.4.1"
+  source   = "./modules/network/lpg"
   for_each = (var.lpgs.none-lpgs != null || var.lpgs.none-lpgs != {}) ? var.lpgs.none-lpgs : {}
 
   depends_on = [module.vcns]
@@ -237,7 +237,7 @@ module "none-lpgs" {
 }
 
 module "exported-lpgs" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/lpg?ref=v2024.4.1"
+  source   = "./modules/network/lpg"
   for_each = (var.lpgs.exported-lpgs != null || var.lpgs.exported-lpgs != {}) ? var.lpgs.exported-lpgs : {}
 
   depends_on = [module.vcns]
@@ -283,7 +283,7 @@ output "exported_lpg_id_map" {
 
 module "drgs" {
   #Required
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/drg?ref=v2024.4.1"
+  source   = "./modules/network/drg"
   for_each = (var.drgs != null || var.drgs != {}) ? var.drgs : {}
 
   #Required
@@ -298,7 +298,7 @@ module "drgs" {
 
 module "drg-attachments" {
   #Required
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/drg-attachment?ref=v2024.4.1"
+  source   = "./modules/network/drg-attachment"
   for_each = (var.drg_attachments != null || var.drg_attachments != {}) ? var.drg_attachments : {}
 
   drg_display_name   = each.value.display_name
@@ -331,7 +331,7 @@ output "drg_attachments_map" {
 
 module "default-dhcps" {
   #Required
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/default-dhcp?ref=v2024.4.1"
+  source   = "./modules/network/default-dhcp"
   for_each = (var.default_dhcps != null || var.default_dhcps != {}) ? var.default_dhcps : {}
 
   #Required
@@ -358,7 +358,7 @@ output "default_dhcp_id" {
 
 module "custom-dhcps" {
   #Required
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/custom-dhcp?ref=v2024.4.1"
+  source   = "./modules/network/custom-dhcp"
   for_each = (var.custom_dhcps != null || var.custom_dhcps != {}) ? var.custom_dhcps : {}
 
   #Required
@@ -399,7 +399,7 @@ output "default_seclist_id_map" {
 ############################
 
 module "security-lists" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/sec-list?ref=v2024.4.1"
+  source   = "./modules/network/sec-list"
   for_each = (local.all_seclists != null || local.all_seclists != {}) ? local.all_seclists : {}
 
   #Required
@@ -428,7 +428,7 @@ output "seclist_id_map" {
 ############################
 
 module "route-tables" {
-  source = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/route-table?ref=v2024.4.1"
+  source = "./modules/network/route-table"
   #for_each = {for k,v in local.all_route_tables : k => v if ! v.gateway_route_table}
   for_each = { for k, v in local.all_route_tables : k => v if !local.gateway_rt_status[k] }
 
@@ -458,7 +458,7 @@ module "route-tables" {
 
 
 module "gateway-route-tables" {
-  source = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/route-table?ref=v2024.4.1"
+  source = "./modules/network/route-table"
   #for_each = {for k,v in local.all_route_tables : k => v if v.gateway_route_table }
   for_each = { for k, v in local.all_route_tables : k => v if local.gateway_rt_status[k] }
 
@@ -491,7 +491,7 @@ output "route_id_map" {
 ############################
 
 module "drg-route-tables" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/drg-route-table?ref=v2024.4.1"
+  source   = "./modules/network/drg-route-table"
   for_each = (var.drg_route_tables != null || var.drg_route_tables != {}) ? var.drg_route_tables : {}
 
   #Required
@@ -517,7 +517,7 @@ output "drg_route_id_map" {
 ################################
 
 module "drg-route-rules" {
-  source     = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/drg-route-rule?ref=v2024.4.1"
+  source     = "./modules/network/drg-route-rule"
   depends_on = [module.drg-attachments, module.drg-route-tables]
 
   for_each = (var.drg_route_rules != null || var.drg_route_rules != {}) ? var.drg_route_rules : {}
@@ -544,7 +544,7 @@ output "drg_route_rules_id_map" {
 ################################
 
 module "drg-route-distributions" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/drg-route-distribution?ref=v2024.4.1"
+  source   = "./modules/network/drg-route-distribution"
   for_each = (var.drg_route_distributions != null || var.drg_route_distributions != {}) ? var.drg_route_distributions : {}
 
   #Required
@@ -569,7 +569,7 @@ output "drg_route_distributions_id_map" {
 ###########################################
 
 module "drg-route-distribution-statements" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/drg-route-distribution-statement?ref=v2024.4.1"
+  source   = "./modules/network/drg-route-distribution-statement"
   for_each = (var.drg_route_distribution_statements != null || var.drg_route_distribution_statements != {}) ? var.drg_route_distribution_statements : {}
 
   #Required
@@ -593,7 +593,7 @@ output "drg_route_distribution_statements_id_map" {
 #############################
 
 module "subnets" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/network/subnet?ref=v2024.4.1"
+  source   = "./modules/network/subnet"
   for_each = (var.subnets != null || var.subnets != {}) ? var.subnets : {}
 
   depends_on = [module.vcns, module.security-lists]
@@ -635,7 +635,7 @@ output "subnet_id_map" {
 #############################
 
 module "vcn-log-groups" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/log-group?ref=v2024.4.1"
+  source   = "./modules/managementservices/log-group"
   for_each = (var.vcn_log_groups != null || var.vcn_log_groups != {}) ? var.vcn_log_groups : {}
 
   # Log Groups
@@ -657,7 +657,7 @@ output "vcn_log_group_map" {
 */
 
 module "vcn-logs" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/managementservices/log?ref=v2024.4.1"
+  source   = "./modules/managementservices/log"
   for_each = (var.vcn_logs != null || var.vcn_logs != {}) ? var.vcn_logs : {}
 
   # Logs

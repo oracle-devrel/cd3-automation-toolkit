@@ -7,7 +7,7 @@
 ############################
 
 module "iam-compartments" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
+  source   = "./modules/identity/iam-compartment"
   for_each = var.compartments.root != null ? var.compartments.root : {}
 
   # insert the 4 required variables here
@@ -23,7 +23,7 @@ module "iam-compartments" {
 }
 
 module "sub-compartments-level1" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
+  source   = "./modules/identity/iam-compartment"
   for_each = var.compartments.compartment_level1 != null ? var.compartments.compartment_level1 : {}
 
   depends_on = [module.iam-compartments]
@@ -40,7 +40,7 @@ module "sub-compartments-level1" {
 }
 
 module "sub-compartments-level2" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
+  source   = "./modules/identity/iam-compartment"
   for_each = var.compartments.compartment_level2 != null ? var.compartments.compartment_level2 : {}
 
   depends_on = [module.sub-compartments-level1]
@@ -58,7 +58,7 @@ module "sub-compartments-level2" {
 }
 
 module "sub-compartments-level3" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
+  source   = "./modules/identity/iam-compartment"
   for_each = var.compartments.compartment_level3 != null ? var.compartments.compartment_level3 : {}
 
   depends_on = [module.sub-compartments-level2]
@@ -75,7 +75,7 @@ module "sub-compartments-level3" {
 }
 
 module "sub-compartments-level4" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
+  source   = "./modules/identity/iam-compartment"
   for_each = var.compartments.compartment_level4 != null ? var.compartments.compartment_level4 : {}
 
   depends_on = [module.sub-compartments-level3]
@@ -92,7 +92,7 @@ module "sub-compartments-level4" {
 }
 
 module "sub-compartments-level5" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-compartment?ref=v2024.4.1"
+  source   = "./modules/identity/iam-compartment"
   for_each = var.compartments.compartment_level5 != null ? var.compartments.compartment_level5 : {}
 
   depends_on = [module.sub-compartments-level4]
@@ -160,7 +160,7 @@ output "sub_compartments_level5_map" {
 
 module "iam-groups" {
 
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-group?ref=v2024.4.1"
+  source   = "./modules/identity/iam-group"
   for_each = var.groups
   depends_on       = [module.iam-users]
   tenancy_ocid      = var.tenancy_ocid
@@ -191,7 +191,7 @@ output "dynamic_group_id_map" {
 ############################
 
 module "iam-policies" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-policy?ref=v2024.4.1"
+  source   = "./modules/identity/iam-policy"
   for_each = var.policies
 
   depends_on            = [module.iam-groups]
@@ -219,7 +219,7 @@ output "policies_id_map" {
 ############################
 
 module "iam-users" {
-  source           = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-user?ref=v2024.4.1"
+  source           = "./modules/identity/iam-user"
   #depends_on       = [module.iam-groups]
   for_each         = var.users
   user_name        = each.value.name
@@ -260,7 +260,7 @@ module "iam-users" {
 #}
 
 module "iam-network-sources" {
-  source       = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/iam-network-sources?ref=v2024.4.1"
+  source       = "./modules/identity/iam-network-sources"
   for_each     = var.networkSources
   name         = each.value.name
   description  = each.value.description
@@ -294,7 +294,7 @@ module "groups" {
 
   depends_on = [module.users]
 
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/identity-domain-group?ref=v2024.4.1"
+  source   = "./modules/identity/identity-domain-group"
   for_each = var.identity_domain_groups
 
   group_name               = each.value.group_name
@@ -319,7 +319,7 @@ module "groups" {
 ############################
 
 module "users" {
-  source           = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/identity/identity-domain-user?ref=v2024.4.1"
+  source           = "./modules/identity/identity-domain-user"
   #depends_on       = [module.iam-groups]
   for_each         = var.identity_domain_users
   user_name        = each.value.user_name
@@ -343,6 +343,4 @@ module "users" {
   defined_tags             = each.value.defined_tags
   freeform_tags_key        = each.value.freeform_tags != null ? each.value.freeform_tags.key : null
   freeform_tags_value      = each.value.freeform_tags != null ? each.value.freeform_tags.value : null
-
-
 }

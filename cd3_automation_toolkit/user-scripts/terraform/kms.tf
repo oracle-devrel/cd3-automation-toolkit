@@ -7,7 +7,7 @@
 ############################################
 
 module "vaults" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/vault?ref=v2024.4.1"
+  source   = "./modules/security/vault"
   for_each = var.vaults != null ? var.vaults : {}
 
   #Required
@@ -22,7 +22,7 @@ module "vaults" {
 }
 
 module "keys" {
-  source   = "git::https://github.com/oracle-devrel/terraform-oci-cd3.git//modules/security/key?ref=v2024.4.1"
+  source   = "./modules/security/key"
   for_each = var.keys != null ? var.keys : {}
 
   #Required

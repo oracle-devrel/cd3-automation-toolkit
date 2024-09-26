@@ -949,8 +949,6 @@ for region in ct.all_regions:
                     if(os.path.isdir(region_service_dir+'/scripts')):
                         shutil.rmtree(region_service_dir+'/scripts')
                     shutil.move(region_dir + 'scripts',region_service_dir+'/')
-
-                '''
                 with open(region_dir + service + ".tf", 'r+') as tf_file:
                     module_data = tf_file.read().rstrip()
                     module_data = module_data.replace("\"./modules", "\"../modules")
@@ -960,8 +958,6 @@ for region in ct.all_regions:
                 f.close()
                 os.remove(region_dir + service + ".tf")
 
-                '''
-                shutil.move(region_dir + service + ".tf",region_service_dir + "/" + service + ".tf")
                 shutil.copyfile(region_dir + "variables_" + region + ".tf", region_service_dir + "/" + "variables_" + region + ".tf")
                 shutil.copyfile(region_dir + "provider.tf", region_service_dir + "/" + "provider.tf")
                 shutil.copyfile(region_dir + "oci-data.tf", region_service_dir + "/" + "oci-data.tf")
