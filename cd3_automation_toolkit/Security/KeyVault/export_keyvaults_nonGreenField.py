@@ -7,7 +7,6 @@
 # Author: Lasya Vadavalli
 # Oracle Consulting
 #
-
 import sys
 import oci
 from oci.key_management import KmsVaultClient
@@ -15,6 +14,7 @@ import os
 import subprocess as sp
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
+from oci.exceptions import TransientServiceError
 
 # Execution of the code begins here
 def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_regions=[], export_compartments=[]):
@@ -66,6 +66,7 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
             pass
         kms_vault_client = KmsVaultClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         for ntk_compartment_name in export_compartments:
+
             vaults = oci.pagination.list_call_get_all_results(kms_vault_client.list_vaults,
                                                               compartment_id=ct.ntk_compartment_ids[
                                                                   ntk_compartment_name])
@@ -73,147 +74,158 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
             for vault in vaults.data:
                 get_vault_data = kms_vault_client.get_vault(vault_id=vault.id).data
                 key_count = 0
-                if vault.lifecycle_state == "ACTIVE":
-                    total_vaults += 1
-                    vault_tf_name = commonTools.check_tf_variable(vault.display_name)
-                    tf_resource = f'module.vaults[\\"{vault_tf_name}\\"].oci_kms_vault.vault'
-                    if tf_resource not in state["resources"]:
-                        importCommands += f'\n{tf_or_tofu} import "{tf_resource}" {vault.id}'
-                    kms_key_client = oci.key_management.KmsManagementClient(config,
-                                                                            service_endpoint=vault.management_endpoint,
-                                                                            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
-                                                                            signer=signer)
-                    keys = oci.pagination.list_call_get_all_results(kms_key_client.list_keys,
-                                                                    compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+                if vault.lifecycle_state not in ["DELETED", "PENDING_DELETION", "SCHEDULING_DELETION"]:
+                    try:
+                        kms_key_client = oci.key_management.KmsManagementClient(config,service_endpoint=vault.management_endpoint,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+                        keys = oci.pagination.list_call_get_all_results(kms_key_client.list_keys, compartment_id=ct.ntk_compartment_ids[
+                                                                        ntk_compartment_name])
+                        total_vaults += 1
+                        vault_tf_name = commonTools.check_tf_variable(vault.display_name)
+                        tf_resource = f'module.vaults[\\"{vault_tf_name}\\"].oci_kms_vault.vault'
+                        if tf_resource not in state["resources"]:
+                            importCommands += f'\n{tf_or_tofu} import "{tf_resource}" {vault.id}'
 
-                    if keys.data != []:
-                        for key in keys.data:
-                            first_key = False
-                            if key.lifecycle_state != "PENDING_DELETION":
-                                key_count += 1
-                                total_keys += 1
-                                key_tf_name = commonTools.check_tf_variable(key.display_name)
-                                tf_resource = f'module.keys[\\"{key_tf_name}\\"].oci_kms_key.key'
-                                if tf_resource not in state["resources"]:
-                                    importCommands += f'\n{tf_or_tofu} import "{tf_resource}" managementEndpoint/{vault.management_endpoint}/keys/{key.id}'
-                                get_key_data = kms_key_client.get_key(key_id=key.id).data
-                                if get_key_data.vault_id == vault.id and get_key_data.lifecycle_state != "PENDING_DELETION":
-                                    if key_count == 1:
-                                        first_key = True
 
-                                    if first_key == True:
-                                        for col_header in values_for_column_kms.keys():
-                                            if col_header == 'Region':
-                                                values_for_column_kms[col_header].append(reg)
-                                            elif col_header == 'Vault Compartment Name':
-                                                values_for_column_kms[col_header].append(ntk_compartment_name)
-                                            elif col_header == 'Vault Display Name':
-                                                values_for_column_kms[col_header].append(vault.display_name)
-                                            elif col_header == 'Vault type':
-                                                values_for_column_kms[col_header].append(vault.vault_type)
-                                            elif col_header == 'Replica Region':
-                                                for replica in kms_vault_client.list_vault_replicas(vault_id=vault.id).data:
-                                                    for region, region_identifier in ct.region_dict.items():
-                                                        if region_identifier == replica.region:
-                                                            region_name = region
-                                                            values_for_column_kms[col_header].append(region_name)
-                                                        else:
-                                                            values_for_column_kms[col_header].append('')
-                                            elif str(col_header).lower() in ["vault defined tags", "vault freeform tags"]:
-                                                values_for_column_kms = commonTools.export_tags(vault, col_header,
-                                                                                                values_for_column_kms)
+                        if keys.data != []:
+                            for key in keys.data:
+                                first_key = False
+                                if key.lifecycle_state not in ["DELETED", "PENDING_DELETION", "SCHEDULING_DELETION"]:
+                                    key_count += 1
+                                    total_keys += 1
+                                    key_tf_name = commonTools.check_tf_variable(key.display_name)
+                                    tf_resource = f'module.keys[\\"{key_tf_name}\\"].oci_kms_key.key'
+                                    if tf_resource not in state["resources"]:
+                                        importCommands += f'\n{tf_or_tofu} import "{tf_resource}" managementEndpoint/{vault.management_endpoint}/keys/{key.id}'
+                                    get_key_data = kms_key_client.get_key(key_id=key.id).data
+                                    if get_key_data.vault_id == vault.id and get_key_data.lifecycle_state != "PENDING_DELETION":
+                                        if key_count == 1:
+                                            first_key = True
 
-                                            elif col_header == 'Key Compartment Name':
-                                                comp_name = comp_name_list[comp_id_list.index(get_key_data.compartment_id)]
-                                                values_for_column_kms[col_header].append(comp_name)
-                                            elif col_header == 'Key Display Name':
-                                                values_for_column_kms[col_header].append(get_key_data.display_name)
-                                            elif col_header == 'Protection mode':
-                                                values_for_column_kms[col_header].append(get_key_data.protection_mode)
-                                            elif col_header == 'Algorithm':
-                                                values_for_column_kms[col_header].append(get_key_data.key_shape.algorithm)
-                                            elif col_header == 'Length in bits':
-                                                values_for_column_kms[col_header].append((get_key_data.key_shape.length)*8)
-                                            elif col_header == 'Curve Id':
-                                                values_for_column_kms[col_header].append(get_key_data.key_shape.curve_id if get_key_data.key_shape.algorithm == 'ECDSA' else '')
-                                            elif col_header == 'Auto rotation':
-                                                values_for_column_kms[col_header].append("TRUE" if get_key_data.is_auto_rotation_enabled==True else "FALSE")
-                                            elif col_header == 'Rotation interval in days':
-                                                values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data.auto_key_rotation_details, 'rotation_interval_in_days') else '')
-                                            elif str(col_header).lower() in ["key defined tags" , "key freeform tags"]:
-                                                if len(key.defined_tags) != 0:
-                                                    values_for_column_kms = commonTools.export_tags(key, col_header, values_for_column_kms)
-                                                else:
-                                                    values_for_column_kms[col_header].append('')
-                                            else:
-                                                oci_objs = [vault, key, get_key_data, get_vault_data, get_vault_data.replica_details]
-                                                values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
-                                                                                                         sheet_dict_kms,
-                                                                                                         values_for_column_kms)
-                                    else:
-                                        for col_header in values_for_column_kms.keys():
-                                            if col_header == 'Key Compartment Name':
-                                                comp_name = comp_name_list[comp_id_list.index(get_key_data.compartment_id)]
-                                                values_for_column_kms[col_header].append(comp_name)
-                                            elif col_header == 'Key Display Name':
-                                                values_for_column_kms[col_header].append(get_key_data.display_name)
-                                            elif col_header == 'Protection mode':
-                                                values_for_column_kms[col_header].append(get_key_data.protection_mode)
-                                            elif col_header == 'Algorithm':
-                                                values_for_column_kms[col_header].append(get_key_data.key_shape.algorithm)
-                                            elif col_header == 'Length in bits':
-                                                values_for_column_kms[col_header].append((get_key_data.key_shape.length) * 8)
-                                            elif col_header == 'Curve Id':
-                                                values_for_column_kms[col_header].append(
-                                                    get_key_data.key_shape.curve_id if get_key_data.key_shape.algorithm == 'ECDSA' else '')
-                                            elif col_header == 'Auto rotation':
-                                                values_for_column_kms[col_header].append("TRUE" if get_key_data.is_auto_rotation_enabled==True else "FALSE")
-                                            elif col_header == 'Rotation interval in days':
-                                                values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data.auto_key_rotation_details,'rotation_interval_in_days') else '')
-                                            elif str(col_header).lower() in ["key defined tags", "key freeform tags"]:
-                                                if len(key.defined_tags) != 0:
-                                                    values_for_column_kms = commonTools.export_tags(key, col_header,
+                                        if first_key == True:
+                                            for col_header in values_for_column_kms.keys():
+                                                if col_header == 'Region':
+                                                    values_for_column_kms[col_header].append(reg)
+                                                elif col_header == 'Vault Compartment Name':
+                                                    values_for_column_kms[col_header].append(ntk_compartment_name)
+                                                elif col_header == 'Vault Display Name':
+                                                    values_for_column_kms[col_header].append(vault.display_name)
+                                                elif col_header == 'Vault type':
+                                                    values_for_column_kms[col_header].append(vault.vault_type)
+
+                                                elif col_header == 'Replica Region':
+                                                    replicas = kms_vault_client.list_vault_replicas(vault_id=vault.id).data
+                                                    if not replicas:
+                                                        values_for_column_kms[col_header].append('')
+                                                    else:
+                                                        for replica in replicas:
+                                                            region_name = None
+                                                            for region, region_identifier in ct.region_dict.items():
+                                                                if region_identifier == replica.region:
+                                                                    region_name = region
+                                                                    break
+                                                            if region_name:
+                                                                values_for_column_kms[col_header].append(region_name)
+                                                            else:
+                                                                values_for_column_kms[col_header].append('')
+                                                elif str(col_header).lower() in ["vault defined tags", "vault freeform tags"]:
+                                                    values_for_column_kms = commonTools.export_tags(vault, col_header,
                                                                                                     values_for_column_kms)
+
+                                                elif col_header == 'Key Compartment Name':
+                                                    comp_name = comp_name_list[comp_id_list.index(get_key_data.compartment_id)]
+                                                    values_for_column_kms[col_header].append(comp_name)
+                                                elif col_header == 'Key Display Name':
+                                                    values_for_column_kms[col_header].append(get_key_data.display_name)
+                                                elif col_header == 'Protection mode':
+                                                    values_for_column_kms[col_header].append(get_key_data.protection_mode)
+                                                elif col_header == 'Algorithm':
+                                                    values_for_column_kms[col_header].append(get_key_data.key_shape.algorithm)
+                                                elif col_header == 'Length in bits':
+                                                    values_for_column_kms[col_header].append((get_key_data.key_shape.length)*8)
+                                                elif col_header == 'Curve Id':
+                                                    values_for_column_kms[col_header].append(get_key_data.key_shape.curve_id if get_key_data.key_shape.algorithm == 'ECDSA' else '')
+                                                elif col_header == 'Auto rotation':
+                                                    values_for_column_kms[col_header].append("TRUE" if get_key_data.is_auto_rotation_enabled==True else "FALSE")
+                                                elif col_header == 'Rotation interval in days':
+                                                    values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data.auto_key_rotation_details, 'rotation_interval_in_days') else '')
+                                                elif str(col_header).lower() in ["key defined tags" , "key freeform tags"]:
+                                                    if len(key.defined_tags) != 0:
+                                                        values_for_column_kms = commonTools.export_tags(key, col_header, values_for_column_kms)
+                                                    else:
+                                                        values_for_column_kms[col_header].append('')
                                                 else:
-                                                    values_for_column_kms[col_header].append('')
-                                            else:
-                                                oci_objs = [key, get_key_data]
-                                                values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
-                                                                                                         sheet_dict_kms,
-                                                                                                         values_for_column_kms)
-                                                pass
-                    else:
-                        for col_header in values_for_column_kms.keys():
-                            if col_header == 'Region':
-                                values_for_column_kms[col_header].append(reg)
-                            elif col_header == 'Vault Compartment Name':
-                                values_for_column_kms[col_header].append(ntk_compartment_name)
-                            elif col_header == 'Vault Display Name':
-                                values_for_column_kms[col_header].append(vault.display_name)
-                            elif col_header == 'Vault type':
-                                values_for_column_kms[col_header].append(vault.vault_type)
-                            elif col_header == 'Replica Region':
-                                if vault.vault_type.lower() == "default":
-                                    values_for_column_kms[col_header].append('')
-                                elif vault.vault_type.lower() == "virtual_private":
-                                    if kms_vault_client.list_vault_replicas(vault_id=vault.id).data == []:
+                                                    oci_objs = [vault, key, get_key_data, get_vault_data, get_vault_data.replica_details]
+                                                    values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
+                                                                                                             sheet_dict_kms,
+                                                                                                             values_for_column_kms)
+                                        else:
+                                            for col_header in values_for_column_kms.keys():
+                                                if col_header == 'Key Compartment Name':
+                                                    comp_name = comp_name_list[comp_id_list.index(get_key_data.compartment_id)]
+                                                    values_for_column_kms[col_header].append(comp_name)
+                                                elif col_header == 'Key Display Name':
+                                                    values_for_column_kms[col_header].append(get_key_data.display_name)
+                                                elif col_header == 'Protection mode':
+                                                    values_for_column_kms[col_header].append(get_key_data.protection_mode)
+                                                elif col_header == 'Algorithm':
+                                                    values_for_column_kms[col_header].append(get_key_data.key_shape.algorithm)
+                                                elif col_header == 'Length in bits':
+                                                    values_for_column_kms[col_header].append((get_key_data.key_shape.length) * 8)
+                                                elif col_header == 'Curve Id':
+                                                    values_for_column_kms[col_header].append(
+                                                        get_key_data.key_shape.curve_id if get_key_data.key_shape.algorithm == 'ECDSA' else '')
+                                                elif col_header == 'Auto rotation':
+                                                    values_for_column_kms[col_header].append("TRUE" if get_key_data.is_auto_rotation_enabled==True else "FALSE")
+                                                elif col_header == 'Rotation interval in days':
+                                                    values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data.auto_key_rotation_details,'rotation_interval_in_days') else '')
+                                                elif str(col_header).lower() in ["key defined tags", "key freeform tags"]:
+                                                    if len(key.defined_tags) != 0:
+                                                        values_for_column_kms = commonTools.export_tags(key, col_header,
+                                                                                                        values_for_column_kms)
+                                                    else:
+                                                        values_for_column_kms[col_header].append('')
+                                                else:
+                                                    oci_objs = [key, get_key_data]
+                                                    values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
+                                                                                                             sheet_dict_kms,
+                                                                                                             values_for_column_kms)
+                                                    pass
+                        else:
+                            for col_header in values_for_column_kms.keys():
+                                if col_header == 'Region':
+                                    values_for_column_kms[col_header].append(reg)
+                                elif col_header == 'Vault Compartment Name':
+                                    values_for_column_kms[col_header].append(ntk_compartment_name)
+                                elif col_header == 'Vault Display Name':
+                                    values_for_column_kms[col_header].append(vault.display_name)
+                                elif col_header == 'Vault type':
+                                    values_for_column_kms[col_header].append(vault.vault_type)
+                                elif col_header == 'Replica Region':
+                                    replicas = kms_vault_client.list_vault_replicas(vault_id=vault.id).data
+                                    if not replicas:
                                         values_for_column_kms[col_header].append('')
                                     else:
-                                        for replica in kms_vault_client.list_vault_replicas(vault_id=vault.id).data:
+                                        for replica in replicas:
+                                            region_name = None
                                             for region, region_identifier in ct.region_dict.items():
                                                 if region_identifier == replica.region:
                                                     region_name = region
-                                                    values_for_column_kms[col_header].append(region_name)
-                                                else:
-                                                    pass
-                            elif str(col_header).lower() in ["vault defined tags", "vault freeform tags"]:
-                                values_for_column_kms = commonTools.export_tags(vault, col_header,
-                                                                                values_for_column_kms)
-                            else:
-                                oci_objs = [vault, get_vault_data, get_vault_data.replica_details]
-                                values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
-                                                                                         sheet_dict_kms,
-                                                                                         values_for_column_kms)
+                                                    break
+                                            if region_name:
+                                                values_for_column_kms[col_header].append(region_name)
+                                            else:
+                                                values_for_column_kms[col_header].append('')
+                                elif str(col_header).lower() in ["vault defined tags", "vault freeform tags"]:
+                                    values_for_column_kms = commonTools.export_tags(vault, col_header,
+                                                                                    values_for_column_kms)
+                                else:
+                                    oci_objs = [vault, get_vault_data, get_vault_data.replica_details]
+                                    values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
+                                                                                             sheet_dict_kms,
+                                                                                             values_for_column_kms)
+
+                    except TransientServiceError as e:
+                        continue
 
         #Write Import Commands to script file
         init_commands = f'\n######### Writing import for OCI Vaults #########\n\n#!/bin/bash\n{tf_or_tofu} init'
