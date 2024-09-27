@@ -10,9 +10,9 @@ On re-running the same option you will find the previously existing files being 
 
 !!! Note
 
-    - If some compartment specified in excel was already existing in OCI then on Terraform Apply, the user will see logs which indicate creation of that compartment - this can be ignored as Terraform will only modify the existing Compartments (with additional information, if there are any eg description) and not create a new/duplicate one.<br>
+    - If some compartment specified in excel is already existing in OCI, then Terraform Apply indicates creation of that compartment - this can be ignored as Terraform will only modify the existing Compartments (with additional information, if there are any eg: description) and not create a new/duplicate one.<br>
     - Terraform destroy on compartments or removing the compartments details from <b><i>*_compartments.auto.tfvars</i></b> will not delete them from OCI Console by default. Inorder to destroy them from OCI either - 
-    - Add an additional column - <b><i>enable_delete</i></b> to Compartments Tab of CD3 Excel sheet with the value <b>"true"</b> for the compartments that needs to be deleted on terraform destroy. Execute the toolkit menu option to Create Compartments.</li>
+    - Add an additional column - <b><i>enable_delete</i></b> in Compartments Tab of CD3 Excel sheet with the value <b>"true"</b> for the compartments that needs to be deleted on terraform destroy. Execute the toolkit menu option to Create Compartments.</li>
     (OR)<br>
     - Add <b><i>enable_delete = true</i></b> parameter to each of the compartment that needs to be deleted in <b><i>*_compartments.auto.tfvars</i></b></li>
   </ul>
@@ -926,7 +926,7 @@ On re-running the option to create KMS, you will find the previously existing fi
  
  - Creation of **DEFAULT** or **VIRTUAL PRIVATE** vaults.
 
- - Replication of Virtual Private Vaults across regions. 
+ - Replication of Default(Virtual) and Virtual Private Vaults across regions. 
 
 !!! Important
 
