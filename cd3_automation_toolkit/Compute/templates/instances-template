@@ -91,10 +91,10 @@ instances = {
             {% if plugin_match %}
             plugins_details = {
                     {% if plugin_bastion %}
-                        Bastion = "{{ plugin_bastion.upper() }}",
+                        Bastion = "{{ plugin_bastion.upper() }}"
                     {% endif %}
                     {% if plugin_management_agent %}
-                        "Management Agent" =  "{{ plugin_management_agent.upper() }}",
+                        "Management Agent" =  "{{ plugin_management_agent.upper() }}"
                     {% endif %}
                     {% if plugin_vulnerability_scanning %}
                         "Vulnerability Scanning" = "{{ plugin_vulnerability_scanning.upper() }}"
@@ -126,6 +126,13 @@ instances = {
                     {% if plugin_compute_hpc_rdma_auto_configuration %}
                         "Compute HPC RDMA Auto-Configuration" = "{{ plugin_compute_hpc_rdma_auto_configuration.upper() }}"
                     {% endif %}
+                    {% if plugin_os_management_hub_agent %}
+                        "OS Management Hub Agent" = "{{ plugin_os_management_hub_agent.upper() }}"
+                    {% endif %}
+                    {% if plugin_cloud_guard_workload_protection %}
+                        "Cloud Guard Workload Protection" = "{{ plugin_cloud_guard_workload_protection.upper() }}"
+                    {% endif %}
+
             }
             {% endif %}
 

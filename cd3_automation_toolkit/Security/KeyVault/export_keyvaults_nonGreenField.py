@@ -76,6 +76,13 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                 key_count = 0
                 if vault.lifecycle_state not in ["DELETED", "PENDING_DELETION", "SCHEDULING_DELETION"]:
                     try:
+                        replicas = kms_vault_client.list_vault_replicas(vault_id=vault.id).data
+                        for replica in replicas:
+                            region_name = None
+                            for region, region_identifier in ct.region_dict.items():
+                                if region_identifier == replica.region:
+                                    region_name = region
+                                    break
                         kms_key_client = oci.key_management.KmsManagementClient(config,service_endpoint=vault.management_endpoint,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
                         keys = oci.pagination.list_call_get_all_results(kms_key_client.list_keys, compartment_id=ct.ntk_compartment_ids[
                                                                         ntk_compartment_name])
@@ -113,20 +120,13 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                                     values_for_column_kms[col_header].append(vault.vault_type)
 
                                                 elif col_header == 'Replica Region':
-                                                    replicas = kms_vault_client.list_vault_replicas(vault_id=vault.id).data
                                                     if not replicas:
                                                         values_for_column_kms[col_header].append('')
                                                     else:
-                                                        for replica in replicas:
-                                                            region_name = None
-                                                            for region, region_identifier in ct.region_dict.items():
-                                                                if region_identifier == replica.region:
-                                                                    region_name = region
-                                                                    break
-                                                            if region_name:
-                                                                values_for_column_kms[col_header].append(region_name)
-                                                            else:
-                                                                values_for_column_kms[col_header].append('')
+                                                        if region_name:
+                                                            values_for_column_kms[col_header].append(region_name)
+                                                        else:
+                                                            values_for_column_kms[col_header].append('')
                                                 elif str(col_header).lower() in ["vault defined tags", "vault freeform tags"]:
                                                     values_for_column_kms = commonTools.export_tags(vault, col_header,
                                                                                                     values_for_column_kms)
@@ -201,20 +201,13 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                 elif col_header == 'Vault type':
                                     values_for_column_kms[col_header].append(vault.vault_type)
                                 elif col_header == 'Replica Region':
-                                    replicas = kms_vault_client.list_vault_replicas(vault_id=vault.id).data
                                     if not replicas:
                                         values_for_column_kms[col_header].append('')
                                     else:
-                                        for replica in replicas:
-                                            region_name = None
-                                            for region, region_identifier in ct.region_dict.items():
-                                                if region_identifier == replica.region:
-                                                    region_name = region
-                                                    break
-                                            if region_name:
-                                                values_for_column_kms[col_header].append(region_name)
-                                            else:
-                                                values_for_column_kms[col_header].append('')
+                                        if region_name:
+                                            values_for_column_kms[col_header].append(region_name)
+                                        else:
+                                            values_for_column_kms[col_header].append('')
                                 elif str(col_header).lower() in ["vault defined tags", "vault freeform tags"]:
                                     values_for_column_kms = commonTools.export_tags(vault, col_header,
                                                                                     values_for_column_kms)

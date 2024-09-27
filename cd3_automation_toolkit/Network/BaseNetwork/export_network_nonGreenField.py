@@ -782,6 +782,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 drg_attachment_info = None
                 vcn_info = None
                 drg_info = vnc.get_drg(drg_id).data
+                drg_display_name = drg_info.display_name
 
                 if drg_info.default_drg_route_tables is not None:
                     DRG_RTs = oci.pagination.list_call_get_all_results(vnc.list_drg_route_tables,

@@ -86,7 +86,7 @@ module "nlb-backends" {
   backend_set_name         = merge(module.nlb-backend-sets.*...)[each.value.backend_set_name]["nlb_backend_set_tf_name"]
   network_load_balancer_id = length(regexall("ocid1.loadbalancer.oc*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]
   port                     = each.value.port
-  #vnic_vlan                = each.value.vnic_vlan
+  #vnic_vlan                = each.value.vnic_vlan != null ? each.value.vnic_vlan : null
   ip_address               = each.value.ip_address
   instance_compartment     = each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid
   #ip_address = each.value.ip_address != "" ? (length(regexall("IP:", each.value.ip_address)) > 0 ? split("IP:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance_ip[each.key].private_ip) : (length(regexall("NAME:", each.value.ip_address)) > 0 ? split("NAME:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance[each.key].private_ip) : null

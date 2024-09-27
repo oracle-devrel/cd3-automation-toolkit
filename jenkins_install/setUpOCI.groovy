@@ -207,7 +207,6 @@ pipeline {
                     labelledShell( label: 'Executing setUpOCI python script', script: '''
                         set +x
                         cd /cd3user/oci_tools/cd3_automation_toolkit
-                        python --version
                         python setUpOCI.py --devops True --main_options "${MainOptions}" --sub_options "${SubOptions}" --sub_child_options "${SubChildOptions}" --add_filter "${AdditionalFilters}" $prop_file
                         cd -
                         rm -rf *.*
@@ -278,7 +277,7 @@ pipeline {
                         echo $cd3_file
                         ''', returnStdout: true).trim()
                     }
-                    archiveArtifacts "${file_path.split("/")[(file_path.split("/")).length-1]}, *.zip"
+                    archiveArtifacts "${file_path.split("/")[(file_path.split("/")).length-1]}, *.zip,*.xl*"
 
                 }
             }
