@@ -18,10 +18,10 @@ nav:
       - launch-container.md
       - Resource Manager Stack: launch-from-rmstack.md
       - Manual Container Launch: launch-from-local.md
-      - URL whitelisting(optional): url-whitelisting.md
+      - URL Whitelisting(optional): url-whitelisting.md
     - Connect Container to OCI: 
       - connect-container-to-oci-tenancy.md
-      - Multiple Prefixes: multiple-connections.md
+      - Multiple Prefixes(optional): multiple-connections.md
 
   - Use with CLI: 
     - cd3-cli.md
