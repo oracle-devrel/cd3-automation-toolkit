@@ -2,7 +2,7 @@
 
 !!! Tip
      - Launching CD3 container using OCI Resource Manager stack is preferred method as it reduces the manual effort.
-     - With this method, users are required to clone the Devrel GitHub repo and execute commands to build and run the docker container.
+     - With below method, users are required to clone the Devrel GitHub repo and execute commands to build and run the docker container.
 
 <br>
 **Prerequisites**
@@ -48,7 +48,7 @@ git clone https://github.com/oracle-devrel/cd3-automation-toolkit
 **Step 2 - Build an image**
 
 * Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).
-* **Optional** - Edit **Dockerfile** to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues later.
+* Edit **Dockerfile** to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues. This step is needed if you plan to use toolkit with Jenkins or OCI DevOps GIT repo.
 ``` 
 vi Dockerfile
 ```
