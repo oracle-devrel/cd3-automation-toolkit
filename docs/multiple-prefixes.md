@@ -1,4 +1,4 @@
-# **Connect container to OCI Tenancy - Multiple Executions**
+# **Connect container to OCI Tenancy - Multiple Prefixes**
 ---
 
 The toolkit allows independent management of multiple tenancies or environments using the same container. This enables better resource control and custom configurations for each environment. 
@@ -8,12 +8,11 @@ The toolkit allows independent management of multiple tenancies or environments 
 
     * With the toolkit release v2024.4.1, the toolkit supports executing createTenancyConfig.py with different values for **prefix** per container when using Jenkins.
 
-
 <br>
 
 **Use Case**
 
-* Managing Multiple Environments (Prod, Non-Prod etc.,) as Separate Entities within a single container
+* Managing Multiple Environments (Prod, Non-Prod etc.,) as separate entities within a single container.
 
 
 **Steps**
