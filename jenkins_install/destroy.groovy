@@ -10,32 +10,38 @@ pipeline {
         stage('Set Environment Variables') {
             steps {
                 script {
-                    def fileContent = readFile "${JENKINS_HOME}/jenkins.properties"
-                    // Split file content into lines
-                    def lines = fileContent.readLines()
+                    def jobName = env.JOB_NAME
+                    def parts = "${env.JOB_NAME}".split('/')
+                    env.Prefix = parts[0]
 
-                    // Process each line to extract variable name and value
-                    def variables = [:]
-                    lines.each { line ->
-                        def parts = line.split('=')
-                        if (parts.size() == 2) {
-                            variables[parts[0].trim()] = parts[1].trim()
+                    def propertiesFileContent = readFile "$JENKINS_HOME/jenkins.properties"
+                    def result = [:]
+                    def currentSection = null
+
+                    propertiesFileContent.readLines().each { line ->
+                        line = line.trim()
+                        if (line.startsWith("#") || line.isEmpty()) {
+                        // Ignore comments and empty lines
+                        return
+                        }
+
+                    def sectionMatch = line =~ /^\[(.+)\]$/
+                    if (sectionMatch) {
+                        currentSection = sectionMatch[0][1]
+                        result[currentSection] = [:]
+                        } else if (currentSection) {
+                        def kvMatch = line =~ /^([^=]+)=\s*(.+)$/
+                        if (kvMatch) {
+                            def key = kvMatch[0][1].trim()
+                            def value = kvMatch[0][2].trim()
+                            result[currentSection][key] = value
+                            }
                         }
                     }
-                    println "Variables: ${variables}"
-                    def variableOds = variables['outdir_structure'].toString().replaceAll("\\[|\\]", '').replaceAll('"', '')
-                    env.out_str = "${variableOds}"
-
-                    if (variables.containsKey('tf_or_tofu')) {
-                      // Strip quotes from tf_or_tofu value
-                       def tfortofuValue = variables['tf_or_tofu'].replaceAll(/^"|"$/, '').trim()
-                       env.tf_or_tofu = tfortofuValue
-                    } else {
-                       println "tfortofu param not found in the properties file"
-                    }
-
-                    def jobName = env.JOB_NAME
-                    def parts = jobName.split('/')
+                    def tfortofuValue = result["${env.Prefix}"]["tf_or_tofu"]
+                    env.tf_or_tofu = Eval.me(tfortofuValue)
+                    def out_str = result["${env.Prefix}"]["outdir_structure"]
+                    env.out_str = Eval.me(out_str)
                     if (env.out_str == 'Multiple_Outdir') {
                         // Assuming the job name format is <region_name>/job/<service_name>/job/job_name
                         env.Region = parts[2]

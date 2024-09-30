@@ -1,6 +1,7 @@
 {% if count == 0 %}
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 ############################
 # Instances
 # Instance - tfvars
@@ -90,10 +91,10 @@ instances = {
             {% if plugin_match %}
             plugins_details = {
                     {% if plugin_bastion %}
-                        Bastion = "{{ plugin_bastion.upper() }}",
+                        Bastion = "{{ plugin_bastion.upper() }}"
                     {% endif %}
                     {% if plugin_management_agent %}
-                        "Management Agent" =  "{{ plugin_management_agent.upper() }}",
+                        "Management Agent" =  "{{ plugin_management_agent.upper() }}"
                     {% endif %}
                     {% if plugin_vulnerability_scanning %}
                         "Vulnerability Scanning" = "{{ plugin_vulnerability_scanning.upper() }}"
@@ -125,6 +126,13 @@ instances = {
                     {% if plugin_compute_hpc_rdma_auto_configuration %}
                         "Compute HPC RDMA Auto-Configuration" = "{{ plugin_compute_hpc_rdma_auto_configuration.upper() }}"
                     {% endif %}
+                    {% if plugin_os_management_hub_agent %}
+                        "OS Management Hub Agent" = "{{ plugin_os_management_hub_agent.upper() }}"
+                    {% endif %}
+                    {% if plugin_cloud_guard_workload_protection %}
+                        "Cloud Guard Workload Protection" = "{{ plugin_cloud_guard_workload_protection.upper() }}"
+                    {% endif %}
+
             }
             {% endif %}
 

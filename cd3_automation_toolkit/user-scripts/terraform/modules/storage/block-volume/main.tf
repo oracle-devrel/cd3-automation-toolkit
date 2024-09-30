@@ -68,8 +68,9 @@ resource "oci_core_volume_attachment" "block_vol_instance_attachment" {
   }
 }
 
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 ####################################
 ## Resource Block - Backup Policy
 ## Create Block Volume Backup Policy

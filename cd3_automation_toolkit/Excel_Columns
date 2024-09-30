@@ -8,6 +8,11 @@
         "Description" : "description",
         "Name" : "name"
     },
+    "Users" :
+    {
+        "Family Name" : "family_name",
+        "User Name" : "name"
+    },
     "Policies" :
     {
        "Description" : "description",

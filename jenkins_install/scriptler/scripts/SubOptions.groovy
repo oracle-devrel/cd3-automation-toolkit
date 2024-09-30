@@ -14,6 +14,7 @@ List developer_services = ["<b>DEVELOPER SERVICES</b>:disabled","Add/Modify/Dele
 List security = ["<b>SECURITY</b>:disabled","Add/Modify/Delete KMS (Keys/Vaults)", "Enable Cloud Guard"]
 List logging_services = ["<b>LOGGING SERVICES</b>:disabled","Enable VCN Flow Logs", "Enable LBaaS Logs", "Enable Object Storage Buckets Logs", "Enable File Storage Logs", "Enable Network Firewall Logs"]
 List cd3_services = ["<b>CD3 SERVICES</b>:disabled","Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"]
+//List utility_services = ["<b>Other OCI Tools</b>:disabled","CIS Compliance Check Script", "ShowOCI Report", "Execute VizOCI", "OCI FSDR"]
 List utility_services = ["<b>Other OCI Tools</b>:disabled","CIS Compliance Check Script", "ShowOCI Report", "OCI FSDR"]
 List ex_identity = ["<b>IDENTITY</b>:disabled","Export Compartments", "Export Groups", "Export Policies", "Export Users", "Export Network Sources"]
 List ex_governance  = ["<b>GOVERNANCE</b>:disabled","Export Tags", "Export Quotas"]

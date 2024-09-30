@@ -15,6 +15,7 @@ RUN microdnf install -y sudo && \
     chown -R $USERNAME:$USERNAME /cd3user/tenancies/ && \
     microdnf install -y vim && \
     microdnf install -y dnf && \
+    microdnf install -y graphviz && \
     echo 'alias vi="vim"' >> /etc/bashrc
 
 USER $USERNAME

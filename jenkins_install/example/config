@@ -1,4 +1,5 @@
-Host devops.scmservice.*.oci.oraclecloud.com
+Host PREFIX1
+Hostname devops.scmservice.<region>.oci.oraclecloud.com
  StrictHostKeyChecking no
  User <domain_name>/<user_name>@<tenancy_name>
  IdentityFile <key_path>

@@ -1,10 +1,10 @@
-def reg_list = new File("/cd3user/tenancies/${customer_prefix}/.config_files/regions_file") as String[]
+def reg_list = new File("/cd3user/tenancies/${Prefix}/.config_files/regions_file") as String[]
 def string_list = reg_list.join(", ")
 reg_options = ""
 for(item in string_list.split(",")){
   reg_options = reg_options+"<option value=\""+item+"\">"+item+"</option>"
 }
-def comp_list = new File("/cd3user/tenancies/${customer_prefix}/.config_files/compartments_file") as String[]
+def comp_list = new File("/cd3user/tenancies/${Prefix}/.config_files/compartments_file") as String[]
 def string_list2 = comp_list.join(", ")
 comp_options = ""
 for(item in string_list2.split(",")){
@@ -154,7 +154,7 @@ for (item in SubOptions.split(",")) {
        </tr><tr></tr><tr></tr><tr></tr>
          """
    }
- if (item.equals('Upload current terraform files/state to Resource Manager')){
+   if (item.equals('Upload current terraform files/state to Resource Manager')){
         html_to_be_rendered = """
         ${html_to_be_rendered}
 
@@ -173,7 +173,7 @@ for (item in SubOptions.split(",")) {
          """
    }
 
- if (item.equals('Enable Cloud Guard')){
+  if (item.equals('Enable Cloud Guard')){
         html_to_be_rendered = """
         ${html_to_be_rendered}
     <tr>
@@ -185,23 +185,51 @@ for (item in SubOptions.split(",")) {
          """
    }
 
+    if (item.equals('Execute VizOCI')){
+        html_to_be_rendered = """
+        ${html_to_be_rendered}
+        <tr>
+   <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"vizoci_reg_filter=\"></td>
+   <td><label for="value">Select Regions (Optional) :</label></td>
+   <td ><select multiple name="value" style="width:150px;">${reg_options} </select></td>
+   <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
+   </tr><tr></tr><tr></tr><tr></tr>
+   <tr>
+    <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"vizoci_comp_filter=\"></td>
+    <td><label for=\"value\">Select Compartments (Optional): </label></td>
+    <td ><select multiple name=\"value\">${comp_options}</select></td>
+    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
+    </tr><tr></tr><tr></tr><tr></tr>
+
+        <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"generate_graphs=[\"></td>
+     <td><label title=\"service1-label\" class=\" \">Generate Graphs </label></td>
+        <td>
+       <input name=\"value\"  json=\"service1\" type=\"checkbox\" class=\" \">
+       </td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
+       </tr><tr></tr><tr></tr><tr></tr>
+         """
+   }
+
 }
 
+export_network_rules = "unset"
 for (item in SubChildOptions.split(",")) {
-	if (item in ["Export Security Rules (From OCI into SecRulesinOCI sheet)","Export Route Rules (From OCI into RouteRulesinOCI sheet)","Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)","Export NSGs (From OCI into NSGs sheet)"]) {
-
-	html_to_be_rendered = """
+  if ((item in ["Export Security Rules (From OCI into SecRulesinOCI sheet)","Export Route Rules (From OCI into RouteRulesinOCI sheet)","Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)","Export NSGs (From OCI into NSGs sheet)"]) && (export_network_rules.equals("unset"))) {
+  html_to_be_rendered = """
         ${html_to_be_rendered}
-
 <tr>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"comp_filter=\"></td>
     <td><label title=\"service1-label\" class=\" \">select Compartments to export SECURITY RULES/ROUTE RULES/DRG ROUTE RULES/NSGs : </label></td>
     <td><select multiple name="value">${comp_options}</select></td>
-
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
+    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
     </tr><tr></tr><tr></tr><tr></tr>
          """
-	}
+   export_network_rules = "set"
+  }
+
+
 	if (item.equals("Export DR Plan")) {
       html_to_be_rendered = """
       ${html_to_be_rendered}

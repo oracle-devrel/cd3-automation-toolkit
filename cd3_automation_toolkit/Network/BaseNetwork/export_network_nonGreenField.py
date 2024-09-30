@@ -357,11 +357,12 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
 
     # Fetch Source Data
     for new_rpc in SOURCE_RPC_LIST.data:
+        is_cross_tenancy_peering = new_rpc.is_cross_tenancy_peering
         source_rpc_id = new_rpc.id
         source_rpc_peer_id = new_rpc.peer_id
 
         # Check peering is alive
-        if source_rpc_peer_id is not None and new_rpc.peering_status == "PEERED":
+        if source_rpc_peer_id is not None and new_rpc.peering_status == "PEERED" and not is_cross_tenancy_peering:
             source_rpc_display_name = new_rpc.display_name
             source_rpc_drg_id = new_rpc.drg_id
             dest_rpc_id = new_rpc.peer_id
@@ -781,6 +782,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 drg_attachment_info = None
                 vcn_info = None
                 drg_info = vnc.get_drg(drg_id).data
+                drg_display_name = drg_info.display_name
 
                 if drg_info.default_drg_route_tables is not None:
                     DRG_RTs = oci.pagination.list_call_get_all_results(vnc.list_drg_route_tables,
@@ -1050,6 +1052,10 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
         if (os.path.exists(outdir + "/" + reg + "/" + service_dir_vlan + "/"+vlan_file_name)):
             commonTools.backup_file(outdir + "/" + reg + "/" + service_dir_vlan, "import_network",vlan_file_name)
         importCommands_vlan[reg] = open(outdir + "/" + reg + "/" + service_dir_vlan + "/" + vlan_file_name, "w")
+        importCommands_vlan[reg].write("\n#!/bin/bash")
+        importCommands_vlan[reg].write("\n")
+        importCommands_vlan[reg].write(f'{tf_or_tofu} init')
+        importCommands_vlan[reg].write("\n\n######### Writing import for VLANs #########\n\n")
 
     print("Tab- 'SubnetsVLANs' would be overwritten during export process!!!")
     for reg in export_regions:
@@ -1123,10 +1129,6 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                     # VLAN Data
                     if skip_vlans['reg'] == 1:
                         continue
-                    importCommands_vlan[reg].write("#!/bin/bash")
-                    importCommands_vlan[reg].write("\n")
-                    importCommands_vlan[reg].write(f'{tf_or_tofu} init')
-                    importCommands_vlan[reg].write("\n\n######### Writing import for VLANs #########\n\n")
                     # check resources in vlan state
                     state_vlan = {'path': f'{outdir}/{reg}/{service_dir_vlan}', 'resources': []}
                     try:

@@ -371,8 +371,8 @@ def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export
 
         tempStrKeys = "\n" + tempStrKeys
         tempStrKeys = "#START_instance_ssh_keys#" + tempStrKeys + "\t#instance_ssh_keys_END#"
-        if ("\\n" in tempStrKeys):
-            tempStrKeys = tempStrKeys.replace("\\n", "\\\\n")
+        if ("\\" in tempStrKeys):
+            tempStrKeys = tempStrKeys.replace("\\", "\\\\")
 
         var_data[reg] = re.sub('#START_instance_ssh_keys#.*?#instance_ssh_keys_END#', tempStrKeys,
                                var_data[reg],flags=re.DOTALL)

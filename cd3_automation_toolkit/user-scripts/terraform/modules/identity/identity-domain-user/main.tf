@@ -17,17 +17,39 @@ resource "oci_identity_domains_user" "user" {
   description   = var.description
   name {
     family_name = var.family_name
+    given_name  = var.given_name
+    middle_name = var.middle_name
+    honorific_prefix      = var.honorific_prefix
   }
   idcs_endpoint = var.identity_domain.url
-  user_name      = var.user_name
+  user_name     = var.user_name
+  display_name  = var.display_name
   emails {
-    primary    = "true"
-    secondary  = "false"
+    primary    = true
+    secondary  = false
     type       = "work"
-    value      =  var.email
-    verified   = "false"
+    value      = var.email
+    verified   = false
+  }
+  emails {
+    type       = "recovery"
+    value      =  var.recovery_email
+  }
+  dynamic "phone_numbers" {
+    for_each = can(var.home_phone_number) && var.home_phone_number != null ? [var.home_phone_number] : []
+    content {
+      type  = "home"
+      value = phone_numbers.value
+    }
   }
 
+  dynamic "phone_numbers" {
+    for_each = can(var.mobile_phone_number) && var.mobile_phone_number != null ? [var.mobile_phone_number] : []
+    content {
+      type  = "mobile"
+      value = phone_numbers.value
+    }
+  }
   urnietfparamsscimschemasoracleidcsextensioncapabilities_user  {
 
     can_use_api_keys             = contains(var.enabled_capabilities, "api_keys") ? true :false
@@ -68,7 +90,3 @@ resource "oci_identity_domains_user" "user" {
     ]
   }
 }
-
-
-
-

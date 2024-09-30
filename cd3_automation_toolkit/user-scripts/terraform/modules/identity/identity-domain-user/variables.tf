@@ -53,7 +53,19 @@ variable "groups" {
 
 
 variable "family_name" {
-  description = "Family Name of the user"
+  description = "Last Name of the user"
+  type        = string
+  default     = "Default"
+}
+
+variable "given_name" {
+  description = "First Name of the user"
+  type        = string
+  default     = "Default"
+}
+
+variable "display_name" {
+  description = "Display Name of the user"
   type        = string
   default     = "Default"
 }
@@ -65,6 +77,24 @@ default = {}
 variable "email" {
   type        = string
   description = "The email you assign to the User. Does not have to be unique, and it's changeable. "
+  default     = null
+}
+
+variable "home_phone_number" {
+  type        = string
+  description = "Home phone number of the user"
+  default     = null
+}
+
+variable "mobile_phone_number" {
+  type        = string
+  description = "Mobile phone number of the user"
+  default     = null
+}
+
+variable "recovery_email" {
+  type        = string
+  description = "The recovery email you assign to the User. It's changeable. "
   default     = null
 }
 
@@ -93,3 +123,15 @@ variable "freeform_tags_value" {
   type    = string
   default = ""
 }
+
+variable "honorific_prefix" {
+  type    = string
+  default = ""
+}
+
+variable "middle_name" {
+  type    = string
+  default = ""
+}
+
+

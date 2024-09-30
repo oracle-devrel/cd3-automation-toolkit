@@ -18,14 +18,6 @@ variable "user_id" {
   default     = null
 }
 
-/*variable "members" {
-  type = list(object({
-    type  = string
-    value = string
-  }))
-  default = []
-}*/
-
 variable "members" {
   description = "List of email ids of the users"
   type        = list(string)
@@ -81,3 +73,8 @@ variable "freeform_tags_value" {
   default = ""
 }
 
+variable "user_can_request_access" {
+  type    = bool
+  description = "Specifies whether user can request access to the group"
+
+}

@@ -26,6 +26,13 @@ data "oci_core_vnic_attachments" "nlb_instance_vnic_attachments" {
   count          = length(regexall("IP:*", var.ip_address)) == 0 ? 1 : 0
   compartment_id = var.instance_compartment
   instance_id    = merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", var.ip_address)[1]][0]
+  #dynamic "filter" {
+  #  for_each = var.vnic_vlan !=null ? [1] : []
+  #  content {
+  #    name   = "vlan_tag"
+  #    values = [var.vnic_vlan]
+  #  }
+  #}
 }
 
 # Filter on VNIC OCID

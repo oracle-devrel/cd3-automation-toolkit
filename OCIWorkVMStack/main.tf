@@ -38,6 +38,7 @@ module "instance" {
   instance_shape            = var.instance_shape
   instance_ram              = var.instance_ram
   instance_ocpus            = var.instance_ocpus
+  boot_volume_size          = var.boot_volume_size
   instance_ad               = var.instance_ad
   instance_fd               = var.instance_fd
   ssh_public_key            = var.ssh_public_key

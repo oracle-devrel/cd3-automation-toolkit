@@ -17,7 +17,7 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
 	"Security":["Add/Modify/Delete KMS (Keys/Vaults)", "Enable Cloud Guard"],
     "Logging Services":["Enable VCN Flow Logs", "Enable LBaaS Logs", "Enable Object Storage Buckets Logs", "Enable File Storage Logs", "Enable Network Firewall Logs"],
     "CD3 Services":["Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"],
-    "Other OCI Tools":["CIS Compliance Check Script", "ShowOCI Report", "OCI FSDR"]
+    "Other OCI Tools":["CIS Compliance Check Script", "ShowOCI Report", "Execute VizOCI", "OCI FSDR"]
     ]
     def non_gf_options_map = [
     "Export Identity":["Export Compartments", "Export Groups", "Export Policies", "Export Users", "Export Network Sources"],
@@ -47,10 +47,13 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
             }
             if (Workflow.toLowerCase().contains("create")){
                 for (item in gf_options_map[mitem]) {
-                  if (item in suboptions_list) {
+                  for (i in item.split(",")){
+                  if (i in suboptions_list) {
                         validation_map[mitem] = "Passed"
                         break
-                    }
+                        }
+                  }
+
                 }
             }
             else {
@@ -78,6 +81,7 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
 	}else {
 	valid_params = "Passed"
 	}
-    return valid_params
+    def failed_map = validation_map.findAll {it.value == 'Failed'}
+    return [valid_params,failed_map.keySet() as List]
     }
 return this

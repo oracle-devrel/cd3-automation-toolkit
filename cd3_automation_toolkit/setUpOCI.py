@@ -1,7 +1,6 @@
 import argparse
 import configparser
-import re
-
+import json
 import Database
 import Identity
 import Compute
@@ -20,7 +19,7 @@ from collections import namedtuple
 import requests
 import subprocess
 import datetime,glob,os
-
+    
 def show_firewall_options(options, quit=False, menu=False, extra=None, index=0):
     # Just add whitespace between number and option. It just makes it look better
     number_offset = len(str(len(options))) + 1
@@ -154,21 +153,29 @@ def execute_options(options, *args, **kwargs):
                 with section(option.text):
                     option.callback(*args, **kwargs)
 
-def get_region_list(rm):
-    if rm == False:
+def get_region_list(rm,vizoci):
+    if rm == False and vizoci==False:
         if devops:
             input_region_names = ct.reg_filter
         else:
             resource_name = 'OCI resources'
             region_list_str = "\nEnter region (comma separated without spaces if multiple) for which you want to export {}; Identity and Tags will be exported from Home Region.\nPress 'Enter' to export from all the subscribed regions- eg ashburn,phoenix: "
             input_region_names = input(region_list_str.format(resource_name))
-    else:
+    elif rm == True and vizoci == False:
         if devops:
             input_region_names = ct.orm_reg_filter
         else:
             resource_name = 'Terraform Stack'
             region_list_str = "\nEnter region (comma separated without spaces if multiple) for which you want to upload {} - eg ashburn,phoenix,global: "
             input_region_names = input(region_list_str.format(resource_name))
+    elif vizoci == True and rm == False:
+        if devops:
+            input_region_names = ct.vizoci_reg_filter
+        else:
+            resource_name = 'VizOCI'
+            region_list_str = "\nEnter region (comma separated without spaces if multiple) for which you want to run {} - eg ashburn,phoenix: "
+            input_region_names = input(region_list_str.format(resource_name))
+
 
     input_region_names = list(map(lambda x: x.strip(), input_region_names.split(','))) if input_region_names else None
     remove_regions = []
@@ -329,7 +336,7 @@ def validate_firewall_cd3(execute_all=False):
         cd3FirewallValidator.validate_firewall_cd3(inputfile, var_file, prefix, outdir, config, signer, ct)
         print("Exiting CD3 Firewall Validation...")
 
-################## Export Identity ##########################
+################## Export Functions ##########################
 def export_identityOptions(prim_options=[]):
     options = [Option("Export Compartments", export_compartments, 'Exporting Compartments'),
                Option("Export Groups",export_groups, 'Exporting Groups'),
@@ -349,21 +356,24 @@ def export_identityOptions(prim_options=[]):
 def export_compartments(inputfile, outdir,config, signer, ct):
     resource = 'Compartments'
     Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct)
-    create_identity(prim_options=['Add/Modify/Delete Compartments'])
+    options = [Option(None, create_compartments, 'Processing Compartments Tab'), ]
+    execute_options(options)
     print("\n\nExecute import_commands_compartments.sh script created under home region directory to synch TF with OCI Identity Compartments\n")
 
 def export_policies(inputfile, outdir,config, signer, ct):
     resource = 'IAM Policies'
     compartments = ct.get_compartment_map(var_file, resource)
     Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_compartments=compartments)
-    create_identity(prim_options=['Add/Modify/Delete Policies'])
+    options = [Option(None, create_policies, 'Processing Policies Tab'), ]
+    execute_options(options)
     print("\n\nExecute import_commands_policies.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 def export_groups(inputfile, outdir,config, signer, ct):
     resource = 'IAM Groups'
     selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
     Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_domains=selected_domains_data)
-    create_identity(prim_options=['Add/Modify/Delete Groups'])
+    options = [Option(None, create_groups, 'Processing Groups Tab'), ]
+    execute_options(options)
     print("\n\nExecute import_commands_groups.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
@@ -372,29 +382,49 @@ def export_users(inputfile, outdir,config,signer, ct):
     # check if tenancy is identity_domain enabled
     selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
     Identity.Users.export_users(inputfile, outdir, service_dir_identity, config, signer, ct,export_domains=selected_domains_data)
-    create_identity(prim_options=['Add/Modify/Delete Users'])
+    options = [Option(None, Identity.Users.create_terraform_users, 'Processing Users Tab'), ]
+    execute_options(options,inputfile, outdir,service_dir_identity, prefix, ct)
     print("\n\nExecute import_commands_users.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
 def export_networkSources(inputfile, outdir, config, signer, ct):
     resource = 'Network Sources'
     Identity.NetworkSources.export_networkSources(inputfile, outdir, service_dir_identity, config, signer, ct)
-    create_identity(prim_options=['Add/Modify/Delete Network Sources'])
+    options = [Option(None, Identity.NetworkSources.create_terraform_networkSources, 'Processing NetworkSources Tab'), ]
+    execute_options(options, inputfile, outdir, service_dir_identity, prefix, ct)
     print("\n\nExecute import_commands_networkSources.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 def export_governance(prim_options=[]):
     options = [
-    Option('Export Tags', export_tags, 'Tagging'),
-    Option('Export Quotas', export_quotas, 'Quotas')]
+    Option('Export Tags', export_tags, 'Exporting Tags'),
+    Option('Export Quotas', export_quotas, 'Exporting Quotas')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options)
 
+def export_tags(prim_options=[]):
+    compartments = ct.get_compartment_map(var_file, 'Tagging Objects')
+    Governance.export_tags_nongreenfield(inputfile, outdir, service_dir_tagging, config, signer, ct, export_compartments=compartments)
+    options = [Option(None, create_tags, 'Processing Tags Tab'), ]
+    execute_options(options)
+    print("\n\nExecute import_commands_tags.sh script created under home region directory to synch TF with OCI Tags\n")
+    # Update modified path list
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_tagging])
+
+def export_quotas(prim_options=[]):
+    Governance.export_quotas_nongreenfield(inputfile, outdir, service_dir_quota, config, signer, ct)
+    options = [Option(None, create_quotas, 'Processing Quotas Tab'), ]
+    execute_options(options)
+    print("\n\nExecute import_commands_quotas.sh script created under home region directory to synch TF with OCI Quota\n")
+    # Update modified path list
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_quota])
+
+
 def export_cost_management(prim_options=[]):
     options = [
-    Option('Export Budgets', export_budget, 'Budgets')]
+    Option('Export Budgets', export_budget, 'Exporting Budgets')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -404,26 +434,11 @@ def export_cost_management(prim_options=[]):
 def export_budget(prim_options=[]):
     compartments = ct.get_compartment_map(var_file, 'Budgets')
     CostManagement.export_budgets_nongreenfield(inputfile, outdir, service_dir_budget, config, signer, ct,export_regions)
-    create_budgets()
+    options = [Option(None, create_budgets, 'Processing Budgets Tab')]
+    execute_options(options)
     print("\n\nExecute import_commands_budgets.sh script created under each region directory to synch TF with OCI Tags\n")
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_budget])
-
-def export_tags(prim_options=[]):
-    compartments = ct.get_compartment_map(var_file, 'Tagging Objects')
-    Governance.export_tags_nongreenfield(inputfile, outdir, service_dir_tagging, config, signer, ct, export_compartments=compartments)
-    create_tags()
-    print("\n\nExecute import_commands_tags.sh script created under home region directory to synch TF with OCI Tags\n")
-    # Update modified path list
-    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_tagging])
-
-def export_quotas(prim_options=[]):
-    Governance.export_quotas_nongreenfield(inputfile, outdir, service_dir_quota, config, signer, ct)
-    create_quotas()
-    print("\n\nExecute import_commands_quotas.sh script created under home region directory to synch TF with OCI Quota\n")
-    # Update modified path list
-    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_quota])
-
 
 def export_network(prim_options=[]):
     options = [Option("Export all Network Components", export_networking,
@@ -618,7 +633,10 @@ def export_compute(prim_options=[]):
 def export_dedicatedvmhosts(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Dedicated VM Hosts')
     Compute.export_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, config, signer, ct, export_compartments=compartments, export_regions=export_regions)
-    create_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, prefix, ct)
+    #create_compute(prim_options=['Add/Modify/Delete Dedicated VM Hosts'])
+    options = [Option(None, create_dedicatedvmhosts, 'Processing Dedicated VM Hosts Tab'),]
+    execute_options(options)
+
     print("\n\nExecute import_commands_dedicatedvmhosts.sh script created under each region directory to synch TF with OCI Dedicated VM Hosts\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dedicated_vm_host])
@@ -640,7 +658,8 @@ def export_instances(inputfile, outdir,config,signer, ct, export_regions):
     ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
 
     Compute.export_instances(inputfile, outdir, service_dir_instance,config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
-    create_instances(inputfile, outdir, service_dir_instance, prefix, ct)
+    options = [Option(None, create_instances, 'Processing Instances Tab'), ]
+    execute_options(options)
     print("\n\nExecute import_commands_instances.sh script created under each region directory to synch TF with OCI Instances\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_instance])
@@ -649,7 +668,7 @@ def export_instances(inputfile, outdir,config,signer, ct, export_regions):
 def export_storage(prim_options=[]):
     options = [Option("Export Block Volumes/Block Backup Policy",export_block_volumes,'Exporting Block Volumes'),
                Option("Export File Systems", export_fss, 'Exporting FSS'),
-               Option("Export Object Storage Buckets", export_buckets, 'Exporting Object Storage')]
+               Option("Export Object Storage Buckets", export_buckets, 'Exporting Object Storage Buckets')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -672,9 +691,9 @@ def export_block_volumes(inputfile, outdir,config,signer,ct, export_regions):
     ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
 
     Storage.export_blockvolumes(inputfile, outdir, service_dir_block_volume, config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
-    Storage.create_terraform_block_volumes(inputfile, outdir, service_dir_block_volume, prefix, ct)
-    print(
-        "\n\nExecute import_commands_blockvolumes.sh script created under each region directory to synch TF with OCI Block Volume Objects\n")
+    options = [Option(None, create_block_volumes, 'Processing BlockVolumes Tab'), ]
+    execute_options(options)
+    print("\n\nExecute import_commands_blockvolumes.sh script created under each region directory to synch TF with OCI Block Volume Objects\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_block_volume])
 
@@ -682,9 +701,9 @@ def export_block_volumes(inputfile, outdir,config,signer,ct, export_regions):
 def export_fss(inputfile, outdir,config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'FSS objects')
     Storage.export_fss(inputfile, outdir, service_dir_fss, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    Storage.create_terraform_fss(inputfile, outdir, service_dir_fss, prefix, ct)
-    print(
-        "\n\nExecute import_commands_fss.sh script created under each region directory to synch TF with OCI FSS objects\n")
+    options = [Option(None, create_fss, 'Processing FSS Tab'), ]
+    execute_options(options)
+    print("\n\nExecute import_commands_fss.sh script created under each region directory to synch TF with OCI FSS objects\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_fss])
 
@@ -692,14 +711,15 @@ def export_fss(inputfile, outdir,config, signer, ct, export_regions):
 def export_buckets(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file, 'Buckets')
     Storage.export_buckets(inputfile, outdir, service_dir_object_storage, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    Storage.create_terraform_oss(inputfile, outdir, service_dir_object_storage, prefix, ct)
+    options = [Option(None, create_buckets, 'Processing Buckets Tab'), ]
+    execute_options(options)
     print("\n\nExecute import_commands_buckets.sh script created under each region directory to synch TF with OCI Object Storage Buckets\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_object_storage])
 
 
 def export_loadbalancer(prim_options=[]):
-    options = [Option("Export Load Balancers", export_lbr,'Exporting LBR Objects'),
+    options = [Option("Export Load Balancers", export_lbr,'Exporting LBaaS Objects'),
                Option("Export Network Load Balancers", export_nlb,'Exporting NLB Objects')]
     if prim_options:
         options = match_options(options, prim_options)
@@ -707,6 +727,24 @@ def export_loadbalancer(prim_options=[]):
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
 
+def export_lbr(inputfile, outdir,config, signer, ct, export_regions):
+    compartments = ct.get_compartment_map(var_file,'LBR objects')
+    Network.export_lbr(inputfile, outdir, service_dir_loadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+    options = [Option(None, create_lb, 'Processing LBaaS Tabs'), ]
+    execute_options(options)
+    print("\n\nExecute import_commands_lbr.sh script created under each region directory to synch TF with OCI LBR objects\n")
+    # Update modified path list
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_loadbalancer])
+
+
+def export_nlb(inputfile, outdir,config,signer, ct, export_regions):
+    compartments = ct.get_compartment_map(var_file,'NLB objects')
+    Network.export_nlb(inputfile, outdir, service_dir_networkloadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+    options = [Option(None, create_nlb, 'Processing NLB Tabs'), ]
+    execute_options(options)
+    print("\n\nExecute import_commands_nlb.sh script created under each region directory to synch TF with OCI NLB objects\n")
+    # Update modified path list
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_networkloadbalancer])
 
 def export_security(prim_options=[]):
     options = [Option("Export KMS (Keys/Vaults)", export_kms,'Exporting KMS Objects (Keys/Vaults)')]
@@ -719,27 +757,11 @@ def export_security(prim_options=[]):
 def export_kms(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file, 'KMS')
     Security.export_keyvaults(inputfile, outdir, service_dir_kms, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    Security.create_terraform_keyvaults(inputfile, outdir, service_dir_kms, prefix, ct)
+    options = [Option(None, create_kms, 'Processing KMS Tab')]
+    execute_options(options)
     print("\n\nExecute import_commands_kms.sh script created under each region directory to synch TF with OCI Key Vaults\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_kms])
-
-def export_lbr(inputfile, outdir,config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'LBR objects')
-    Network.export_lbr(inputfile, outdir, service_dir_loadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    create_lb(inputfile, outdir, prefix, ct)
-    print("\n\nExecute import_commands_lbr.sh script created under each region directory to synch TF with OCI LBR objects\n")
-    # Update modified path list
-    update_path_list(regions_path=export_regions, service_dirs=[service_dir_loadbalancer])
-
-
-def export_nlb(inputfile, outdir,config,signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'NLB objects')
-    Network.export_nlb(inputfile, outdir, service_dir_networkloadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    create_nlb(inputfile, outdir, prefix, ct)
-    print("\n\nExecute import_commands_nlb.sh script created under each region directory to synch TF with OCI NLB objects\n")
-    # Update modified path list
-    update_path_list(regions_path=export_regions, service_dirs=[service_dir_networkloadbalancer])
 
 
 def export_databases(prim_options=[]):
@@ -755,7 +777,8 @@ def export_databases(prim_options=[]):
 def export_dbsystems_vm_bm(inputfile, outdir,config,signer, ct,export_regions):
     compartments = ct.get_compartment_map(var_file,'VM and BM DB Systems')
     Database.export_dbsystems_vm_bm(inputfile, outdir, service_dir_dbsystem_vm_bm, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
-    Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, service_dir_dbsystem_vm_bm, prefix, ct)
+    options = [Option(None, create_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab')]
+    execute_options(options)
     print("\n\nExecute import_commands_dbsystems-vm-bm.sh script created under each region directory to synch TF with DBSystems\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dbsystem_vm_bm])
@@ -765,7 +788,8 @@ def export_exa_infra_vmclusters(inputfile, outdir,config, signer, ct, export_reg
     compartments = ct.get_compartment_map(var_file,'EXA Infra and EXA VMClusters')
     Database.export_exa_infra(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
     Database.export_exa_vmclusters(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
-    create_exa_infra_vmclusters(inputfile, outdir, prefix,ct)
+    options = [Option(None, create_exa_infra_vmclusters, '')]
+    execute_options(options)
     print("\n\nExecute import_commands_exa-infra.sh and import_commands_exa-vmclusters.sh scripts created under each region directory to synch TF with Exa-Infra and Exa-VMClusters\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_database_exacs])
@@ -774,7 +798,8 @@ def export_exa_infra_vmclusters(inputfile, outdir,config, signer, ct, export_reg
 def export_adbs(inputfile, outdir,config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'ADBs')
     Database.export_adbs(inputfile, outdir, service_dir_adb, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
-    Database.create_terraform_adb(inputfile, outdir, service_dir_adb, prefix, ct)
+    options = [Option(None, create_adb, 'Processing ADB Tab')]
+    execute_options(options)
     print("\n\nExecute import_commands_adb.sh script created under each region directory to synch TF with OCI ADBs\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_adb])
@@ -796,25 +821,25 @@ def export_management_services(prim_options=[]):
 def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Notifications')
     ManagementServices.export_notifications(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    ManagementServices.create_terraform_notifications(inputfile, outdir, service_dir, prefix, ct)
+    create_management_services(prim_options=['Add/Modify/Delete Notifications'])
     print("\n\nExecute import_commands_notifications.sh script created under each region directory to synch TF with OCI Notifications\n")
 
 def export_events(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Events')
     ManagementServices.export_events(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    ManagementServices.create_terraform_events(inputfile, outdir, service_dir, prefix, ct)
+    create_management_services(prim_options=['Add/Modify/Delete Events'])
     print("\n\nExecute import_commands_events.sh script created under each region directory to synch TF with OCI Events\n")
 
 def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Alarms')
     ManagementServices.export_alarms(inputfile, outdir, service_dir, config,signer,ct,  export_compartments=compartments, export_regions=export_regions)
-    ManagementServices.create_terraform_alarms(inputfile, outdir,service_dir, prefix, ct)
+    create_management_services(prim_options=['Add/Modify/Delete Alarms'])
     print("\n\nExecute import_commands_alarms.sh script created under each region directory to synch TF with OCI Alarms\n")
 
 def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Service Connectors')
     ManagementServices.export_service_connectors(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    ManagementServices.create_service_connectors(inputfile, outdir, service_dir, prefix, ct)
+    create_management_services(prim_options=['Add/Modify/Delete ServiceConnectors'])
     print("\n\nExecute import_commands_serviceconnectors.sh script created under each region directory to synch TF with OCI Service Connectors\n")
 
 def export_developer_services(prim_options=[]):
@@ -829,7 +854,8 @@ def export_developer_services(prim_options=[]):
 def export_oke(inputfile, outdir, config,signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'OKE')
     DeveloperServices.export_oke(inputfile, outdir, service_dir_oke,config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    DeveloperServices.create_terraform_oke(inputfile, outdir, service_dir_oke,prefix, ct)
+    options = [Option(None, create_oke, 'Processing OKE Tab')]
+    execute_options(options,inputfile, outdir, prefix, '', '', ct)
     print("\n\nExecute import_commands_oke.sh script created under each region directory to synch TF with OKE\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_oke])
@@ -843,7 +869,7 @@ def export_sddc(prim_options=[]):
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_sddc])
 
-def export_dns(prim_options=[]):
+def export_dns_management(prim_options=[]):
     options = [Option("Export DNS Views/Zones/Records", export_dns_views_zones_rrsets,
                       'Exporting DNS Views/Zones/Records'),
                Option("Export DNS Resolvers", export_dns_resolvers, 'Exporting DNS Resolvers')
@@ -871,13 +897,13 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
                 dns_filter = "y"
         dns_filter = dns_filter if dns_filter else None
     Network.export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer, ct, dns_filter=dns_filter, export_compartments=compartments, export_regions=export_regions)
-    create_terraform_dns(inputfile, outdir, service_dir, prefix, ct)
-
+    options = [Option(None, create_dns, 'Processing DNS-Views-Zones-Records Tab')]
+    execute_options(options)
 def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file, 'DNS Resolvers')
     Network.export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions=export_regions)
-    Network.create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, ct)
-
+    options = [Option(None, create_dns_resolvers, 'Processing DNS-Resolvers Tab')]
+    execute_options(options)
 
 def cd3_services(prim_options=[]):
     options = [
@@ -894,38 +920,82 @@ def fetch_protocols(outdir, outdir_struct, ct):
     cd3service.fetch_protocols()
 
 ################## Create Functions ##########################
+
+def create_compartments():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Compartments", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+    if errors == False:
+        Identity.create_terraform_compartments(inputfile, outdir, service_dir_identity, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
+
+def create_groups():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Groups", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+    if errors == False:
+        Identity.create_terraform_groups(inputfile, outdir, service_dir_identity, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
+
+def create_policies():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Policies", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+
+    if errors == False:
+        Identity.create_terraform_policies(inputfile, outdir, service_dir_identity, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
+
+def create_users():
+    Identity.create_terraform_users(inputfile, outdir, service_dir_identity, prefix, ct)
+    # Update modified path list
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+
+
+def create_networksources():
+    Identity.NetworkSources.create_terraform_networkSources(inputfile, outdir, service_dir_identity, prefix, ct)
+    # Update modified path list
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+
+
 def create_identity(prim_options=[]):
     ct.identity_domain_check(config,signer)
     options = [
-        Option('Add/Modify/Delete Compartments', Identity.create_terraform_compartments, 'Processing Compartments Tab'),
-        Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Processing Groups Tab'),
-        Option('Add/Modify/Delete Policies', Identity.create_terraform_policies, 'Processing Policies Tab'),
-        Option('Add/Modify/Delete Users', Identity.Users.create_terraform_users, 'Processing Users Tab'),
-        Option('Add/Modify/Delete Network Sources', Identity.NetworkSources.create_terraform_networkSources, 'Processing NetworkSources Tab')
+        Option('Add/Modify/Delete Compartments', create_compartments, 'Processing Compartments Tab'),
+        Option('Add/Modify/Delete Groups', create_groups, 'Processing Groups Tab'),
+        Option('Add/Modify/Delete Policies', create_policies, 'Processing Policies Tab'),
+        Option('Add/Modify/Delete Users', create_users, 'Processing Users Tab'),
+        Option('Add/Modify/Delete Network Sources', create_networksources, 'Processing NetworkSources Tab')
     ]
     if prim_options:
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir,service_dir_identity, prefix, ct)
+    execute_options(options)
     # Update modified path list
-    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+    #update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
 
 
 
 def create_governance(prim_options=[]):
     options = [
-    Option('Tags', create_tags, 'Tagging'),
-    Option('Quotas', create_quotas, 'Quotas')]
-    if prim_options:
-        options = match_options(options, prim_options)
-    else:
-        options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options)
-
-def create_cost_management(prim_options=[]):
-    options = [
-    Option('Budgets', create_budgets, 'Budgets')]
+    Option('Tags', create_tags, 'Processing Tags Tab'),
+    Option('Quotas', create_quotas, 'Processing Quotas Tab')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -933,36 +1003,60 @@ def create_cost_management(prim_options=[]):
     execute_options(options)
 
 
-def create_tags(prim_options=[]):
-    options = [Option(None, Governance.create_terraform_tags, 'Processing Tags Tab')]
-    execute_options(options, inputfile, outdir, service_dir_tagging, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_tagging])
+def create_tags():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Tags", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
 
-def create_quotas(prim_options=[]):
-    options = [Option(None, Governance.create_terraform_quotas, 'Processing Quota Tab')]
-    execute_options(options, inputfile, outdir, service_dir_quota, prefix, ct)
+    if errors == False:
+        Governance.create_terraform_tags(inputfile, outdir, service_dir_tagging, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_tagging])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
+
+def create_quotas():
+    Governance.create_terraform_quotas(inputfile, outdir, service_dir_quota, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_quota])
 
-def create_budgets(prim_options=[]):
-    options = [Option(None, CostManagement.create_terraform_budgets, 'Processing Budget Tab')]
-    execute_options(options, inputfile, outdir, service_dir_budget, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_budget])
+def create_cost_management(prim_options=[]):
+    options = [
+    Option('Budgets', create_budgets, 'Processing Budgets Tab')]
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options)
 
+
+def create_budgets():
+    errors = True
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Budgets", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+
+    if errors == True:
+        CostManagement.create_terraform_budgets(inputfile, outdir, service_dir_budget, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_budget])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
 
 def create_network(execute_all=False,prim_options=[]):
     service_dir = outdir_struct
     options = [
-        Option('Create Network', Network.create_all_tf_objects, 'Create All Objects'),
-        Option('Modify Network', modify_terraform_network, 'Modifying Network'),
-        Option('Security Rules', export_modify_security_rules, 'Security Rules'),
-        Option('Route Rules', export_modify_route_rules, 'Route Rules'),
-        Option('DRG Route Rules', export_modify_drg_route_rules, 'DRG Route Rules'),
-        Option('Network Security Groups', export_modify_nsgs, 'Network Security Groups'),
-        Option('Add/Modify/Delete VLANs', create_vlans, 'VLANs'),
-        Option('Customer Connectivity', create_drg_connectivity, 'Connectivity')
+            Option('Create Network', create_terraform_network, 'Create All Objects'),
+            Option('Modify Network', modify_terraform_network, 'Modifying Network'),
+            Option('Security Rules', export_modify_security_rules, 'Security Rules'),
+            Option('Route Rules', export_modify_route_rules, 'Route Rules'),
+            Option('DRG Route Rules', export_modify_drg_route_rules, 'DRG Route Rules'),
+            Option('Network Security Groups', export_modify_nsgs, 'Network Security Groups'),
+            Option('Add/Modify/Delete VLANs', create_vlans, 'VLANs'),
+            Option('Customer Connectivity', create_drg_connectivity, 'Connectivity')
     ]
     if prim_options:
         options = match_options(options, prim_options)
@@ -975,9 +1069,30 @@ def create_network(execute_all=False,prim_options=[]):
     regions_path.append("global")
     service_dirs = [service_dir_network,service_dir_nsg, service_dir_vlan, 'rpc']
     update_path_list(regions_path=regions_path, service_dirs=service_dirs)
+def create_terraform_network(inputfile, outdir, service_dir,  prefix, ct, non_gf_tenancy):
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+
+    if errors == False:
+        Network.create_all_tf_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy=non_gf_tenancy)
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
+
 
 def modify_terraform_network(inputfile, outdir, service_dir,  prefix, ct, non_gf_tenancy):
-    Network.create_all_tf_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy=non_gf_tenancy,  modify_network=True, )
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+
+    if errors == False:
+        Network.create_all_tf_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy=non_gf_tenancy,  modify_network=True, )
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
 
 def export_modify_security_rules(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy,sub_options=[]):
     execute_all = False
@@ -1094,39 +1209,42 @@ def create_rpc(inputfile, outdir, service_dir, service_dir_network, prefix, auth
     Network.create_terraform_drg_route(inputfile, outdir, service_dir_network, prefix, non_gf_tenancy=non_gf_tenancy, ct=ct, network_connectivity_in_setupoci='connectivity', modify_network=True)
 
 def create_compute(prim_options=[]):
-    service_dir = outdir_struct
     options = [
-        Option('Add/Modify/Delete Dedicated VM Hosts', create_dedicatedvmhosts, ''),
-        Option('Add/Modify/Delete Instances/Boot Backup Policy', create_instances,''),
+        Option('Add/Modify/Delete Dedicated VM Hosts', create_dedicatedvmhosts, 'Processing Dedicated VM Hosts Tab'),
+        Option('Add/Modify/Delete Instances/Boot Backup Policy', create_instances,'Processing Instances Tab'),
     ]
     if prim_options:
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, service_dir,prefix, ct)
+    execute_options(options)
 
 
-def create_instances(inputfile, outdir, service_dir, prefix, ct):
-    options = [
-        Option(None, Compute.create_terraform_instances, 'Processing Instances Tab')
-    ]
-    execute_options(options, inputfile, outdir, service_dir_instance, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_instance])
+def create_instances():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Instances", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
 
+    if errors == False:
+        Compute.create_terraform_instances(inputfile, outdir, service_dir_instance, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_instance])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
 
-def create_dedicatedvmhosts(inputfile, outdir, service_dir, prefix, ct):
-    options = [Option(None, Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab')]
-    execute_options(options, inputfile, outdir, service_dir_dedicated_vm_host,prefix, ct)
+def create_dedicatedvmhosts():
+    Compute.create_terraform_dedicatedhosts(inputfile, outdir, service_dir_dedicated_vm_host, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_dedicated_vm_host])
 
 
 def create_storage(execute_all=False,prim_options=[]):
     options = [
-        Option('Add/Modify/Delete Block Volumes/Block Backup Policy', create_block_volumes, ''),
-        Option('Add/Modify/Delete File Systems', create_fss, ''),
-        Option('Add/Modify/Delete Object Storage Buckets', create_buckets, '')
+        Option('Add/Modify/Delete Block Volumes/Block Backup Policy', create_block_volumes, 'Processing BlockVolumes Tab'),
+        Option('Add/Modify/Delete File Systems', create_fss, 'Processing FSS Tab'),
+        Option('Add/Modify/Delete Object Storage Buckets', create_buckets, 'Processing Buckets Tab')
         #Option('Enable Object Storage Buckets Write Logs', create_cis_oss_logs, '')
     ]
     if prim_options:
@@ -1134,33 +1252,55 @@ def create_storage(execute_all=False,prim_options=[]):
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
-        execute_options(options, inputfile, outdir,prefix, ct)
+        execute_options(options)
 
-def create_block_volumes(inputfile, outdir, prefix,ct):
-    options = [ Option(None, Storage.create_terraform_block_volumes, 'Processing BlockVolumes Tab') ]
-    execute_options(options, inputfile, outdir, service_dir_block_volume, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_block_volume])
+def create_block_volumes():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Block Volumes", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+
+    if errors == False:
+        Storage.create_terraform_block_volumes(inputfile, outdir, service_dir_block_volume, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_block_volume])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
+
+def create_fss():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate FSS", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+
+    if errors == False:
+        Storage.create_terraform_fss(inputfile, outdir, service_dir_fss, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_fss])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
 
 
-def create_fss(inputfile, outdir, prefix,ct):
-    options = [Option(None, Storage.create_terraform_fss, 'Processing FSS Tab')]
-    execute_options(options, inputfile, outdir, service_dir_fss, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_fss])
+def create_buckets():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate Buckets", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
 
-
-def create_buckets(inputfile, outdir, prefix,ct):
-    options = [Option(None, Storage.create_terraform_oss, 'Processing Buckets Tab')]
-    execute_options(options, inputfile, outdir, service_dir_object_storage, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_object_storage])
-
+    if errors == False:
+        Storage.create_terraform_oss(inputfile, outdir, service_dir_object_storage, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_object_storage])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
 
 def create_loadbalancer(execute_all=False,prim_options=[]):
     options = [
-        Option('Add/Modify/Delete Load Balancers', create_lb, 'LBaaS'),
-        Option('Add/Modify/Delete Network Load Balancers', create_nlb, 'NLB')
+        Option('Add/Modify/Delete Load Balancers', create_lb, 'Processing LBaaS Tabs'),
+        Option('Add/Modify/Delete Network Load Balancers', create_nlb, 'Processing NLB Tabs')
         #Option('Enable LBaaS Logs', enable_lb_logs, 'LBaaS Logs')
     ]
     if prim_options:
@@ -1168,9 +1308,9 @@ def create_loadbalancer(execute_all=False,prim_options=[]):
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
-        execute_options(options, inputfile, outdir, prefix, ct)
+        execute_options(options)
 
-def create_lb(inputfile, outdir, prefix, ct):
+def create_lb():
     options = [
          Option(None, Network.create_terraform_lbr_hostname_certs, 'Creating LBR'),
          Option(None, Network.create_backendset_backendservers, 'Creating Backend Sets and Backend Servers'),
@@ -1184,7 +1324,7 @@ def create_lb(inputfile, outdir, prefix, ct):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_loadbalancer])
 
 
-def create_nlb(inputfile, outdir, prefix, ct):
+def create_nlb():
     options = [
          Option(None, Network.create_terraform_nlb_listener, 'Creating NLB and Listeners'),
          Option(None, Network.create_nlb_backendset_backendservers, 'Creating NLB Backend Sets and Backend Servers'),
@@ -1196,24 +1336,24 @@ def create_nlb(inputfile, outdir, prefix, ct):
 
 def create_databases(execute_all=False,prim_options=[]):
     options = [
-        Option('Add/Modify/Delete Virtual Machine or Bare Metal DB Systems', create_terraform_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab'),
+        Option('Add/Modify/Delete Virtual Machine or Bare Metal DB Systems', create_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab'),
         Option('Add/Modify/Delete EXA Infra and EXA VM Clusters', create_exa_infra_vmclusters, ''),
-        Option('Add/Modify/Delete ADBs', create_terraform_adb, 'Processing ADB Tab'),
+        Option('Add/Modify/Delete ADBs', create_adb, 'Processing ADB Tab'),
     ]
     if prim_options:
         options = match_options(options, prim_options)
     else:
         if not execute_all:
             options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, prefix, ct)
+    execute_options(options)
 
-def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix,ct):
+def create_dbsystems_vm_bm():
     Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, service_dir_dbsystem_vm_bm, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_dbsystem_vm_bm])
 
 
-def create_exa_infra_vmclusters(inputfile, outdir, prefix,ct):
+def create_exa_infra_vmclusters():
     options = [Option(None, Database.create_terraform_exa_infra, 'Processing Exa-Infra Tab'),
                Option(None, Database.create_terraform_exa_vmclusters, 'Processing Exa-VM-Clusters Tab')]
     execute_options(options, inputfile, outdir, service_dir_database_exacs, prefix, ct)
@@ -1221,7 +1361,7 @@ def create_exa_infra_vmclusters(inputfile, outdir, prefix,ct):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_database_exacs])
 
 
-def create_terraform_adb(inputfile, outdir, prefix,ct):
+def create_adb():
     Database.create_terraform_adb(inputfile, outdir, service_dir_adb, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_adb])
@@ -1264,10 +1404,10 @@ def create_developer_services(execute_all=False,prim_options=[]):
     execute_options(options, inputfile, outdir, prefix, auth_mechanism, config_file_path,ct)
 
 def create_rm_stack(inputfile, outdir, prefix, auth_mechanism, config_file, ct):
-    regions = get_region_list(rm = True)
+    regions = get_region_list(rm = True, vizoci = False)
     DeveloperServices.create_resource_manager(outdir,var_file, outdir_struct, prefix, auth_mechanism, config_file, ct, regions)
 
-def create_oke(inputfile, outdir, prefix, auth_mechanism, config_file, ct):
+def create_oke(inputfile, outdir, prefix, dummy1, dummy2, ct):
     DeveloperServices.create_terraform_oke(inputfile, outdir, service_dir_oke, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_oke])
@@ -1279,26 +1419,38 @@ def create_sddc(prim_options=[]):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_sddc])
 
 
-def create_dns(prim_options=[]):
-    options = [
-        Option('Add/Modify/Delete DNS Views/Zones/Records', create_terraform_dns,
-               'Processing DNS-Views-Zones-Records Tab'),
-        Option('Add/Modify/Delete DNS Resolvers', Network.create_terraform_dns_resolvers,
-               'Processing DNS-Resolvers Tab')
-    ]
-    if prim_options:
-        options = match_options(options, prim_options)
+def create_dns_management(prim_options=[]):
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate DNS", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+
+    if errors == False:
+        options = [
+            Option('Add/Modify/Delete DNS Views/Zones/Records', create_dns,
+                   'Processing DNS-Views-Zones-Records Tab'),
+            Option('Add/Modify/Delete DNS Resolvers', create_dns_resolvers,
+                   'Processing DNS-Resolvers Tab')
+        ]
+        if prim_options:
+            options = match_options(options, prim_options)
+        else:
+            options = show_options(options, quit=True, menu=True, index=1)
+        execute_options(options)
+        # Update modified path list
+        update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_dns])
     else:
-        options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, service_dir_dns, prefix, ct)
-    # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_dns])
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
 
 
-def create_terraform_dns(inputfile, outdir, service_dir, prefix, ct):
-    Network.create_terraform_dns_views(inputfile, outdir, service_dir, prefix, ct)
-    Network.create_terraform_dns_zones(inputfile, outdir, service_dir, prefix, ct)
-    Network.create_terraform_dns_rrsets(inputfile, outdir, service_dir, prefix, ct)
+def create_dns():
+    Network.create_terraform_dns_views(inputfile, outdir, service_dir_dns, prefix, ct)
+    Network.create_terraform_dns_zones(inputfile, outdir, service_dir_dns, prefix, ct)
+    Network.create_terraform_dns_rrsets(inputfile, outdir, service_dir_dns, prefix, ct)
+
+def create_dns_resolvers():
+    Network.create_terraform_dns_resolvers(inputfile, outdir, service_dir_dns, prefix, ct)
 
 def create_logging(prim_options=[]):
     options = [
@@ -1332,15 +1484,27 @@ def create_logging(prim_options=[]):
         execute_options(options1, inputfile, outdir, prefix, ct, service_dir)
         update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir])
 
+def create_kms():
+    errors = False
+    if (workflow_type == 'create_resources'):
+        choices = [Option("Validate KMS", None, None)]
+        errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
+    if errors == False:
+        Security.create_terraform_keyvaults(inputfile, outdir, service_dir_kms, prefix, ct)
+        # Update modified path list
+        update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])
+    else:
+        print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
+        exit(1)
 def create_security_services(prim_options=[]):
-    options = [Option("Add/Modify/Delete KMS (Keys/Vaults)", Security.create_terraform_keyvaults, 'Creating Keys/Vaults'),
-               Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard')]
+    options = [Option("Add/Modify/Delete KMS (Keys/Vaults)", create_kms, 'Processing KMS Tab'),
+               Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enabling Cloud Guard')]
 
     if prim_options:
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, service_dir_kms, prefix, ct)
+    execute_options(options)
     for option in options:
         if option.name == 'Add/Modify/Delete KMS (Keys/Vaults)':
             update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])
@@ -1367,14 +1531,13 @@ def run_utility(prim_options=[]):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])"""
 
 
-def enable_cis_cloudguard(*args,**kwargs):
+def enable_cis_cloudguard():
     if not devops:
         region = input("Enter Reporting Region for Cloud Guard eg london: ")
     else:
         region = ct.cg_region
     region = region.lower()
-    options = [Option(None, Security.enable_cis_cloudguard, 'Enabling Cloud Guard')]
-    execute_options(options, outdir, service_dir_cloud_guard, prefix, ct, region)
+    Security.enable_cis_cloudguard(outdir, service_dir_cloud_guard, prefix, ct, region)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_cloud_guard])
 
@@ -1499,6 +1662,86 @@ def run_showoci(outdir, prefix, config_file,sub_options=[]):
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, outdir, prefix, config_file)
+
+def run_vizoci(outdir, prefix, config_file,sub_options=[]):
+    cmdpath = os.path.dirname(os.path.abspath(__file__)) + "/../othertools/"
+    tag = "vizoci"
+    cwd= os.getcwd()
+    os.chdir(cmdpath + tag)
+    cmd = "python " + "vizoci-gather.py"
+
+    export_regions = get_region_list(rm=False,vizoci=True)
+    reg_list = []
+    for reg in export_regions:
+        reg_list.append(ct.region_dict[reg])
+
+    compartments = ct.get_compartment_map(var_file, 'VizOCI')
+    comp_list=[]
+    for comp in compartments:
+        if '::' in comp:
+            comp=comp.replace("::",".")
+        comp_list.append("root."+comp)
+
+    filter_str1 = "Do you also want to generate graphs (y/n), Default is n: "
+
+    if not devops:
+        graph_gen = "n" if input(filter_str1).lower() != 'y' else "y"
+    else:
+        graph_gen = None
+        if ct.generate_graphs:
+            if ct.generate_graphs.lower() == "false":
+                graph_gen = "n"
+            if ct.generate_graphs.lower() == "true":
+                graph_gen = "y"
+        graph_gen = graph_gen if graph_gen else None
+
+
+    dirname = prefix + "_vizoci_report"
+    resource = "vizoci_report"
+    if outdir[len(outdir) - 1] == "/":
+        outdir = outdir.rsplit("/", 2)[0] + "/othertools_files"
+    else:
+        outdir = outdir.rsplit("/", 1)[0] + "/othertools_files"
+    out_rep = outdir + '/' + dirname
+    # config = "--config "+ config
+
+    commonTools.backup_file(outdir, resource, dirname)
+    if not os.path.exists(out_rep):
+        os.makedirs(out_rep)
+
+    config = oci.config.from_file(file_location=config_file_path)
+    with open('config/vizociconfig.json', 'r') as json_file:
+        json_data = json.load(json_file)
+
+    json_data['vizocidir'] = out_rep
+    json_data['home-region'] = ct.region_dict[ct.home_region]
+    json_data['tenantocid'] = config['tenancy']
+    json_data['regions'] = reg_list
+    json_data['compartments'] = comp_list
+
+    if auth_mechanism == 'api_key':
+        json_data['ociconfig']['authtype'] = 'APIKEY'
+        json_data['ociconfig']['apikeyinfo']['filelocation'] = config_file
+    if auth_mechanism == 'instance_principal':
+        json_data['ociconfig']['authtype'] = 'INSTANCE'
+
+    with open('config/vizociconfig.json', 'w') as f:
+        json.dump(json_data, f, indent=2)
+
+    split = str.split(cmd)
+    print("Executing: " + cmd)
+    execute(split, config_file_path)
+
+    print("\n\nVizOCI Data Gather Completed.")
+
+    if graph_gen is not None and graph_gen.lower()=='y':
+        print("Proceeding with Graph Generation...\n\n")
+        cmd = "python " + "vizoci-graph-gen.py"
+        split = str.split(cmd)
+        print("Executing: " + cmd)
+        execute(split, config_file_path)
+
+    os.chdir(cwd)
 
 def export_update_dr_plan(outdir, prefix, config_file_path,option=''):
     print("Use Excel Template oci-fsdr-plan-template.xlsx at /cd3user/oci_tools/othertools/oci-fsdr for the export")
@@ -1906,15 +2149,15 @@ if non_gf_tenancy:
     # verify_outdir_is_empty()
     print("\nworkflow_type set to export_resources. Export existing OCI objects and Synch with TF state")
     print("We recommend to not have any existing tfvars/tfstate files for export out directory")
-    export_regions = get_region_list(rm=False)
+    export_regions = get_region_list(rm=False,vizoci=False)
     inputs = [
         Option('Export Identity', export_identityOptions, 'Identity'),
         Option('Export Governance', export_governance, 'Governance'),
         Option('Export Cost Management', export_cost_management, 'Cost Management'),
         Option('Export Network', export_network, 'Network'),
         Option('Export OCI Firewall', export_firewall_policies, 'OCI Firewall Policy'),
-        Option('Export DNS Management', export_dns, 'DNS Management'),
-        Option('Export Compute', export_compute, 'Dedicated VM Hosts and Instances'),
+        Option('Export DNS Management', export_dns_management, 'DNS Management'),
+        Option('Export Compute', export_compute, 'Compute'),
         Option('Export Storage', export_storage, 'Storage'),
         Option('Export Databases', export_databases, 'Databases'),
         Option('Export Load Balancers', export_loadbalancer, 'Load Balancers'),
@@ -1934,14 +2177,14 @@ else:
         Option('Cost Management', create_cost_management, 'Cost Management'),
         Option('Network', create_network, 'Network'),
         Option('OCI Firewall', create_validate_firewall_service, 'Firewall'),
-        Option('DNS Management', create_dns, 'DNS Management'),
+        Option('DNS Management', create_dns_management, 'DNS Management'),
         Option('Compute', create_compute, 'Compute'),
         Option('Storage', create_storage, 'Storage'),
         Option('Database', create_databases, 'Databases'),
         Option('Load Balancers', create_loadbalancer, 'Load Balancers'),
         Option('Management Services', create_management_services, 'Management Services'),
         Option('Developer Services', create_developer_services, 'Developer Services'),
-        Option('Security', create_security_services, 'OCI security services'),
+        Option('Security', create_security_services, 'Security Services'),
         Option('Logging Services', create_logging, 'Logging Services'),
         Option('Software-Defined Data Centers - OCVS', create_sddc, 'Processing SDDC Tabs'),
         Option('CD3 Services', cd3_services, 'CD3 Services'),

@@ -17,7 +17,7 @@ resource "oci_events_rule" "event" {
   condition   = var.condition
   actions {
     dynamic "actions" {
-      for_each = var.actions[var.key_name]["actions"] != [] ? var.actions[var.key_name]["actions"] : null
+      for_each = var.actions[var.key_name]["actions"] != [] ? var.actions[var.key_name]["actions"] : []
       content {
         #Required
         action_type = actions.value.action_type

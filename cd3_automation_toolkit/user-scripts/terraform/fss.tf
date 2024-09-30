@@ -82,9 +82,9 @@ module "fss-replication" {
   for_each = (var.fss_replication != null || var.fss_replication != {}) ? var.fss_replication : {}
 
   #Required
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  source_id      = length(regexall("ocid1.filesystem.oc1*", each.value.source_id)) > 0 ? each.value.source_id : merge(module.fss.*...)[each.value.source_id]["fss_tf_id"]
-  target_id      = length(regexall("ocid1.filesystem.oc1*", each.value.target_id)) > 0 ? each.value.target_id : merge(module.fss.*...)[each.value.target_id]["fss_tf_id"]
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  source_id      = length(regexall("ocid1.filesystem.oc*", each.value.source_id)) > 0 ? each.value.source_id : merge(module.fss.*...)[each.value.source_id]["fss_tf_id"]
+  target_id      = length(regexall("ocid1.filesystem.oc*", each.value.target_id)) > 0 ? each.value.target_id : merge(module.fss.*...)[each.value.target_id]["fss_tf_id"]
   #Optional
   defined_tags         = each.value.defined_tags
   display_name         = each.value.display_name

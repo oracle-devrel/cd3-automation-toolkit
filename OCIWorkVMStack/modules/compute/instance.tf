@@ -6,7 +6,6 @@ resource "oci_core_instance" "instances" {
   shape               = var.instance_shape
 
   shape_config {
-
     memory_in_gbs = var.instance_ram
     ocpus         = var.instance_ocpus
     #baseline_ocpu_utilization = var.baseline_ocpu_utilization
@@ -14,7 +13,7 @@ resource "oci_core_instance" "instances" {
   source_details {
     source_id   = var.instance_image_ocid
     source_type = "image"
-    #boot_volume_size_in_gbs = var.boot_volume_size
+    boot_volume_size_in_gbs = var.boot_volume_size
   }
   create_vnic_details {
     #assign_public_ip = local.PulicIP == true ? "false" : "true"
@@ -29,6 +28,20 @@ resource "oci_core_instance" "instances" {
     current_user_ocid   = var.current_user_ocid
     config_region       = var.config_region
     user_data           = fileexists("${path.root}/scripts/${var.cloud_init_script}") ? "${base64encode(file("${path.root}/scripts/${var.cloud_init_script}"))}" : null
+  }
+  instance_options {
+    are_legacy_imds_endpoints_disabled = "true"
+  }
+
+  is_pv_encryption_in_transit_enabled   = "true"
+  agent_config {
+    are_all_plugins_disabled = "false"
+    is_management_disabled   = "false"
+    is_monitoring_disabled   = "false"
+    plugins_config {
+      desired_state = "ENABLED"
+      name          = "Bastion"
+    }
   }
 
   lifecycle {

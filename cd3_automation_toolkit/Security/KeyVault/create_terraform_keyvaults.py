@@ -140,18 +140,13 @@ def create_terraform_keyvaults(inputfile, outdir, service_dir, prefix, ct):
                     if columnvalue != '' and columnvalue.lower() != 'nan':
                         columnvalue = columnvalue.strip().lower()
                         if columnvalue != region:
-                            if flag == 1:
-                                if columnvalue in commonTools.endNames:
-                                    break
-                                if columnvalue not in ct.all_regions:
-                                    print(
-                                        "ROW "+str(i+3)+": Invalid Replica Region!! Tenancy is not subscribed to this region. Please try again")
-                                    exit(1)
-                                tempdict_vault = {'replica_region': ct.region_dict[columnvalue]}
-                            else:
+                            if columnvalue in commonTools.endNames:
+                                break
+                            if columnvalue not in ct.all_regions:
                                 print(
-                                    "ROW "+str(i+3)+": Error!! Replication can only be done for Virtual Private vaults. Remove the entry and try again. Exiting...")
+                                    "ROW "+str(i+3)+": Invalid Replica Region!! Tenancy is not subscribed to this region. Please try again")
                                 exit(1)
+                            tempdict_vault = {'replica_region': ct.region_dict[columnvalue]}
                         else:
                             print(
                                 "ROW "+str(i+3)+": Error!! Replica region can't be same as the primary vault's region. Try with a different region. Exiting...")

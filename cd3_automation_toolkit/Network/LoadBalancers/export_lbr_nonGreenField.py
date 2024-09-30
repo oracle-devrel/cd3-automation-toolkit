@@ -477,6 +477,9 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
                 values_for_column_bss['Cookie Path'].append("")
                 values_for_column_bss['Disable Fallback(TRUE|FALSE)'].append("")
 
+            # Get Health Checker
+            hc = lbr.get_health_checker(eachlbr.__getattribute__('id'), backendsets).data
+
             for col_headers in values_for_column_bss:
                 headers_lower = commonTools.check_column_headers(col_headers)
 
@@ -503,8 +506,6 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
 
                 # Process the Backend Set and Backend Server  Columns
                 elif col_headers in sheet_dict_bss.keys():
-                    hc = lbr.get_health_checker(eachlbr.__getattribute__('id'), backendsets).data
-
                     if col_headers == "Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)":
                         policy = backendset_details.__getattribute__(sheet_dict_bss[col_headers])
                         values_for_column_bss['Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)'].append(
@@ -871,41 +872,48 @@ def print_routing_policies(region, ct, values_for_column_rp, LBRs, lbr_compartme
         comp_done_ids = []
         for comp_name, comp_id in ct.ntk_compartment_ids.items():
             if lbr_comp_id == comp_id and lbr_comp_id not in comp_done_ids:
-                # Retrieve the values for the routing policies
-                for rp, values in eachlbr.__getattribute__('routing_policies').items():
-                    for col_headers in values_for_column_rp.keys():
-                        headers_lower = commonTools.check_column_headers(col_headers)
+                lbr_compartment_name = comp_name
+                comp_done_ids.append(lbr_comp_id)
 
-                        if col_headers in sheet_dict_common.keys():
-                            values_for_column_rp = common_headers(region, col_headers, values_for_column_rp, eachlbr,
-                                                                  sheet_dict_common, lbr_compartment_name)
-                        elif col_headers == 'LBR Name':
-                            values_for_column_rp[col_headers].append(eachlbr.display_name)
+        # Retrieve the values for the routing policies
+        for rp, values in eachlbr.__getattribute__('routing_policies').items():
+            for col_headers in values_for_column_rp.keys():
+                headers_lower = commonTools.check_column_headers(col_headers)
 
-                        elif col_headers == 'Routing Policy Name':
-                            values_for_column_rp[col_headers].append(values.__getattribute__('name'))
+                if col_headers in sheet_dict_common.keys():
+                    values_for_column_rp = common_headers(region, col_headers, values_for_column_rp, eachlbr,
+                                                          sheet_dict_common, lbr_compartment_name)
+                elif col_headers == 'LBR Name':
+                    values_for_column_rp[col_headers].append(eachlbr.display_name)
 
-                        elif col_headers == "Rules":
-                            rules = []
-                            for rule in values.rules:
-                                if hasattr(rule, 'actions') and rule.actions and hasattr(rule.actions[0], 'backend_set_name'):
-                                    backend_set_name = rule.actions[0].backend_set_name
-                                else:
-                                    backend_set_name = None
-                                rule_str = f"{rule.name}::{rule.condition}::{backend_set_name}"
-                                rules.append(rule_str)
-                            rules_string = "\n".join(rules)
-                            values_for_column_rp[col_headers].append(rules_string)
+                elif col_headers == 'Routing Policy Name':
+                    values_for_column_rp[col_headers].append(values.__getattribute__('name'))
 
-                        elif col_headers in sheet_dict_rp.keys():
-                            values_for_column_rp[col_headers].append(
-                                values.__getattribute__(sheet_dict_rp[col_headers]))
-
+                elif col_headers == "Rules":
+                    rules = []
+                    for rule in values.rules:
+                        if hasattr(rule, 'actions') and rule.actions and hasattr(rule.actions[0], 'backend_set_name'):
+                            backend_set_name = rule.actions[0].backend_set_name
                         else:
-                            # Process the remaining  Columns
-                            oci_objs = [eachlbr, values]
-                            values_for_column_rp = commonTools.export_extra_columns(oci_objs, col_headers,
-                                                                                    sheet_dict_rp,
+                            backend_set_name = None
+
+                        name = rule.name.strip("\n")
+                        condition = rule.condition.strip("\n")
+                        backend_set_name = backend_set_name.strip("\n")
+                        rule_str = f"{name}::{condition}::{backend_set_name}"
+                        rules.append(rule_str)
+                    rules_string = "\n".join(rules)
+                    values_for_column_rp[col_headers].append(rules_string)
+
+                elif col_headers in sheet_dict_rp.keys():
+                    values_for_column_rp[col_headers].append(
+                        values.__getattribute__(sheet_dict_rp[col_headers]))
+
+                else:
+                    # Process the remaining  Columns
+                    oci_objs = [eachlbr, values]
+                    values_for_column_rp = commonTools.export_extra_columns(oci_objs, col_headers,
+                                                                            sheet_dict_rp,
                                                                                     values_for_column_rp)
 
     return values_for_column_rp
@@ -968,7 +976,7 @@ def export_lbr(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
     print("\nFetching details of Load Balancer...")
 
     # Create backups
-    file_name = 'import_commands_lbr_nonGF.sh'
+    file_name = 'import_commands_lbr.sh'
     resource = 'import_lbr'
     total_resources=0
 

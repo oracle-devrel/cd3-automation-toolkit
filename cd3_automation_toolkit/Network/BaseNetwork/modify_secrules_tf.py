@@ -160,7 +160,8 @@ def modify_terraform_secrules(inputfile, outdir, service_dir,prefix, ct, non_gf_
                 columnvalue = commonTools.check_columnvalue(columnvalue)
 
                 # Check for multivalued columns
-                tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
+                if columnname.lower() not in ["source", "destination"]: # this is to support IPv6 CIDRs as it contains "::"
+                    tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
                 # Process Defined and Freeform Tags
                 if columnname.lower() in commonTools.tagColumns:
