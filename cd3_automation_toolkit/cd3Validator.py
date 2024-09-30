@@ -2020,7 +2020,7 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
             log("\n============================= Verifying Buckets Tab ==========================================\n")
             print("\nValidating Buckets Tab..")
             buckets_check = validate_buckets(filename,ct.ntk_compartment_ids)
-            errors = budgets_check
+            errors = buckets_check
 
             # Prints the final result; once the validation is complete
     if any([comp_check, groups_check, policies_check, tags_check, instances_check, dns_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check,buckets_check, kms_check]) or False in final_check:
