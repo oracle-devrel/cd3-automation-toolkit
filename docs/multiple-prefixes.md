@@ -1,7 +1,7 @@
 # **Connect container to OCI Tenancy - Multiple Prefixes**
 ---
 
-The toolkit allows independent management of multiple tenancies or environments using the same container. This enables better resource control and custom configurations for each environment. 
+The toolkit allows independent management of multiple environments using the same container. This enables better resource control and custom configurations for each environment. 
 
 
 !!! note 

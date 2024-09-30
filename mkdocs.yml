@@ -21,7 +21,7 @@ nav:
       - URL Whitelisting(optional): url-whitelisting.md
     - Connect Container to OCI: 
       - connect-container-to-oci-tenancy.md
-      - Multiple Prefixes(optional): multiple-connections.md
+      - Multiple Prefixes(optional): multiple-prefixes.md
 
   - Use with CLI: 
     - cd3-cli.md

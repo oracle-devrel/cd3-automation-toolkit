@@ -1,8 +1,7 @@
 # CD3 Slack Channel
 
 
-
-CD3 Public Slack Channel is available on the workspace [here](https://join.slack.com/t/oracledevs/shared_invite/zt-2lfv28k9i-fXiYiHcdh3Amsf6cVXvZTQ).
+CD3 Public Slack Channel is available on the Oracle Developers workspace. <a href="https://join.slack.com/t/oracledevs/shared_invite/zt-2lfv28k9i-fXiYiHcdh3Amsf6cVXvZTQ"><b>Click here</b></a> to sign in.
 
 Once you are signed into the workspace, you can join the channel <b> #cd3-toolkit-users </b>
 
