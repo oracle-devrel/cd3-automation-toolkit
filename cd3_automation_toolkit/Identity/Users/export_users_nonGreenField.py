@@ -38,19 +38,22 @@ def append_user_info(values_for_column_users,sheet_dict_users, ct, user_info, us
         column_map = {
             "Region": ct.home_region.capitalize(),
             "User Name": username,
-            "Family Name": family_name,
-            "First Name": given_name,
+            "Family Name": family_name if hasattr(user_info, 'name') else "",
+            "First Name": given_name if hasattr(user_info, 'name') else "",
             "Description": description,
-            "Display Name": display_name,
+            "Display Name": display_name if hasattr(user_info, 'display_name') else "",
             "User Email": email,
             "Recovery Email": recovery_email,
             "Domain Name": domain_key,
             "Defined Tags": str(user_defined_tags) if user_defined_tags else "",
             "Enable Capabilities": add_capabilities(user_info),
-            "Middle Name": user_info.name.middle_name,
-            "Prefix": user_info.name.honorific_prefix,
-            "Home Phone Number": next((phone.value for phone in user_info.phone_numbers if phone.type == "home"), None) if user_info.phone_numbers else None,
-            "Mobile Phone Number": next((phone.value for phone in user_info.phone_numbers if phone.type == "mobile"), None) if user_info.phone_numbers else None
+            "Middle Name": getattr(user_info.name, 'middle_name', "") if hasattr(user_info, 'name') else "",
+            "Prefix": getattr(user_info.name, 'honorific_prefix', "") if hasattr(user_info, 'name') else "",
+            "Home Phone Number": next((phone.value for phone in user_info.phone_numbers if phone.type == "home"), None)
+            if hasattr(user_info, 'phone_numbers') and user_info.phone_numbers else None,
+            "Mobile Phone Number": next((phone.value for phone in user_info.phone_numbers if phone.type == "mobile"),
+                                        None)
+            if hasattr(user_info, 'phone_numbers') and user_info.phone_numbers else None
         }
         return column_map.get(col_header, None)
 
@@ -107,7 +110,8 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
     if ct.identity_domain_enabled:
         for domain_key, idcs_endpoint in export_domains.items():
             domain_name = domain_key.split("@")[1]
-            domain_client = oci.identity_domains.IdentityDomainsClient(config, idcs_endpoint)
+            domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,
+                                                                       service_endpoint=idcs_endpoint)
             users = domain_client.list_users()
             index = 0
             for user in users.data.resources:
@@ -164,6 +168,7 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
                 username = user_info.name
                 description = user_info.description
                 email = user_info.email
+                user_defined_tags = []
                 tf_name = commonTools.check_tf_variable(username)
                 import_user_id = user_info.id
                 tf_resource = f'module.iam-users[\\"{str(tf_name)}\\"].oci_identity_user.user'
@@ -171,7 +176,9 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
                     importCommands += f'\n{tf_or_tofu} import "{tf_resource}" "{import_user_id}"'
 
                 count_u += 1
-                append_user_info(values_for_column_users,sheetName_users, ct, user_info, username, "", description, email, "", [])
+                #append_user_info(values_for_column_users,sheetName_users, ct, user_info, username, "", description, email, "", [])
+                append_user_info(values_for_column_users, sheet_dict_users, ct, user_info, username, "", "", "", "",
+                    description, email, "", user_defined_tags)
 
             if user.capabilities:
                 tf_resource = f'module.iam-users[\\"{str(tf_name)}\\"].oci_identity_user_capabilities_management.user_capabilities_management[0]'

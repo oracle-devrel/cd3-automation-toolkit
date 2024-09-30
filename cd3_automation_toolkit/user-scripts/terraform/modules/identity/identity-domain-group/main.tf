@@ -8,7 +8,7 @@
 locals {
   user_ids = {
     for user in data.oci_identity_domains_users.users.users :
-      user.user_name => user.id
+      user.user_name => user.id...
   }
 }
 
@@ -33,7 +33,7 @@ resource "oci_identity_domains_group" "group" {
     for_each = {for k in var.members: k=>k}
     content {
       type  = "User"
-      value = local.user_ids[members.value]
+      value = local.user_ids[members.value][0]
     }
   }
   urnietfparamsscimschemasoracleidcsextensionrequestable_group {

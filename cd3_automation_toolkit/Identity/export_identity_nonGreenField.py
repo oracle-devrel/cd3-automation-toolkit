@@ -357,7 +357,8 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         if ct.identity_domain_enabled:
             for domain_key, idcs_endpoint in export_domains.items():
                 domain_name = domain_key.split("@")[1]
-                domain_client = oci.identity_domains.IdentityDomainsClient(config, idcs_endpoint)
+                domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,
+                                                                           service_endpoint=idcs_endpoint)
                 groups = domain_client.list_groups(attributes=['members'], attribute_sets=['all'])
                 dyngroups = domain_client.list_dynamic_resource_groups(attributes=['matching_rule'], attribute_sets=['all'])
 
