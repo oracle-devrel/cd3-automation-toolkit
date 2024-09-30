@@ -1,0 +1,424 @@
+-------------------------------------
+CD3 Automation Toolkit Tag v2024.1.0
+Jan 31st, 2024
+-------------------------------------
+1. Support for multiple Authentication Mechanisms for OCI SDK - API Key, Session Token, Instance Principal
+2. Support for toolkit via CI/CD pipelines for setUpOCI as well as terraform actions
+3. Support for Remote State Management for terraform state using Object Storage bucket
+4. Migrated oci terraform provider from hashicorp/oci to oracle/oci and updated to latest version
+5. Replaced parameter in setUpOCI.properties - 'non_gf_tenancy' with 'workflow_type'. Valid values - 'create_resources' or 'export_resources'
+6. Moved toolkit configuration files into /cd3user/tenancies/<customer_name>/.config_files folder
+7. New versioning for the toolkit: <year>.<major_release>.<minor_release>
+
+----------------------------------
+CD3 Automation Toolkit Tag v12.1
+----------------------------------
+1. Bug fix for SDDC
+2. Bug fix for OPA rules
+3. Updated CIS Compliance Script
+
+----------------------------------
+CD3 Automation Toolkit Tag v12
+----------------------------------
+1. Introduced new service -Network Sources
+2. Added support for multiple Exa VM Clusters on single Exa Infra
+3. Added support for OCVS standard shapes
+4. Revisited Instance Terraform to support plugins, additional attributes like secure boot etc.
+5. Added validator for buckets
+6. Bug fix for NLB, DNS Resolver.
+7. Introduced alpha release of OPA policies
+
+----------------------------------
+CD3 Automation Toolkit Tag v11.1
+----------------------------------
+1. Python code tuning for fetch compartment OCIDs for RM stack upload and CD3Validator.
+2. Python code cleanup
+3. Sheet name fix for NLB in CD3-Blank-template.xlsx
+4. SDDC template fix
+5. Support for VPN along with CD3 docker container
+
+-----------------------------------
+CD3 Automation Toolkit Tag v11
+----------------------------------
+1. New Services - Buckets, OCVS, VLANs, RPC, Private DNS, Users
+2. Added support for Remote Execution of shell and ansible scripts after terraform
+   provisioning of the instances.
+3. Added support for executing cloud-init script for instances.
+4. Updated cloud guard to create cloned recipes and use them for the 'root' target.
+5. Python tuning wrt fetch compartments script. The toolkit will rely on variables_<region>.tf file
+   in the home region for compartment OCIDs instead of fetching it from OCI everytime.
+6. Bug fix for path route sets looping issue with LBaaS.
+7. Bug fix for ADB export of ADBs with Secured Access from anywhere.
+8. Bug fix for RM stack upload
+
+----------------------------------
+CD3 Automation Toolkit Tag v10.2
+----------------------------------
+1. Bug fixes - tfvars template change for Security Rules to include source port range, RM stack zip file,
+   nsg TF variable check, encoding issue with cis_reports.py, making drg_route_table attributes as optional -
+   ecmp changes, multi-line and tags issue for Identity Components.
+2. Restrict directory permissions for cd3user inside the container.
+3. Fix python package versions in shell scrip while launching container.
+4. Allowed cloud guard to be enabled from any region and fixed terraform for cloud guard.
+
+----------------------------------
+CD3 Automation Toolkit Tag v10.1
+----------------------------------
+1. Support for separating the out directory for terraform files generated for each resource. Single outdir can also
+   be used if required. A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties to
+   achieve this config.
+   Please note that this can be configured only at the time of setting up the tenancy. If for any reason, you need to change the
+   directory structure, you will need to re run createTenancy.py again.
+2. Support to export data from a particular region instead of all subscribed regions has been added to the
+   Non-Greenfield workflow.
+3. Upgrade Service Connectors to support Monitoring as Source/Target and Functions as Target.
+4. Added Functionality for export of ADBs.
+5. Python code re do for creation of NSGs - Supports duplicate NSG names across different regions.
+6. Terraform code update to make Null values as optional in tfvars for all components.
+7. Performance tuning has been done wrt Fetch Compartments during Non-Greenfield workflow. The script will be executed
+   only once when you select multiple export options simultaneously.
+8. Bug fixes wrt Networking, Tagging, Excel sheet templates etc
+
+----------------------------------
+CD3 Automation Toolkit Tag v10
+----------------------------------
+1. Support for new services - OKE and SCH. New tab for 'OKE' is included in CD3-CIS-template.xlsx
+   New tab for 'ServiceConnectors' is added to CD3-CIS-ManagementServices-template.xlsx
+2. Added the script to fetch regions subscribed to the tenancy. This will be executed automatically every time
+   setUpOCI is executed.
+3. Introduced a new option in setUpOCI menu called 'CD3 Services' to execute 'Fetch Compartments' and 'Fetch Protocols'
+   Scripts.
+4. Modified the setUpOCI workflow to prompt the user to execute 'Fetch Compartments' script for the very first time
+   running the toolkit or if any new compartments are created.
+5. Bug fixes wrt Instances, DB Systems
+
+----------------------------------
+CD3 Automation Toolkit Tag v9.2.1
+----------------------------------
+1. Sample terraform import command included as part of output tfvars file for each OCI resource managed
+   by Toolkit.
+2. Split Export of Network options to chose export of different components separately eg Major Objects,
+   Subnets, NSGs etc.
+3. Include support for Marketplace Images for Instances.
+4. Few bug fixes/enhancements wrt export of Instances/NSGs, making null values for NSGs/Instances optional
+   in tfvars
+
+---------------------------------
+CD3 Automation Toolkit Tag v9.2
+---------------------------------
+1. Terraform modules for FSS and ADB(Modified the input sheet for ADB to include more features)
+2. Included new service - Network Load Balancers
+3. Enhanced Tags sheet to include Default Tags for Multiple Compartments.
+4. Enhanced CD3 Validator for FSS, NSGs column for each tab.
+5. Included CIS compliance checker script as part of setUpOCI Menu option
+6. Cleanup of variables_<region>.tf file
+7. Updated CD3 templates in example folder with latest CIS data
+8. Bug fixes wrt multiple services like Instances, Notifications etc
+9. Introduced documentation folder containing terraform and toolkit user guide in outdir of each customer
+
+---------------------------------
+CD3 Automation Toolkit Tag v9.1
+--------------------------------
+1. Terraform Modules for Instances, Block Volumes, Tags, CIS features, LBaaS
+2. Introduced new columns for PV encryption in Instances/Block Volumes.
+3. Introduced new columns for Min/Max bandwidth for flexible shapes load balancers,
+   reserved public IP. Support for OCI certificate management certificates for Listeners,
+   BackendSets.
+4. Bug fixes
+
+---------------------------------
+CD3 Automation Toolkit Tag v9.0.2
+--------------------------------
+1. Multiple bug fixes for network and policies
+
+---------------------------------
+CD3 Automation Toolkit Tag v9.0.1
+--------------------------------
+1. Bug fix for data after END tag in DRGRouteRulesinOCI sheet.
+2. Bug fix for tenancies having both DRGv1 and DRGv2
+3. Bug fix for VCN Flow Log output
+4. Bug fix for NSG ICMP rules not having only ICMP type
+5. Modified output template files to adjust the spacing
+
+-------------------------------
+CD3 Automation Toolkit Tag v9.0
+-------------------------------
+1. Terraform output files in modules format for IAM, Network, Database(DBSystems and Exa) and Management Services(Events, Notifications) components.
+2. Added support for Alarms with output files as terraform modules.
+3. Updated the excel sheet templates as per latest CIS compliance for IAM compartments, groups, policies,
+   events, notifications and alarms.
+4. Added support for multiple VCN CIDRs in VCNs sheet.
+5. Added support for same VCN names across regions.
+6. Added export for Dedicated VM Hosts and Database tabs as terraform flat files
+7. Modified Database tabs to include new features.
+8. Restructured the code directories and setUpOCI menu options.
+9. Added drop downs in the excel sheet columns to make excel filling easier.
+10.Updated OCI_regions to include all regions
+
+------------------------
+SetUPOCI_Via_TF Tag v8.0.3
+------------------------
+1. Bug fix for Availability Domain values while export of block volumes, FSS
+2. Bug fix for DRG Route Rules export error - 'Too Many requests'
+3. Bug fix for export of Tags having spaces in the values
+
+------------------------
+SetUPOCI_Via_TF Tag v8.0.2
+------------------------
+1. Bug fix for End Tag in NSGs tab
+2. Bug fix for export of LBR hosted in two subnets in different compartments
+3. Bug fix for terraform variable name for route table names
+4. Allow case insensitive for Security Rule Types/Protocols
+5. Allow flexible shapes in LBR CD3
+
+------------------------
+SetUPOCI_Via_TF Tag v8.0
+------------------------
+1. Support for DRGv2 - added 2 new sheets to CD3: DRGs and DRGRouteRulesinOCI
+2. Backward compatible to support DRGv1
+3. Updated CD3 Validator to include validation for DRGs tab
+4. Optimized the code for export of objects
+5. Bug fix for export of SecRules and RouteRules for all compartments
+6. Updated the toolkit to support user access to a single compartment by allowing creation of sub-compartments under that only.
+7. Included export of additional objects for Instances and Block Volumes
+8. Upgrade terraform version to 1.0.0
+
+------------------------
+SetUPOCI_Via_TF Tag v7.2
+------------------------
+1. Bug fix for export of policies having newline is description eg for policies added automatically for streaming
+2. Launch Linux 7.9 as OCS VM since 7.8 is not searcheable now and enable yum repos
+3. Change os.cmd to function calls for SetUPOCI
+4. Include CIS Features to enable cloud-guard, OSS, VCN Flow Logging
+5. CD3 Validator for Identity, Networking, Instances, Block Volumes
+6. Accept key value along with key var name in Instances Sheet
+7. Updated CD3 Templates as per CIS
+
+------------------------
+SetUPOCI_Via_TF Tag v7.1.2
+------------------------
+1. Bug fix for CD3 LBR - Certs/PEM keys copied to outdir- this helps to resolve the path issue while RM upload
+   Export LBR modified
+2. Bug fix for Instance Export - included root compartment, AD issue and Boot Volume not found issue
+3. Removed installation of Development Tools from shell script on OCSVM.
+4. Added CD3 validation for DNS Label length for VCN and Subnets
+
+------------------------
+SetUPOCI_Via_TF Tag v7.1.1
+------------------------
+1. Bug fix for CD3 Network components validator - included check for invalid CIDR range having host bits set
+2. Bug fix for Security List Rules - allow all ports for TCP/UDP
+3. Removed unwanted packages from shell script - cfgparse, ipaddr, pycrypto, gcc
+
+SetUPOCI_Via_TF Tag v7.1
+------------------------
+1. Introduced new option in setUpOCI Menu to create RM Stack.
+ - When this option is chosen, it will ask for the compartment where the RM stack has to be created.
+ - It will create stacks in the specified compartment in the home region
+ - RM Stack names: ocswork-<prefix>-<region> where <prefix> is the prefix mentioned in setUpOCI.properties file and <region> is the regions tenancy is subscribed to.
+ - Uploads all files in outdir to RM Stack and also uploads the tfstate file if existing
+ - Uses same RM Stack for multiple executions.
+2. Bug fix for LBR Backend sets to allow same backend servers with different ports.
+
+------------------------
+SetUPOCI_Via_TF Tag v7.0.1
+------------------------
+1. This is a minor release.
+2. xrld package's latest release was not compatible and giving issues with CD3.
+   It has been fixed by installing lower version of xlrd package.
+   pip3 install xlrd==1.2.0
+
+------------------------
+SetUPOCI_Via_TF Tag v7.0
+------------------------
+1. Support for additional properties for OCI objects using Jinja2 templates
+2. Support for configuring Events and Notifications
+3. Support for export of all objects to CD3 (Except DBs)
+4. Updated Terraform Configuration Files to support the Latest Terraform Version
+5. Support for Resource Manager
+6. Support to create and export Dynamic Groups
+7. Support to create and export Cost Tracking and Default Tags
+8. Support to create and export LBR Components- Cipher Suites, Rule Set and  Path Route Set
+9. Support to attach or export 'Custom Backup Policy Attachments' to Block and Boot Volumes.
+
+------------------------
+SetUPOCI_Via_TF Tag v6.1.1
+------------------------
+Launch Linux 7.8 as OCSWork VM (if image ocid is empty in ocswork.properties) as Linux 8 does not support many packages which are required by
+automation toolkit.
+
+------------------------
+SetUPOCI_Via_TF Tag v6.1
+------------------------
+1.  Addition of Description field for Security Rules and Route Rules. Keep using same CD3 but just add new column 'RuleDescription'
+    at the end of both the sheets - SecRulesinOCI and RouteRulesinOCI
+2.  New text files - OCI_Regions and OCI_Protocols have been introduced. If any new region gets supported by OCI, it can be added in
+    OCI_Regions file. Similarly Protocol and its number mapping has been defined in OCI_Protocols file which will be used by Security
+    Rules as well as NSG Rules.
+3.  Automation Toolkit will now support duplicate compartment names like OCI does. Please refer to CD3-template.xlsx under example folder for sample data.
+4.  Extra properties specific to OCItoOCI project have been removed from ocswork.properties and a new file ocswork_ocic.properties has been added to accomodate that.
+5.  Support for multiple OCSWork VMs via separate config_for_delete files. A new input parameter has been added to ocswork.properties file.
+6.  Support for Reserved Public IP for OCSWork VM. Reserved public IP will e assigned to OCSWork VM which you cna chose to retain also while destroying OCSWork VM.
+7a. Regions property has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that.
+    It would be good to subscribe tenancy to all required regions before setting up OCS Work VM or else create the region directory manually.
+7b. Regions property has been removed from VCN Info tab of CD3 as well.
+8.  CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc. Please look at Confluence Page
+    https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+CD3+Validator for more details.
+9.  Support for Flex shapes for Instances. Please refer to CD3-template.xlsx under example folder for sample input data.
+10. Instead of LinuxLatest and WindowsLatest, OS value in CD3 template has been changed to Linux and Windows respectively. Variable names in
+    variables_<region>.tf has been changed accordingly.
+    Support for LinuxLatest and WindowsLatest templates for instance will be deprecated from next release.
+11. Support for Multiple Listeners for LBRs. Add new column 'ListenerName' in the CD3 sheet. Please refer to CD3-template.xlsx under example folder for sample input data.
+12. Support for Multiple export options for FSS. Please refer to CD3-template.xlsx under example folder for sample input data.
+13. Support for NSG export/import. Export process for non-greenfield tenancies will support export of NSGs and their import into terraform.
+14. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions at confluence page:
+    https://confluence.oraclecorp.com/confluence/display/NAC/Guide+to+access+repository+in+DevCS
+    Private key is copied over to /root/.ssh folder. It is up to the developers if they want to keep the private key there for any future GIT updates or if they want to remove the key for security reasons.
+
+------------------------
+SetUPOCI_Via_TF Tag v6.0.1
+------------------------
+Bug fix for Instance, FSS, LBR and DB creation using subnet name
+
+------------------------
+SetUPOCI_Via_TF Tag v6.0
+------------------------
+CD3 format has been changed. Please use CD3-template.xlsx downloaded with example folder.
+
+Below are the highlights of this release:
+1. Support for Non Green Field Tenancies. See Detailed explanation about procedure at confluence page:
+    https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+Non-GreenField+Tenancies
+2. Removed common_seclist_name and seclist_per_subnet columns from Subnets Tab. Specify security lists to be created for a subnet as comma separated in seclist_names column.
+3. If DNS doesn't need to be enabled for a VCN or subnet, specify 'n' in dns_label column for that VCN or Subnet.
+4. Specify 'n' for route_table_name or seclist_names in Subnets tab if only Default Route Table or Default Secuirty List of VCN needs to be attached to the subnet.
+5. When you are running Modify Network, if there are any route tables or security lists which are not attached to any subnet or DRG or LPG then it will display the names in output like below:
+
+    ATTENION!!! Below RouteTables are not attached to any subnet or DRG and LPG; If you want to delete any of them, remove the TF file!!!")
+
+    ATTENION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!")
+
+------------------------
+SetUPOCI_Via_TF Tag v5.0.1
+------------------------
+This is a minor release. There was a bug in create_major_objects.py while establishing VCN peering
+Peer string was not getting replaced properly.
+
+------------------------
+SetUPOCI_Via_TF Tag v5.0
+------------------------
+CD3 format has been changed. Please use CD3-template.xlsx downloaded with example folder.
+
+1. Modified CD3 Networking sheets/code - added/modified columns, removed VCN Peering section from VCN Info tab
+2. Added support to specify LPG names.
+3. Peering will be handled by column hub_spoke_peer_none in VCNs tab.
+3. Added color coding for exported SecRules and RouteRules
+4. Added support to specify SGW target in route rules
+5. Added support for PrivateIP in route rules
+6. Enabled python 3.6 using SCL on PCS Work VM.
+
+------------------------
+SetUPOCI_Via_TF Tag v4.1
+------------------------
+1. Modified export rules code to add appropriate formatting to the sheets: 'SecRulesinOCI' and 'RouteRulesinOCI' and also the
+    sheets would be added along with other Networking sheets now instead of at the end.
+2. Added new option to modify existing subnet properties.
+3. Added OVA DISK Migration code via Bash- developed by Aneesh
+4. Modified panda creation to launch in oraclemigration container and then fetch details using OPC CLI as terraform state fails
+5. Added few more fixes like making search domain optional in create_terraform_dhcp.py
+
+------------------------
+SetUPOCI_Via_TF Tag v4.0
+------------------------
+Note- This version would require you to change your excel file and use the latest one since there is a column addition in the existing sheet.
+
+1. Added support to add a common security List across subnets apart from just Default Security List. This is done by adding
+    a new column in Subnets tab "common_seclist_name" which specifies name of common seclist to be created and used for each subnet.
+    If left blank  for a particular subnet that means the common seclist doesnt not need to be assigned to that subnet.
+2. Modified output files created for routes. Earlier tool used to create one TF file for all route tables. Now it would generate
+    separate file for each Route Table like it does for Security List.
+3. Introduced option to create new VCN under Update Network
+4. Added Default DHCP options also to TF like for Default Security List
+5. Added support to include Description for a rule in NSGs. Added new column for this
+6. Modified DB Systems creation code. Separated tabs for DB system - VM, BM and Exa
+7. Fixed some minor issues with existing code
+
+------------------------
+SetUPOCI_Via_TF Tag v3.3
+------------------------
+1. Added Support for LBR via cd3 excel as well as csv. New sheet called 'LBR' has been added to the cd3. Please look
+    in example folder for sample file.
+2. Added Support for DB systems, ADW/ADT via cd3 excel as well as csv. New sheets called 'DataBase' and 'ADW/ADT' have been added to the cd3.
+    Please look in example folder for sample file.
+3. Fixed issues related to Panda initialization via OCSWork VM, Added support to run OCSWork VM via Linux system.
+4. Updated FSS creation code to include Multi FSS-1MT and 1FSS-multi MT
+5. Updated modify_secrules_tf.py and modify_routerules_tf.py to process rows/vcns in the excel tabs which are part of cd3 only.
+
+------------------------
+SetUPOCI_Via_TF Tag v3.2
+------------------------
+1. Added Support for FSS via cd3 excel as well as csv. New sheet called 'FSS' has been added to the cd3. Please look
+    in example folder for sample file.
+2. Fixed minor issues related to egress rules in modify and export security lists. Specific egress rules could not be
+    added earlier. Was allowing only egress all open.
+
+------------------------
+SetUPOCI_Via_TF Tag v3.1
+------------------------
+1. Added Support to enter names for VCN components- IGW, NGW, DRG and SGW. And also for route table and seclist attached to the subnets.
+   This helps with customers who prefer to chose specific naming convention for all the components.
+   How To Specify:
+   -----------------
+   a.) In VCNs Tab, under each column for the component like for drg_required, it accepts 3 values: y, n or component name.
+   n means the component is not to be configured for the VCN, y means component would be configured with default name eg <vcn name>_DRG
+   and if you specify some other text, the component will be configured with that text as the name of that component eg ashprodNGW in sample
+   cd3 in example folder
+
+   b.) For SecList Name and Route Table name, 2 columns have been created in Subnets Tab. If the column is left empty, default naming(same as subnet name) would
+   be used for that route table or seclist name attached to that subnet. If you specify some name for seclist eg devqa_seclist then that many number of
+   security lists as defined in VCNs tab would be created for the subnet with naming as eg devqa_seclist-1, devqa_seclist-2, devqa_seclist-3
+   Also you can specify same route table name or seclist name for multiple subnets, it would attach same route table or seclists to those subnets.
+
+2. Added Support for Dedicated VM Hosts.
+   New sheet to specify Dedicated VM Host details has been introduced and a new column has been added in th Instances sheet if the instance needs to be launched
+   in that dedicated VM Host
+
+------------------------
+SetUPOCI_Via_TF Tag v3.0
+------------------------
+New Features Added:
+1. Added support for Network Security Groups. A new sheet has been introduced in cd3 which contains information about NSGs to be created
+   and a new column added in Instances sheet which will define instance as part of NSG name.
+2. setUpOCI.py script now accepts setUpOCI.properties which contains input params. So you can use this properties file to specify input param paths
+   rather than giving at command prompt.
+
+------------------------
+SetUPOCI_Via_TF Tag v2.0
+------------------------
+New Features Added:
+1. New Property is added in VCN-Info sheet which will accept regions that OCI tenancy is subscribed to. So Now the automation would
+   work for any region rather than just Ashburn and Phoenix.
+2. You can add a new subnet and DHCP option to the existing network. say eg after creating initial network, you have done customizations to the
+   network or created few instances. So now if you want to add a new subnet or a new DHCP option (without altering existing network), a new option (no 14)
+   has been introduced.
+
+------------------------
+SetUPOCI_Via_TF Tag v1.0
+------------------------
+Python Version used 3.7
+Packages required on your local system: oci, scp, paramiko, puttykeys, numpy, pycryptodomex via pip (pip3)
+
+
+This contains Python code to create terraform files for OCI setup. It includes below functionality:
+Creating Compartments, Groups, Policies
+Creating Network Objects
+Creating Instances
+Creating and Attaching Block Volumes
+Tagging Resources
+Modify Route Rules/Security Rules
+Back Up Policy for Boot and Block Volumes
+Export Security Rules/Route Rules
+
+It also offers functionality to create OCS Work VM into customer's OCI tenancy using which all other tasks can be carried out.
+Please go through readMe under SetUpOCI_ViaTF for details on how to use the automation.
+
+It works for 2 regions currently: Ashburn and Phoenix ie it works for customer tenancy subscribed to Ashburn and Phoenix
