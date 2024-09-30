@@ -45,7 +45,7 @@ The toolkit supports 2 workflows:<br>
 !!! tip
 	CD3 Automation toolkit can be used either via CLI or Jenkins.
   
-	📖 Detailed documentation and videos are provided for both options. Check the left panel for navigation.
+	📖 Detailed documentation and videos are provided for both options. Check the top panel for navigation.
 
 
 <br>
