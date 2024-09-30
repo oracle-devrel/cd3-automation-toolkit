@@ -1,0 +1,2544 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2024.4.1/ReleaseInfo/">
+      
+      
+      
+      
+      <link rel="icon" href="../images/oci.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.18">
+    
+    
+      
+        <title>ReleaseInfo - CD3 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oracle+Sans:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Oracle Sans";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#release-info" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="CD3 Documentation" class="md-header__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
+      
+  <img src="../images/oci.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CD3 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ReleaseInfo
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="oracle" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256l137.3-137.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/oracle-devrel/cd3-automation-toolkit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    oracle-devrel/cd3-automation-toolkit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../cd3-overview/" class="md-tabs__link">
+        
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../install-cd3/" class="md-tabs__link">
+        
+  
+    
+  
+  Install CD3
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../cd3-cli/" class="md-tabs__link">
+        
+  
+    
+  
+  Use with CLI
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../cd3-jenkins/" class="md-tabs__link">
+        
+  
+    
+  
+  Use with Jenkins
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../must-read-prerequisites/" class="md-tabs__link">
+        
+  
+    
+  
+  Must Read
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../group-tf-files/" class="md-tabs__link">
+        
+  
+    
+  
+  Additional Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../upgrade-toolkit/" class="md-tabs__link">
+        
+  
+    
+  
+  Upgrade CD3
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../knownbehaviour/" class="md-tabs__link">
+        
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../learningvideos/" class="md-tabs__link">
+        
+  
+    
+  
+  External References
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queries/" class="md-tabs__link">
+          
+  
+    
+  
+  CD3 Slack
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CD3 Documentation" class="md-nav__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
+      
+  <img src="../images/oci.png" alt="logo">
+
+    </a>
+    CD3 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/oracle-devrel/cd3-automation-toolkit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    oracle-devrel/cd3-automation-toolkit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../cd3-overview/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Overview
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cd3-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supportedservices/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Services Supported
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../excel-templates/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Excel Templates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../install-cd3/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Install CD3
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Install CD3
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prerequisites/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../launch-container/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Launch CD3 Container
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Launch CD3 Container
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../launch-from-rmstack/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resource Manager Stack
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../launch-from-local/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Manual Container Launch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../url-whitelisting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    URL Whitelisting(optional)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../connect-container-to-oci-tenancy/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Connect Container to OCI
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Connect Container to OCI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multiple-prefixes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multiple Prefixes(optional)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../cd3-cli/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Use with CLI
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Use with CLI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cd3-cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Before You Begin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../greenfield-cli/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Create in OCI
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Create in OCI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../greenfield-cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../opa-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OPA integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../nongreenfield-cli/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Export from OCI
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Export from OCI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nongreenfield-cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../cd3-jenkins/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Use with Jenkins
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Use with Jenkins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cd3-jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Before You Begin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jenkinsintro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jenkins Dashboard
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../greenfield-jenkins/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Create in OCI
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Create in OCI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../greenfield-jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multiple-services-jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Provision multiple services together
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../nongreenfield-jenkins/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Export from OCI
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Export from OCI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nongreenfield-jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sync-cli-jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commit Local changes to GIT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../must-read-prerequisites/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Must Read
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Must Read
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../manage-network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Manage Network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../manage-compute/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Manage Compute
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../manage-firewall/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Manage OCI Network Firewall
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../group-tf-files/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Additional Features
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Additional Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../group-tf-files/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grouping of Terraform Files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remotestate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Remote Management of Terraform State
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resource-manager-upload/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OCI Resource Manager Upload
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../additional-attributes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Support for Additional Attrs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cd3validator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CD3 Validator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jobs-migration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrate CD3 Jenkins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../upgrade-toolkit/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Upgrade CD3
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Upgrade CD3
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../upgrade-toolkit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Steps to Upgrade Toolkit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../knownbehaviour/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Troubleshooting
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../knownbehaviour/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Expected Behaviour
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commonissues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Common Issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../learningvideos/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    External References
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            External References
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../learningvideos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Learning Videos
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CD3 Slack
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            CD3 Slack
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../queries/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Join
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>ReleaseInfo</h1>
+
+<h2 id="release-info">Release-Info</h2>
+<h3 id="automation-toolkit-release-v10-docker-image-release-v60">Automation Toolkit Release v10 &amp; Docker Image Release v6.0</h3>
+<h4 id="date-jan-13th-2023">Date - Jan 13<sup>th</sup>, 2023</h4>
+<p>This is a major release with below updates:</p>
+<ol>
+<li>Support for new services - OKE and SCH. New tab for 'OKE' is included in CD3-CIS-template.xlsx. New tab for 'ServiceConnectors' is added to CD3-CIS-ManagementServices-template.xlsx.</li>
+<li>Added the script to fetch regions subscribed to the tenancy. This will be executed automatically every time setUpOCI is executed.</li>
+<li>Introduced a new option in setUpOCI menu called 'CD3 Services' to execute 'Fetch Compartments' and 'Fetch Protocols Scripts.</li>
+<li>Modified the setUpOCI workflow to prompt the user to execute 'Fetch Compartments' script in case it has not been executed previously.</li>
+<li>Bug fixes wrt Instances, DB Systems</li>
+</ol>
+<h3 id="automation-toolkit-release-v921-docker-image-release-v521">Automation Toolkit Release v9.2.1 &amp; Docker Image Release v5.2.1</h3>
+<h4 id="date-nov-30th-2022">Date - Nov 30<sup>th</sup>, 2022</h4>
+<p>This is a minor release with below updates:</p>
+<ol>
+<li>Sample terraform import command included as part of output tfvars file for each OCI resource managed by Toolkit.</li>
+<li>Split Export of Network options to chose export of different components separately eg Major Objects, Subnets, NSGs etc.</li>
+<li>Include support for Marketplace Images for Instances.</li>
+<li>Few bug fixes/enhancements wrt export of Instances/NSGs, making null values for NSGs/Instances optional in tfvars</li>
+</ol>
+<h2 id="previous-versions-released-before-making-it-available-on-github">Previous Versions released before making it available on GitHub</h2>
+<h3 id="automation-toolkit-release-v92-docker-image-release-v52">Automation Toolkit Release v9.2 &amp; Docker Image Release v5.2</h3>
+<h4 id="date-oct-10th-2022">Date - Oct 10<sup>th</sup>, 2022</h4>
+<p>This is a major release with existing services converted into terraform modules and also bug fixes.</p>
+<ol>
+<li>Terraform modules for FSS and ADB(Modified the input sheet for ADB to include more features)</li>
+<li>Included new service - Network Load Balancers</li>
+<li>Enhanced Tags sheet to include Default Tags for Multiple Compartments.</li>
+<li>Enhanced CD3 Validator for FSS, NSGs column for each tab.</li>
+<li>Included CIS compliance checker script as part of setUpOCI Menu option</li>
+<li>Cleanup of variables_<region>.tf file</li>
+<li>Updated CD3 templates in example folder with latest CIS data</li>
+<li>Bug fixes wrt multiple services like Instances, Notifications etc</li>
+<li>Introduced documentation folder containing terraform and toolkit user guide in outdir of each customer</li>
+</ol>
+<h3 id="automation-toolkit-release-v91-docker-image-release-v51">Automation Toolkit Release v9.1 &amp; Docker Image Release v5.1</h3>
+<h4 id="date-jun-13th-2022">Date - Jun 13<sup>th</sup>, 2022</h4>
+<p>This is a major release with existing services converted into terraform modules and also bug fixes.</p>
+<ol>
+<li>Terraform Modules for Instances, Block Volumes, Tags, CIS features, LBaas.</li>
+<li>Introduced new columns for PV encryption in Instances/Block Volumes.</li>
+<li>Introduced new columns for Min/Max bandwidth for flexible shapes load balancers, reserved public IP. Support for OCI certificate management certificates for Listeners, BackendSets.</li>
+<li>Removed support for subnet_name_attach_cidr parameter from CD3 excel's 'VCN Info' sheet.</li>
+<li>Bug fixes</li>
+</ol>
+<h3 id="automation-toolkit-release-v902-docker-image-release-v502">Automation Toolkit Release v9.0.2 &amp; Docker Image Release v5.0.2</h3>
+<h4 id="date-april-29-2022">Date - April 29, 2022</h4>
+<p>This is a minor release with bug fixes related to Networking and Identity Policies.</p>
+<h3 id="automation-toolkit-release-v901-docker-image-release-v501">Automation Toolkit Release v9.0.1 &amp; Docker Image Release v5.0.1</h3>
+<h4 id="date-april-9-2022">Date - April 9, 2022</h4>
+<p>This is a minor release.</p>
+<ol>
+<li>Bug fix for data after END tag in DRGRouteRulesinOCI sheet.</li>
+<li>Bug fix for tenancies having both DRGv1 and DRGv2</li>
+<li>Bug fix for VCN Flow Log output</li>
+<li>Bug fix for NSG ICMP rules not having only ICMP type</li>
+<li>Modified output template files to adjust the spacing</li>
+</ol>
+<h3 id="automation-toolkit-release-v90-docker-image-release-v50">Automation Toolkit Release v9.0 &amp; Docker Image Release v5.0</h3>
+<h4 id="date-march-21-2022">Date - March 21, 2022</h4>
+<p>This is a major release.</p>
+<ol>
+<li>Terraform output files in modules format for IAM, Network, Database(DBSystems and Exa) and Management Services(Events, Notifications) components.</li>
+<li>Added support for Alarms with output files as terraform modules.</li>
+<li>Updated the excel sheet templates as per latest CIS compliance for IAM compartments, groups, policies, events, notifications and alarms.</li>
+<li>Added support for multiple VCN CIDRs in VCNs sheet.</li>
+<li>Added support for same VCN names across regions.</li>
+<li>Added export for Dedicated VM Hosts and Database tabs as terraform flat files</li>
+<li>Modified Database tabs to include new features.</li>
+<li>Restructured the code directories and setUpOCI menu options.</li>
+<li>Added drop downs in the excel sheet columns to make excel filling easier.</li>
+<li>Updated OCI_regions to include all regions</li>
+<li>Deprecation of OCSWorkVM.</li>
+</ol>
+<h3 id="automation-toolkit-release-v803-docker-image-release-v403">Automation Toolkit Release v8.0.3 &amp; Docker Image Release v4.0.3</h3>
+<h4 id="date-nov-26-2021">Date - Nov 26 , 2021</h4>
+<p>This is a minor release.</p>
+<ol>
+<li>Bug fix for Availability Domain values while export of block volumes, FSS</li>
+<li>Bug fix for DRG Route Rules export error - 'Too Many requests'</li>
+<li>Bug fix for export of Tags having spaces in the values</li>
+</ol>
+<h3 id="automation-toolkit-release-v802-docker-image-release-v402">Automation Toolkit Release v8.0.2 &amp; Docker Image Release v4.0.2</h3>
+<h4 id="date-sep-30-2021">Date - Sep 30 , 2021</h4>
+<p>This is a minor release.</p>
+<ol>
+<li>Bug fix for End Tag in NSGs tab</li>
+<li>Bug fix for export of LBR hosted in two subnets in different compartments.</li>
+<li>Bug fix for terraform variable name for route table names</li>
+<li>Allow case insensitive for Security Rule Types/Protocols</li>
+<li>Allow flexible shapes in LBR CD3</li>
+</ol>
+<h3 id="automation-toolkit-release-v80-docker-image-release-v40">Automation Toolkit Release v8.0 &amp; Docker Image Release v4.0</h3>
+<h4 id="date-jul-27-2021">Date - Jul 27 , 2021</h4>
+<p>This is a major release.</p>
+<ol>
+<li>Support for DRGv2 - added 2 new sheets to CD3: DRGs and DRGRouteRulesinOCI</li>
+<li>Backward compatible to support DRGv1</li>
+<li>Updated CD3 Validator to include validation for DRGs tab</li>
+<li>Optimized the code for export of objects</li>
+<li>Bug fix for export of SecRules and RouteRules for all compartments</li>
+<li>Updated the toolkit to support user access to a single compartment by allowing creation of sub-compartments under that only.</li>
+<li>Included export of additional objects for Instances and Block Volumes</li>
+<li>CD3 templates are compliant to latest CIS Landing Zone</li>
+<li>Upgrade terraform version to 1.0.0</li>
+<li>Please note that since this release is upgrading the terraform version so previous version's terraform state will not be compatible with the new tf files. Recommendation is to keep using old code setup for eixsting customers and new code setup for new customers. Or else export everything using new code and then import into the new terraform state</li>
+</ol>
+<h3 id="automation-toolkit-release-v72-docker-image-release-v32">Automation Toolkit Release v7.2 &amp; Docker Image Release v3.2</h3>
+<h4 id="date-may-26-2021">Date - May 26, 2021</h4>
+<p>This is a minor release.</p>
+<ol>
+<li>Bug fix for export of policies having newline in description eg for policies added automatically for streaming</li>
+<li>Launch Linux 7.9 as OCS VM since 7.8 is not searcheable now and enable yum repos</li>
+<li>Change os.cmd to function calls for SetUPOCI</li>
+<li>Include CIS Features to enable cloud-guard, OSS, VCN Flow Logging</li>
+<li>CD3 Validator for Identity, Networking, Instances, Block Volumes</li>
+<li>Accept key value along with key var name in Instances Sheet</li>
+<li>Updated CD3 Templates as per CIS</li>
+</ol>
+<h3 id="release-v712">Release v7.1.2</h3>
+<h4 id="date-apr-12-2021">Date - Apr 12, 2021</h4>
+<p>This is a minor release.</p>
+<ol>
+<li>Bug fix for CD3 LBR - Certs/PEM keys copied to outdir- this helps to resolve the path issue while RM upload. Export LBR also modified</li>
+<li>Bug fix for Instance Export - included root compartment, AD issue and Boot Volume not found issue.</li>
+<li>Removed installation of Development Tools from shell script on OCSVM.</li>
+<li>Added CD3 validation for DNS Label length for VCN and Subnets</li>
+</ol>
+<h3 id="release-v711">Release v7.1.1</h3>
+<h4 id="this-is-a-minor-release">This is a minor release.</h4>
+<ol>
+<li>Bug fix for CD3 Network components validator - included check for invalid CIDR range having host bits set</li>
+<li>Bug fix for Security List Rules - allow all ports for TCP/UDP</li>
+<li>Removed unwanted packages from shell script - cfgparse, ipaddr, pycrypto, gcc</li>
+</ol>
+<h3 id="release-v71">Release v7.1</h3>
+<p>Date - Feb 12, 2021</p>
+<p>Below are the highlights of this release:</p>
+<ol>
+<li>Introduced new option in setUpOCI Menu to create RM Stack</li>
+</ol>
+<p>&nbsp; &nbsp;* When this option is chosen, it will ask for the compartment where the RM stack has to be created.</p>
+<p>&nbsp; &nbsp;* It will create stacks in the specified compartment in the home region</p>
+<p>&nbsp; &nbsp;* RM Stack names: ocswork-<prefix>-<region> where <prefix> is the prefix mentioned in setUpOCI.properties file and <region> is the regions tenancy is subscribed to.</p>
+<p>&nbsp; &nbsp;* Uploads all files in outdir to RM Stack and also uploads the tfstate file if existing.</p>
+<p>&nbsp; &nbsp;* Uses same RM Stack for multiple executions.</p>
+<ol>
+<li>
+<p>Bug fix for LBR Backend sets to allow same backend servers with different ports.</p>
+</li>
+<li>
+<p>OCSWork VM launched with TF version 0.13.4 in sync with Resource Manager in OCI</p>
+</li>
+<li>
+<p>CD3 templates as per CIS Standards</p>
+</li>
+</ol>
+<h3 id="release-v701">Release v7.0.1</h3>
+<p>This is a minor release.</p>
+<p>xrld package's latest release was not compatible and giving below issue with CD3:</p>
+<p><img width="452" alt="image" src="https://user-images.githubusercontent.com/122371432/214040681-4a9154ec-4f93-4786-808c-ad69189a0797.png"></p>
+<p>It has been fixed by installing lower version of xlrd package.</p>
+<p>pip3 install xlrd==1.2.0</p>
+<p>It has been corrected and pushed to the master branch.</p>
+<h3 id="major-release-v70">Major Release v7.0</h3>
+<h4 id="date-oct-9-2020">Date - Oct 9, 2020</h4>
+<ol>
+<li>Support for additional properties for OCI objects using Jinja2 templates</li>
+<li>Support for configuring Events and Notifications</li>
+<li>Support for export of Instances, block volumes, Tags, Events and Notifications etc to CD3</li>
+<li>Updated Terraform Configuration Files to support the Latest Terraform Version</li>
+<li>Support for Resource Manager</li>
+<li>Support to create and export Dynamic Groups</li>
+<li>Support to create and export Cost Tracking and Default Tags</li>
+<li>Support to create and export LBR Components- Cipher Suites, Rule Set and Path Route Set</li>
+<li>Support to attach or export 'Custom Backup Policy Attachments' to Block and Boot Volumes</li>
+</ol>
+<h3 id="release-v611">Release v6.1.1</h3>
+<p>creatOCSWork.py picks up latest Linux OCID and launches the OCSWork VM. However Linux 8 does not support many packages required by automation toolkit.</p>
+<p>Hence modified the code to launch Linux 7.8 incase <strong>ocs_vm_source_image_ocid</strong> is left empty in ocswork.properties.</p>
+<h3 id="release-v61">Release v6.1</h3>
+<h4 id="date-july-31-2020">Date - July 31, 2020</h4>
+<p>Below are the highlights of this release:</p>
+<ol>
+<li>Addition of Description field for Security Rules and Route Rules. Keep using same CD3 but just add new column 'RuleDescription' at the end of both the sheets - SecRulesinOCI and RouteRulesinOCI</li>
+<li>New text files - OCI_Regions and OCI_Protocols have been introduced. If any new region gets supported by OCI, it can be added in OCI_Regions file. Similarly Protocol and its number mapping has been defined in OCI_Protocols file which will be used by Security Rules as well as NSG Rules.</li>
+<li>Automation Toolkit will now support duplicate compartment names like OCI does. Please refer to CD3-template.xlsx under example folder for sample data.</li>
+<li>Extra properties specific to OCItoOCI project have been removed from ocswork.properties and a new file ocswork_ocic.properties has been added to accomodate that.</li>
+<li>Support for multiple OCSWork VMs via separate config_for_delete files. A new input parameter has been added to ocswork.properties file.</li>
+<li>Support for Reserved Public IP for OCSWork VM. Reserved public IP will be assigned to OCSWork VM which you cna chose to retain also while destroying OCSWork VM.</li>
+<li>
+<p>a. Regions property has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that. It would be good to subscribe tenancy to all required regions before setting up OCS Work VM or else create the region directory manually.
+b. Regions property has been removed from VCN Info tab of CD3 as well.</p>
+</li>
+<li>
+<p>CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc. </p>
+</li>
+<li>Support for Flex shapes for Instances. Please refer to CD3-template.xlsx under example folder for sample input data.</li>
+<li>Instead of LinuxLatest and WindowsLatest, OS value in CD3 template has been changed to Linux and Windows respectively. Variable names in variables_<region>.tf has been changed accordingly. Support for LinuxLatest and WindowsLatest templates for instance will be deprecated from next release.</li>
+<li>Support for Multiple Listeners for LBRs. Add new column 'ListenerName' in the CD3 sheet. Please refer to CD3-template.xlsx under example folder for sample input data.</li>
+<li>Support for Multiple export options for FSS. Please refer to CD3-template.xlsx under example folder for sample input data.</li>
+<li>Support for NSG export/import. Export process for non-greenfield tenancies will support export of NSGs and their import into terraform.</li>
+<li>GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo.
+Private key is copied over to /root/.ssh folder. It is up to the developers if they want to keep the private key there for any future GIT updates or if they want to remove the key for security reasons.</li>
+</ol>
+<h3 id="release-v601">Release v6.0.1</h3>
+<h4 id="date-mar-23-2020">Date - Mar 23, 2020</h4>
+<p>There was a bug in v6.0 where TF for Instances, FSS, LBR etc was not getting correct subnet name as created for subnets using NEtworking.</p>
+<p>It has been corrected and pushed to the master branch.</p>
+<h3 id="major-release-v60">Major Release v6.0</h3>
+<p>Below are the highlights of this release:</p>
+<ol>
+<li>Support for Non Green Field Tenancies. </li>
+<li>Removed common_seclist_name and seclist_per_subnet columns from Subnets Tab. Specify security lists to be created for a subnet as comma separated in seclist_names column.</li>
+<li>If DNS doesn't need to be enabled for a VCN or subnet, specify 'n' in dns_label column for that VCN or Subnet.</li>
+<li>Specify 'n' for route_table_name or seclist_names in Subnets tab if only Default Route Table or Default Secuirty List of VCN needs to be attached to the subnet.</li>
+<li>When you are running Modify Network, if there are any route tables or security lists which are not attached to any subnet or DRG or LPG then it will display the names in output like below:</li>
+</ol>
+<p><strong>ATTENTION!!! Below RouteTables are not attached to any subnet or DRG and LPG; If you want to delete any of them, remove the TF file!!!</strong></p>
+<p><strong>ATTENTION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!</strong></p>
+<h3 id="release-v501">Release v5.0.1</h3>
+<p>There was a bug in LPGs creation/peering. Corrected that and pushed as v5.0.1</p>
+<h3 id="major-release-v50">Major Release v5.0</h3>
+<h4 id="date-feb-7-2020">Date - Feb 7, 2020</h4>
+<p>It has many new enhancements and features added to it.</p>
+<p>Detailed explanation about CD3 excel is at: CD3 Excel release v5.0</p>
+<p>Below are the highlights:</p>
+<ol>
+<li>yum utility won't break on OCS Work VM. Please use python setUpOCI.py <setUpOCI.properties> cmd and python fetch_compartments_to_variablesTF.py <outdir> cmd to execute automation.</li>
+<li>Export of rules after network creation is a mandatory step. Single sheet- 'SecRulesinOCI' and 'RouteRulesinOCI' would be used to manage rules in OCI.</li>
+<li>Color Coding has been added to the exported rules.</li>
+<li>Support for specifying LPG names has been included. </li>
+</ol>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; Format to specify LPG names:</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; specify either y (like for other components) - this will give default name to the LPG whch is <vcn_name>_lpg<counter> eg ProdVCN_lpg0
+ or the &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; name that you want to give to the LPG.</p>
+<ol>
+<li>Peering section has been removed and merged in VCNs tab. Format for specifying peering in hub_spoke_peer_none column:</li>
+</ol>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;specify hub in the column for the VCN you want to mark as hub</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;specify spoke:<hub_vcn_name> if you want to mark a VCN as spoke to hub VCN</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;specify peer:<vcn_name> if you want to establish normal peering between 2 VCNs</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;specify none if the VCN is a normal standalone VCN</p>
+<ol>
+<li>you can specify SGW target for route rules in OCI. specify as either object_storage or all_services</li>
+</ol>
+<p>When VCNs are specified in hub-spoke model, Route Tables associated with DRG and LPG get created automatically.
+Inter subnet communication and egress communication from all subnets is opened via SecRules.
+Initial Subnet Route rules are controlled by flags for each target in Subnets Tab.
+If any change is required to be done in default sec rules or route rules, they can be modified via cd3 after exporting them.</p>
+<p>CSV support for this version is still under progress.</p>
+<h3 id="major-release-v40">Major Release v4.0</h3>
+<blockquote>
+<p><strong>Note</strong> 
+This version would require you to change your excel file and use the latest one since there is a column addition in the existing sheet.</p>
+</blockquote>
+<ol>
+<li>Added support to add a common security List across subnets apart from just Default Security List. This is done by adding a new column in Subnets tab "common_seclist_name" which specifies name of common seclist to be created and used for each subnet
+&nbsp; &nbsp;  If left blank for a particular subnet that means the common seclist doesnt not need to be assigned to that subnet.</li>
+<li>Modified output files created for routes. Earlier tool used to create one TF file for all route tables. Now it would generate separate file for each Route Table like it does for Security List.</li>
+<li>Introduced option to create new VCN under Update Network</li>
+<li>Added Default DHCP options also to TF like for Default Security List</li>
+<li>Added support to include Description for a rule in NSGs. Added new column for this</li>
+<li>Modified DB Systems creation code. Separated tabs for DB system - VM, BM and Exa</li>
+<li>Fixed some minor issues with existing code</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2024 <a href=""  target="_blank" rel="noopener">Copyright (c) 2024 Oracle and/or its affiliates.</a>
+    </div>
+  
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/oracle-devrel/cd3-automation-toolkit" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp" target="_blank" rel="noopener" title="www.youtube.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "navigation.top", "navigation.tabs", "navigation.expand", "navigation.path", "content.code.copy", "toc.integrate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.3220b9d7.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
