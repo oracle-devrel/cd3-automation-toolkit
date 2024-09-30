@@ -289,10 +289,12 @@ def create_terraform_oss(inputfile, outdir, service_dir, prefix, ct):
                                         print(
                                             f"'{time_rule_locked}' is not in the correct format. It should be in the format 'dd-mm-yyyy'. The retention rules will not be processed.")
                                         continue
+                                '''
                                 else:
                                     print(
                                         f"'{time_rule_locked}' is not in the correct format. It should be in the format of 'YYYY-MM-DDThh:mm:ssZ' or 'YYYY-MM-DDThh:mm:ss.fffZ'. The retention rules will not be processed.")
                                     continue
+                                '''
 
                         tempdict = {'retention_rule_display_name': retention_rule_display_name,
                                     'time_unit': time_unit,

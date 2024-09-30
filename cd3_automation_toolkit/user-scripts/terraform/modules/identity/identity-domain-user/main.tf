@@ -31,10 +31,14 @@ resource "oci_identity_domains_user" "user" {
     value      = var.email
     verified   = false
   }
-  emails {
+  dynamic "emails" {
+    for_each = var.recovery_email != null ?[1]:[]
+    content {
     type       = "recovery"
     value      =  var.recovery_email
+}
   }
+
   dynamic "phone_numbers" {
     for_each = can(var.home_phone_number) && var.home_phone_number != null ? [var.home_phone_number] : []
     content {

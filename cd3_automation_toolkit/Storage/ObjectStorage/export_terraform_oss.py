@@ -236,11 +236,11 @@ def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_co
                         rt_time_rule_locked = str(retention_policy.time_rule_locked)
                         if rt_time_rule_locked != 'None' and rt_time_rule_locked != '':
                             date_obj = parser.parse(rt_time_rule_locked)
-                            rt_time_rule_locked = date_obj.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+                            # rt_time_rule_locked = date_obj.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+                            rt_time_rule_locked = (date_obj.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]).rstrip("0") + "Z"
                             rt_data = rt_name + "::" + rt_time_amount + "::" + rt_time_unit + "::" + rt_time_rule_locked
                         else:
                             rt_data = rt_name + "::" + rt_time_amount + "::" + rt_time_unit
-
                     else:
                         rt_data=rt_name + "::indefinite"
                     retention_rule_data_list.append(rt_data)
