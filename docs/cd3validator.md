@@ -24,6 +24,9 @@ Log file containing CD3 validator checks is generated at: ```/cd3user/tenancies/
 
 * <I>Compartment Network does not exist in OCI.</I>→ This error means that the component is not found in OCI. So, please make sure to create the Compartment "Network" before validating other tabs.
 
+* <I>Either "Region" ashburn is not subscribed to tenancy or toolkit is not yet configured to be used for this region.</I> → If this is a new region subscribed to the tenancy after toolkit was setup initially then Please re run createTenancyConfig.py with same tenancyconfig.properties to configure the toolkit with the new region.
+
+
 * For policy statements like below:<br>
  allow service loganalytics to {BUCKET_READ} in tenancy <br>
  allow service loganalytics to {EVENTRULE_READ} in tenancy <br>
