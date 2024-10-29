@@ -9,18 +9,14 @@
 import argparse
 import logging
 import os
-import re
 import shutil
 import sys
 import datetime
 import configparser
-import distutils
-from distutils import dir_util
 import oci
 from oci.object_storage import ObjectStorageClient
 import git
 import glob
-import yaml
 import subprocess
 sys.path.append(os.getcwd()+"/..")
 from os import environ
@@ -74,8 +70,13 @@ def create_devops_resources(config,signer):
                                                                 retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                                 signer=signer)
 
-            create_topic_response = ons_client.create_topic(create_topic_details=oci.ons.models.CreateTopicDetails(
+            try:
+                create_topic_response = ons_client.create_topic(create_topic_details=oci.ons.models.CreateTopicDetails(
                     name=topic_name, compartment_id=compartment_ocid, description="Created by Automation ToolKit")).data
+            except Exception as e:
+                print(e.message)
+                print("\nExiting!!!")
+                exit()
             toolkit_topic_id = create_topic_response.topic_id
 
 
@@ -158,11 +159,14 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
                "User " + str(devops_user) + "\n " \
                "IdentityFile " + str(devops_user_key) + "\n"
 
+    '''
     user_ssh_dir = os.path.expanduser("~") + "/.ssh"
     if not os.path.exists(user_ssh_dir):
         os.makedirs(user_ssh_dir)
+    '''
 
-    ssh_config_file = user_ssh_dir + '/config'
+    #ssh_config_file = user_ssh_dir + '/config'
+    ssh_config_file = jenkins_home + '/git_config'
 
     #if /cd3user/.ssh/config file exists
     if os.path.exists(ssh_config_file):
@@ -190,7 +194,7 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     #shutil.copyfile(git_config_file, user_ssh_dir + '/config')
     # change permissions of private key file and config file for GIT
     os.chmod(devops_user_key, 0o600)
-    os.chmod(user_ssh_dir + '/config', 0o600)
+    os.chmod(ssh_config_file, 0o600)
     #os.chmod(git_config_file, 0o600)
 
     '''
@@ -233,20 +237,12 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
         file = open(jenkins_properties_file_path, "w")
         jenkins_config.write(file)
+        file.close()
 
     except Exception as e:
         print(e)
 
-    file.close()
 
-    """# Update Environment variable for jenkins
-    yaml_file_path = jenkins_install + "/jcasc.yaml"
-    if (os.path.exists(yaml_file_path)):
-        with open(yaml_file_path) as yaml_file:
-            cfg = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        cfg["jenkins"]["globalNodeProperties"] = [{'envVars': {'env': [{'key': 'customer_prefix', 'value': prefix}]}}]
-        with open(yaml_file_path, "w") as yaml_file:
-            cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)"""
     # Clean repo config if exists and initiate git repo
     subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
     subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
@@ -349,8 +345,8 @@ safe_file = user_dir + "/tenancies/createTenancyConfig.safe"
 auto_keys_dir = user_dir + "/tenancies/keys"
 toolkit_dir = os.path.dirname(os.path.abspath(__file__))+"/.."
 #toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
-modules_dir = toolkit_dir + "/user-scripts/terraform"
-variables_example_file = modules_dir + "/variables_example.tf"
+terraform_dir = toolkit_dir + "/user-scripts/terraform"
+variables_example_file = terraform_dir + "/variables_example.tf"
 setupoci_props_toolkit_file_path = toolkit_dir + "/setUpOCI.properties"
 
 jenkins_install = toolkit_dir + "/../jenkins_install"
@@ -573,7 +569,7 @@ elif auth_mechanism=='session_token':
                                                                                                               "key_file = "+_key_path+"\n"
                                                                                                                                                   "region = "+region+"\n")
     '''
-    # copy config file to customer specific directory and create symlink for TF execution
+    # copy config file to prefix specific directory and create symlink for TF execution
     config_file_path_user_home = user_dir + "/.oci/config"
     # To take care of multiple executions of createTenancyConfig,py
     if not os.path.islink(config_file_path_user_home):
@@ -620,11 +616,17 @@ home_region = ct.home_region
 
 
 ## Check the remote state requirements
-backend_file = open(modules_dir + "/backend.tf", 'r')
+backend_file = open(terraform_dir + "/backend.tf", 'r')
 backend_file_data = backend_file.readlines()
 global_backend_file_data = ""
 
 if remote_state == "yes":
+    #fetch compartment ocid from compartment name
+    if "ocid1.compartment.oc" not in compartment_ocid:
+        print("Fetching existing Compartments from Tenancy...")
+        ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
+        compartment_ocid = ct.ntk_compartment_ids[compartment_ocid]
+
     print("\nCreating Tenancy specific remote tfstate Items - bucket, S3 credentials.................")
     s3_credential_file_path = config_files + "/" + prefix + "_s3_credentials"
     buckets_client = ObjectStorageClient(config=config,
@@ -805,7 +807,7 @@ for region in ct.all_regions:
         if not os.path.exists(f"{terraform_files}/global/rpc"):
             os.makedirs(f"{terraform_files}/global/rpc")
 
-            shutil.copyfile(modules_dir + "/provider.tf", f"{terraform_files}/global/rpc/provider.tf")
+            shutil.copyfile(terraform_dir + "/provider.tf", f"{terraform_files}/global/rpc/provider.tf")
 
             with open(f"{terraform_files}/global/rpc/provider.tf", 'r+') as provider_file:
                 provider_file_data = provider_file.read().rstrip()
@@ -833,11 +835,23 @@ for region in ct.all_regions:
     if os.path.exists(terraform_files+region):
         continue
 
-    os.mkdir(terraform_files+region)
+    #os.mkdir(terraform_files+region)
 
+    # 7. Copy terraform modules and variables file to outdir
+    '''
+    if modules_source+"/" == terraform_files:
+        try:
+            shutil.copytree(terraform_dir + "/modules", terraform_files+"/modules")
+        except FileExistsError as fe:
+            pass
+
+    shutil.copytree(terraform_dir, terraform_files + "/" + region + "/", ignore=shutil.ignore_patterns("modules"))
+    '''
+    shutil.copytree(terraform_dir, terraform_files + "/" + region + "/")
+
+    #Prepare variables file
     linux_image_id = ''
     windows_image_id = ''
-
 
     new_config = deepcopy(config)
     new_config.__setitem__("region", ct.region_dict[region])
@@ -874,8 +888,7 @@ for region in ct.all_regions:
     f.write(variables_example_file_data)
     f.close()
 
-    # 7. Copy terraform modules and variables file to outdir
-    distutils.dir_util.copy_tree(modules_dir, terraform_files +"/" + region)
+
     with open(terraform_files +"/" + region + "/provider.tf", 'r+') as provider_file:
         provider_file_data = provider_file.read().rstrip()
     if auth_mechanism == 'instance_principal':
@@ -995,8 +1008,9 @@ if use_devops == 'yes':
     f.write(regions_file_data[:-1])
     f.close()
     # create all compartments_file
-    print("Fetching existing Compartments from Tenancy...")
-    ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
+    if ct.ntk_compartment_ids == {}:
+        print("Fetching existing Compartments from Tenancy...")
+        ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
     compartments_file_data = ""
     comp_done = []
     for k, v in ct.ntk_compartment_ids.items():
@@ -1058,7 +1072,7 @@ data=prefix + "\t" + "SUCCESS\t"+current_time+"\n"
 f.write(data)
 f.close()
 
-logging.info("Customer Specific Working Directory Path: "+customer_tenancy_dir+"\n")
+logging.info("Prefix Specific Working Directory Path: "+customer_tenancy_dir+"\n")
 
 if remote_state == 'yes':
     logging.info("Remote State Bucket Name: "+ bucket_name+ " in "+rg+".")

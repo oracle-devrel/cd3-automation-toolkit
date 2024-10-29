@@ -47,7 +47,7 @@ module "instances" {
   #nsg_ids              = each.value.nsg_ids != [] ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : []
   boot_volume_size_in_gbs                    = each.value.boot_volume_size_in_gbs != null ? each.value.boot_volume_size_in_gbs : null
   memory_in_gbs                              = each.value.memory_in_gbs != null ? each.value.memory_in_gbs : null
-  capacity_reservation_id                    = each.value.capacity_reservation_id != null ? lookup(var.capacity_reservation_ocids, each.value.capacity_reservation_id, null) : null
+  capacity_reservation_id                    = each.value.capacity_reservation_id != null ? (length(regexall("ocid1.capacityreservation.oc*", each.value.capacity_reservation_id)) > 0 ? each.value.capacity_reservation_id : lookup(var.capacity_reservation_ocids, each.value.capacity_reservation_id, null)) : null
   create_is_pv_encryption_in_transit_enabled = each.value.create_is_pv_encryption_in_transit_enabled
 
   boot_tf_policy              = each.value.backup_policy != null ? each.value.backup_policy : null

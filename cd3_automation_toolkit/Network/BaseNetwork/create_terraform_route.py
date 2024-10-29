@@ -218,6 +218,9 @@ def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, ct, non_g
             # Dont create any route table or route distribution name if using Auto Generated ones
             if (DRG_RT in commonTools.drg_auto_RTs and DRG_RD in commonTools.drg_auto_RDs):
                 continue
+            # Dont create any oute table or route distribution name if OCID is goven in DRG RT Name
+            if ("ocid1.drgroutetable.oc" in DRG_RT):
+                continue
 
             region = region.strip().lower()
             if region not in ct.all_regions:

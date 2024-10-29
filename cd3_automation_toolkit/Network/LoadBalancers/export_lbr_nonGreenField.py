@@ -1066,7 +1066,7 @@ def export_lbr(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
                     for keys in values.backends:
                         cnt = cnt + 1
                         backendservers_name = keys.name
-                        backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address + "-" + str(cnt))
+                        backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address + "-" + str(keys.port))
                         tf_resource = f'module.backends[\\"{tf_name}_{backendsets_tf_name}_{backendservers_tf_name}\\"].oci_load_balancer_backend.backend'
                         if tf_resource not in state["resources"]:
                             importCommands[

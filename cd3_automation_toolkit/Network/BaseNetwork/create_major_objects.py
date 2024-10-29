@@ -243,7 +243,10 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tena
 
                 if columnname == "DRG Name":
                     drg_name = columnvalue
-                    drg_tf_name = commonTools.check_tf_variable(drg_name)
+                    if ("ocid1.drg.oc" not in drg_name):
+                        drg_tf_name = commonTools.check_tf_variable(drg_name)
+                    else:
+                        drg_tf_name = drg_name
                     tempdict['drg_tf_name'] = drg_tf_name
 
                 if (columnname == 'Attached To'):
@@ -327,6 +330,8 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tena
                     #if it is Auto Generated RT(during export) dont attach any RT to DRG attachment
                     if(columnvalue in commonTools.drg_auto_RTs):
                         drg_rt_tf_name = ''
+                    elif("ocid1.drgroutetable.oc1" in columnvalue):
+                        drg_rt_tf_name = columnvalue
                     elif(columnvalue!=''):
                         drg_rt_tf_name = commonTools.check_tf_variable(drg_name + "_" + columnvalue)
                     tempStr['drg_rt_tf_name'] = drg_rt_tf_name
@@ -340,7 +345,9 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tena
                 drgstr_skeleton = drg_template.render(count=0)[:-1]
                 region_included_drg.append(region)
             tempStr['drg_version'] = drg_versions[region, drg_name]
-            drgstr = drg_template.render(tempStr)
+            drgstr=''
+            if ("ocid1.drg.oc" not in drg_tf_name):
+                drgstr = drg_template.render(tempStr)
 
             if(attachedto=="attached"):
                 drg_attach = drg_attach_template.render(tempStr)
@@ -360,7 +367,8 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tena
             if region in region_included_drg:
                 if(drg_attach_tfStr[region]!=''):
                     drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
-                drg_tfStr[region] = drgstr_skeleton + drg_tfStr[region]
+                if(drg_tfStr[region] != ''):
+                    drg_tfStr[region] = drgstr_skeleton + drg_tfStr[region]
 
     def processVCN(tempStr):
         rt_tf_name = ''

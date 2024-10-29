@@ -76,5 +76,6 @@ variable "freeform_tags_value" {
 variable "user_can_request_access" {
   type    = bool
   description = "Specifies whether user can request access to the group"
+  default = false
 
 }

@@ -76,11 +76,12 @@ properties([
             choiceType: 'ET_FORMATTED_HTML',
             description: 'Select additional filters',
             name: 'AdditionalFilters',
-            referencedParameters: 'Workflow,SubOptions,SubChildOptions',
+            referencedParameters: 'Workflow,SubOptions,SubChildOptions,MainOptions',
              script: [
                 $class: 'ScriptlerScript',
                 scriptlerScriptId: 'AdditionalFilters.groovy',
                 parameters: [
+                    [name:'MainOptions',value:'${MainOptions}'],
                     [name:'SubOptions', value: '${SubOptions}'],
 					[name:'SubChildOptions', value: '${SubChildOptions}'],
                     [name:'Workflow', value: '${Workflow}'],

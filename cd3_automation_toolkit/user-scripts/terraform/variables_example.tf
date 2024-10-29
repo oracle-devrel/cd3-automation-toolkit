@@ -98,7 +98,7 @@ variable "dbsystem_ssh_keys" {
 # Platform Image OCIDs, Source OCIDS
 # and Market Place Images
 ###################################
-
+# Reference url to get the OCIDS : https://docs.oracle.com/en-us/iaas/images/
 variable "instance_source_ocids" {
   type = map(any)
   default = {
@@ -262,7 +262,7 @@ variable "groups" {
 variable "identity_domain_groups" {
   type = map(object({
     group_name        = string
-    group_description = string
+    group_description = optional(string)
     idcs_endpoint     = string
     domain_compartment_id    = string
     matching_rule     = optional(string)
@@ -1533,6 +1533,7 @@ variable "nlb_backends" {
     network_load_balancer_id = string
     port                     = number
     #vnic_vlan                = optional(string)
+    #vnic_ip                  = optional(string)
     ip_address               = string
     instance_compartment     = string
     is_drain                 = optional(bool)

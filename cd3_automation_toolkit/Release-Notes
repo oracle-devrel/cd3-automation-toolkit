@@ -1,4 +1,16 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2024.4.2
+Nov 8th, 2024
+-------------------------------------
+1. Introduced deleteTenancyConfig.py script which will remove all the components created by createTenancyConfig.py
+2. Bug fixes/Enhancements -
+ a. Modified Network sheets to accept OCID for DRG , DRG RT and Destination Object for Route Rule.
+ b. Identity Domain Users/Groups bug fixes for parameter(terraform as well as python) - user_can_request_access, group description as optional for identity domain groups.
+ c. cd3Validator bugs - corrected some false errors for buckets, network.
+ d. Retention rule bug for buckets.
+ e. Bug related to backed server tf name for LBaaS and NLB.
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2024.4.1
 Sep 30th, 2024
 -------------------------------------

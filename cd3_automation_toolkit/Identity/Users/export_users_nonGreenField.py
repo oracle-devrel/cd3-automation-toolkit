@@ -112,7 +112,7 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
             domain_name = domain_key.split("@")[1]
             domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,
                                                                        service_endpoint=idcs_endpoint)
-            users = domain_client.list_users()
+            users = domain_client.list_users(limit=100000) # change this to pagination once api supports
             index = 0
             for user in users.data.resources:
                 defined_tags_info = user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags

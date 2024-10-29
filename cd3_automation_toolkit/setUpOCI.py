@@ -2087,6 +2087,31 @@ run_fetch_script = 0
 
 ## Fetch Subscribed Regions
 subscribed_regions = ct.get_subscribedregions(config,signer)
+
+# Check for new region subscriptions
+region_dir_list =[]
+for name in os.listdir(outdir):
+    if os.path.isdir(os.path.join(outdir,name)):
+        region_dir_list.append(name)
+
+region_dir_not_configured = list(set(ct.all_regions).difference(region_dir_list))
+
+if region_dir_not_configured!=[]:
+    #None of the subscribed regions dir exist. Looks like user has not executed createTenancyConfig.py even once
+    if list(set(ct.all_regions).difference(region_dir_not_configured)) == []:
+        print("Make sure that CD3 container has been connected to the tenancy using createTenancyConfig.py script.")
+        print("Follow the documentation link: https://oracle-devrel.github.io/cd3-automation-toolkit/latest/install-cd3/")
+        print("Exiting!!!")
+        exit(0)
+
+    #New region subscription
+    else:
+        print("WARNING!!!!!!!!")
+        print("Regions "+str(region_dir_not_configured) + " are subscribed to the tenancy but not yet configured with CD3 Automation Toolkit.")
+        print("Re-run createTenancyConfig.py with same tenancyconfig.properties used for prefix '"+ prefix+"' to configure new regions with the toolkit.")
+        print("Till then OCI resources can not be managed through terraform for them.\n\n")
+        ct.all_regions = list(set(ct.all_regions).difference(region_dir_not_configured))
+
 home_region = ct.home_region
 
 ## Fetch Region ADs

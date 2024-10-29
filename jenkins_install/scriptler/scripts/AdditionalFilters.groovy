@@ -1,3 +1,4 @@
+List suboptions_list = SubOptions.split(",")
 def reg_list = new File("/cd3user/tenancies/${Prefix}/.config_files/regions_file") as String[]
 def string_list = reg_list.join(", ")
 reg_options = ""
@@ -13,28 +14,43 @@ for(item in string_list2.split(",")){
 
 html_to_be_rendered = "<table>"
 if(Workflow.toLowerCase().contains("export")){
-
-html_to_be_rendered = """
-    ${html_to_be_rendered}
-   <tr>
+region_filter_option = """
+	<tr>
    <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"reg_filter=\"></td>
    <td><label for="value">Select Regions (Optional) :</label></td>
    <td ><select multiple name="value" style="width:150px;">${reg_options} </select></td>
    <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
    </tr><tr></tr><tr></tr><tr></tr>
-   <tr>
+	"""
+compartment_filter_option = """
+	<tr>
     <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"comp_filter=\"></td>
     <td><label for=\"value\">Select Compartments (Optional): </label></td>
     <td ><select multiple name=\"value\">${comp_options}</select></td>
     <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
     </tr><tr></tr><tr></tr><tr></tr>
-
-"""
+	"""
+List default_params_set = []
+for (item in MainOptions.split(",")) {
+  if (item != "Export Identity") {
+    html_to_be_rendered = "${html_to_be_rendered} ${region_filter_option} ${compartment_filter_option}"
+    default_params_set = ["region","compartment"]
+    break;
+  }
+}
+ if (("Export Groups" in suboptions_list) || ("Export Users" in suboptions_list)) {
+	if ("compartment" in default_params_set) {
+      		html_to_be_rendered = "${html_to_be_rendered}"
+    }else {
+        html_to_be_rendered = "${html_to_be_rendered}${compartment_filter_option}"
+        default_params_set.add("compartment")
+    }
+}
 }
 domain_filter_val = "Unset"
-for (item in SubOptions.split(",")) {
+for (item in suboptions_list) {
     if ((item in ["Export Groups","Export Users"]) && (domain_filter_val.equals("Unset"))) {
-        html_to_be_rendered = """
+      	html_to_be_rendered = """
         ${html_to_be_rendered}
     <tr>
     <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"domain_filter=[\"></td>
@@ -228,7 +244,6 @@ for (item in SubChildOptions.split(",")) {
          """
    export_network_rules = "set"
   }
-
 
 	if (item.equals("Export DR Plan")) {
       html_to_be_rendered = """

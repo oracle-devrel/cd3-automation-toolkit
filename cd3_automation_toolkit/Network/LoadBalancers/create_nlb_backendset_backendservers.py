@@ -170,7 +170,7 @@ def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix,
                     servername = serverinfo.split(":")[0].strip()
                     serverport = serverinfo.split(":")[1].strip()
 
-                backend_server_tf_name = commonTools.check_tf_variable(servername + "-" + str(cnt))
+                backend_server_tf_name = commonTools.check_tf_variable(servername + "-" + serverport)
                 e = servername.count(".")
                 if (e == 3):
                     backend_server_ip_address = "IP:" + servername

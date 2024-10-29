@@ -22,14 +22,18 @@ oci_obj_names = {}
 
 
 def print_drgv2(values_for_column_drgv2, region, comp_name, vcn_info, drg_info, drg_attachment_info, drg_rt_info,
-                import_drg_route_distribution_info, drg_route_distribution_statements):
+                import_drg_route_distribution_info, drg_route_distribution_statements,write_drg_ocids):
     for col_header in values_for_column_drgv2.keys():
         if (col_header == "Region"):
             values_for_column_drgv2[col_header].append(region)
         elif (col_header == "Compartment Name"):
             values_for_column_drgv2[col_header].append(comp_name)
         elif (col_header == "DRG Name"):
-            values_for_column_drgv2[col_header].append(drg_info.display_name)
+            if write_drg_ocids == True:
+                values_for_column_drgv2[col_header].append(drg_info.id)
+            else:
+                values_for_column_drgv2[col_header].append(drg_info.display_name)
+
         elif (col_header == "Attached To"):
             if (drg_attachment_info is None):
                 values_for_column_drgv2[col_header].append('')
@@ -53,12 +57,19 @@ def print_drgv2(values_for_column_drgv2, region, comp_name, vcn_info, drg_info, 
             if (drg_rt_info == None):
                 values_for_column_drgv2[col_header].append("")
             else:
-                values_for_column_drgv2[col_header].append(drg_rt_info.display_name)
+                if write_drg_ocids==True:
+                    values_for_column_drgv2[col_header].append(drg_rt_info.id)
+                else:
+                    values_for_column_drgv2[col_header].append(drg_rt_info.display_name)
+
         elif (col_header == 'Import DRG Route Distribution Name'):
             if import_drg_route_distribution_info == None:
                 values_for_column_drgv2[col_header].append("")
             else:
-                values_for_column_drgv2[col_header].append(import_drg_route_distribution_info.display_name)
+                if write_drg_ocids == True:
+                    values_for_column_drgv2[col_header].append(import_drg_route_distribution_info.id)
+                else:
+                    values_for_column_drgv2[col_header].append(import_drg_route_distribution_info.display_name)
         elif (col_header == "Import DRG Route Distribution Statements"):
             statement_val = ''
             if (drg_route_distribution_statements == None):
@@ -90,7 +101,7 @@ def print_drgv2(values_for_column_drgv2, region, comp_name, vcn_info, drg_info, 
 
 
 def print_vcns(values_for_column_vcns, region, comp_name, vnc,vcn_info, drg_attachment_info, igw_info, ngw_info, sgw_info,
-               lpg_display_names,state):
+               lpg_display_names,state,write_drg_ocids):
     drg_info=None
     for col_header in values_for_column_vcns.keys():
 
@@ -106,10 +117,17 @@ def print_vcns(values_for_column_vcns, region, comp_name, vnc,vcn_info, drg_atta
                     values_for_column_vcns[col_header].append("n")
                 else:
                     route_table_id = drg_attachment_info.route_table_id
-                    if (route_table_id is not None):
-                        val = drg_info.display_name + "::" + vnc.get_route_table(route_table_id).data.display_name
+                    if write_drg_ocids == True:
+                        if (route_table_id is not None):
+                            val = drg_info.id + "::" + vnc.get_route_table(route_table_id).data.display_name
+                        else:
+                            val = drg_info.id
                     else:
-                        val = drg_info.display_name
+                        if (route_table_id is not None):
+                            val = drg_info.display_name + "::" + vnc.get_route_table(route_table_id).data.display_name
+                        else:
+                            val = drg_info.display_name
+
                     values_for_column_vcns[col_header].append(val)
             else:
                 values_for_column_vcns[col_header].append("n")
@@ -620,6 +638,10 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
     print("Tabs- VCNs and DRGs would be overwritten during export process!!!\n")
 
+    export_compartment_ids = []
+    for comp in export_compartments:
+        export_compartment_ids.append(ct.ntk_compartment_ids[comp])
+
     # Fetch DRGs
     for reg in export_regions:
         current_region = reg
@@ -637,6 +659,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                                                                            ntk_compartment_name],
                                                                        attachment_type="ALL")  # ,lifecycle_state ="ATTACHED")#,attachment_type="ALL")
             rpc_execution = True
+            write_drg_ocids=False
             for drg_attachment_info in DRG_Attachments.data:
                 if (drg_attachment_info.lifecycle_state != "ATTACHED"):
                     continue
@@ -647,6 +670,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 # Attachment Data
                 drg_display_name = drg_info.display_name
                 drg_comp_id = drg_info.compartment_id
+
+                if drg_comp_id not in export_compartment_ids:
+                    drg_display_name=drg_id
+                    write_drg_ocids=True
+
                 for key, val in ct.ntk_compartment_ids.items():
                     if val == drg_comp_id:
                         if ("::" in key):
@@ -660,7 +688,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 if (drg_id not in drg_ocid):
                     oci_obj_names[reg].write("\nDRG Version::::" + drg_display_name + "::::" + drg_version)
                     tf_resource = f'module.drgs[\\"{tf_name}\\"].oci_core_drg.drg'
-                    if tf_resource not in state["resources"]:
+                    if tf_resource not in state["resources"] and write_drg_ocids == False:
                         importCommands[reg].write( f'\n{tf_or_tofu} import "{tf_resource}" {str(drg_info.id)}')
                     drg_ocid.append(drg_id)
 
@@ -700,15 +728,17 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                         drg_route_table_info = vnc.get_drg_route_table(drg_route_table_id).data
 
                         import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
+
                         if (import_drg_route_distribution_id != None):
                             import_drg_route_distribution_info = vnc.get_drg_route_distribution(
                                 import_drg_route_distribution_id).data
+
                             drg_route_distribution_statements = vnc.list_drg_route_distribution_statements(
                                 import_drg_route_distribution_info.id)
 
                             tf_name = commonTools.check_tf_variable(
                                 drg_display_name + "_" + import_drg_route_distribution_info.display_name)
-                            if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
+                            if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs and "ocid1.drg.oc" not in drg_display_name):
                                 tf_resource = f'module.drg-route-distributions[\\"{tf_name}\\"].oci_core_drg_route_distribution.drg_route_distribution'
                                 if tf_resource not in state["resources"]:
                                     importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(import_drg_route_distribution_info.id)}')
@@ -722,7 +752,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
                     print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info, drg_info, drg_attachment_info,
                                 drg_route_table_info, import_drg_route_distribution_info,
-                                drg_route_distribution_statements)
+                                drg_route_distribution_statements,write_drg_ocids)
 
                 # RPC
                 elif attach_type.upper() == "REMOTE_PEERING_CONNECTION" and rpc_execution:
@@ -747,7 +777,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
                             tf_name = commonTools.check_tf_variable(
                                 drg_display_name + "_" + import_drg_route_distribution_info.display_name)
-                            if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
+                            if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs and write_drg_ocids == False):
                                 tf_resource = f'module.drg-route-distributions[\\"{tf_name}\\"].oci_core_drg_route_distribution.drg_route_distribution'
                                 if tf_resource not in state["resources"]:
                                     importCommands[reg].write(f'\n{tf_or_tofu} import "{tf_resource}" {str(import_drg_route_distribution_info.id)}')
@@ -783,6 +813,13 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 vcn_info = None
                 drg_info = vnc.get_drg(drg_id).data
                 drg_display_name = drg_info.display_name
+
+                #Do not process if DRG (and its RTs/RDs are in different compartment than the export_compartments list
+                drg_comp_id=drg_info.compartment_id
+                if drg_comp_id not in export_compartment_ids:
+                    continue
+
+                write_drg_ocids=False
 
                 if drg_info.default_drg_route_tables is not None:
                     DRG_RTs = oci.pagination.list_call_get_all_results(vnc.list_drg_route_tables,
@@ -820,7 +857,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                         print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info, drg_info,
                                     drg_attachment_info, drg_route_table_info,
                                     import_drg_route_distribution_info,
-                                    drg_route_distribution_statements)
+                                    drg_route_distribution_statements,write_drg_ocids)
 
     commonTools.write_to_cd3(values_for_column_drgv2, cd3file, "DRGs")
     print("RPCs exported to CD3\n")
@@ -860,6 +897,14 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 for drg_attachment_info in DRG_Attachments.data:
                     if (drg_attachment_info.lifecycle_state != "ATTACHED"):
                         continue
+
+                write_drg_ocids=False
+                if drg_attachment_info != None:
+                    drg_id = drg_attachment_info.drg_id
+                    drg_info = vnc.get_drg(drg_id).data
+                    drg_comp_id=drg_info.compartment_id
+                    if drg_comp_id not in export_compartment_ids:
+                        write_drg_ocids= True
 
                 # igw_display_name = "n"
                 IGWs = oci.pagination.list_call_get_all_results(vnc.list_internet_gateways,
@@ -933,7 +978,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
 
                 # Fill VCNs Tab
                 print_vcns(values_for_column_vcns, region, ntk_compartment_name, vnc,vcn_info, drg_attachment_info, igw_info, ngw_info,
-                           sgw_info, lpg_display_names,state)
+                           sgw_info, lpg_display_names,state,write_drg_ocids)
 
     commonTools.write_to_cd3(values_for_column_vcns, cd3file, "VCNs")
     print("VCNs exported to CD3\n")

@@ -298,7 +298,7 @@ module "groups" {
   for_each = var.identity_domain_groups
 
   group_name               = each.value.group_name
-  group_description        = each.value.group_description
+  group_description        = each.value.group_description != null ? each.value.group_description : null
   matching_rule            = each.value.matching_rule
   compartment_id           = each.value.domain_compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.domain_compartment_id)) > 0 ? each.value.domain_compartment_id : var.compartment_ocids[each.value.domain_compartment_id]) : var.tenancy_ocid
   identity_domain          = data.oci_identity_domains.iam_domains[each.key].domains[0]
