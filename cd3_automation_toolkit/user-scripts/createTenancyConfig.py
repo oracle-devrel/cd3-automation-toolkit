@@ -164,8 +164,10 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     if not os.path.exists(user_ssh_dir):
         os.makedirs(user_ssh_dir)
     '''
-
     #ssh_config_file = user_ssh_dir + '/config'
+
+    if not os.path.exists(jenkins_home):
+        os.mkdir(jenkins_home)
     ssh_config_file = jenkins_home + '/git_config'
 
     #if /cd3user/.ssh/config file exists
@@ -211,8 +213,6 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     '''
 
     # create jenkins.properties file
-    if not os.path.exists(jenkins_home):
-        os.mkdir(jenkins_home)
     jenkins_properties_file_path = jenkins_home+"/jenkins.properties"
 
     if dir_values:

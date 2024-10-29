@@ -391,8 +391,10 @@ if os.path.exists(ssh_config_file):
 
 if exception == False:
     # Removes prefix directory
-    shutil.rmtree(customer_tenancy_dir)
-    shutil.rmtree(jenkins_home+"/jobs/"+prefix)
+    if (os.path.exists(customer_tenancy_dir)):
+        shutil.rmtree(customer_tenancy_dir)
+    if (os.path.exists(jenkins_home+"/jobs/"+prefix)):
+        shutil.rmtree(jenkins_home+"/jobs/"+prefix)
 
     #Removes prefix from createTenancyConfig.safe
     if os.path.exists(safe_file):
