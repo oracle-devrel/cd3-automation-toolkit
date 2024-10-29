@@ -622,7 +622,7 @@ global_backend_file_data = ""
 
 if remote_state == "yes":
     #fetch compartment ocid from compartment name
-    if "ocid1.compartment.oc" not in compartment_ocid:
+    if "ocid1.compartment.oc" not in compartment_ocid and "ocid1.tenancy.oc" not in compartment_ocid:
         print("Fetching existing Compartments from Tenancy...")
         ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
         compartment_ocid = ct.ntk_compartment_ids[compartment_ocid]
