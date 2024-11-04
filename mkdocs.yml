@@ -22,6 +22,7 @@ nav:
     - Connect Container to OCI: 
       - connect-container-to-oci-tenancy.md
       - Multiple Prefixes(optional): multiple-prefixes.md
+      - Delete Prefix(optional): delete-prefix.md
 
   - Use with CLI: 
     - cd3-cli.md
