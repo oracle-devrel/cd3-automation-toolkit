@@ -171,7 +171,7 @@ python createTenancyConfig.py tenancyconfig.properties
 **Output:**
 
 <details>
-    <summary> Output files - </summary>
+    <summary> Output files and OCI resources - </summary>
     <table>
         <tr>
             <th>Files Generated</th>
@@ -193,37 +193,37 @@ python createTenancyConfig.py tenancyconfig.properties
             <td>Region based directories</td>
             <td>/cd3user/tenancies/&lt;prefix&gt;/terraform_files</td>
             <td>Tenancy's subscribed regions based directories for the generation of terraform files.
-                Each region directorywill contain individual directory for each service based on the parameter 'outdir_structure_file'</td>
+                Each region directory will contain individual directory for each service based on the parameter 'outdir_structure_file'</td>
         </tr>
         <tr>
             <td>Variables File,Provider File, Root and Sub terraform modules</td>
             <td>/cd3user/tenancies/&lt;prefix&gt;/terraform_files/&lt;region></td>
-            <td>Required for terraform to work. Variables file and Provider file willbe genrated based on authentication mechanism chosen.</td>
+            <td>Required for terraform to work. Variables file and Provider file will be generated based on authentication mechanism chosen.</td>
         </tr>
         <tr>
             <td>out file</td>
             <td>/cd3user/tenancies/&lt;prefix&gt;/createTenancyConfig.out</td>
-            <td>This file contains acopy of information displayed as the console output.</td>
+            <td>This file contains a copy of information displayed as the console output.</td>
         </tr>
         <tr>
             <td>OCI Config File</td>
             <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_oci_config</td>
-            <td>Customer specific Config file for OCI API calls. This will havedata based on authentication mechanism chosen.</td>
+            <td>Customer specific Config file for OCI API calls. This will have data based on authentication mechanism chosen.</td>
         </tr>
         <tr>
             <td>Public and Private Key Pair</td>
-            <td>Copied from /cd3user/tenancies/keys/ to /cd3usertenancies/&lt;prefix&gt;/.config_files</td>
-            <td>API Key for authentication mechanism as API_Key arecopied to customer specific out directory locations for easy access.</td>
+            <td>Copied from /cd3user/tenancies/keys/ to /cd3user/tenancies/&lt;prefix&gt;/.config_files</td>
+            <td>API Key for authentication mechanism as API_Key are copied to customer specific out directory locations for easy access.</td>
         </tr>
         <tr>
             <td>GIT Config File</td>
-            <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_git_config</td>
-            <td>Customer specific GIT Config file for OCI Dev Ops GIT operations.This is generated only if use_oci_devops_git is set to yes</td>
+            <td>/cd3user/tenancies/jenkins_home/git_config</td>
+            <td>GIT Config file for OCI Dev Ops GIT operations.This is generated only if use_oci_devops_git is set to yes. Symlink is created for this file at /cd3user/.ssh/config</td>
         </tr>
         <tr>
             <td>S3 Credentials File</td>
             <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_s3_credentials</td>
-            <td>This file contains access key and secret for S3 compatible OSbucket to manage remote terraform state. This is generated only if use_remote_state is set to yes</td>
+            <td>This file contains access key and secret for S3 compatible bucket to manage remote terraform state. This is generated only if use_remote_state is set to yes</td>
         </tr>
         <tr>
             <td>Jenkins Home</td>
@@ -233,7 +233,33 @@ python createTenancyConfig.py tenancyconfig.properties
         <tr>
             <td>tenancyconfig.properties</td>
             <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_tenancyconfig.properties</td>
-            <td>The input properties file used to execute the script is copied to custome folder to retain for future reference. This can be used when the script needs tobe re-run with same parameters at later stage.</td>
+            <td>The input properties file used to execute the script is copied to customer folder to retain for future reference. This can be used when the script needs to be re-run with same parameters at later stage.</td>
+        </tr>
+       <tr>
+            <th>OCI Resources Created</th>
+            <th>Name</th>
+            <th>Comment/Purpose</th>
+        </tr>
+
+        <tr>
+            <td>OCI DevOps Project and Repository</td>
+            <td>&lt;prefix&gt;-automation-toolkit-project and &lt;prefix&gt;-automation-toolkit-repo</td>
+            <td>Devops Project and repo are created under compartment specified under compartment_ocid property in tenancyconfig.properties. This will host the terraform/tofu code. This is created only if use_oci_devops_git is set to yes.</td>
+        </tr>
+        <tr>
+            <td>OCI Topic</td>
+            <td>&lt;prefix&gt;-automation-toolkit-topic </td>
+            <td>An empty OCI Topic (without any subscription) is created which is needed for Devops Project.</td>
+        </tr>
+        <tr>
+            <td>OCI Bucket</td>
+            <td>&lt;prefix&gt;-automation-toolkit-bucket </td>
+            <td>An OCI bucket is created to store the state file. This is created only if use_remote_state is set to yes.</td>
+        </tr>
+        <tr>
+            <td>Customer Secret Key</td>
+            <td>&lt;prefix&gt;-automation-toolkit-csk </td>
+            <td>A Customer Secret Key is created for the user specified in tenancyconfig.properties file. This is used as S3 credentials for the bucket storing remote state.</td>
         </tr>
         
     </table>
