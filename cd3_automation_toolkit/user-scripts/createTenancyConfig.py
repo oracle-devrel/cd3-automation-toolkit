@@ -170,7 +170,7 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
         os.mkdir(jenkins_home)
     git_config_file = jenkins_home + '/git_config'
 
-    #if git_config_file exists
+    # if /cd3user/tenancies/jenkins_home/git_config file exists
     if os.path.exists(git_config_file):
         f = open(git_config_file,"r")
         config_file_data = f.read()

@@ -17,9 +17,10 @@ parser.add_argument("-t", "--session_token", help="SESSION_TOKEN", nargs='?', co
 args = parser.parse_args()
 
 try:
-    region_file = os.path.dirname(os.path.abspath(__file__))+"/region_file.json"
-    region_map = load_region_map(region_file)
-    region = get_region_from_ocid(args.ocid, region_map)
+    #region_file = os.path.dirname(os.path.abspath(__file__))+"/region_file.json"
+    #region_map = load_region_map(region_file)
+    #region = get_region_from_ocid(args.ocid, region_map)
+    region = get_region_from_ocid(args.ocid)
 except Exception as e:
     print(f"Error loading region map: {str(e)}")
     exit(1)
