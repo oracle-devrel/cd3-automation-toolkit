@@ -24,7 +24,7 @@ The toolkit allows independent management of multiple environments using the sam
     This will help retain the input properties files used for different executions of the createTenancyConfig.py
 
 * Different values can be specified for other parameters as well. For instance, one prefix can be configured to have **multiple outdir structure** for the generated terraform files, while another prefix can be set with a **single outdir structure**.
-* Execute **createTenancyConfig.py** with modified **tenancyconfig.properties**.
+* Execute **createTenancyConfig.py** with modified **tenancyconfig.properties** or **tenancyconfig_<prefix\>.properties**.
 * After executing **createTenancyConfig.py**, the following screenshots show how the environment specific out directories look like when using the toolkit with CLI and with Jenkins.
 
 <br>
