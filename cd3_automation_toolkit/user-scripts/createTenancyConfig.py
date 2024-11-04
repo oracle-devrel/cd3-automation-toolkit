@@ -168,17 +168,17 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
     if not os.path.exists(jenkins_home):
         os.mkdir(jenkins_home)
-    ssh_config_file = jenkins_home + '/git_config'
+    git_config_file = jenkins_home + '/git_config'
 
-    #if /cd3user/.ssh/config file exists
-    if os.path.exists(ssh_config_file):
-        f = open(ssh_config_file,"r")
+    #if git_config_file exists
+    if os.path.exists(git_config_file):
+        f = open(git_config_file,"r")
         config_file_data = f.read()
         f.close()
 
         # new prefix config
         if prefix not in config_file_data:
-            f = open(ssh_config_file,"a")
+            f = open(git_config_file,"a")
             config_file_data =  "\n\n" + new_data
             f.write(config_file_data)
             f.close()
@@ -188,7 +188,7 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
     # file doesnot exist
     else:
-        f = open(ssh_config_file, "w")
+        f = open(git_config_file, "w")
         config_file_data = new_data
         f.write(config_file_data)
         f.close()
@@ -196,10 +196,10 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     #shutil.copyfile(git_config_file, user_ssh_dir + '/config')
     # change permissions of private key file and config file for GIT
     os.chmod(devops_user_key, 0o600)
-    os.chmod(ssh_config_file, 0o600)
+    os.chmod(git_config_file, 0o600)
     #os.chmod(git_config_file, 0o600)
 
-    '''
+
     # create symlink for Git Config file for SSH operations.
     src = git_config_file
     if not os.path.exists("/cd3user/.ssh"):
@@ -210,7 +210,6 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     except FileExistsError as e:
         os.unlink(dst)
         os.symlink(src,dst)
-    '''
 
     # create jenkins.properties file
     jenkins_properties_file_path = jenkins_home+"/jenkins.properties"
@@ -448,8 +447,8 @@ try:
     remote_state = config.get('Default', 'use_remote_state').strip().lower()
     remote_state_bucket = config.get('Default', 'remote_state_bucket_name').strip()
 
-    use_devops = config.get('Default', 'use_oci_devops_git').strip().strip().lower()
-    devops_repo = config.get('Default', 'oci_devops_git_repo_name').strip().strip()
+    use_devops = config.get('Default', 'use_oci_devops_git').strip().lower()
+    devops_repo = config.get('Default', 'oci_devops_git_repo_name').strip()
     devops_user = config.get('Default', 'oci_devops_git_user').strip()
     devops_user_key = config.get('Default', 'oci_devops_git_key').strip()
 
