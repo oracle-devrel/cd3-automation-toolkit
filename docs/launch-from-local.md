@@ -8,9 +8,9 @@
 **Prerequisites**
 
 * Git
-* Any docker CLI compatible platform such as Docker or Rancher. See [How to Install and Configure Rancher Desktop Part 2](https://www.youtube.com/watch?v=2QNAOJpeJZc) for reference.
+* Any docker CLI compatible platform such as Docker or Rancher. See <a href="https://www.youtube.com/watch?v=2QNAOJpeJZc"><u>How to Install and Configure Rancher Desktop</u></a> for reference.
 * Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.
-* OCI Tenancy Access as defined in [Prerequisistes](prerequisites.md).
+* OCI Tenancy Access as defined in <a href="../prerequisites"><u>Prerequisistes</u></a>.
 
 <details>
     <summary> Additional Steps needed while launching Container on a Linux Platform manually </summary>
@@ -108,5 +108,5 @@ docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_loca
 * Run ```docker exec -it cd3_toolkit bash``` to exec into the running container.
 <br><br>
 
-- [X] Follow [Connect container to tenancy](connect-container-to-oci-tenancy.md) for next steps. 
+- [X] Follow <a href="../connect-container-to-oci-tenancy"><u>Connect container to tenancy</u></a> for next steps. 
 

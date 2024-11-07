@@ -6,7 +6,7 @@ Below sub-options appear under _OCI Firewall_ option-
 
 - This is the validator for all tabs of CD3 Excel sheet for Firewall. It is a comprehensive list of validations performed on firewall tabs. 
 
-- Log file containing CD3 firewall validator checks is generated at: /cd3user/tenancies/<prefix>/<prefix>_cd3FirewallValidator.log 
+- Log file containing CD3 firewall validator checks is generated at: <i>/cd3user/tenancies/<prefix\>/<prefix\>_cd3FirewallValidator.log</i>
 
 **2. Add/Modify/Delete Firewall Policy**<br>
 
@@ -15,8 +15,9 @@ Below sub-options appear under _OCI Firewall_ option-
 **3. Add/Modify/Delete Firewall**<br>
 
 - Reads the Firewall tab of the excel and generates tfvars.
-   !!!   Note
-         - Specify Subnet Name as <subnet-name\>::<vcn-name\>. This service does not need Network details to be existing in the excel sheet.
+
+!!! Note
+      - Specify Subnet Name as ```<subnet-name>::<vcn-name>```. This service does not need Network details to be existing in the excel sheet.
 
 **4. Clone Firewall Policy**<br>
 

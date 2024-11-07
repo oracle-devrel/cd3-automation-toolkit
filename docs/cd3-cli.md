@@ -1,15 +1,15 @@
 # **Using the Automation Toolkit with CLI**
 ---
 !!! Important
-    Check out the [Must Read](must-read-prerequisites.md) section for managing network, compute and oci firewall resources.
+    Check out the <a href="../must-read-prerequisites"><u>Must Read</u></a> section for managing network, compute and oci firewall resources.
 
 ## **High Level Steps to use toolkit with CLI**
 
 1. Login to the CD3 Container.
 
-2. Check out [CD3 Toolkit Process](cd3-overview.md#cd3-toolkit-process) for workflows supported by the toolkit and choose the workflow.
+2. Check out <a href="../cd3-overview#cd3-toolkit-process"><u>CD3 Toolkit Process</u></a> for workflows supported by the toolkit and choose the workflow.
 
-3. Use one of the templates from [Excel Templates](excel-templates.md) based on the workflow chosen.
+3. Use one of the templates from <a href="../excel-templates"><u>Excel Templates</u></a> based on the workflow chosen.
 
 4. Review setUpOCI.properties file _/cd3user/tenancies/<prefix\>/<prefix\>_setUpOCI.properties_.
 
@@ -98,7 +98,7 @@ workflow_type=create_resources
 </details>
 
 ## **Copy CD3 Excel File**
-* While using the container launched using [RM Stack](launch-from-rmstack.md), local path _/cd3user/mount_path_ on the VM is mapped to _/cd3user/tenancies_ inside the container. So the file can be copied at _/cd3user/mount_path/<prefix\>_ on the VM. Below is the sample command to copy the excel file from local system to container:
+* While using the container launched using <a href="../launch-from-rmstack"><u>RM Stack</u></a>, local path _/cd3user/mount_path_ on the VM is mapped to _/cd3user/tenancies_ inside the container. So the file can be copied at _/cd3user/mount_path/<prefix\>_ on the VM. Below is the sample command to copy the excel file from local system to container:
 ```
 scp -i <private key pushed to VM while creating stack> <path to excel file on local> cd3user@<Public/Private IP of the VM>:/cd3user/mount_path/<prefix>
 ``` 

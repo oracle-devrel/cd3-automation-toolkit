@@ -28,10 +28,13 @@ Log file containing CD3 validator checks is generated at: ```/cd3user/tenancies/
 
 
 * For policy statements like below:<br>
- allow service loganalytics to {BUCKET_READ} in tenancy <br>
- allow service loganalytics to {EVENTRULE_READ} in tenancy <br>
- allow DYNAMIC-GROUP logging_analytics_agent to {LOG_ANALYTICS_LOG_GROUP_UPLOAD_LOGS} in tenancy <br>
+```
+ allow service loganalytics to {BUCKET_READ} in tenancy 
+ allow service loganalytics to {EVENTRULE_READ} in tenancy 
+ allow DYNAMIC-GROUP logging_analytics_agent to {LOG_ANALYTICS_LOG_GROUP_UPLOAD_LOGS} in tenancy 
+```
 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Validator can report below error which can be ignored:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I>2024-04-24 11:50:08,086 - ROW 41 : Invalid verb used in Policy Statement</I>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ```2024-04-24 11:50:08,086 - ROW 41 : Invalid verb used in Policy Statement```

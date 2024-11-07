@@ -7,15 +7,15 @@
         ![image](../images/migratejobs-1.png)
 
 2. Set up OCI Devops repository SSH Authentication
-    - Ensure SSH authentication is configured and operational on the Customer Jenkins instance. For detailed instructions, refer to the [OCI Code Repository documentation](https://docs.oracle.com/en-us/iaas/Content/devops/using/ssh_auth.htm).<br>
+    - Ensure SSH authentication is configured and operational on the Customer Jenkins instance. For detailed instructions, refer to the <a href="https://docs.oracle.com/en-us/iaas/Content/devops/using/ssh_auth.htm"><u>OCI Code Repository documentation</u></a>.<br>
   
         > Note - Steps to change the GIT repo are explained in next section.
     
 3. Ensure Availability of Ansi Color Plugin
-    - Confirm the presence of the Ansi color plugin in the Customer Jenkins instance. This plugin is utilized in Automation Toolkit pipeline Groovy code and is necessary if not already installed. Plugin link: [Ansicolor Plugin](https://plugins.jenkins.io/ansicolor/)
+    - Confirm the presence of the Ansi color plugin in the Customer Jenkins instance. This plugin is utilized in Automation Toolkit pipeline Groovy code and is necessary if not already installed. Plugin link: <a href="https://plugins.jenkins.io/ansicolor/"><u>Ansicolor Plugin</u></a>.
 
 4. Install Terraform Binary
-    - Make sure the Terraform binary is installed and accessible for the Jenkins user within the Jenkins instance. Installation guide: [Terraform Installation](https://developer.hashicorp.com/terraform/install)
+    - Make sure the Terraform binary is installed and accessible for the Jenkins user within the Jenkins instance. Installation guide: <a href="https://developer.hashicorp.com/terraform/install"><u>Terraform Installation</u></a>.
 
 5. Update Optional Attribute Field inside Terraform Provider Block at `/cd3user/tenancies/<prefix>/terraform_files/<region><service_dir>/provider.tf`
     - Include an  attribute as highlighted below within the Terraform provider block. This is optional but necessary in case Terraform plan encounters an error.

@@ -6,7 +6,7 @@
 
 
 **Step 1:** 
-<br>Chose the Blank CD3 Excel sheet template from [Excel Templates](excel-templates.md)
+<br>Choose the Blank CD3 Excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>
  and copy at _/cd3user/tenancies/<prefix\>/_<br><br>
 **Step 2:** 
 <br>Modify ```/cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties``` 

@@ -1,7 +1,7 @@
 # Jenkins Dashboard
 
 !!! Important
-    Check out the [Must Read](must-read-prerequisites.md) section for managing network, compute and oci firewall resources.
+    Check out the <a href="../must-read-prerequisites"><u>Must Read</u></a> section for managing network, compute and oci firewall resources.
 
 <br>
 
@@ -40,7 +40,7 @@ Below table shows the stages executed in this pipeline along with their descript
 | <b>Trigger Pipelines</b> | Corresponding terraform/tofu **apply** pipelines <br> are auto triggered based on the service chosen | |
 
 #### a. Download CD3 Excel File
- <a href=../download-excel> <b>Click here for the steps</b></a> to download excel file after successful completion of 'Execute setupoci' stage of the pipeline. The Excel file is available as an artifact for each build of the setupoci pipeline.
+ <a href=../download-excel> <u>Click here </u></a> for the steps to download excel file after successful completion of 'Execute setupoci' stage of the pipeline. The Excel file is available as an artifact for each build of the setupoci pipeline.
   >Note: For create_resources (Greenfield workflow), this will be the same Excel file which was uploaded to create resources in OCI. For export_resoucres (Non-Greenfield workflow), this will be the updated Excel file with exported OCI resource data.
 
 ### <b>2. terraform_files Folder</b>

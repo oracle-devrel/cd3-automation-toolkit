@@ -3,7 +3,7 @@
 ## Execute setUpOCI Pipeline
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](excel-templates.md).
+<br>Choose the appropriate CD3 Excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>.
 Fill the CD3 Excel with appropriate values.
 
 
@@ -30,7 +30,7 @@ Click on the setupoci pipeline and select **Build with Parameters** from left si
 
 **Step 4:** 
 <br>Select the workflow as **Create New Resources in OCI(Greenfield Workflow)**. Choose single or multiple MainOptions as required and then corresponding SubOptions.
-<br> Check out <b>[this](multiple-services-jenkins.md)</b> while selecting multiple options simultaneously.
+<br> Check out <a href="../multiple-services-jenkins"><u>Provisioning of multiple services together </u></a> page while selecting multiple options simultaneously.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags (under Governance).
 
 <img width="520" height="200" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/demo_setupocimenu_jenkins_create.jpg"><br>

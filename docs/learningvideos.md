@@ -14,4 +14,4 @@
 * [Part 10 - Support for Additional Attributes - CD3 Automation toolkit](https://www.youtube.com/watch?v=6bWWbchS2vk&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=11)
 
 
-<br>[Here](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) is the Youtube playlist link for all these videos.
+<br>[Here is the Youtube playlist ](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) link for all these videos.
