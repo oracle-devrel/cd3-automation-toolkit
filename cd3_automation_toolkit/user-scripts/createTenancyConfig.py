@@ -75,6 +75,8 @@ def create_devops_resources(config,signer):
                     name=topic_name, compartment_id=compartment_ocid, description="Created by Automation ToolKit")).data
             except Exception as e:
                 print(e.message)
+                if ('Topic with same name already exists in the same tenant or compartment' in str(e.message)):
+                    print("If it is in Deleting State, wait for few minutes for it to get terminated and re-try.")
                 print("\nExiting!!!")
                 exit()
             toolkit_topic_id = create_topic_response.topic_id
@@ -170,7 +172,7 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
         os.mkdir(jenkins_home)
     git_config_file = jenkins_home + '/git_config'
 
-    # if /cd3user/tenancies/jenkins_home/git_config file exists
+    #if git_config_file exists
     if os.path.exists(git_config_file):
         f = open(git_config_file,"r")
         config_file_data = f.read()
@@ -241,15 +243,18 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     except Exception as e:
         print(e)
 
+    if os.path.exists(devops_dir+"../.terraform_files"):
+        shutil.rmtree(devops_dir+"../.terraform_files", ignore_errors=True)
+    os.rename(devops_dir,devops_dir+"../.terraform_files")
 
-    # Clean repo config if exists and initiate git repo
-    subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
+    if not os.path.exists(devops_dir):
+        os.makedirs(devops_dir)
     subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
+    subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
     subprocess.run(['git', 'config', '--global', 'safe.directory', devops_dir], cwd=devops_dir)
-    f = open(devops_dir + ".gitignore", "w")
-    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\nimport_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
-    f.write(git_ignore_file_data)
-    f.close()
+    subprocess.run(['git', 'config','--global','user.email',devops_user], cwd=devops_dir)
+    subprocess.run(['git', 'config', '--global', 'user.name', devops_user], cwd=devops_dir)
+
     # Cleanup existing "origin" remote and create required one
     existing_remote = subprocess.run(['git', 'remote'], cwd=devops_dir,capture_output=True).stdout
     existing_remote = str(existing_remote).split('\'')[1][:-2]
@@ -266,42 +271,56 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
         f.close()
         exit(1)
 
-    for f in glob.glob(jenkins_install + "/*.groovy"):
-        shutil.copy2(f, devops_dir)
-    # Create local branch "main" from remote "main"
-    subprocess.run(['git', 'checkout', '-B', 'main','-q'], cwd=devops_dir,stdout=DEVNULL)
-    subprocess.run(['git', 'pull', 'origin', 'main','-q'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
-    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
 
+    # Create local branch "main" from remote "main"
+    subprocess.run(['git', 'checkout', '-B', 'main'], cwd=devops_dir,stdout=DEVNULL)
+
+    subprocess.run(['git', 'pull', 'origin', 'main','--rebase'], cwd=devops_dir,stdout=DEVNULL)
+    f = open(devops_dir + ".gitignore", "w")
+    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\nimport_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
+    f.write(git_ignore_file_data)
+    f.close()
+
+    all_items = glob.glob(devops_dir + "../.terraform_files/*")+ [devops_dir+ "/../.terraform_files/.safe"]
+    for f in all_items:
+        actual_file = f.split("/")[-1]
+        path = devops_dir+actual_file
+        if os.path.exists(path) and os.path.isfile(path):
+            os.remove(devops_dir+actual_file)
+        if os.path.exists(path) and os.path.isdir(path):
+            shutil.rmtree(path, ignore_errors=True)
+        if actual_file.endswith(".tf_backup") or actual_file.endswith(".tfstate"):
+            continue
+        shutil.move(f,devops_dir)
+    for f in glob.glob(jenkins_install + "/*.groovy"):
+        actual_file = f.split("/")[-1]
+        path = devops_dir+actual_file
+        if os.path.exists(path) and os.path.isfile(path):
+            os.remove(devops_dir+actual_file)
+        shutil.copy(f,devops_dir)
+
+    last_commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
     current_status = subprocess.run(['git', 'status','--porcelain'], cwd=devops_dir,capture_output=True).stdout
     current_status = str(current_status).split('\'')[1]
+    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig'], cwd=devops_dir,stdout=DEVNULL)
     if current_status and files_in_repo > 0:
-        subprocess.run(['git', 'stash','-q'], cwd=devops_dir,stdout=DEVNULL)
-        #subprocess.run(['git', 'rebase','origin/main','-q'], cwd=devops_dir,stdout=DEVNULL)
         repo_changes = input("\nData in local terraform_files and repo is not same, which changes you want to retain? Enter local or repo, default is local : ")
         if ("repo" in repo_changes.lower()):
             print("Ignoring local changes......")
-            #subprocess.run(['git', 'stash'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'stash', 'drop', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git', 'branch','main', '-u', 'origin/main'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git','reset','--hard','@{u}'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
         else:
             print("Updating remote with local changes.....")
-            #subprocess.run(['git', 'stash'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'stash', 'apply', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
-            subprocess.run(['git', 'stash', 'pop'], cwd=devops_dir,stdout=DEVNULL)
-            subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'stash', 'drop', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
 
-    subprocess.run(['git', 'config','--global','user.email',devops_user], cwd=devops_dir)
-    subprocess.run(['git', 'config', '--global', 'user.name', devops_user], cwd=devops_dir)
     commit_id='None'
     try:
-        subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
+        #subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
         commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
         commit_id = str(commit_id).split('\'')[1][:-2]
         subprocess.run(['git', 'push','origin','main'], cwd=devops_dir, stdout=DEVNULL)
-        print("Initial Commit to DevOps Repository done with commit id: " + commit_id)
+        print("Latest Commit to DevOps Repository done with commit id: " + commit_id)
     except git.exc.GitCommandError as e:
         if ("nothing to commit, working directory clean" in str(e)):
             print("Nothing to commit to DevOps Repository.")
@@ -310,8 +329,9 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
         print("Exiting...")
         exit(1)
     # Create develop branch from main
-    subprocess.run(['git', 'checkout', '-B', 'develop','main', '-q'], cwd=devops_dir, stdout=DEVNULL)
-    subprocess.run(['git', 'push', 'origin', 'develop'], cwd=devops_dir, stdout=DEVNULL)
+    subprocess.run(['git', 'checkout', '-B', 'develop','main'], cwd=devops_dir, stdout=DEVNULL)
+    subprocess.run(['git', 'pull', 'origin', 'develop','--rebase'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
+    subprocess.run(['git', 'push', 'origin', 'develop','-f'], cwd=devops_dir, stdout=DEVNULL)
     return commit_id
 
 def create_bucket(config, signer):

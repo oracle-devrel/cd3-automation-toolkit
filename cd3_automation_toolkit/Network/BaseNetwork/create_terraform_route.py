@@ -185,7 +185,7 @@ def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, ct, non_g
             drg_rt_dstrb_tf_name = ''
             drg_rt_dstrb_res_name = ''
             region = str(df.loc[i, 'Region']).strip()
-
+            vcn_connectivity_in_excel = ""
             if str(df.loc[i, 'Attached To']).lower().startswith("rpc"):
                 vcn_connectivity_in_excel = "connectivity"
             elif str(df.loc[i, 'Attached To']).lower().startswith("vcn"):
