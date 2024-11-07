@@ -274,8 +274,8 @@ pipeline {
                     file_path = labelledShell( label: 'Preparing archival', script: '''
                         set +x
                         cd3_file=`grep '^cd3file' ${prop_file}| cut -d'=' -f2`
-                        cp $cd3_file .
-                        echo $cd3_file
+                        cp "$cd3_file" .
+                        echo "$cd3_file"
                         ''', returnStdout: true).trim()
                     }
                     archiveArtifacts "${file_path.split("/")[(file_path.split("/")).length-1]}, *.zip,*.xl*"
