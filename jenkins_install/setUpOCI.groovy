@@ -244,7 +244,7 @@ pipeline {
                 		latest_fsdr_XL=`ls -t ${prefix_dir}/othertools_files/*.xl* | head -n 1`
                 		last_modified=`stat -c \"%Y\" ${latest_fsdr_XL}`
                 		if [ $(($last_modified-$current_timestamp)) -gt 0 ]; then
-                		    cp ${latest_fsdr_XL} .
+                		    cp "${latest_fsdr_XL}" .
                 		fi
                 		fi
             		''')
