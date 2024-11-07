@@ -13,7 +13,7 @@ Instructions on how to fill data into the Excel sheet can be found in the Blue s
     
     - If a row is deleted from the Excel sheet and the toolkit is rerun, it will be removed from tfvars.
     
-    - After deploying the Infrastructure using any of the templates, run [CIS compliance checker script](other-oci-tools.md#cis-compliance-checker-script) to validate it.
+    - After deploying the Infrastructure using any of the templates, run <a href="../other-oci-tools#cis-compliance-checker-script"><u>CIS compliance checker script</u></a> to validate it.
 
 <br>
 

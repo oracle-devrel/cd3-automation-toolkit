@@ -32,7 +32,7 @@ Sample Execution:
 
 
 !!! IMPORTANT 
-    - <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b> is not enabled if OpenTofu is configured for the prefix during [Connect Container to Tenancy](/cd3-automation-toolkit/connect-container-to-oci-tenancy/).<br>
+    - <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b> is not enabled if OpenTofu is configured for the prefix during <a href="../connect-container-to-oci-tenancy"><u>Connecting CD3 Container to Tenancy</u></a>.<br>
     - If remote state is being used and try to upload the stack to OCI Resource Manager using <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b>, then running terraform plan/apply from OCI Resource Manager will not work and show below error:
 
          <img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="../images/RMupload-3.png">

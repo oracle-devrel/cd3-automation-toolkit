@@ -15,15 +15,15 @@ Provisioning of compute instances using Automation Toolkit involves the below st
 
 - Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu. <br>
 
-- Enter subnet name column value as: <network-compartment-name\>@<vcn-name\>::<subnet-name\> <br>
+- Enter subnet name column value as: ```<network-compartment-name>@<vcn-name>::<subnet-name>``` <br>
 
 - Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False. <br>
 
 - Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances. <br>
 
-- Add any additional attributes (not part of excel sheet already) as per  [this](additional-attributes.md). <br>
+- Add any additional attributes (not part of excel sheet already) <a href="../additional-attributes"><u>following this link</u></a>. <br>
 
-- To enable or disable a plugin for the instance add new column with name as <b>'Plugin <plugin-name-in-console\>' </b> eg 'Plugin Bastion'.
+- To enable or disable a plugin for the instance add new column with name as ```Plugin <plugin-name-in-console>``` eg 'Plugin Bastion'.
     Valid values are Enabled or Disabled <br>
 - Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is: ```shape::ocpus``` eg ```VM.Standard.E3.Flex::5```
 
@@ -99,7 +99,7 @@ Ensure there is an entry in the variables_<region\>.tf file for the value entere
     }
     ```
     !!! Important
-        Execute GIT commands to sync these variables_<region\>.tf file changes  with DevOps GIT Repo in case **toolkit is being used with Jenkins,** Here are the [Steps](sync-cli-jenkins.md).
+        Execute GIT commands to sync these variables_<region\>.tf file changes  with DevOps GIT Repo in case **toolkit is being used with Jenkins,** <a href="../sync-cli-jenkins"><u>Here are the Steps</u></a>.
 
 **3.  Execute setUpOCI and terraform/tofu apply**
 
@@ -114,9 +114,9 @@ Upon re-running the same option, the previously existing files will be backed up
 ## Export Existing Compute Resources from OCI (Non-Greenfield Workflow)
 
 
-1. Use the [CD3-Blank-Template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example) to export existing OCI VM details into the "Instances" sheet. <br>
+1. Use the <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example"><u>CD3-Blank-Template.xlsx</u></a> to export existing OCI VM details into the "Instances" sheet. <br>
 
-2. Add any additional attributes (not part of excel sheet already) which needs to be exported as per [this](additional-attributes.md). <br>
+2. <a href="../additional-attributes"><u>Add any additional attributes</u></a> (not part of excel sheet already) which needs to be exported . <br>
 
 3. Make sure to export the VCNs and Subnets in which the Instances are present prior to exporting the Instance. <br>
 
@@ -149,7 +149,7 @@ Specify the compartment name along with hierarchy in the below format:
 
 13. Execute the .sh file (*sh import_commands_instances.sh*) to generate terraform state file. <br>  **This will be automatically executed while using the toolkit with Jenkins.**
 
-14. Check out the [known behaviour of toolkit](knownbehaviour.md) for export of instances having multiple plugins.
+14. Check out the <a href="../knownbehaviour"><u>known behaviour of toolkit</u></a> for export of instances having multiple plugins.
 
 
 

@@ -13,7 +13,7 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
     
     
     
-* OCI Tenancy Access as defined in [Prerequisites](prerequisites.md).
+* OCI Tenancy Access as defined in <a href ="../prerequisites"><u>Prerequisites</u></a>
 <br><br>
 
 - [x] Click on below button to directly navigate to Resource Manager stack in the OCI Tenancy and fill in required details to launch CD3 Work VM and Container.<br>
@@ -44,7 +44,7 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 
 !!! Note
     In case existing network is chosen to launch Work VM, it needs to have outbound internet connectivity.<br>
-    See [URLs](url-whitelisting.md) that need to be whitelisted for outbound connectivity.
+    See <a href="../url-whitelisting"><u>URLs</u></a> that need to be whitelisted for outbound connectivity.
 
 - [x] After the Apply job is successful, click on it and scroll down to the end of logs and find the details for the created VM, and commands to be executed to login to the toolkit container.<br>
 <img width="1124" src="../images/launch-from-stack-1.png">
@@ -54,8 +54,9 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 !!! Note
     The VM launched using RM stack will have v1 IMDS endpoints disabled, PV encryption and the bastion plugin enabled.
 - [X] Login to the VM using private key corresponding to the public key provided during stack creation. Use 'cd3user' or 'opc' user to connect to the VM. Same key has been copied for both the users.
-- [X] Follow [these](cd3-cli.md#copy-cd3-excel-file) to copy the excel file to and from the container while executing the toolkit.
-- [X] Verify if container is launched using below command. If this command does not return any running container, wait for the stack to finish processing. The progress logs are available at /cd3user/mount_path/installToolkit.log
+- [X] Follow <a href="../cd3-cli#copy-cd3-excel-file"><u>Steps to transfer the CD3 Excel file</u></a> to and from the container while executing the toolkit.
+
+- [X] Verify if container is launched using below command. If this command does not return any running container, wait for the stack to finish processing. The progress logs are available at <i>/cd3user/mount_path/installToolkit.log</i>
 
 ```
 sudo podman ps -a
@@ -70,4 +71,4 @@ sudo podman ps -a
 sudo podman exec -it cd3_toolkit bash
 ```
 
-- [X] Follow [Connect CD3 Container to OCI](connect-container-to-oci-tenancy.md) for next steps. 
+- [X] Follow <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI</u></a> for next steps. 

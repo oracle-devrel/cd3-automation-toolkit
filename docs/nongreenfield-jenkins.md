@@ -5,7 +5,7 @@
     - Differential state import of the objects will be performed, i.e., the import statements will be generated only for the objects not already present in state file.
 
 **Step 1**: 
-<br>Choose the Blank CD3 Excel sheet template from [Excel Templates](excel-templates.md).
+<br>Choose the Blank CD3 Excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>.
 
 
 **Step 2**:

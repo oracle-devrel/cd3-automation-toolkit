@@ -4,7 +4,7 @@ Jenkins integration with the toolkit is provided to jump start your journey with
 
 ## **Pre-reqs for Jenkins Configuration**
 
-The configurations are done when executing createTenancyConfig.py in [Connect container to OCI Tenancy](connect-container-to-oci-tenancy.md). Here are the validation steps:
+The configurations are done when executing createTenancyConfig.py in <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI Tenancy</u></a>. Here are the validation steps:
 
   - jenkins.properties file is created under ```/cd3user/tenancies/jenkins_home```  as per input parameters in tenancyconfig.        properties<br>
   - An Object Storage bucket is created in OCI in the specified compartment to manage tfstate remotely. <br>
@@ -34,14 +34,14 @@ The configurations are done when executing createTenancyConfig.py in [Connect co
 
   - It will prompt to create the first user to access Jenkins URL if accessing for the first time. This will be the admin user.
   - The Automation Toolkit only supports a single user Jenkins setup in this release.
-  - After logging in, Jenkins Dashboard will be displayed with folders as <\prefix> values.
+  - After logging in, Jenkins Dashboard will be displayed with folders as ```<prefix>``` values.
 
 ## **High Level Steps to use toolkit with Jenkins**
 
 1. Login to the CD3 Container.
 
-2. Check out [CD3 Toolkit Process](cd3-overview.md#cd3-toolkit-process) for workflows supported by the toolkit and choose the workflow.
+2. Check out <a href="../cd3-overview#cd3-toolkit-process"><u>CD3 Toolkit Process</u></a> for workflows supported by the toolkit and choose the workflow.
 
-3. Use one of the templates from [Excel Templates](excel-templates.md) based on the workflow chosen.
-4. Execute setUpOCI pipeline from [Jenkins Dashboard](jenkinsintro.md).
+3. Use one of the templates from <a href="../excel-templates"><u>Excel Templates</u></a> based on the workflow chosen.
+4. Execute setUpOCI pipeline from <a href="../jenkinsintro"><u>Jenkins Dashboard</u></a>.
 

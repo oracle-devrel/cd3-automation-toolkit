@@ -17,7 +17,7 @@ The toolkit allows independent management of multiple environments using the sam
 
 **Steps**
 
-* Edit the **tenancyconfig.properties** file according to [Connect CD3 Container to OCI](connect-container-to-oci-tenancy.md). Use a unique prefix that differs from the ones used previously. *Eg:  demo_prod,  demo_nonprod.*
+* Edit the **tenancyconfig.properties** file according to <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI</u></a>. Use a unique prefix that differs from the ones used previously. *Eg:  demo_prod,  demo_nonprod.*
 
 !!! tip
     You can copy tenancyconfig.properties file as tenancyconfig_<prefix\>.properties and edit this file instead of directly editing tenancyconfig.properties.<br>
@@ -44,4 +44,4 @@ The Jenkins dashboard appears as follows when configured with two prefixes.
 ![jenkins](../images/multiple-prefixes-jenkins.jpg)
 
 
-Check <a href=../cd3-jenkins#bootstrapping-of-jenkins-in-the-toolkit> <b>Important Note</b></a> to enable jenkins for multiple prefixes.
+Check <a href=../cd3-jenkins#bootstrapping-of-jenkins-in-the-toolkit> <u>Important Note</u></a> to enable jenkins for multiple prefixes.

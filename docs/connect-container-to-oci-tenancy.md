@@ -1,4 +1,4 @@
-# **Connect container to OCI Tenancy**
+# **Connect CD3 Container to OCI Tenancy**
 ---
 
 !!! note 
@@ -7,11 +7,11 @@
 
 **Step 1 - Login (Exec) into the Container**:
 
-* Login to the previously launched container using either [RM Stack](launch-from-rmstack.md) or [Manual Launch](launch-from-local.md).
+* Login to the previously launched container using either <a href ="../launch-from-rmstack"><u>RM Stack</u></a> or <a href ="../launch-from-local"><u>Manual Launch</u></a>.
 
 **Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
 
-* Click [here](authmechanisms.md) to configure any one of the available authentication mechanisms.
+* <a href ="../authmechanisms"><u>Click here</u></a> to configure any one of the available authentication mechanisms.
   
 **Step 3 - Edit tenancyconfig.properties**:
 
@@ -158,7 +158,7 @@ python createTenancyConfig.py tenancyconfig.properties
 ```
 
     !!! note 
-        * When running the CD3 container on a Linux VM host (without using the Resource Manager stack option), refer to [point no. 7](faq.md) under FAQ to avoid any permission issues.
+        * When running the CD3 container on a Linux VM host (without using the Resource Manager stack option), refer to <a href="../faq"><u>point no. 7</u></a> under FAQ to avoid any permission issues.
         * Running the above command immediately after adding API key to the user profile in OCI might result in  Authentication Errors. In such cases, retry after a minute.
 
 

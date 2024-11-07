@@ -4,12 +4,12 @@
 
 1. Add the attribute name to the CD3 Excel sheet (based on the resource the attribute belongs to) as given in Terraform Official Documentation.
 2. Uncomment the attribute in .tf files (terraform modules in outdirectory, if they are commented). 
-3. Uncomment the attribute in Jinja template for the resource attribute. (Resource to Jinja template mapping is available [here](#resource-to-template-mapping))
+3. Uncomment the attribute in Jinja template for the resource attribute. <a href="#resource-to-template-mapping"><u>Resource to Jinja template mapping is available here</u></a>.
 4. Update the variable file for any additional changes like image ocids, ssh public keys, etc
 
 **Example 1: To add an attribute for Instances - (preserve_boot_volume)**
 
-- Here is the Terraform Hashicorp documentation for instances - https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance 
+- Here is the Terraform Hashicorp documentation for instances - <a href="https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance"><u>https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance</u></a>
 - Add an additional column preserve_boot_volume to the Instances Sheet as shown below. Optionally change the underscores to spaces for better readability.
 
     <img src = "../images/additionalattr-1.png" width=50% height=50%>

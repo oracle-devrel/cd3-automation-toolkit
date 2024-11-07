@@ -2,8 +2,8 @@
 ---
 
 **Step 1**: 
-<br>Choose the appropriate excel sheet template from [Excel Templates](excel-templates.md).
-Fill the excel with appropriate values and copy at _/cd3user/tenancies/<prefix\>_<br><br>
+<br>Choose the appropriate excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>.
+Fill the Excel with appropriate values and copy at _/cd3user/tenancies/<prefix\>_<br><br>
 **Step 2**:
 <br>Modify ```/cd3user/tenancies /<prefix>/<prefix>_setUpOCI.properties```.
 <br>Update parameters: **cd3file** parameter to the location of CD3 excel file and  **workflow_type**  to **create_resources** as shown below.
@@ -80,7 +80,7 @@ Choose the resources by specifying a single option (for choosing one of these re
 
     ```terraform init```  - *To initialize and prepare the working/out directory so Terraform can run the configuration.*<br>
 
-    ```terraform plan```  - *To preview any changes before applying them. Run the plan against [OPA policies](opa-integration.md) for compliance against CIS.*
+    ```terraform plan```  - *To preview any changes before applying them. Run the plan against <a href="../opa-integration"><u>OPA policies</u></a> for compliance against CIS.*
 
     ```terraform apply``` - *To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.*
 
@@ -89,6 +89,6 @@ Choose the resources by specifying a single option (for choosing one of these re
 
     ```tofu init```  - *To initialize and prepare the working/out directory so tofu can run the configuration.*<br>
 
-    ```tofu plan```  - *To preview any changes before applying them. Run the plan against [OPA policies](opa-integration.md) for compliance against CIS.*
+    ```tofu plan```  - *To preview any changes before applying them. Run the plan against <a href="../opa-integration"><u>OPA policies</u></a> for compliance against CIS.*
 
     ```tofu apply``` - *To make the changes defined by tofu configuration to create, update, or destroy resources in OCI.*

@@ -1,8 +1,7 @@
+1. Configure <a href = "../prerequisites"><u>Prerequisites</u></a>
+2. <a href="../launch-container"><u>Launch CD3 Container</u></a>
+3. <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI</u></a>
 
-
-- Configure [prerequisites](prerequisites.md)
-- [Launch CD3 Container](launch-container.md)
-- [Connect CD3 Container to OCI](connect-container-to-oci-tenancy.md)
 
 <br>
 At the end of the installation, a fully configured container will be available to start generating terraform for OCI resources.
