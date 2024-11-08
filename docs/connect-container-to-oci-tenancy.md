@@ -12,6 +12,9 @@
 **Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
 
 * <a href ="../authmechanisms"><u>Click here</u></a> to configure any one of the available authentication mechanisms.
+
+* Make sure to assign required OCI Tenancy Access to user/instance as defined in <a href ="../prerequisites"><u>Prerequisites.</u></a>
+
   
 **Step 3 - Edit tenancyconfig.properties**:
 
