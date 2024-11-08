@@ -12,9 +12,7 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
     Allow group <group_name\> to manage virtual-network-family in compartment <name\> <br>
     
     
-    
-* OCI Tenancy Access as defined in <a href ="../prerequisites"><u>Prerequisites</u></a>
-<br><br>
+<br>
 
 - [x] Click on below button to directly navigate to Resource Manager stack in the OCI Tenancy and fill in required details to launch CD3 Work VM and Container.<br>
 [![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/main.zip)

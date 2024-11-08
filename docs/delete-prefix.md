@@ -11,7 +11,6 @@ When executing createTenancyConfig.py during <a href="../connect-container-to-oc
 
 * Config files under ```/cd3user/tenancies/<prefix>``` folder
 
-<br> 
 
 **Additional Resources created with Jenkins**
 
