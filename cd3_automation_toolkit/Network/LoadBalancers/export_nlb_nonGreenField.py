@@ -86,13 +86,13 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
                         backend = instance_comp_name+"@"+instance_display_name+":"+port
                         backend_list = backend_list + "," + backend
 
-                        backendservers_name = instance_display_name +"-"+str(cnt_bes)
+                        backendservers_name = instance_display_name +"-"+port
                         backendservers_tf_name = commonTools.check_tf_variable(backendservers_name)
                     else:
                         backend = backend_value
                         backend_list= backend_list+","+backend
 
-                        backendservers_name = backend.split(":")[0] +"-"+str(cnt_bes)
+                        backendservers_name = backend.split(":")[0] +"-"+port
                         backendservers_tf_name = commonTools.check_tf_variable(backendservers_name)
                     tf_resource = f'module.nlb-backends[\\"{tf_name}_{backendsets_tf_name}_{backendservers_tf_name}\\"].oci_network_load_balancer_backend.backend'
                     if tf_resource not in state["resources"]:

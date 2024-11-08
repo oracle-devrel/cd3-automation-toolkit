@@ -117,9 +117,9 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             source_details = ''
         else:
             source_id = blockvols.source_details.id
-            source_details = blockvols.source_details.type.strip() + "::" + blockvols.display_name.strip()
+            source_details = blockvols.source_details.type.strip() + "::" + commonTools.check_tf_variable(blockvols.display_name.strip())
             tmp_key = region + "--" + source_id
-            source_ocids[tmp_key] = blockvols.display_name.strip()
+            source_ocids[tmp_key] = commonTools.check_tf_variable(blockvols.display_name.strip())
         autotune_type = ''
         max_vpus_per_gb = ''
         if len(blockvols.autotune_policies) == 0:

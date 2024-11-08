@@ -76,11 +76,12 @@ properties([
             choiceType: 'ET_FORMATTED_HTML',
             description: 'Select additional filters',
             name: 'AdditionalFilters',
-            referencedParameters: 'Workflow,SubOptions,SubChildOptions',
+            referencedParameters: 'Workflow,SubOptions,SubChildOptions,MainOptions',
              script: [
                 $class: 'ScriptlerScript',
                 scriptlerScriptId: 'AdditionalFilters.groovy',
                 parameters: [
+                    [name:'MainOptions',value:'${MainOptions}'],
                     [name:'SubOptions', value: '${SubOptions}'],
 					[name:'SubChildOptions', value: '${SubChildOptions}'],
                     [name:'Workflow', value: '${Workflow}'],
@@ -243,7 +244,7 @@ pipeline {
                 		latest_fsdr_XL=`ls -t ${prefix_dir}/othertools_files/*.xl* | head -n 1`
                 		last_modified=`stat -c \"%Y\" ${latest_fsdr_XL}`
                 		if [ $(($last_modified-$current_timestamp)) -gt 0 ]; then
-                		    cp ${latest_fsdr_XL} .
+                		    cp "${latest_fsdr_XL}" .
                 		fi
                 		fi
             		''')
@@ -273,8 +274,8 @@ pipeline {
                     file_path = labelledShell( label: 'Preparing archival', script: '''
                         set +x
                         cd3_file=`grep '^cd3file' ${prop_file}| cut -d'=' -f2`
-                        cp $cd3_file .
-                        echo $cd3_file
+                        cp "$cd3_file" .
+                        echo "$cd3_file"
                         ''', returnStdout: true).trim()
                     }
                     archiveArtifacts "${file_path.split("/")[(file_path.split("/")).length-1]}, *.zip,*.xl*"

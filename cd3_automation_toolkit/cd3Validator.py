@@ -220,6 +220,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
     # Loop through each row
     for i in dfsub.index:
+        subnet_or_vlan = (str(dfsub.loc[i, 'Subnet or VLAN']).strip()).split("::")[0]
         count = count + 1
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if (str(dfsub.loc[i, 'Region']).strip() in commonTools.endNames):
@@ -229,7 +230,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
         region = str(dfsub.loc[i, 'Region']).strip()
 
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
+            log(f'ROW {i+3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             subnet_reg_check = True
 
         # Check for invalid compartment name
@@ -252,30 +253,31 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
         # Check if the dns_label field has special characters or if it has greater than 15 characters or is duplicate
         dns_value = str(dfsub.loc[i, 'DNS Label']).strip()
-        dns_subnetname = str(dfsub.loc[i, 'Display Name']).strip()
-        dns_vcn = str(dfsub.loc[i, 'VCN Name']).strip()
+        if dns_value.lower() != 'n':
+            dns_subnetname = str(dfsub.loc[i, 'Display Name']).strip()
+            dns_vcn = str(dfsub.loc[i, 'VCN Name']).strip()
 
-        if (dns_value.lower() == "nan"):
-            subnet_dns.append("")
-        else:
-            if (dns_vcn not in vcn_list):
-                vcn_list.append(dns_vcn)
-                if (dns_subnetname not in subnetname_list):
-                    subnetname_list.append(dns_subnetname)
+            if (dns_value.lower() == "nan"):
+                subnet_dns.append("")
+            else:
+                if (dns_vcn not in vcn_list):
+                    vcn_list.append(dns_vcn)
+                    if (dns_subnetname not in subnetname_list):
+                        subnetname_list.append(dns_subnetname)
+                        if (dns_value not in subnet_dns):
+                            subnet_dns.append(dns_value)
+                else:
                     if (dns_value not in subnet_dns):
                         subnet_dns.append(dns_value)
-            else:
-                if (dns_value not in subnet_dns):
-                    subnet_dns.append(dns_value)
-                else:
-                    log(f'ROW {i+3} : Duplicate "DNS Label" value "{dns_value}" for subnet "{dns_subnetname}" of vcn "{dns_vcn}".')
-                    subnet_dns.append(dns_value)
-                    subnet_dnsdup_check = True
-            subnet_dnswrong_check = checklabel(dns_value, count)
+                    else:
+                        log(f'ROW {i+3} : Duplicate "DNS Label" value "{dns_value}" for subnet "{dns_subnetname}" of vcn "{dns_vcn}".')
+                        subnet_dns.append(dns_value)
+                        #subnet_dnsdup_check = True
+                subnet_dnswrong_check = checklabel(dns_value, count)
 
-        if (len(dns_value) > 15):
-            log(f'ROW {i+3} : "DNS Label" value "{dns_value}" for subnet "{dns_subnetname}" of vcn "{dns_vcn}" has more alphanumeric characters than the allowed maximum limit of 15.')
-            subnet_dns_length = True
+            if (len(dns_value) > 15):
+                log(f'ROW {i+3} : "DNS Label" value "{dns_value}" for subnet "{dns_subnetname}" of vcn "{dns_vcn}" has more alphanumeric characters than the allowed maximum limit of 15.')
+                subnet_dns_length = True
 
         # Check if the Service and Internet gateways are set appropriately; if not display the message;
         sgw_value = str(dfsub.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).strip()
@@ -316,6 +318,8 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 if j in labels or commonTools.check_column_headers(j) in commonTools.tagColumns:
                     pass
                 else:
+                    if j == "Type(private|public)" and subnet_or_vlan.lower() == "vlan":
+                        continue
                     log(f'ROW {count+2} : Empty value at column "{j}".')
                     subnet_empty_check = True
 
@@ -403,7 +407,7 @@ def validate_vcns(filename, comp_ids, vcnobj):# config):  # ,vcn_cidrs,vcn_compa
         # Check for invalid Region
         region = str(dfv.loc[i, 'Region']).strip()
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
+            log(f'ROW {i+3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             vcn_reg_check = True
 
         # Check for invalid Compartment Name
@@ -557,7 +561,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
         region = str(dfdhcp.loc[i, 'Region']).strip()
 
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
+            log(f'ROW {i+3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             dhcp_reg_check = True
 
         # Check for invalid compartment name
@@ -625,7 +629,7 @@ def validate_drgv2(filename, comp_ids, vcnobj):
             log(f'ROW {i + 3} : Empty value at column "Region".')
             drgv2_empty_check = True
         elif region not in ct.all_regions:
-            log(f'ROW {i + 3} : Region {region} is not subscribed to tenancy.')
+            log(f'ROW {i + 3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             drgv2_invalid_check = True
 
         # Check for invalid Compartment Name
@@ -645,7 +649,7 @@ def validate_drgv2(filename, comp_ids, vcnobj):
         if drg_name.lower() == 'nan':
             log(f'ROW {i + 3} : Empty value at column "DRG Name".')
             drgv2_empty_check = True
-        if drg_name not in vcnobj.vcns_having_drg.values():
+        if drg_name not in vcnobj.vcns_having_drg.values() and "ocid1.drg.oc" not in drg_name:
             log(f'ROW {i + 3}: DRG Name {drg_name} not part of VCNs Tab.')
             drgv2_drg_check = True
 
@@ -658,14 +662,14 @@ def validate_drgv2(filename, comp_ids, vcnobj):
                 drgv2_format_check = True
             else:
                 attached_to=attached_to.split("::")
-                if(len(attached_to)!=2):
+                if(len(attached_to)< 2 and len(attached_to) > 3):
                     log(f'ROW {i + 3} : Wrong value at column Attached To - {attached_to}. Valid format is <ATTACH_TYPE>::<ATTACH_ID>')
                     drgv2_format_check = True
                 elif attached_to[0].strip().upper()=="VCN":
                     vcn_name = attached_to[1].strip()
 
                     try:
-                        if (vcn_name.lower() != "nan" and vcnobj.vcns_having_drg[vcn_name,region]!=drg_name):
+                        if (vcn_name.lower() != "nan" and vcnobj.vcns_having_drg[vcn_name,region]!=drg_name) and "ocid1.drg.oc" not in drg_name:
                             log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per DRG Required column of VCNs Tab.')
                             drgv2_vcn_check = True
                     except KeyError:
@@ -720,7 +724,7 @@ def validate_dns(filename,comp_ids):
             log(f'ROW {i + 3} : Empty value at column "Region".')
             mandat_val_check = True
         elif region not in ct.all_regions:
-            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            log(f'ROW {i + 3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             mandat_val_check = True
 
         # Check for invalid Compartment Name
@@ -769,7 +773,7 @@ def validate_dns(filename,comp_ids):
             log(f'ROW {i + 3} : Empty value at column "Region".')
             mandat_val_check = True
         elif region not in ct.all_regions:
-            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            log(f'ROW {i + 3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             mandat_val_check = True
 
         # Check for invalid Compartment Name
@@ -843,7 +847,7 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
             log(f'ROW {i+3} : Empty value at column "Region".')
             inst_empty_check = True
         elif region not in ct.all_regions:
-            log(f'ROW {i+3} : "Region" {region} is not subscribed for tenancy.')
+            log(f'ROW {i+3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             inst_invalid_check = True
 
         # Check for invalid Compartment Name
@@ -908,7 +912,7 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
                     log(f'ROW {i+3} : Empty value at column "Source Details".')
                     inst_empty_check = True
 
-                elif (not columnvalue.startswith("image::") and not columnvalue.startswith("bootVolume::") and not columnvalue.startswith("ocid1.image.oc")):
+                elif (not columnvalue.startswith("image::") and not columnvalue.startswith("bootVolume::") and not columnvalue.startswith("ocid1.image.oc") and not columnvalue.startswith("ocid1.bootvolume.oc")):
                     log(f'ROW {i+3} : Wrong value at column Source Details - {columnvalue}. Valid format is image::<var_name> or bootVolume::<var_name>.')
                     inst_invalid_check = True
 
@@ -961,7 +965,7 @@ def validate_blockvols(filename,comp_ids):
             log(f'ROW {i+3} : Empty value at column "Region".')
             bvs_empty_check = True
         elif region not in ct.all_regions:
-            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
+            log(f'ROW {i+3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             bvs_invalid_check = True
 
         # Check for invalid Compartment Name
@@ -1030,7 +1034,7 @@ def validate_blockvols(filename,comp_ids):
                     block_volume_replicas_region = (block_volume_replicas_ads[0]).lower()
                     block_volume_replicas_ad = (block_volume_replicas_ads[1]).upper()
                     if block_volume_replicas_region not in ct.all_regions or block_volume_replicas_ad not in ADS:
-                        log(f'ROW {i + 3} : Volume replication Region is not subscribed to tenancy or AD is not present in destination region. Check column "' +columnname+"\"")
+                        log(f'ROW {i + 3} : Volume replication Region is not subscribed to tenancy or toolkit is not yet configured to be used for this region or AD is not present in destination region. Check column "' +columnname+"\"")
                         bvs_invalid_check = True
                     elif block_volume_replicas_region == str(dfvol.loc[i, 'Region']).strip().lower() and block_volume_replicas_ad == str(dfvol.loc[i, 'Availability Domain(AD1|AD2|AD3)']).strip().upper():
                         log(f'ROW {i + 3} : Replication Region and AD can not be same as Volume Region and AD. Check column "' +columnname+"\"")
@@ -1120,7 +1124,7 @@ def validate_fss(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list):
             fss_empty_check = True
 
         if region!='nan' and region not in ct.all_regions:
-            log(f'ROW {i+3} : "Region" {region} is not subscribed for tenancy.')
+            log(f'ROW {i+3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             fss_invalid_check = True
 
         # Check for invalid Compartment Name
@@ -1486,7 +1490,7 @@ def validate_buckets(filename, comp_ids):
             log(f'ROW {i + 3} : Empty value at column "Region".')
             buckets_empty_check = True
         elif region not in ct.all_regions:
-            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            log(f'ROW {i + 3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             bucket_reg_check = True
 
         # Check for invalid Compartment Name
@@ -1577,6 +1581,8 @@ def validate_buckets(filename, comp_ids):
             current_time = datetime.datetime.utcnow()
             #Check for the retention policy details
             if columnname == 'Retention Rules':
+                if columnvalue == "nan":
+                    continue
                 rule_values = columnvalue.split("\n")
                 if rule_values and str(dfbuckets.loc[i, 'Object Versioning']).strip().lower() == 'enabled':
                     log(f'ROW {i + 3} : Retention policy cannot be created when Object Versioning is enabled.')
@@ -1618,7 +1624,7 @@ def validate_buckets(filename, comp_ids):
                                 if time_rule_locked:
                                     if time_rule_locked.endswith(".000Z"):
                                         time_rule_locked = time_rule_locked[:-5] + "Z"
-                                    elif not re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",time_rule_locked):
+                                    elif not re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*Z",time_rule_locked):
                                         # Convert from "dd-mm-yyyy" to "YYYY-MM-DDThh:mm:ssZ" format
                                         if re.match(r"\d{2}-\d{2}-\d{4}", time_rule_locked):
                                             try:
@@ -1634,7 +1640,12 @@ def validate_buckets(filename, comp_ids):
                                             continue
                                     # Parse the time_rule_locked into a datetime object
                                     try:
-                                        time_rule_locked_datetime = datetime.datetime.strptime(time_rule_locked, "%Y-%m-%dT%H:%M:%SZ")
+                                        if len(time_rule_locked.split(".")) > 1:
+                                            time_rule_locked_datetime = datetime.datetime.strptime(time_rule_locked,
+                                                                                                   "%Y-%m-%dT%H:%M:%S.%fZ"
+                                                                                                   )
+                                        else:
+                                            time_rule_locked_datetime = datetime.datetime.strptime(time_rule_locked, "%Y-%m-%dT%H:%M:%SZ")
                                     except ValueError:
                                         log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "YYYY-MM-DDThh:mm:ssZ".')
                                         buckets_invalid_check = True
@@ -1721,7 +1732,7 @@ def validate_kms(filename,comp_ids):
         if region == 'nan':
             pass
         elif region != 'nan' and region not in ct.all_regions:
-            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            log(f'ROW {i + 3} : Either "Region" {region} is not subscribed to tenancy or toolkit is not yet configured to be used for this region.')
             kms_invalid_check = True
 
         vault_compartment_name = str(dfkms.loc[i, 'Vault Compartment Name']).strip()
@@ -1780,7 +1791,7 @@ def validate_kms(filename,comp_ids):
             elif replica_region == 'nan':
                 pass
             elif replica_region != 'nan' and replica_region not in ct.all_regions:
-                log(f'ROW {i + 3} : "Replica Region" {region} is not subscribed for tenancy.')
+                log(f'ROW {i + 3} : "Replica Region" {region} is either not subscribed to tenancy or toolkit is not yet configured to be used for this region')
                 kms_invalid_check = True
 
 

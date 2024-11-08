@@ -12,23 +12,39 @@ def get_network_entity_name(config,signer,network_identity_id):
     vcn1 = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     if('internetgateway' in network_identity_id):
         igw=vcn1.get_internet_gateway(network_identity_id)
-        network_identity_name = "igw:"+igw.data.display_name
+        network_entity_comp_id=igw.data.compartment_id
+        if network_entity_comp_id in export_compartment_ids:
+            network_identity_name = "igw:"+igw.data.display_name
+        else:
+            network_identity_name = "igw:" + igw.data.id
         return  network_identity_name
 
     elif ('servicegateway' in network_identity_id):
         sgw = vcn1.get_service_gateway(network_identity_id)
-        network_identity_name = "sgw:"+sgw.data.display_name
+        network_entity_comp_id = sgw.data.compartment_id
+        if network_entity_comp_id in export_compartment_ids:
+            network_identity_name = "sgw:" + sgw.data.display_name
+        else:
+            network_identity_name = "sgw:"+sgw.data.id
         return network_identity_name
 
 
     elif ('natgateway' in network_identity_id):
         ngw = vcn1.get_nat_gateway(network_identity_id)
-        network_identity_name = "ngw:"+ngw.data.display_name
+        network_entity_comp_id = ngw.data.compartment_id
+        if network_entity_comp_id in export_compartment_ids:
+            network_identity_name = "ngw:" + ngw.data.display_name
+        else:
+            network_identity_name = "ngw:"+ngw.data.id
         return network_identity_name
 
     elif ('localpeeringgateway' in network_identity_id):
         lpg = vcn1.get_local_peering_gateway(network_identity_id)
-        network_identity_name = "lpg:"+lpg.data.display_name
+        network_entity_comp_id = lpg.data.compartment_id
+        if network_entity_comp_id in export_compartment_ids:
+            network_identity_name = "lpg:" + lpg.data.display_name
+        else:
+            network_identity_name = "lpg:"+lpg.data.id
         return network_identity_name
     elif ('drgattachment' in network_identity_id):
         drg_attach = vcn1.get_drg_attachment(network_identity_id)
@@ -46,7 +62,11 @@ def get_network_entity_name(config,signer,network_identity_id):
         return network_identity_name
     elif ('drg' in network_identity_id):
         drg = vcn1.get_drg(network_identity_id)
-        network_identity_name = "drg:"+drg.data.display_name
+        network_entity_comp_id = drg.data.compartment_id
+        if network_entity_comp_id in export_compartment_ids:
+            network_identity_name = "drg:" + drg.data.display_name
+        else:
+            network_identity_name = "drg:"+drg.data.id
         return network_identity_name
 
         """
@@ -282,6 +302,7 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
     config=config1
     global signer,tf_or_tofu
     signer=signer1
+    global export_compartment_ids
 
     tf_or_tofu = ct.tf_or_tofu
     tf_state_list = [tf_or_tofu, "state", "list"]
@@ -315,6 +336,10 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
                 commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "import_network",
                                         "import_commands_network_routerules.sh")
             importCommands[reg] = ''
+
+    export_compartment_ids = []
+    for comp in export_compartments:
+        export_compartment_ids.append(ct.ntk_compartment_ids[comp])
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])

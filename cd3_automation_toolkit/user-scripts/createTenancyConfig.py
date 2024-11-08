@@ -9,18 +9,14 @@
 import argparse
 import logging
 import os
-import re
 import shutil
 import sys
 import datetime
 import configparser
-import distutils
-from distutils import dir_util
 import oci
 from oci.object_storage import ObjectStorageClient
 import git
 import glob
-import yaml
 import subprocess
 sys.path.append(os.getcwd()+"/..")
 from os import environ
@@ -74,8 +70,15 @@ def create_devops_resources(config,signer):
                                                                 retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                                 signer=signer)
 
-            create_topic_response = ons_client.create_topic(create_topic_details=oci.ons.models.CreateTopicDetails(
+            try:
+                create_topic_response = ons_client.create_topic(create_topic_details=oci.ons.models.CreateTopicDetails(
                     name=topic_name, compartment_id=compartment_ocid, description="Created by Automation ToolKit")).data
+            except Exception as e:
+                print(e.message)
+                if ('Topic with same name already exists in the same tenant or compartment' in str(e.message)):
+                    print("If it is in Deleting State, wait for few minutes for it to get terminated and re-try.")
+                print("\nExiting!!!")
+                exit()
             toolkit_topic_id = create_topic_response.topic_id
 
 
@@ -158,21 +161,26 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
                "User " + str(devops_user) + "\n " \
                "IdentityFile " + str(devops_user_key) + "\n"
 
+    '''
     user_ssh_dir = os.path.expanduser("~") + "/.ssh"
     if not os.path.exists(user_ssh_dir):
         os.makedirs(user_ssh_dir)
+    '''
+    #ssh_config_file = user_ssh_dir + '/config'
 
-    ssh_config_file = user_ssh_dir + '/config'
+    if not os.path.exists(jenkins_home):
+        os.mkdir(jenkins_home)
+    git_config_file = jenkins_home + '/git_config'
 
-    #if /cd3user/.ssh/config file exists
-    if os.path.exists(ssh_config_file):
-        f = open(ssh_config_file,"r")
+    #if git_config_file exists
+    if os.path.exists(git_config_file):
+        f = open(git_config_file,"r")
         config_file_data = f.read()
         f.close()
 
         # new prefix config
         if prefix not in config_file_data:
-            f = open(ssh_config_file,"a")
+            f = open(git_config_file,"a")
             config_file_data =  "\n\n" + new_data
             f.write(config_file_data)
             f.close()
@@ -182,7 +190,7 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
     # file doesnot exist
     else:
-        f = open(ssh_config_file, "w")
+        f = open(git_config_file, "w")
         config_file_data = new_data
         f.write(config_file_data)
         f.close()
@@ -190,10 +198,10 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     #shutil.copyfile(git_config_file, user_ssh_dir + '/config')
     # change permissions of private key file and config file for GIT
     os.chmod(devops_user_key, 0o600)
-    os.chmod(user_ssh_dir + '/config', 0o600)
+    os.chmod(git_config_file, 0o600)
     #os.chmod(git_config_file, 0o600)
 
-    '''
+
     # create symlink for Git Config file for SSH operations.
     src = git_config_file
     if not os.path.exists("/cd3user/.ssh"):
@@ -204,11 +212,8 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     except FileExistsError as e:
         os.unlink(dst)
         os.symlink(src,dst)
-    '''
 
     # create jenkins.properties file
-    if not os.path.exists(jenkins_home):
-        os.mkdir(jenkins_home)
     jenkins_properties_file_path = jenkins_home+"/jenkins.properties"
 
     if dir_values:
@@ -233,28 +238,23 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
         file = open(jenkins_properties_file_path, "w")
         jenkins_config.write(file)
+        file.close()
 
     except Exception as e:
         print(e)
 
-    file.close()
+    if os.path.exists(devops_dir+"../.terraform_files"):
+        shutil.rmtree(devops_dir+"../.terraform_files", ignore_errors=True)
+    os.rename(devops_dir,devops_dir+"../.terraform_files")
 
-    """# Update Environment variable for jenkins
-    yaml_file_path = jenkins_install + "/jcasc.yaml"
-    if (os.path.exists(yaml_file_path)):
-        with open(yaml_file_path) as yaml_file:
-            cfg = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        cfg["jenkins"]["globalNodeProperties"] = [{'envVars': {'env': [{'key': 'customer_prefix', 'value': prefix}]}}]
-        with open(yaml_file_path, "w") as yaml_file:
-            cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)"""
-    # Clean repo config if exists and initiate git repo
-    subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
+    if not os.path.exists(devops_dir):
+        os.makedirs(devops_dir)
     subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
+    subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
     subprocess.run(['git', 'config', '--global', 'safe.directory', devops_dir], cwd=devops_dir)
-    f = open(devops_dir + ".gitignore", "w")
-    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\nimport_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
-    f.write(git_ignore_file_data)
-    f.close()
+    subprocess.run(['git', 'config','--global','user.email',devops_user], cwd=devops_dir)
+    subprocess.run(['git', 'config', '--global', 'user.name', devops_user], cwd=devops_dir)
+
     # Cleanup existing "origin" remote and create required one
     existing_remote = subprocess.run(['git', 'remote'], cwd=devops_dir,capture_output=True).stdout
     existing_remote = str(existing_remote).split('\'')[1][:-2]
@@ -271,42 +271,56 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
         f.close()
         exit(1)
 
-    for f in glob.glob(jenkins_install + "/*.groovy"):
-        shutil.copy2(f, devops_dir)
-    # Create local branch "main" from remote "main"
-    subprocess.run(['git', 'checkout', '-B', 'main','-q'], cwd=devops_dir,stdout=DEVNULL)
-    subprocess.run(['git', 'pull', 'origin', 'main','-q'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
-    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
 
+    # Create local branch "main" from remote "main"
+    subprocess.run(['git', 'checkout', '-B', 'main'], cwd=devops_dir,stdout=DEVNULL)
+
+    subprocess.run(['git', 'pull', 'origin', 'main','--rebase'], cwd=devops_dir,stdout=DEVNULL)
+    f = open(devops_dir + ".gitignore", "w")
+    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\nimport_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
+    f.write(git_ignore_file_data)
+    f.close()
+
+    all_items = glob.glob(devops_dir + "../.terraform_files/*")+ [devops_dir+ "/../.terraform_files/.safe"]
+    for f in all_items:
+        actual_file = f.split("/")[-1]
+        path = devops_dir+actual_file
+        if os.path.exists(path) and os.path.isfile(path):
+            os.remove(devops_dir+actual_file)
+        if os.path.exists(path) and os.path.isdir(path):
+            shutil.rmtree(path, ignore_errors=True)
+        if actual_file.endswith(".tf_backup") or actual_file.endswith(".tfstate"):
+            continue
+        shutil.move(f,devops_dir)
+    for f in glob.glob(jenkins_install + "/*.groovy"):
+        actual_file = f.split("/")[-1]
+        path = devops_dir+actual_file
+        if os.path.exists(path) and os.path.isfile(path):
+            os.remove(devops_dir+actual_file)
+        shutil.copy(f,devops_dir)
+
+    last_commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
     current_status = subprocess.run(['git', 'status','--porcelain'], cwd=devops_dir,capture_output=True).stdout
     current_status = str(current_status).split('\'')[1]
+    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig'], cwd=devops_dir,stdout=DEVNULL)
     if current_status and files_in_repo > 0:
-        subprocess.run(['git', 'stash','-q'], cwd=devops_dir,stdout=DEVNULL)
-        #subprocess.run(['git', 'rebase','origin/main','-q'], cwd=devops_dir,stdout=DEVNULL)
         repo_changes = input("\nData in local terraform_files and repo is not same, which changes you want to retain? Enter local or repo, default is local : ")
         if ("repo" in repo_changes.lower()):
             print("Ignoring local changes......")
-            #subprocess.run(['git', 'stash'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'stash', 'drop', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git', 'branch','main', '-u', 'origin/main'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git','reset','--hard','@{u}'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
         else:
             print("Updating remote with local changes.....")
-            #subprocess.run(['git', 'stash'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'stash', 'apply', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
-            subprocess.run(['git', 'stash', 'pop'], cwd=devops_dir,stdout=DEVNULL)
-            subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
-            #subprocess.run(['git', 'stash', 'drop', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
 
-    subprocess.run(['git', 'config','--global','user.email',devops_user], cwd=devops_dir)
-    subprocess.run(['git', 'config', '--global', 'user.name', devops_user], cwd=devops_dir)
     commit_id='None'
     try:
-        subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
+        #subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
         commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
         commit_id = str(commit_id).split('\'')[1][:-2]
         subprocess.run(['git', 'push','origin','main'], cwd=devops_dir, stdout=DEVNULL)
-        print("Initial Commit to DevOps Repository done with commit id: " + commit_id)
+        print("Latest Commit to DevOps Repository done with commit id: " + commit_id)
     except git.exc.GitCommandError as e:
         if ("nothing to commit, working directory clean" in str(e)):
             print("Nothing to commit to DevOps Repository.")
@@ -315,8 +329,9 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
         print("Exiting...")
         exit(1)
     # Create develop branch from main
-    subprocess.run(['git', 'checkout', '-B', 'develop','main', '-q'], cwd=devops_dir, stdout=DEVNULL)
-    subprocess.run(['git', 'push', 'origin', 'develop'], cwd=devops_dir, stdout=DEVNULL)
+    subprocess.run(['git', 'checkout', '-B', 'develop','main'], cwd=devops_dir, stdout=DEVNULL)
+    subprocess.run(['git', 'pull', 'origin', 'develop','--rebase'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
+    subprocess.run(['git', 'push', 'origin', 'develop','-f'], cwd=devops_dir, stdout=DEVNULL)
     return commit_id
 
 def create_bucket(config, signer):
@@ -349,8 +364,8 @@ safe_file = user_dir + "/tenancies/createTenancyConfig.safe"
 auto_keys_dir = user_dir + "/tenancies/keys"
 toolkit_dir = os.path.dirname(os.path.abspath(__file__))+"/.."
 #toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
-modules_dir = toolkit_dir + "/user-scripts/terraform"
-variables_example_file = modules_dir + "/variables_example.tf"
+terraform_dir = toolkit_dir + "/user-scripts/terraform"
+variables_example_file = terraform_dir + "/variables_example.tf"
 setupoci_props_toolkit_file_path = toolkit_dir + "/setUpOCI.properties"
 
 jenkins_install = toolkit_dir + "/../jenkins_install"
@@ -452,8 +467,8 @@ try:
     remote_state = config.get('Default', 'use_remote_state').strip().lower()
     remote_state_bucket = config.get('Default', 'remote_state_bucket_name').strip()
 
-    use_devops = config.get('Default', 'use_oci_devops_git').strip().strip().lower()
-    devops_repo = config.get('Default', 'oci_devops_git_repo_name').strip().strip()
+    use_devops = config.get('Default', 'use_oci_devops_git').strip().lower()
+    devops_repo = config.get('Default', 'oci_devops_git_repo_name').strip()
     devops_user = config.get('Default', 'oci_devops_git_user').strip()
     devops_user_key = config.get('Default', 'oci_devops_git_key').strip()
 
@@ -573,7 +588,7 @@ elif auth_mechanism=='session_token':
                                                                                                               "key_file = "+_key_path+"\n"
                                                                                                                                                   "region = "+region+"\n")
     '''
-    # copy config file to customer specific directory and create symlink for TF execution
+    # copy config file to prefix specific directory and create symlink for TF execution
     config_file_path_user_home = user_dir + "/.oci/config"
     # To take care of multiple executions of createTenancyConfig,py
     if not os.path.islink(config_file_path_user_home):
@@ -620,11 +635,17 @@ home_region = ct.home_region
 
 
 ## Check the remote state requirements
-backend_file = open(modules_dir + "/backend.tf", 'r')
+backend_file = open(terraform_dir + "/backend.tf", 'r')
 backend_file_data = backend_file.readlines()
 global_backend_file_data = ""
 
 if remote_state == "yes":
+    #fetch compartment ocid from compartment name
+    if "ocid1.compartment.oc" not in compartment_ocid and "ocid1.tenancy.oc" not in compartment_ocid:
+        print("Fetching existing Compartments from Tenancy...")
+        ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
+        compartment_ocid = ct.ntk_compartment_ids[compartment_ocid]
+
     print("\nCreating Tenancy specific remote tfstate Items - bucket, S3 credentials.................")
     s3_credential_file_path = config_files + "/" + prefix + "_s3_credentials"
     buckets_client = ObjectStorageClient(config=config,
@@ -805,7 +826,7 @@ for region in ct.all_regions:
         if not os.path.exists(f"{terraform_files}/global/rpc"):
             os.makedirs(f"{terraform_files}/global/rpc")
 
-            shutil.copyfile(modules_dir + "/provider.tf", f"{terraform_files}/global/rpc/provider.tf")
+            shutil.copyfile(terraform_dir + "/provider.tf", f"{terraform_files}/global/rpc/provider.tf")
 
             with open(f"{terraform_files}/global/rpc/provider.tf", 'r+') as provider_file:
                 provider_file_data = provider_file.read().rstrip()
@@ -833,11 +854,23 @@ for region in ct.all_regions:
     if os.path.exists(terraform_files+region):
         continue
 
-    os.mkdir(terraform_files+region)
+    #os.mkdir(terraform_files+region)
 
+    # 7. Copy terraform modules and variables file to outdir
+    '''
+    if modules_source+"/" == terraform_files:
+        try:
+            shutil.copytree(terraform_dir + "/modules", terraform_files+"/modules")
+        except FileExistsError as fe:
+            pass
+
+    shutil.copytree(terraform_dir, terraform_files + "/" + region + "/", ignore=shutil.ignore_patterns("modules"))
+    '''
+    shutil.copytree(terraform_dir, terraform_files + "/" + region + "/")
+
+    #Prepare variables file
     linux_image_id = ''
     windows_image_id = ''
-
 
     new_config = deepcopy(config)
     new_config.__setitem__("region", ct.region_dict[region])
@@ -874,8 +907,7 @@ for region in ct.all_regions:
     f.write(variables_example_file_data)
     f.close()
 
-    # 7. Copy terraform modules and variables file to outdir
-    distutils.dir_util.copy_tree(modules_dir, terraform_files +"/" + region)
+
     with open(terraform_files +"/" + region + "/provider.tf", 'r+') as provider_file:
         provider_file_data = provider_file.read().rstrip()
     if auth_mechanism == 'instance_principal':
@@ -995,8 +1027,9 @@ if use_devops == 'yes':
     f.write(regions_file_data[:-1])
     f.close()
     # create all compartments_file
-    print("Fetching existing Compartments from Tenancy...")
-    ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
+    if ct.ntk_compartment_ids == {}:
+        print("Fetching existing Compartments from Tenancy...")
+        ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
     compartments_file_data = ""
     comp_done = []
     for k, v in ct.ntk_compartment_ids.items():
@@ -1058,7 +1091,7 @@ data=prefix + "\t" + "SUCCESS\t"+current_time+"\n"
 f.write(data)
 f.close()
 
-logging.info("Customer Specific Working Directory Path: "+customer_tenancy_dir+"\n")
+logging.info("Prefix Specific Working Directory Path: "+customer_tenancy_dir+"\n")
 
 if remote_state == 'yes':
     logging.info("Remote State Bucket Name: "+ bucket_name+ " in "+rg+".")

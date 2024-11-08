@@ -36,12 +36,13 @@ resource "oci_identity_domains_group" "group" {
       value = local.user_ids[members.value][0]
     }
   }
-  urnietfparamsscimschemasoracleidcsextensionrequestable_group {
-
+  dynamic "urnietfparamsscimschemasoracleidcsextensionrequestable_group" {
+   for_each = var.user_can_request_access == false ?[1]:[]
+    content {
     #Optional
     requestable = var.user_can_request_access
-
-  }
+    }
+}
   urnietfparamsscimschemasoracleidcsextension_oci_tags {
 
     # Optional

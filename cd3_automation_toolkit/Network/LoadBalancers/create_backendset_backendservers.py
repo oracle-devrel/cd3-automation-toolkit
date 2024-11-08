@@ -220,7 +220,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, ct)
                 tempback = {'backup': backup }
                 tempStr.update(tempback)
 
-                backend_server_tf_name = commonTools.check_tf_variable(servername+"-"+str(cnt))
+                backend_server_tf_name = commonTools.check_tf_variable(servername+"-"+serverport)
                 e = servername.count(".")
                 if (e == 3):
                     backend_server_ip_address = "IP:"+servername

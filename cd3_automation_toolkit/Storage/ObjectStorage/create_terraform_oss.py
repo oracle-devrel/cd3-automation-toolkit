@@ -279,7 +279,7 @@ def create_terraform_oss(inputfile, outdir, service_dir, prefix, ct):
                             time_rule_locked = rule_components[3]
                             if time_rule_locked.endswith(".000Z"):
                                 time_rule_locked = time_rule_locked[:-5] + "Z"
-                            elif not re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",time_rule_locked):
+                            elif not re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*Z",time_rule_locked):
                                 # Convert from "dd-mm-yyyy" to "YYYY-MM-DDThh:mm:ssZ" format
                                 if re.match(r"\d{2}-\d{2}-\d{4}", time_rule_locked):
                                     try:

@@ -180,8 +180,8 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
                         k +=1
                 else:
                     wl_str = ""
-                tempdict = {'whitelisted_ips': wl_str,'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
-                            'subnet_id': subnet_id }
+                #tempdict = {'whitelisted_ips': wl_str,'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,'subnet_id': subnet_id }
+                tempdict = {'whitelisted_ips': wl_str }
                 tempStr.update(tempdict)
 
 

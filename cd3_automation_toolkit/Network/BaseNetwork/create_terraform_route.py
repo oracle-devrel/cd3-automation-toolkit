@@ -185,7 +185,7 @@ def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, ct, non_g
             drg_rt_dstrb_tf_name = ''
             drg_rt_dstrb_res_name = ''
             region = str(df.loc[i, 'Region']).strip()
-
+            vcn_connectivity_in_excel = ""
             if str(df.loc[i, 'Attached To']).lower().startswith("rpc"):
                 vcn_connectivity_in_excel = "connectivity"
             elif str(df.loc[i, 'Attached To']).lower().startswith("vcn"):
@@ -217,6 +217,9 @@ def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, ct, non_g
 
             # Dont create any route table or route distribution name if using Auto Generated ones
             if (DRG_RT in commonTools.drg_auto_RTs and DRG_RD in commonTools.drg_auto_RDs):
+                continue
+            # Dont create any oute table or route distribution name if OCID is goven in DRG RT Name
+            if ("ocid1.drgroutetable.oc" in DRG_RT):
                 continue
 
             region = region.strip().lower()

@@ -82,7 +82,7 @@ def modify_terraform_secrules(inputfile, outdir, service_dir,prefix, ct, non_gf_
         commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, prefix + default_auto_tfvars_filename)
 
     with open('out.csv') as secrulesfile:
-        reader = csv.DictReader(ct.skipCommentedLine(secrulesfile))
+        reader = csv.DictReader(secrulesfile)
         ingress_rule = ''
         egress_rule = ''
         processed_seclist = []
