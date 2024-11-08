@@ -10,6 +10,11 @@
     - Ensure SSH authentication is configured and operational on the Customer Jenkins instance. For detailed instructions, refer to the <a href="https://docs.oracle.com/en-us/iaas/Content/devops/using/ssh_auth.htm"><u>OCI Code Repository documentation</u></a>.<br>
   
         > Note - Steps to change the GIT repo are explained in next section.
+
+    - Ensure the Git repository has all the generated terraform code and branches for the terraform deployment pipelines to work properly for customer prefixes. 
+    
+        Copy or create the SSH configuration file from the CD3 Jenkins instance to the customer's Jenkins instance. The file is located at /cd3user/.ssh/config on the CD3 Jenkins instance.
+
     
 3. Ensure Availability of Ansi Color Plugin
     - Confirm the presence of the Ansi color plugin in the Customer Jenkins instance. This plugin is utilized in Automation Toolkit pipeline Groovy code and is necessary if not already installed. Plugin link: <a href="https://plugins.jenkins.io/ansicolor/"><u>Ansicolor Plugin</u></a>.
@@ -34,6 +39,8 @@
 8. Push the above changes to Devops GIT repository so that pipline can get the latest commits/changes and execute it.
 
 9. Stop/Start the Customer Jenkins Instance for the changes to take effect. This is applicable for any configuration changes in Jenkins.
+
+    Additionally, copy the init.groovy.d folder from the jenkins_home directory of the CD3 Jenkins instance to the jenkins_home directory of the customer's instance
 
 10. Job and Pipeline Configuration
     - Verify that the specified jobs and pipelines, initialized by the Automation Toolkit, are visible in the Customer Jenkins instance.

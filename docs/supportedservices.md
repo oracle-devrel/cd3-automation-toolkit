@@ -119,7 +119,7 @@
             </div>
             <p><a href="../cd3exceltabs#storage"><b>Storage</b></a></p>
             <div class="description">
-                <p><i>FSS, Block and Boot Volumes, Backup Policies, Object Storage Buckets and logging for write events</i></p>
+                <p><i>FSS, Block and Boot Volumes, Backup Policies, Object Storage Buckets</i></p>
             </div>
             <p><a href="../cd3exceltabs#database"><b>Database</b></a></p>
             <div class="description">
