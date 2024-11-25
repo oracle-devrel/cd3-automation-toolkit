@@ -2278,7 +2278,7 @@ Below commands create a user local user called cd3user on the VM and configures 
 <ul>
 <li>Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).</li>
 <li>
-<p>Edit <strong>Dockerfile</strong> to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues. This step is needed if you plan to use toolkit with Jenkins or OCI DevOps GIT repo.
+<p>If you are using mac, Edit <strong>Dockerfile</strong> to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues. This step is needed if you plan to use toolkit with Jenkins or OCI DevOps GIT repo.
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>vi Dockerfile
 </span></code></pre></div></p>
 <p>Search for the line <code>ARG USER_UID=1001</code> and replace <code>1001</code> with uid of the user on local host eg 503 for Mac users.</p>
