@@ -81,7 +81,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 
 📝 Creating Terraform Code for each module/resource can be cumbersome and requires Terraform expertise.
 
-🔁 Manually created infrastrucutre is hard to rebuild for different environments or regions.
+🔁 Manually created infrastructure is hard to rebuild for different environments or regions.
 
 <br>
 
