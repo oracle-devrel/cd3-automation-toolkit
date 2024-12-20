@@ -60,7 +60,8 @@ sudo wget https://releases.hashicorp.com/terraform-provider-null/${TF_NULL_PROVI
 sudo mkdir -p /cd3user/.terraform.d/plugins/registry.terraform.io/hashicorp/null/${TF_NULL_PROVIDER}/linux_amd64 && \
 sudo unzip terraform-provider-null_${TF_NULL_PROVIDER}_linux_amd64.zip -d /cd3user/.terraform.d/plugins/registry.terraform.io/hashicorp/null/${TF_NULL_PROVIDER}/linux_amd64 && \
 sudo cp -r /cd3user/.terraform.d/plugins/registry.terraform.io /cd3user/.terraform.d/plugins/registry.opentofu.org && \
-sudo chown -R cd3user:cd3user /cd3user/ ;\
+sudo chown -R cd3user:cd3user /cd3user/ && \
+sudo rm -rf terraform-provider-null_${TF_NULL_PROVIDER}_linux_amd64.zip terraform-provider-oci_${TF_OCI_PROVIDER}_linux_amd64.zip ;\
 fi
 
 ##################################### START INSTALLING JENKINS ###################################
