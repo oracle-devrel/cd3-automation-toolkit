@@ -360,6 +360,7 @@ current_time=str(datetime.datetime.now())
 
 # Initialize Toolkit Variables
 user_dir = "/cd3user"
+
 safe_file = user_dir + "/tenancies/createTenancyConfig.safe"
 auto_keys_dir = user_dir + "/tenancies/keys"
 toolkit_dir = os.path.dirname(os.path.abspath(__file__))+"/.."
@@ -471,6 +472,14 @@ try:
     devops_repo = config.get('Default', 'oci_devops_git_repo_name').strip()
     devops_user = config.get('Default', 'oci_devops_git_user').strip()
     devops_user_key = config.get('Default', 'oci_devops_git_key').strip()
+
+    # Check if Jenkins was installed during image build
+    if environ.get('USE_DEVOPS') is not None:
+        use_devops_docker = os.environ['USE_DEVOPS']
+        use_devops_docker=use_devops_docker.lower()
+
+        if use_devops_docker != use_devops:
+            use_devops = "no"
 
     if use_devops == 'yes' or remote_state == 'yes':
         #Use remote state if using devops
@@ -800,6 +809,8 @@ f.close()
 if not os.path.exists(terraform_files):
     os.makedirs(terraform_files)
 
+# Copy modules dir to terraform_files folder
+shutil.copytree(terraform_dir + "/modules", terraform_files + "/modules")
 
 print("Creating Tenancy specific region directories, terraform provider , variables files.................")
 regions_file_data = ""
@@ -866,7 +877,8 @@ for region in ct.all_regions:
 
     shutil.copytree(terraform_dir, terraform_files + "/" + region + "/", ignore=shutil.ignore_patterns("modules"))
     '''
-    shutil.copytree(terraform_dir, terraform_files + "/" + region + "/")
+    #shutil.copytree(terraform_dir, terraform_files + "/" + region + "/")
+    shutil.copytree(terraform_dir, terraform_files + "/" + region + "/", ignore=shutil.ignore_patterns("modules"))
 
     #Prepare variables file
     linux_image_id = ''
@@ -955,6 +967,8 @@ for region in ct.all_regions:
                 with open(file, 'r+') as tf_file:
                     module_data = tf_file.read().rstrip()
                     module_data = module_data.replace("# depends_on", "depends_on")
+                    module_data = module_data.replace("\"./modules", "\"../modules")
+
                 tf_file.close()
                 f = open(file, "w+")
                 f.write(module_data)
@@ -983,7 +997,7 @@ for region in ct.all_regions:
                     shutil.move(region_dir + 'scripts',region_service_dir+'/')
                 with open(region_dir + service + ".tf", 'r+') as tf_file:
                     module_data = tf_file.read().rstrip()
-                    module_data = module_data.replace("\"./modules", "\"../modules")
+                    module_data = module_data.replace("\"./modules", "\"../../modules")
 
                 f = open(region_service_dir + "/" + service + ".tf", "w+")
                 f.write(module_data)

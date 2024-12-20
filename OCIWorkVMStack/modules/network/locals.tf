@@ -4,4 +4,5 @@ locals {
   create_inet_gw  = (var.vcn_strategy == "Create New VCN" && var.subnet_type == "Public") ? 1 : 0
   create_nat_gw   = (var.vcn_strategy == "Create New VCN" && var.subnet_type == "Private") ? 1 : 0
   create_nsg_rule = (var.vcn_strategy == "Create New VCN" && length(var.source_cidr) != 0) ? 1 : 0
+  route_rule_drg  = var.drg_attachment == true ? ( length(var.source_cidr) > 0 ? var.source_cidr : [] ) : []
 }

@@ -106,10 +106,10 @@ def validate_cidr(cidr_list):
 
     for i in range(0, len(cidr_list)):
         try:
+            rowN = cidr_list[i][1]
             ipaddress.ip_network(cidr_list[i][0])
-            rowN= cidr_list[i][1]
         except ValueError:
-            log(f'Row  {str(rowN)} Field "CIDR Block" {cidr_list[i]} is invalid. CIDR range has host bits set.')
+            log(f'Row {str(rowN)} Field "CIDR Block" {cidr_list[i]} is invalid. CIDR range has host bits set.')
             cidr_check = True
 
     for i in range(0, len(cidr_list)):
@@ -1791,7 +1791,7 @@ def validate_kms(filename,comp_ids):
             elif replica_region == 'nan':
                 pass
             elif replica_region != 'nan' and replica_region not in ct.all_regions:
-                log(f'ROW {i + 3} : "Replica Region" {region} is either not subscribed to tenancy or toolkit is not yet configured to be used for this region')
+                log(f'ROW {i + 3} : "Replica Region" {replica_region} is either not subscribed to tenancy or toolkit is not yet configured to be used for this region')
                 kms_invalid_check = True
 
 

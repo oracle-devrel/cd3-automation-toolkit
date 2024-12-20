@@ -350,33 +350,3 @@ module "lbr-reserved-ips" {
   #private_ip_id        = each.value.private_ip_id != null ? (length(regexall("ocid1.privateip.oc*", each.value.private_ip_id)) > 0 ? each.value.private_ip_id : (length(regexall("\\.", each.value.private_ip_id)) == 3 ? local.private_ip_id[0][each.value.private_ip_id] : merge(module.private-ips.*...)[each.value.private_ip_id].private_ip_tf_id)) : null
   #public_ip_pool_id    = each.value.public_ip_pool_id != null ? (length(regexall("ocid1.publicippool.oc*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
 }
-
-/*
-resource "oci_load_balancer_load_balancer_routing_policy" "load_balancer_routing_policy" {
-    
-    #Required
-    condition_language_version = "V1"
-    load_balancer_id = "ocid1.loadbalancer.oc1.uk-london-1.aaaaaaaa26pp3ygxyycgrmi2f3wuwmgntltotctwvmi4kr6bcbvwo7t5j2va"
-    name = "RP01"
-    rules {  
-        #Required
-        actions {
-            #Required
-            name = "FORWARD_TO_BACKENDSET"
-
-            #Optional
-            backend_set_name = "bset01"
-        }
-        condition = "all(http.request.url.path eq (i 'test'), http.request.url.query[(i 'key01')] eq (i 'value01'), all(http.request.url.path eq (i 'testonly')))"
-        name = "rule01"
-    }
-
-    rules {
-      actions {
-        backend_set_name = "bset01"
-        name             = "FORWARD_TO_BACKENDSET"
-      }
-      condition = "any(http.request.url.path eq (i 'gh'))"
-      name      = "rule02"
-   }
-}*/

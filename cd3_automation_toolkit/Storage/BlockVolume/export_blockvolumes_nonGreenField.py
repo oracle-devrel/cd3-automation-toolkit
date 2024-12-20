@@ -119,7 +119,8 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             source_id = blockvols.source_details.id
             source_details = blockvols.source_details.type.strip() + "::" + commonTools.check_tf_variable(blockvols.display_name.strip())
             tmp_key = region + "--" + source_id
-            source_ocids[tmp_key] = commonTools.check_tf_variable(blockvols.display_name.strip())
+            #source_ocids[tmp_key] = commonTools.check_tf_variable(blockvols.display_name.strip())
+            source_ocids[commonTools.check_tf_variable(blockvols.display_name.strip())] = tmp_key
         autotune_type = ''
         max_vpus_per_gb = ''
         if len(blockvols.autotune_policies) == 0:
@@ -263,9 +264,9 @@ def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, expo
 
             tempStrOcids = ""
             for k, v in source_ocids.items():
-                if k.split("--")[0].lower() == reg:
-                    k = "\"" + k.split("--")[1] + "\""
-                    tempStrOcids = "\t" + v + " = " + k + "\n" + tempStrOcids
+                if v.split("--")[0].lower() == reg:
+                    v = "\"" + v.split("--")[1] + "\""
+                    tempStrOcids = "\t" + k + " = " + v + "\n" + tempStrOcids
             tempStrOcids = "\n" + tempStrOcids
             tempStrOcids = "#START_blockvolume_source_ocids#" + tempStrOcids + "\t#blockvolume_source_ocids_END#"
             var_data[reg] = re.sub('#START_blockvolume_source_ocids#.*?#blockvolume_source_ocids_END#', tempStrOcids,

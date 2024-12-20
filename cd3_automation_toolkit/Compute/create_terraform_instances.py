@@ -226,12 +226,12 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Source Details":
                 if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
-                    if "ocid1.image.oc1" in columnvalue.strip():
+                    if "ocid1.image.oc" in columnvalue.strip():
                         ocid = columnvalue.strip()
                         type = "image"
                         source_details.append(type)
                         source_details.append(ocid)
-                    elif "ocid1.bootvolume.oc1" in columnvalue.strip():
+                    elif "ocid1.bootvolume.oc" in columnvalue.strip():
                         ocid = columnvalue.strip()
                         type = "bootVolume"
                         source_details.append(type)

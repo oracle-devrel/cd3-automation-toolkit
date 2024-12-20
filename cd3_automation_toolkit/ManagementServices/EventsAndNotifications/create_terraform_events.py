@@ -20,9 +20,9 @@ def extend_event(service_name, resources, listeventid):
     event = [ "com.oraclecloud." + service_name + "." + resources ]
     listeventid['eventType'].extend(event)
     listeventid['eventType'] = list(dict.fromkeys(listeventid['eventType']))
-    condition = json.dumps(listeventid)
+    condition = json.dumps(listeventid,separators=(',', ':'))
     condition = condition.replace("\"" , "\\\"")
-    condition = condition.replace(" " , "")
+    #condition = condition.replace(" " , "")
     return (condition)
 
 
@@ -95,7 +95,7 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
 
             # Dont strip for Description
             columnvalue = str(df[columnname][i])
-            if columnname == "Event Description":
+            if columnname in ["Event Description","Additional Data"]:
 
                 # Check for boolean/null in column values
                 columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -213,8 +213,9 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
                     d["data"] = json.loads(data.replace("'", "\""))
                 else:
                     d["data"] = json.loads(data)
-                condition = json.dumps(d)
-                condition = condition.replace("\"" , "\\\"").replace("'", "\\\"").replace(" " , "")
+                condition = json.dumps(d,separators=(',', ':'))
+
+                condition = condition.replace("\"" , "\\\"").replace("'", "\\\"")
                 tempdict = {'condition' : condition}
             tempStr.update(tempdict)
       
@@ -244,8 +245,8 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
                 d["data"] = json.loads(data.replace("'", "\""))
             else:
                 d["data"] = json.loads(data)
-            condition = json.dumps(d)
-            condition = condition.replace("\"", "\\\"").replace("'", "\\\"").replace(" ", "")
+            condition = json.dumps(d,separators=(',', ':'))
+            condition = condition.replace("\"", "\\\"").replace("'", "\\\"")
 
             tempdict = {'condition' : condition}
             tempStr.update(tempdict)

@@ -18,7 +18,7 @@ resource "oci_sch_service_connector" "service_connector" {
       for_each = var.source_monitoring_details
       content {
         #Optional
-        compartment_id = split("&", monitoring_sources.key)[0]
+        compartment_id = split("@", monitoring_sources.key)[0]
         namespace_details {
           #Required
           kind = "selected"
@@ -40,9 +40,9 @@ resource "oci_sch_service_connector" "service_connector" {
     dynamic "log_sources" {
       for_each = toset(var.log_group_names)
       content {
-        compartment_id = split("&", log_sources.key)[0]
-        log_group_id   = length(regexall("Audit", split("&", log_sources.key)[1])) > 0 ? (length(regexall("Audit_In_Subcompartment", split("&", log_sources.key)[1])) > 0 ? "_Audit_Include_Subcompartment" : "_Audit") : data.oci_logging_log_groups.source_log_groups[log_sources.key].log_groups[0].id
-        log_id         = lower(split("&", log_sources.key)[2]) == "all" ? null : data.oci_logging_logs.source_logs[log_sources.key].logs[0].id
+        compartment_id = split("@", log_sources.key)[0]
+        log_group_id   = length(regexall("Audit", split("@", log_sources.key)[1])) > 0 ? (length(regexall("Audit_In_Subcompartment", split("@", log_sources.key)[1])) > 0 ? "_Audit_Include_Subcompartment" : "_Audit") : data.oci_logging_log_groups.source_log_groups[log_sources.key].log_groups[0].id
+        log_id         = lower(split("@", log_sources.key)[2]) == "all" ? null : data.oci_logging_logs.source_logs[log_sources.key].logs[0].id
       }
     }
     stream_id = var.source_kind == "streaming" ? data.oci_streaming_streams.source_streams[one(keys(var.source_stream_id))].streams[0].id : null
