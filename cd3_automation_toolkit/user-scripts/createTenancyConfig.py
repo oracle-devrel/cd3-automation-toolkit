@@ -15,7 +15,6 @@ import datetime
 import configparser
 import oci
 from oci.object_storage import ObjectStorageClient
-import git
 import glob
 import subprocess
 sys.path.append(os.getcwd()+"/..")
@@ -474,12 +473,14 @@ try:
     devops_user_key = config.get('Default', 'oci_devops_git_key').strip()
 
     # Check if Jenkins was installed during image build
-    if environ.get('USE_DEVOPS') is not None:
-        use_devops_docker = os.environ['USE_DEVOPS']
-        use_devops_docker=use_devops_docker.lower()
+    use_devops_docker = os.environ['USE_DEVOPS']
+    use_devops_docker=use_devops_docker.lower()
 
-        if use_devops_docker != use_devops:
-            use_devops = "no"
+    if use_devops_docker != use_devops:
+        use_devops = "no"
+
+    if use_devops == 'yes':
+        import git
 
     if use_devops == 'yes' or remote_state == 'yes':
         #Use remote state if using devops
