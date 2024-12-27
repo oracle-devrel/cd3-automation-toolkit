@@ -351,7 +351,7 @@ class commonTools():
                             soc = True
                     elif line.strip().startswith('#compartment_ocids_END#'):
                         soc = False
-                    else:
+                    elif "=" in line:
                         line_items = str(line.strip()).split('=')
                         key = str(line_items[0]).strip()
                         value = str(line_items[1]).strip()
@@ -360,9 +360,9 @@ class commonTools():
                         self.ntk_compartment_ids[key.replace('--', '::')] = val
 
             f.close()
-            if len(var_ocids) == 0:
-                print("Please make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option first and re-run this.")
-                exit(1)
+            #if len(var_ocids) == 0:
+            #    print("Please make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option first and re-run this.")
+            #    exit(1)
 
         except Exception as e:
             print(str(e))

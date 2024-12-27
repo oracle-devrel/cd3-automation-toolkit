@@ -119,12 +119,14 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
 
         rm_dir = region_dir + '/RM/'
 
-        # 1. Copy all the TF files for specified regions to RM directory
+        # 1. Copy all the TF files for specified regions to RM directory. Also copy modules directory
         try:
             shutil.copytree(region_dir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform','provider.tf','*.zip*','*.safe*','*.log*','*cis_report','*.csv*','*cd3validator', 'variables_*.tf*'))
+            shutil.copytree(outdir+"/modules", rm_dir)
         except FileExistsError as fe:
             shutil.rmtree(rm_dir)
             shutil.copytree(region_dir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform','provider.tf','*.zip*','*.safe*','*.log*','*cis_report','*.csv*','*cd3validator', 'variables_*.tf*'))
+            shutil.copytree(outdir+"/modules", rm_dir+"/modules")
 
         #2. Change the provider.tf and variables_<region>.tf to include just the region variable in all stacks for specified regions
         tfStr[region]=''
@@ -286,6 +288,15 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
             zip_name = rm_name + ".zip"
             # Fix for make_archive huge zip file issue - Ulag
             file_paths = []
+            for file in os.listdir(rm_dir):
+                if ".tf" in file and "variables" not in file and "provider" not in file and 'backend' not in file:
+                    with open(file, 'r') as tf_file:
+                        module_data = tf_file.read().rstrip()
+                        module_data = module_data.replace("\"../modules", "\"./modules")
+                    f = open(file, "w+")
+                    f.write(module_data)
+                    f.close()
+
             for root, directories, files in os.walk(rm_dir):
                 for filename in files:
                     rel_dir = os.path.relpath(root, rm_dir)
@@ -368,7 +379,7 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
                     if os.path.exists(service_dir+"/"+ svc + ".tf"):
                         with open(service_dir+"/"+ svc + ".tf", 'r') as tf_file:
                             module_data = tf_file.read().rstrip()
-                            module_data = module_data.replace("\"../modules", "\"./modules")
+                            module_data = module_data.replace("\"../../modules", "\"./modules")
                         if svc == 'rpc':
                             f = open(service_dir+"/"+ svc + "-temp.tf", "w+")
                         else:

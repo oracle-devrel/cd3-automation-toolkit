@@ -231,7 +231,7 @@ def create_terraform_tags(inputfile, outdir, service_dir, prefix, ct):
                                     else:
                                         if str(df.loc[i, 'Validator']).strip() == '' or  str(df.loc[i, 'Validator']).strip().lower() == 'nan':
                                             is_required_updated = 'true' #Uncomment this if needed
-                                            default_value = '-'
+                                            default_value = '[CANNOT_BE_EMPTY]'
                                             columnvalue = key_tf_name+"="+default_compartment+"="+default_value+"="+is_required_updated #Uncomment this if needed
                                             if columnvalue not in default_tags:
                                                 default_tags.append(columnvalue)

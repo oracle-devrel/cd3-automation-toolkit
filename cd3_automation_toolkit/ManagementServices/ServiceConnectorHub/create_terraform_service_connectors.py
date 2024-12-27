@@ -129,14 +129,14 @@ def create_service_connectors(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == 'Target Stream Name':
                 target_stream_name = columnvalue.strip().split()
-                target_stream_name = dict(subString.split("&") for subString in target_stream_name)
+                target_stream_name = dict(subString.split("@") for subString in target_stream_name)
                 target_stream_name = dict((commonTools.check_tf_variable(k), v) for k, v in target_stream_name.items())
                 target_stream_name = json.dumps(target_stream_name)
                 tempdict = {'target_stream_name': target_stream_name}
 
             if columnname == 'Source Stream Name':
                 source_stream_name = columnvalue.strip().split()
-                source_stream_name = dict(subString.split("&") for subString in source_stream_name)
+                source_stream_name = dict(subString.split("@") for subString in source_stream_name)
                 source_stream_name = dict((commonTools.check_tf_variable(k), v) for k, v in source_stream_name.items())
                 source_stream_name = json.dumps(source_stream_name)
                 tempdict = {'source_stream_name': source_stream_name}
@@ -148,7 +148,7 @@ def create_service_connectors(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == 'Target Log Group Name':
                 target_log_group_name = columnvalue.strip().split()
-                target_log_group_name = dict(subString.split("&") for subString in target_log_group_name)
+                target_log_group_name = dict(subString.split("@") for subString in target_log_group_name)
                 target_log_group_name = dict(
                     (commonTools.check_tf_variable(k), v) for k, v in target_log_group_name.items())
                 target_log_group_name = json.dumps(target_log_group_name)
@@ -162,15 +162,15 @@ def create_service_connectors(inputfile, outdir, service_dir, prefix, ct):
                 source_log_group_names = columnvalue.strip()
                 source_log_group_list = source_log_group_names.replace(" ", "").replace("::", "--").split(",")
                 for index, item in enumerate(source_log_group_list):
-                    if len(item.split("&")) == 2:
-                        source_log_group_list[index] = f"{item}&all"
+                    if len(item.split("@")) == 2:
+                        source_log_group_list[index] = f"{item}@all"
 
                 source_log_group_list = json.dumps(source_log_group_list)
                 tempdict = {'source_log_group_names': source_log_group_list}
 
             if columnname == 'Target Topic Name':
                 target_topic_name = columnvalue.strip().split()
-                target_topic_name = dict(subString.split("&") for subString in target_topic_name)
+                target_topic_name = dict(subString.split("@") for subString in target_topic_name)
                 target_topic_name = dict((commonTools.check_tf_variable(k), v) for k, v in target_topic_name.items())
                 target_topic_name = json.dumps(target_topic_name)
                 tempdict = {'target_topic_name': target_topic_name}
@@ -192,7 +192,7 @@ def create_service_connectors(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == 'Target Monitoring Details' and columnvalue != "":
                 target_monitoring_details = columnvalue.strip().replace(" ", "")
-                target_monitoring_details = dict(item.split("&") for item in target_monitoring_details.split(";"))
+                target_monitoring_details = dict(item.split("@") for item in target_monitoring_details.split(";"))
                 target_monitoring_details = {
                     json.dumps(key): '[' + ','.join(['"' + x + '"' for x in val[1:-1].split(',')]) + ']' for
                     key, val in target_monitoring_details.items()}
@@ -205,7 +205,7 @@ def create_service_connectors(inputfile, outdir, service_dir, prefix, ct):
             if columnname == 'Source Monitoring Details' and columnvalue != "":
                 # loop through the columnvalue
                 monitoring_details = columnvalue.strip().replace(" ", "")
-                monitoring_details = dict(item.split("&") for item in monitoring_details.split(";"))
+                monitoring_details = dict(item.split("@") for item in monitoring_details.split(";"))
                 # monitoring_details = dict((commonTools.check_tf_variable(k), v) for k, v in monitoring_details.items())
                 monitoring_details = {
                     json.dumps(key): '[' + ','.join(['"' + x + '"' for x in val[1:-1].split(',')]) + ']' for

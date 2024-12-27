@@ -135,17 +135,17 @@ def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,ct):
                     columnvalue = int(float(columnvalue))
             if columnname == "Source Details":
                 if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
-                    if "ocid1.volume.oc1" in columnvalue.strip():
+                    if "ocid1.volume.oc" in columnvalue.strip():
                         ocid = columnvalue.strip()
                         type = "volume"
                         source_details.append(type)
                         source_details.append(ocid)
-                    elif "ocid1.volumebackup.oc1" in columnvalue.strip():
+                    elif "ocid1.volumebackup.oc" in columnvalue.strip():
                         ocid = columnvalue.strip()
                         type = "volumeBackup"
                         source_details.append(type)
                         source_details.append(ocid)
-                    elif "ocid1.blockvolumereplica.oc1" in columnvalue.strip():
+                    elif "ocid1.blockvolumereplica.oc" in columnvalue.strip():
                         ocid = columnvalue.strip()
                         type = "blockVolumeReplica"
                         source_details.append(type)

@@ -359,17 +359,31 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                 domain_name = domain_key.split("@")[1]
                 domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,
                                                                            service_endpoint=idcs_endpoint)
-                groups = domain_client.list_groups(attributes=['members'], attribute_sets=['all'])
-                dyngroups = domain_client.list_dynamic_resource_groups(attributes=['matching_rule'], attribute_sets=['all'])
+                list_groups_response = domain_client.list_groups(attributes=['members'], attribute_sets=['all'])
+                groups = list_groups_response.data.resources
+                while list_groups_response.has_next_page:
+                    list_groups_response = domain_client.list_groups(attributes=['members'], attribute_sets=['all'],page=list_groups_response.next_page)
+                    groups.extend(list_groups_response.data.resources)
 
-                for grp_info in groups.data.resources:
+                for grp_info in groups:
                     if grp_info.display_name in ["Domain_Administrators", "All Domain Users", "Administrators"]:
                         continue
                     total_g +=1
                     members_list = [section.name for section in grp_info.members if section and section.name] if grp_info.members else []
                     importCommands, values_for_column_groups = process_group(grp_info, members_list,[], domain_name, is_dynamic=False, importCommands=importCommands, values_for_column_groups=values_for_column_groups)
 
-                for dg in dyngroups.data.resources:
+                dyngroups_response = domain_client.list_dynamic_resource_groups(attributes=['matching_rule'],
+                                                                                attribute_sets=['all']
+                                                                                )
+                dyngroups = dyngroups_response.data.resources
+                while dyngroups_response.has_next_page:
+                    dyngroups_response = domain_client.list_dynamic_resource_groups(attributes=['matching_rule'],
+                                                                                    attribute_sets=['all'],
+                                                                                    page=dyngroups_response.next_page
+                                                                                    )
+                    dyngroups.extend(dyngroups_response.data.resources)
+
+                for dg in dyngroups:
                     total_g += 1
                     importCommands, values_for_column_groups = process_group(dg, [],[], domain_name, is_dynamic=True, importCommands=importCommands, values_for_column_groups=values_for_column_groups)
         else:

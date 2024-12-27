@@ -120,7 +120,7 @@ def fw_create(inputfile, outdir, service_dir, prefix, ct):
                 subnet_tf_name = str(columnvalue).strip()
                 if subnet_tf_name == 'nan' or subnet_tf_name == '':
                     continue
-                if ("ocid1.subnet.oc1" in subnet_tf_name):
+                if ("ocid1.subnet.oc" in subnet_tf_name):
                     vcn_name = ""
                     subnet_id = subnet_tf_name
                 else:

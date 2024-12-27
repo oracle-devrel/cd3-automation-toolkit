@@ -57,12 +57,12 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
                     if log.log_group_id == "_Audit":
                         log_group_name = "Audit"
                         comp_name = get_comp_details(log.compartment_id)
-                        log_source_list.append(f"{comp_name}&{log_group_name}&all")
+                        log_source_list.append(f"{comp_name}@{log_group_name}@all")
 
                     elif log.log_group_id == "_Audit_Include_Subcompartment":
                         log_group_name = "Audit_In_Subcompartment"
                         comp_name = get_comp_details(log.compartment_id)
-                        log_source_list.append(f"{comp_name}&{log_group_name}&all")
+                        log_source_list.append(f"{comp_name}@{log_group_name}@all")
 
                     else:
                         log_group_id = log.log_group_id
@@ -74,9 +74,9 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
                                 log_name = getattr(
                                     log_client.get_log(log_group_id=log_group_id, log_id=log.log_id).data,
                                     'display_name')
-                                log_source_list.append(f"{comp_name}&{log_group_name}&{log_name}")
+                                log_source_list.append(f"{comp_name}@{log_group_name}@{log_name}")
                             else:
-                                log_source_list.append(f"{comp_name}&{log_group_name}&all")
+                                log_source_list.append(f"{comp_name}@{log_group_name}@all")
                         except oci.exceptions.ServiceError as e:
                             print(f"Error retrieving log group details: {e}")
                             continue
@@ -96,7 +96,7 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
                 source_stream_name = getattr(stream_client.get_stream(stream_id=source_stream_id).data, 'name')
                 source_comp_id = getattr(stream_client.get_stream(stream_id=source_stream_id).data, 'compartment_id')
                 source_stream_comp_name = get_comp_details(source_comp_id)
-                source_stream_string = source_stream_comp_name + "&" + source_stream_name
+                source_stream_string = source_stream_comp_name + "@" + source_stream_name
             else:
                 print(f"Error: 'stream_id' not found in source_data/deleted for connector {schs.display_name}.Skipping to the next SCH.")
                 continue
@@ -131,7 +131,7 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
 
                 mon_ns_string = str(mon_namespace_dict).replace("'", "")
                 mon_ns_string = mon_ns_string.replace("{", "").replace("}", "").replace("],", "];")
-                mon_ns_string = mon_ns_string.replace(":", "&").replace(" ", "")
+                mon_ns_string = mon_ns_string.replace(":", "@").replace(" ", "")
                 mon_ns_string = mon_ns_string.replace("&&", "::")
             else:
                 # Print an error message and continue to the next SCH
@@ -146,7 +146,7 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
                     metric_namespace = getattr(target_data, 'metric_namespace')
                     comp_id = getattr(target_data, 'compartment_id')
                     comp_name = get_comp_details(comp_id)
-                    target_mon_ns_string = f'{comp_name}&[{metric_name},{metric_namespace}]'
+                    target_mon_ns_string = f'{comp_name}@[{metric_name},{metric_namespace}]'
                 else:
                     # Print an error message and continue to the next SCH
                     print(f"Error: 'metric' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
@@ -167,7 +167,7 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
                 target_log_group_name = getattr(dest_logs_compartment_details.data, 'display_name')
                 target_comp_id = getattr(dest_logs_compartment_details.data, 'compartment_id')
                 target_comp_name = get_comp_details(target_comp_id)
-                target_la_string = target_comp_name + "&" + target_log_group_name
+                target_la_string = target_comp_name + "@" + target_log_group_name
             else:
                 # Print an error message and continue to the next SCH
                 print(f"Error: 'log_group_id' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
@@ -184,7 +184,7 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
                     target_comp_id = getattr(stream_client.get_stream(stream_id=target_stream_id).data,
                                              'compartment_id')
                     target_stream_comp_name = get_comp_details(target_comp_id)
-                    target_stream_string = target_stream_comp_name + "&" + target_stream_name
+                    target_stream_string = target_stream_comp_name + "@" + target_stream_name
                 else:
                     # Print an error message and continue to the next SCH
                     print(f"Error: 'stream_id' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
@@ -201,7 +201,7 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
                     target_topic_comp_id = getattr(notification_client.get_topic(topic_id=target_topic_id).data,
                                                    'compartment_id')
                     target_topic_comp_name = get_comp_details(target_topic_comp_id)
-                    target_topic_string = target_topic_comp_name + "&" + target_topic_name
+                    target_topic_string = target_topic_comp_name + "@" + target_topic_name
                 else:
                     print(f"Error: 'topic_id' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
                     continue

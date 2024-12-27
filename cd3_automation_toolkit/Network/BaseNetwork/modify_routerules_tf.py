@@ -166,7 +166,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, service_dir,prefix, ct, n
             if columnname == 'Next Hop Attachment':
                 dest_obj = columnvalue.strip()
                 if dest_obj != '':
-                    if("ocid1.drgattachment.oc1" in dest_obj):
+                    if("ocid1.drgattachment.oc" in dest_obj):
                         dest_objs = str(dest_obj).strip().split(".")
                         if(len(dest_objs)==5):
                             dest_obj = dest_obj.strip()

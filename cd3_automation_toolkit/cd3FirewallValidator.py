@@ -24,7 +24,7 @@ import re
         config.__setitem__("region", ct.region_dict[region])
         vnc = VirtualNetworkClient(config)
         for comp_id in compartment_ids.values():
-            if comp_id == 'ocid1.compartment.oc1..aaaaaaaaeifixpi24fbexwhnsohftxam34s5xwidb7wy23rsnxs5pg6qj5da':
+            if comp_id == 'ocid1.compartment.oc1..aaaaaaaaeifixpi24fbexw5xwidb7wy23rsnxs5pg6qj5da':
                 vcn_list = oci.pagination.list_call_get_all_results(vnc.list_vcns, compartment_id=comp_id, lifecycle_state="AVAILABLE")
                 for vcn in vcn_list.data:
                     # if(vcn.lifecycle_state == 'ACTIVE'):

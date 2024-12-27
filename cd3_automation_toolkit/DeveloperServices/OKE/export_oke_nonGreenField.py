@@ -531,7 +531,7 @@ def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compart
 
 
                         #Virtual NodePool
-                        if ("ocid1.virtualnodepool.oc1" in nodepool_info.id):
+                        if ("ocid1.virtualnodepool.oc" in nodepool_info.id):
                             nodepool_display_name = nodepool_info.display_name
                             np_tf_name = commonTools.check_tf_variable(nodepool_display_name)
                             tf_resource = f'module.virtual-nodepools[\\"{cluster_tf_name}_{np_tf_name}\\"].oci_containerengine_virtual_node_pool.virtual_nodepool'
@@ -540,7 +540,7 @@ def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compart
                             nodepool_type = "virtual"
 
                         # Managed NodePool
-                        if ("ocid1.nodepool.oc1" in nodepool_info.id):
+                        if ("ocid1.nodepool.oc" in nodepool_info.id):
                             nodepool_display_name = nodepool_info.name
                             np_tf_name = commonTools.check_tf_variable(nodepool_display_name)
                             nodepool_type = "managed"

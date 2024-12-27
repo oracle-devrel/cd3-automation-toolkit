@@ -49,11 +49,22 @@ resource "oci_core_route_table" "rt" {
   vcn_id         = local.vcn_id
   display_name   = "${var.subnet_name}-rt"
 
+ # Route rules to NGW or IGW
   route_rules {
     destination       = "0.0.0.0/0"
     destination_type  = "CIDR_BLOCK"
     network_entity_id = local.create_inet_gw == 1 ? oci_core_internet_gateway.internet_gw[0].id : oci_core_nat_gateway.nat_gw[0].id
   }
+
+ # Route rules to DRG
+ dynamic route_rules {
+  for_each = local.route_rule_drg
+  content {
+     destination       = route_rules.value
+     destination_type  = "CIDR_BLOCK"
+     network_entity_id = var.existing_drg_id
+   }
+ }
 
 }
 resource "oci_core_security_list" "security_list" {

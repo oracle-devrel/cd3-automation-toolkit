@@ -110,7 +110,7 @@ def create_listener(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Certificate Name or OCID":
                 if columnvalue != '':
-                    if 'ocid1.certificate.oc1' not in columnvalue:
+                    if 'ocid1.certificate.oc' not in columnvalue:
                         certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
                         tempdict = {'certificate_tf_name': certificate_tf_name}
                     else:

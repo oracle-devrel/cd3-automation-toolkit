@@ -118,7 +118,7 @@ module "service-connectors" {
   logs_compartment_id       = var.tenancy_ocid
   source_monitoring_details = each.value.source_details.source_kind == "monitoring" ? { for k, v in each.value.source_details.source_monitoring_details : lookup(var.compartment_ocids, k, "not_found") => v } : {}
   target_monitoring_details = each.value.target_details.target_kind == "monitoring" ? { for k, v in each.value.target_details.target_monitoring_details : lookup(var.compartment_ocids, k, "not_found") => v } : {}
-  log_group_names           = each.value.source_details.source_kind == "logging" ? flatten([for key in each.value.source_details.source_log_group_names : join("&", tolist([lookup(var.compartment_ocids, split("&", key)[0], "null"), split("&", key)[1], split("&", key)[2]]))]) : []
+  log_group_names           = each.value.source_details.source_kind == "logging" ? flatten([for key in each.value.source_details.source_log_group_names : join("@", tolist([lookup(var.compartment_ocids, split("@", key)[0], "null"), split("@", key)[1], split("@", key)[2]]))]) : []
   display_name              = each.value.display_name
   description               = each.value.description
   source_kind               = each.value.source_details.source_kind

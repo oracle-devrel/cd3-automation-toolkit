@@ -49,5 +49,5 @@ def create_all_tf_objects(inputfile, outdir, service_dir,prefix, ct, non_gf_tena
         create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, network_vlan_in_setupoci,modify_network)
 
     if non_gf_tenancy == False:
-        print('\n\nMake sure to export all SecRules, RouteRules and DRG RouteRules to CD3. Use sub-options 3,4,5 under option 3(Network) of Main Menu for the same.')
+        print('\n\nMake sure to export all SecRules, RouteRules and DRG RouteRules to CD3. Use sub-options 3,4,5 under option 4(Network) of Main Menu for the same.')
 

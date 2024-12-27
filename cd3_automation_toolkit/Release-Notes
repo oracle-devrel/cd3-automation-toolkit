@@ -1,4 +1,16 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2024.4.3
+Dec 27th, 2024
+-------------------------------------
+1. Bug fixes/Enhancements -
+ a. Added pagination for identity domain users/groups during export.
+ b. Removed duplication of modules directory - moved it outside to common terraform_files folder.
+ c. Modified 'ServiceConnectors' sheet to have consistent delimiters/separators as per other CD3 sheets.
+ d. Parameterization of Dockerfile to accept whether need to install jenkins.
+ e. Download of Terraform provider during image creation.
+ f. Few other minor bug fixes in python wrt block volume export, fetch compartments script and RM stack TF update to add route rule for DRG.
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2024.4.2
 Nov 8th, 2024
 -------------------------------------

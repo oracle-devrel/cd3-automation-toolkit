@@ -159,7 +159,7 @@ def get_region_list(rm,vizoci):
             input_region_names = ct.reg_filter
         else:
             resource_name = 'OCI resources'
-            region_list_str = "\nEnter region (comma separated without spaces if multiple) for which you want to export {}; Identity and Tags will be exported from Home Region.\nPress 'Enter' to export from all the subscribed regions- eg ashburn,phoenix: "
+            region_list_str = "\nEnter region (comma separated without spaces if multiple) for which you want to export {}; Identity and Tags will be exported from Home Region.\nPress 'Enter' to export from all the subscribed regions - eg ashburn,phoenix: "
             input_region_names = input(region_list_str.format(resource_name))
     elif rm == True and vizoci == False:
         if devops:
