@@ -90,7 +90,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 
 The toolkit transforms input data from Excel files into Terraform files, enabling seamless creation of infrastructure in OCI.
 
-**CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and IaC(terraform) to gain complete control over your OCI resources lifecycle. 
+**CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and IaC(terraform) and continue to manage your OCI resources using CD3.
 
 📜 The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing DevOps CI/CD ecosystem.
 
