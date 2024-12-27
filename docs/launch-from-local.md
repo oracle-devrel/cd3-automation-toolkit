@@ -55,7 +55,13 @@ vi Dockerfile
 
      Search for the line ```ARG USER_UID=1001``` and replace ```1001``` with uid of the user on local host eg 503 for Mac users.
 
+* Optional - If you do not want to use CD3 toolkit with Jenkins, you can skip the installation of Jenkins during image build.
+``` 
+vi Dockerfile
+```
+     Search for the line ```ARG USE_DEVOPS=YES``` and replace ```YES``` with ```NO```.
 
+  
 
 * Run 
 ```
