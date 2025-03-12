@@ -110,7 +110,7 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
     if ct.identity_domain_enabled:
         for domain_key, idcs_endpoint in export_domains.items():
             domain_name = domain_key.split("@")[1]
-            domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,
+            domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                                        service_endpoint=idcs_endpoint)
             list_users_response = domain_client.list_users() # change this to pagination once api supports
             users = list_users_response.data.resources

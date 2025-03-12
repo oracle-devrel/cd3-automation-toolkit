@@ -8,7 +8,7 @@
 # network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
 # action can be NO_DECRYPT or DECRYPT
 # Sample import command for Firewall Policy Decryption Rules:
-# terraform import "module.decryption_rules[\"<<decryption-rule terraform variable name>>\"].oci_network_firewall_network_firewall_policy_decryption_rule.network_firewall_policy_decryption_rule\"  networkFirewallPolicies/<<firewall-policy ocid>>/decryptionRules/<<decryption-rule ocid>>
+# terraform import "module.decryption_rules[\"<<decryption-rule terraform variable name>>\"].oci_network_firewall_network_firewall_policy_decryption_rule.network_firewall_policy_decryption_rule\"  networkFirewallPolicies/<<firewall-policy ocid>>/decryptionRules/<<decryption-rule name>>
 ############################
 
 decryption_rules = {

@@ -1,6 +1,26 @@
 def buildstatus = ""
 def git_status = 0
 def prefix = "${env.JOB_NAME}".split('/')[0]
+def exportNetworkRules(stage_name) {
+    return {
+        stage("${stage_name}") {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                sh """
+                    cd /cd3user/oci_tools/cd3_automation_toolkit
+                    python setUpOCI.py --devops True --main_options "Network" --sub_options "Security Rules,Route Rules,DRG Route Rules" --sub_child_options "Export Security Rules (From OCI into SecRulesinOCI sheet),Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet),Export Route Rules (From OCI into RouteRulesinOCI sheet),Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet),Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet),Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)" --add_filter "comp_filter=,[],@," ${env.prop_file}
+                """
+                file_path = sh(script: "grep '^cd3file' ${env.prop_file}| cut -d'=' -f2", returnStdout: true).trim()
+                file_name = sh(script:"echo '${file_path}'| rev|cut -d '/' -f1 | rev", returnStdout: true).trim()
+                sh """
+                set +x
+                cp '${file_path}' '${WORKSPACE}/${file_name}'
+                """
+                archiveArtifacts "${file_name}"
+
+                }
+        }
+    }
+}
 def generateStage(job) {
     return {
         stage("Stage: ${job}") {
@@ -13,8 +33,22 @@ def generateStage(job) {
                 region = values[0]
                 job_name = "./terraform_files/${region}/apply".replace("//","/")
             }
-            build job: "${job_name}"
-        }
+           //build job: "${job_name}"
+            def job_exec_details = build job: "${job_name}", propagate: false, wait: true // Here wait: true means current running job will wait for build_job to finish.
+
+            //println(job_exec_details.getResult())
+            //println(job_exec_details.getFullProjectName())
+            //println((job_exec_details.getFullProjectName()).split("/")[3])
+            if (!["ABORTED","FAILURE"].contains(job_exec_details.getResult()) && ["apply","network"].contains((job_exec_details.getFullProjectName()).split("/")[3])) {
+                println("first condition passed")
+                if ( SubOptions.contains('Create Network') || SubOptions.contains('Modify Network') )  {
+                    println("Calling export rules")
+                    def stage_name = "Export Network Rules"
+                    parallel([stage_name : exportNetworkRules(stage_name)])
+                }
+
+            }
+      }
     }
 }
 properties([
@@ -83,7 +117,7 @@ properties([
                 parameters: [
                     [name:'MainOptions',value:'${MainOptions}'],
                     [name:'SubOptions', value: '${SubOptions}'],
-					[name:'SubChildOptions', value: '${SubChildOptions}'],
+                    [name:'SubChildOptions', value: '${SubChildOptions}'],
                     [name:'Workflow', value: '${Workflow}'],
                     [name:'Prefix', value: "${prefix}"]
                 ]

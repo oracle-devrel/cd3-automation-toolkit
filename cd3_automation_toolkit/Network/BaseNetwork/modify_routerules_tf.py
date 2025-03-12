@@ -98,7 +98,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, service_dir,prefix, ct, n
         # Process RTs only for those DRG which are present in cd3(and have been created via TF)
         try:
             if (DRG_Name not in drgv2.drg_names[region]):
-                print("skipping DRG route table: " + str(df.loc[i, 'DRG RT Name']) + " as its DRG is not part of DRGv2 tab in cd3")
+                print("skipping DRG route table: " + str(df.loc[i, 'DRG RT Name']) + " as its DRG is not part of DRGs tab in cd3")
                 continue
         except KeyError:
             print("skipping DRG route table: " + str(df.loc[i, 'DRG RT Name']) + " as no DRG is declared for region "+region)

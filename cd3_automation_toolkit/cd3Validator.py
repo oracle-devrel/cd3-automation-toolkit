@@ -239,6 +239,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
             pass
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
@@ -416,6 +417,7 @@ def validate_vcns(filename, comp_ids, vcnobj):# config):  # ,vcn_cidrs,vcn_compa
             pass
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
@@ -570,6 +572,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
             pass
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
@@ -639,6 +642,7 @@ def validate_drgv2(filename, comp_ids, vcnobj):
             drgv2_empty_check = True
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
@@ -734,6 +738,7 @@ def validate_dns(filename,comp_ids):
             mandat_val_check = True
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i + 3} : Compartment {comp_name} does not exist in OCI.')
@@ -783,6 +788,7 @@ def validate_dns(filename,comp_ids):
             mandat_val_check = True
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i + 3} : Compartment {comp_name} doesnot exist in OCI.')
@@ -813,6 +819,7 @@ def validate_dns(filename,comp_ids):
                 log(f'ROW {i+3} : Incorrect format for Associated Private Views')
                 mandat_val_check = True
             try:
+                v_comp = commonTools.check_tf_variable(v_comp)
                 comp_id = comp_ids[v_comp]
             except KeyError:
                 log(f'ROW {i + 3} : Compartment {v_comp} does not exist in OCI.')
@@ -857,6 +864,7 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
             inst_empty_check = True
         else:
             try:
+                comp_name=commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
@@ -975,6 +983,7 @@ def validate_blockvols(filename,comp_ids):
             bvs_empty_check = True
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} doesnot exist in OCI.')
@@ -1130,6 +1139,7 @@ def validate_fss(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list):
         # Check for invalid Compartment Name
         if comp_name.lower()!='nan':
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} doesnot exist in OCI.')
@@ -1244,6 +1254,7 @@ def validate_policies(filename,comp_ids):
             pass
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} doesnot exist in OCI.')
@@ -1342,6 +1353,7 @@ def validate_tags(filename,comp_ids):
             tag_empty_check = True
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i + 3} : Compartment {comp_name} doesnot exist in OCI.')
@@ -1500,6 +1512,7 @@ def validate_buckets(filename, comp_ids):
             buckets_empty_check = True
         else:
             try:
+                comp_name = commonTools.check_tf_variable(comp_name)
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i + 3} : Compartment {comp_name} does not exist in OCI.')
@@ -1766,6 +1779,7 @@ def validate_kms(filename,comp_ids):
                 pass
             else:
                 try:
+                    vault_comp_name = commonTools.check_tf_variable(vault_comp_name)
                     comp_id = comp_ids[vault_compartment_name]
                 except KeyError:
                     log(f'ROW {i+3} : Compartment {vault_compartment_name} does not exist in OCI.')
@@ -1806,6 +1820,7 @@ def validate_kms(filename,comp_ids):
                 # Check Key Compartment name
                 if key_compartment_name != 'nan' or key_compartment_name != '':
                     try:
+                        key_compartment_name = commonTools.check_tf_variable(key_compartment_name)
                         comp_id = comp_ids[key_compartment_name]
                     except KeyError:
                         log(f'ROW {i + 3} : Compartment {key_compartment_name} does not exist in OCI.')

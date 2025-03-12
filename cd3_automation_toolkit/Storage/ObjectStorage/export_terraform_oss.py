@@ -154,7 +154,7 @@ def print_buckets(region, outdir, service_dir,state, bucket_data, values_for_col
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
+def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -219,6 +219,21 @@ def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_co
                 ##buckets info##
                 try:
                     bucket_data = buckets_client.get_bucket(namespace_name, bucket_name, fields=['autoTiering']).data
+                    # Tags filter
+                    defined_tags = bucket_data.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
                 except Exception as e:
                     print("Skipping Bucket "+bucket_name +" because of some issue. Check OCI console for details")
                     bucket_data=None

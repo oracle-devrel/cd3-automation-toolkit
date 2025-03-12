@@ -100,9 +100,8 @@ def print_drgv2(values_for_column_drgv2, region, comp_name, vcn_info, drg_info, 
                                                                        values_for_column_drgv2)
 
 
-def print_vcns(values_for_column_vcns, region, comp_name, vnc,vcn_info, drg_attachment_info, igw_info, ngw_info, sgw_info,
+def print_vcns(values_for_column_vcns, region, comp_name, vnc,vcn_info, drg_attachment_info, drg_info, igw_info, ngw_info, sgw_info,
                lpg_display_names,state,write_drg_ocids):
-    drg_info=None
     for col_header in values_for_column_vcns.keys():
 
         if (col_header == "Region"):
@@ -111,8 +110,6 @@ def print_vcns(values_for_column_vcns, region, comp_name, vnc,vcn_info, drg_atta
             values_for_column_vcns[col_header].append(comp_name)
         elif (col_header == "DRG Required"):
             if drg_attachment_info!=None:
-                drg_id = drg_attachment_info.drg_id
-                drg_info = vnc.get_drg(drg_id).data
                 if (drg_info == None):
                     values_for_column_vcns[col_header].append("n")
                 else:
@@ -570,7 +567,7 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
     # Close the safe_file post updates
     rpc_safe_file["global"].close()
 
-def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global sheet_dict_vcns
     global sheet_dict_drgv2,tf_or_tofu
     tf_or_tofu = ct.tf_or_tofu
@@ -663,9 +660,44 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
             for drg_attachment_info in DRG_Attachments.data:
                 if (drg_attachment_info.lifecycle_state != "ATTACHED"):
                     continue
+
+                # Tags filter for DRG attachment
+                defined_tags = drg_attachment_info.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 drg_attachment_name = drg_attachment_info.display_name
                 drg_id = drg_attachment_info.drg_id
                 drg_info = vnc.get_drg(drg_id).data
+
+                # Tags filter for DRG
+                defined_tags = drg_info.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
 
                 # Attachment Data
                 drg_display_name = drg_info.display_name
@@ -708,7 +740,6 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     vcn_drgattach_route_table_id = drg_attachment_info.route_table_id
                     vcn_info = vnc.get_vcn(attach_id).data
 
-                    # tf_name = vcn_info.display_name + "_" + drg_attachment_name
                     tf_name = commonTools.check_tf_variable(drg_attachment_name)
                     tf_resource = f'module.drg-attachments[\\"{tf_name}\\"].oci_core_drg_attachment.drg_attachment'
                     if tf_resource not in state["resources"]:
@@ -883,6 +914,23 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                                                             lifecycle_state="AVAILABLE")
             for vcn in vcns.data:
                 vcn_info = vcn
+
+                # Tags filter
+                defined_tags = vcn_info.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 # Fetch VCN components assuming components are in same comp as VCN
 
                 # DRG attachment is in same compartment as VCN by default
@@ -895,7 +943,23 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 drg_attachment_info = None
 
                 for drg_attachment_info in DRG_Attachments.data:
-                    if (drg_attachment_info.lifecycle_state != "ATTACHED"):
+
+                    # Tags filter
+                    defined_tags = drg_attachment_info.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+
+                    # Either DRG Attachment is not in 'ATTACHED' state or does not have required tags
+                    if (drg_attachment_info.lifecycle_state != "ATTACHED") or check==False:
+                        drg_attachment_info=None
                         continue
 
                 write_drg_ocids=False
@@ -903,7 +967,23 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     drg_id = drg_attachment_info.drg_id
                     drg_info = vnc.get_drg(drg_id).data
                     drg_comp_id=drg_info.compartment_id
-                    if drg_comp_id not in export_compartment_ids:
+
+                    # Tags filter
+                    defined_tags = drg_info.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+
+                    # DRG is in different compartment or DRG doesnot have required tags
+                    if drg_comp_id not in export_compartment_ids or check==False:
+                        drg_info=None
                         write_drg_ocids= True
 
                 # igw_display_name = "n"
@@ -912,6 +992,23 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                                                                     ntk_compartment_name],
                                                                 vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                 for igw in IGWs.data:
+
+                    # Tags filter
+                    defined_tags = igw.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     igw_info = igw
                     igw_display_name = igw_info.display_name
                     tf_name = vcn_info.display_name + "_" + igw_display_name
@@ -926,6 +1023,23 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                                                                     ntk_compartment_name],
                                                                 vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                 for ngw in NGWs.data:
+
+                    # Tags filter
+                    defined_tags = ngw.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     ngw_info = ngw
                     ngw_display_name = ngw_info.display_name
                     tf_name = vcn_info.display_name + "_" + ngw_display_name
@@ -940,6 +1054,23 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                                                                     ntk_compartment_name],
                                                                 vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                 for sgw in SGWs.data:
+
+                    # Tags filter
+                    defined_tags = sgw.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     sgw_info = sgw
                     sgw_display_name = sgw_info.display_name
                     tf_name = vcn_info.display_name + "_" + sgw_display_name
@@ -956,6 +1087,23 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 for lpg in LPGs.data:
                     if (lpg.lifecycle_state != "AVAILABLE"):
                         continue
+
+                    # Tags filter
+                    defined_tags = lpg.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     lpg_info = lpg
                     lpg_display_names = lpg_info.display_name + "," + lpg_display_names
 
@@ -977,7 +1125,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     lpg_display_names = lpg_display_names[:-1]
 
                 # Fill VCNs Tab
-                print_vcns(values_for_column_vcns, region, ntk_compartment_name, vnc,vcn_info, drg_attachment_info, igw_info, ngw_info,
+                print_vcns(values_for_column_vcns, region, ntk_compartment_name, vnc,vcn_info, drg_attachment_info, drg_info, igw_info, ngw_info,
                            sgw_info, lpg_display_names,state,write_drg_ocids)
 
     commonTools.write_to_cd3(values_for_column_vcns, cd3file, "VCNs")
@@ -989,7 +1137,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
         oci_obj_names[reg].close()
 
 
-def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global sheet_dict_dhcp,tf_or_tofu
 
     tf_or_tofu = ct.tf_or_tofu
@@ -1038,14 +1186,46 @@ def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compa
                                                             compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="AVAILABLE")
             for vcn in vcns.data:
+                # Tags filter
+                defined_tags = vcn.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 vcn_info = vnc.get_vcn(vcn.id).data
-                #            comp_ocid_done_again = []
+
                 for ntk_compartment_name_again in export_compartments:
                     DHCPs = oci.pagination.list_call_get_all_results(vnc.list_dhcp_options,
                                                                      compartment_id=ct.ntk_compartment_ids[
                                                                          ntk_compartment_name_again], vcn_id=vcn.id,
                                                                      lifecycle_state="AVAILABLE")
                     for dhcp in DHCPs.data:
+                        # Tags filter
+                        defined_tags = dhcp.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            continue
+
                         dhcp_info = dhcp
                         print_dhcp(values_for_column_dhcp, region, ntk_compartment_name_again, vcn_info.display_name,
                                    dhcp_info,state)
@@ -1057,7 +1237,7 @@ def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compa
         importCommands_dhcp[reg].close()
 
 
-def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global sheet_dict_subnets_vlans,tf_or_tofu
     tf_or_tofu = ct.tf_or_tofu
     tf_state_list = [tf_or_tofu, "state", "list"]
@@ -1132,7 +1312,24 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                                                             compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="AVAILABLE")
             for vcn in vcns.data:
+                # Tags filter
+                defined_tags = vcn.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 vcn_info = vnc.get_vcn(vcn.id).data
+
                 for ntk_compartment_name_again in export_compartments:
 
                     # Subnet Data
@@ -1142,14 +1339,67 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                                                                            ntk_compartment_name_again], vcn_id=vcn.id,
                                                                        lifecycle_state="AVAILABLE")
                     for subnet in Subnets.data:
+
+                        # Tags filter
+                        defined_tags = subnet.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            continue
+
                         subnet_info = subnet
                         dhcp_id = subnet_info.dhcp_options_id
-                        dhcp_name = vnc.get_dhcp_options(dhcp_id).data.display_name
+
+                        # Tags filter
+                        defined_tags = vnc.get_dhcp_options(dhcp_id).data.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+
+                        if check == False:
+                            dhcp_name = dhcp_id
+                        else:
+                            dhcp_name = vnc.get_dhcp_options(dhcp_id).data.display_name
+
                         if ("Default DHCP Options for " in dhcp_name):
                             dhcp_name = ""
 
                         rt_id = subnet_info.route_table_id
-                        rt_name = vnc.get_route_table(rt_id).data.display_name
+
+                        # Tags filter
+                        defined_tags = vnc.get_route_table(rt_id).data.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            rt_name = rt_id
+                        else:
+                            rt_name = vnc.get_route_table(rt_id).data.display_name
+
                         if ("Default Route Table for " in rt_name):
                             rt_name = "n"
 
@@ -1157,7 +1407,24 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                         sl_names = ""
                         add_def_seclist = 'n'
                         for sl_id in sl_ids:
-                            sl_name = vnc.get_security_list(sl_id).data.display_name
+                            # Tags filter
+                            defined_tags = vnc.get_security_list(sl_id).data.defined_tags
+                            tags_list = []
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
+
+                            if export_tags == []:
+                                check = True
+                            else:
+                                check = any(e in tags_list for e in export_tags)
+                            # None of Tags from export_tags exist on this instance; Dont export this instance
+                            if check == False:
+                                sl_name=sl_id
+                            else:
+                                sl_name = vnc.get_security_list(sl_id).data.display_name
+
                             if ("Default Security List for " in sl_name):
                                 add_def_seclist = 'y'
                                 continue
@@ -1189,19 +1456,72 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                                                                          ntk_compartment_name_again], vcn_id=vcn.id,
                                                                      lifecycle_state="AVAILABLE")
                     for vlan in VLANs.data:
+
+                        # Tags filter
+                        defined_tags = vlan.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            continue
+
                         vlan_info = vlan
                         dhcp_name = ""
 
                         rt_id = vlan_info.route_table_id
-                        rt_name = vnc.get_route_table(rt_id).data.display_name
+                        # Tags filter
+                        defined_tags = vnc.get_route_table(rt_id).data.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            rt_name=rt_id
+                        else:
+                            rt_name = vnc.get_route_table(rt_id).data.display_name
+
                         if ("Default Route Table for " in rt_name):
                             rt_name = "n"
 
                         nsg_ids = vlan_info.nsg_ids
                         nsg_names = ""
                         for nsg_id in nsg_ids:
-                            nsg_name = vnc.get_network_security_group(nsg_id).data.display_name
+                            # Tags filter
+                            defined_tags = vnc.get_network_security_group(nsg_id).data.defined_tags
+                            tags_list = []
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
+
+                            if export_tags == []:
+                                check = True
+                            else:
+                                check = any(e in tags_list for e in export_tags)
+                            # None of Tags from export_tags exist on this instance; Dont export this instance
+                            if check == False:
+                                nsg_name=nsg_id
+                            else:
+                                nsg_name = vnc.get_network_security_group(nsg_id).data.display_name
+
                             nsg_names = nsg_name + "," + nsg_names
+
                         if (nsg_names != "" and nsg_names[-1] == ','):
                             nsg_names = nsg_names[:-1]
 
@@ -1224,7 +1544,7 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
         importCommands_vlan[reg].close()
 
 # Execution of the code begins here
-def export_networking(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_networking(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
 
     print("\nCD3 excel file should not be opened during export process!!!\n")
 
@@ -1236,20 +1556,20 @@ def export_networking(inputfile, outdir, service_dir, config, signer, ct, export
         service_dir_nsg = ""
 
     # Fetch Major Objects
-    export_major_objects(inputfile, outdir, service_dir_network, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions)
+    export_major_objects(inputfile, outdir, service_dir_network, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions,export_tags=export_tags)
 
     # Fetch DHCP
-    export_dhcp(inputfile, outdir, service_dir_network, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions)
+    export_dhcp(inputfile, outdir, service_dir_network, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions,export_tags=export_tags)
 
     # Fetch Subnets and VLANs
-    export_subnets_vlans(inputfile, outdir, service_dir, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions)
+    export_subnets_vlans(inputfile, outdir, service_dir, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions,export_tags=export_tags)
 
     # Fetch RouteRules and SecRules
-    export_seclist(inputfile, outdir, service_dir_network, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions,_tf_import_cmd=True)
+    export_seclist(inputfile, outdir, service_dir_network, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions,export_tags=export_tags,_tf_import_cmd=True)
 
-    export_routetable(inputfile, outdir, service_dir_network, config1=config, signer1=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions, _tf_import_cmd=True)
+    export_routetable(inputfile, outdir, service_dir_network, config1=config, signer1=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions,export_tags=export_tags, _tf_import_cmd=True)
 
-    export_drg_routetable(inputfile, outdir, service_dir_network, config1=config, signer1=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions, _tf_import_cmd=True)
+    export_drg_routetable(inputfile, outdir, service_dir_network, config1=config, signer1=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions, export_tags=export_tags,_tf_import_cmd=True)
 
     # Fetch NSGs
-    export_nsg(inputfile, outdir, service_dir_nsg, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions, _tf_import_cmd=True)
+    export_nsg(inputfile, outdir, service_dir_nsg, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions, export_tags=export_tags,_tf_import_cmd=True)

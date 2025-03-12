@@ -104,7 +104,7 @@ def print_budgets(values_for_columns, region, budget,budget_name,budget_alert_ru
 
 
 # Execution of the code begins here
-def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer, ct,export_regions=[]):
+def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer, ct,export_regions=[],export_tags=[]):
     global importCommands
     global values_for_column_budgets
     global sheet_dict_budgets,tf_or_tofu
@@ -155,6 +155,23 @@ def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer,
         budgets_list = oci.pagination.list_call_get_all_results(budgets_client.list_budgets,compartment_id=tenancy_id,lifecycle_state="ACTIVE",target_type="ALL")
         if budgets_list.data != []:
             for budget in budgets_list.data:
+
+                # Tags filter
+                defined_tags = budget.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 budget_name = str(budget.display_name)
                 budget_id = str(budget.id)
                 budget_tf_name = commonTools.check_tf_variable(budget_name)

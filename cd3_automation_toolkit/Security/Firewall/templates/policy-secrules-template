@@ -9,7 +9,7 @@
 # action can be ALLOW, DROP, REJECT, INSPECT
 # inspection can be INTRUSION_DETECTION, INTRUSION_PREVENTION
 # Sample import command for Firewall Policy Security Rule:
-# terraform import "module.security_rules[\"<<secrule terraform variable name>>\"].oci_network_firewall_network_firewall_policy_security_rule.network_firewall_policy_security_rule\"  networkFirewallPolicies/<<firewall-policy ocid>>/securityRules/<<secrule ocid>>
+# terraform import "module.security_rules[\"<<secrule terraform variable name>>\"].oci_network_firewall_network_firewall_policy_security_rule.network_firewall_policy_security_rule\"  networkFirewallPolicies/<<firewall-policy ocid>>/securityRules/<<secrule name>>
 ############################
 
 security_rules = {

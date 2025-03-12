@@ -276,6 +276,48 @@
     "DNS-Resolvers" : {},
     "KMS" :{},
     "Quotas" : {},
-    "Budgets" : {}
+    "Budgets" : {},
+    "mysql-dbsystem" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "Display Name" : "display_name",
+        "Description" : "description",
+        "Hostname Label" : "hostname_label",
+        "HA" : "is_highly_available",
+        "Availability Domain(AD1|AD2|AD3)" : "availability_domain",
+        "Fault Domain" : "fault_domain",
+        "Network Details" : "subnet_id",
+        "Shape" : "shape_name",
+        "Username" : "admin_username",
+        "Password" : "password",
+        "IP Address" : "ip_address",
+        "Back up policy is enabled" : "backup_policy.is_enabled",
+        "Backup policy pitr policy is enabled" : "backup_policy.pitr_policy.is_enabled",
+        "Backup policy Retention in days" : "backup_policy.retention_in_days",
+        "Backup policy window start time" : "backup_policy.window_start_time",
+        "Crash Recovery is Enabled" : "crash_recovery",
+        "Data Storage (in Gbs)" : "data_storage_size_in_gbs",
+        "Database Management is Enabled" : "database_management_status",
+        "Deletion policy automatic backup retention" : "deletion_policy.automatic_backup_retention",
+        "Deletion policy final backup" : "deletion_policy.final_backup",
+        "Deletion policy is deleted protected" : "deletion_policy.is_delete_protected",
+        "Maintenance window start time" : "maintenance.window_start_time",
+        "Port" : "port",
+        "Port_x" : "port_x",
+        "Source Type" : "source.source_type",
+        "Configuration Id" : "configuration_id",
+        "Defined Tags" : "defined_tags"
+    },
+    "mysql-configuration" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "Display Name" : "display_name",
+        "Description" : "description",
+        "Shape Name" : "shape",
+        "users_variable_name" : "users_variable_name",
+        "users_variable_value" : "users_variable_value"
+    }
 
 }

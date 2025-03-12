@@ -23,7 +23,7 @@ def get_volume_data(bvol, volume_id, ct):
     return vol_comp+'@'+vol_name
 
 ### Execution start here - SDDC Data
-def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compartments=[], export_regions=[]):
+def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
@@ -95,6 +95,22 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
 
                 #removing inactive clusters
                 if sddc_cluster.lifecycle_state=='DELETED':
+                    continue
+
+                # Tags filter
+                defined_tags = sddc_cluster.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
                     continue
 
                 # Process management and workload cluster data

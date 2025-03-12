@@ -30,11 +30,19 @@ compartment_filter_option = """
     <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
     </tr><tr></tr><tr></tr><tr></tr>
 	"""
+tag_filter_option = """
+	<tr>
+    <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"tag_filter=[\"></td>
+    <td><label for=\"value\">Enter Tags Filter eg TagNameSpace.TagKey1=TagValue1,TagNameSpace.TagKey2=TagValue2 :</label><br></br></td>
+    <td><input type=\"text\" name=\"value\">(Leave empty to export all resources)<br></br></td>
+    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
+    </tr><tr></tr><tr></tr><tr></tr>
+	"""
 List default_params_set = []
 for (item in MainOptions.split(",")) {
   if (item != "Export Identity") {
-    html_to_be_rendered = "${html_to_be_rendered} ${region_filter_option} ${compartment_filter_option}"
-    default_params_set = ["region","compartment"]
+    html_to_be_rendered = "${html_to_be_rendered} ${region_filter_option} ${compartment_filter_option} ${tag_filter_option}"
+    default_params_set = ["region","compartment","tag"]
     break;
   }
 }
@@ -240,6 +248,12 @@ for (item in SubChildOptions.split(",")) {
     <td><label title=\"service1-label\" class=\" \">select Compartments to export SECURITY RULES/ROUTE RULES/DRG ROUTE RULES/NSGs : </label></td>
     <td><select multiple name="value">${comp_options}</select></td>
     <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
+    </tr><tr></tr><tr></tr><tr></tr>
+<tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"tag_filter=\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter Tags Filter eg TagNameSpace.TagKey1=TagValue1,TagNameSpace.TagKey2=TagValue2 : </label></td>
+    <td><input type=\"text\" name=\"value\"></td>
+    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
     </tr><tr></tr><tr></tr><tr></tr>
          """
    export_network_rules = "set"

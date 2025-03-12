@@ -388,7 +388,7 @@ if os.path.exists(safe_file):
 
 if prefixes !=[]:
     if prefix in prefixes:
-        print("WARNING!!! Container has already been successfuly connected to the tenancy with same prefix. Please proceed only if you re-running the script for new region subscription")
+        print("WARNING!!! Container has already been successfuly connected to the tenancy with same prefix. Please proceed only if you are re-running the script for new region subscription")
     #else:
         #print("WARNING!!! Container has already been successfully connected to the tenancy with these values of prefixes: "+str(list(set(prefixes))))
         #print("WARNING!!! Toolkit usage with Jenkins has not been tested with running this script multiple times with different values of prefix in the properties file")
@@ -473,8 +473,11 @@ try:
     devops_user_key = config.get('Default', 'oci_devops_git_key').strip()
 
     # Check if Jenkins was installed during image build
-    use_devops_docker = os.environ['USE_DEVOPS']
-    use_devops_docker=use_devops_docker.lower()
+    if environ.get('USE_DEVOPS') is None:
+        use_devops_docker = "yes"
+    else:
+        use_devops_docker = os.environ['USE_DEVOPS']
+        use_devops_docker=use_devops_docker.lower()
 
     if use_devops_docker != use_devops:
         use_devops = "no"
@@ -811,7 +814,10 @@ if not os.path.exists(terraform_files):
     os.makedirs(terraform_files)
 
 # Copy modules dir to terraform_files folder
-shutil.copytree(terraform_dir + "/modules", terraform_files + "/modules")
+try:
+    shutil.copytree(terraform_dir + "/modules", terraform_files + "/modules")
+except FileExistsError as fe:
+    pass
 
 print("Creating Tenancy specific region directories, terraform provider , variables files.................")
 regions_file_data = ""
