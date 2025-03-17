@@ -277,7 +277,7 @@
     "KMS" :{},
     "Quotas" : {},
     "Budgets" : {},
-    "mysql-dbsystem" :
+    "MySQL-DBSystems" :
     {
         "Region" : "region",
         "Compartment Name" : "compartment_id",
@@ -309,7 +309,7 @@
         "Configuration Id" : "configuration_id",
         "Defined Tags" : "defined_tags"
     },
-    "mysql-configuration" :
+    "MySQL-Configurations" :
     {
         "Region" : "region",
         "Compartment Name" : "compartment_id",

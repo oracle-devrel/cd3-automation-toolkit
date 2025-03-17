@@ -174,10 +174,14 @@ def export_exa_vmclusters(inputfile, outdir, service_dir, config, signer, ct, ex
                         tag = tkey + "." + kk + "=" + vv
                         tags_list.append(tag)
 
-                check = any(e in tags_list for e in export_tags)
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
                 # None of Tags from export_tags exist on this instance; Dont export this instance
                 if check == False:
                     continue
+
                 for ntk_compartment_name_again in export_compartments:
                     exa_vmclusters = oci.pagination.list_call_get_all_results(db_client.list_cloud_vm_clusters,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], cloud_exadata_infrastructure_id=exa_infra.id, lifecycle_state="AVAILABLE")
                     for exa_vmcluster in exa_vmclusters.data:

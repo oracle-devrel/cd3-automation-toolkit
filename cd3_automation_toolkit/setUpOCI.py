@@ -362,7 +362,7 @@ def export_all(prim_options=[]):
     export_dns_management(prim_options=["Export DNS Views/Zones/Records","Export DNS Resolvers"],export_all=True)
     export_compute(prim_options=["Export Dedicated VM Hosts","Export Instances (excludes instances launched by OKE)"],export_all=True)
     export_storage(prim_options=["Export Block Volumes/Block Backup Policy","Export File Systems","Export Object Storage Buckets"],export_all=True)
-    export_databases(prim_options=["Export Virtual Machine or Bare Metal DB Systems","Export EXA Infra and EXA VMClusters",'Export ADBs'])
+    export_databases(prim_options=["Export Virtual Machine or Bare Metal DB Systems","Export EXA Infra and EXA VMClusters",'Export ADBs','Export MySQL DBs'])
     export_loadbalancer(prim_options=["Export Load Balancers","Export Network Load Balancers"])
     export_developer_services(prim_options=["Export OKE cluster and Nodepools"])
     export_security(prim_options=["Export KMS (Keys/Vaults)"])
@@ -559,6 +559,12 @@ def export_major_objects(inputfile, outdir, config, signer, ct, export_regions,e
         Option(None, Network.create_terraform_drg_route,'Processing DRGs tab for DRG Route Tables and Route Distribution creation'),
     ]
     execute_options(options, inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy,network_connectivity_in_setupoci='', modify_network=False)
+
+    options = [
+    Option(None, Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
+    ]
+    execute_options(options, inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy)
+
 
     print("\n\nExecute import_commands_network_major-objects.sh and import_commands_network_drg_routerules.sh scripts created under each region directory to synch TF with OCI Network objects\n")
 
@@ -806,8 +812,8 @@ def export_kms(inputfile, outdir, config, signer, ct, export_regions,export_tags
 def export_databases(prim_options=[]):
     options = [Option("Export Virtual Machine or Bare Metal DB Systems",export_dbsystems_vm_bm,'Exporting VM and BM DB Systems'),
                Option("Export EXA Infra and EXA VMClusters", export_exa_infra_vmclusters, 'Exporting EXA Infra and EXA VMClusters'),
-                Option('Export ADBs', export_adbs, 'Exporting Autonomous Databases'),
-               Option('Export MysqlDBs', export_mysqlDBs, 'Exporting MySql Databases')]
+               Option('Export ADBs', export_adbs, 'Exporting Autonomous Databases'),
+               Option('Export MySQL DBs', export_mysql, 'Exporting MySQL Databases and Configurations')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
@@ -844,30 +850,18 @@ def export_adbs(inputfile, outdir,config, signer, ct, export_regions,export_tags
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_adb])
 
-def export_mysql(inputfile, outdir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file, 'mysql-dbsystem')  # Keep using var_file like ADB
-    Database.export_mysql(inputfile, outdir, service_dir_mysql_dbsystem, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
-    print("\n\nExecute import_commands_mysql-dbsystem.sh script created under each region directory to synch TF with OCI MySQLs\n")
-    # Update modified path list
+
+def export_mysql(inputfile, outdir,config,signer, ct,export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file, 'MySQL DB Systems and Configurations')
+    Database.export_mysql_db(inputfile, outdir, service_dir_mysql_dbsystem, config, signer, ct,
+                          export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list)
+    Database.export_mysql_configuration(inputfile, outdir, service_dir_mysql_dbsystem, config, signer, ct,
+                                        export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list)
+    options = [Option(None, create_mysql, '')]
+    execute_options(options,execute_all=True)
+    print("\n\nExecute import_commands_mysql-dbsystems.sh and import_commands_mysql-configurations.sh scripts created under each region directory to synch TF with OCI MySQLs\n")
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_mysql_dbsystem])
 
-def export_mysql_configuration(inputfile, outdir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file, 'mysql-configuration')  # Keep using var_file like ADB
-    Database.export_mysql_configuration(inputfile, outdir, service_dir_mysql_dbsystem, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
-    options = [Option(None, Database.create_terraform_mysql_configuration, 'Processing MySQL configuration Tab')]
-    execute_options(options, inputfile, outdir, service_dir_mysql_dbsystem, setUpOCI_props.get('Default', 'prefix').strip(), ct)
-    print("\n\nExecute import_commands_mysql_configuration.sh script created under each region directory to synch TF with OCI MySQL Configurations\n")
-    # Update modified path list
-    update_path_list(regions_path=export_regions, service_dirs=[service_dir_mysql_dbsystem])
-
-def export_mysqlDBs(inputfile=None, outdir=None, config=None, signer=None, ct=None, export_regions=None, prim_options=[]):
-    options = [Option("Export Mysql DB system", export_mysql,'Exporting Mysql DB system'),
-               Option("Export Mysql Configuration", export_mysql_configuration, 'Exporting Mysql Configuration')]
-    if prim_options:
-        options = match_options(options, prim_options)
-    else:
-        options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
 
 def export_management_services(prim_options=[]):
     options = [Option("Export Notifications",export_notifications,'Exporting Notifications'),
@@ -1410,7 +1404,7 @@ def create_databases(execute_all=False,prim_options=[]):
         Option('Add/Modify/Delete Virtual Machine or Bare Metal DB Systems', create_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab'),
         Option('Add/Modify/Delete EXA Infra and EXA VM Clusters', create_exa_infra_vmclusters, ''),
         Option('Add/Modify/Delete ADBs', create_adb, 'Processing ADB Tab'),
-        Option('Add/Modify/Delete MysqlDBs', create_mysql,'Processing Mysql Tab'),
+        Option('Add/Modify/Delete MySQL DBs', create_mysql,''),
     ]
     if prim_options:
         options = match_options(options, prim_options)
@@ -1440,8 +1434,8 @@ def create_adb():
 
 def create_mysql(execute_all=False,prim_options=[]):
     options = [
-        Option('Add/Modify/Delete MysqlDBs', Database.create_terraform_mysql, 'Processing MysqlDBs'),
-        Option('Add/Modify/Delete Mysql Configuration', Database.create_terraform_mysql_configuration, 'Processing Mysql Configuration'),
+        Option('Add/Modify/Delete MySQL DB Systems', Database.create_terraform_mysql_db, 'Processing MySQL-DBSystems Tab'),
+        Option('Add/Modify/Delete MySQL Configurations', Database.create_terraform_mysql_configuration, 'Processing MySQL-Configurations Tab'),
     ]
     if prim_options:
         options = match_options(options, prim_options)
