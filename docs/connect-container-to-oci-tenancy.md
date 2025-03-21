@@ -132,7 +132,9 @@ _tenancyconfig.properties_
         Mandatory when using $(auth_mechanism) as instance_principal or session_token. 
         Format: <b>&lt;domainName&gt;/&lt;userName&gt;@&lt;tenancyName&gt;</b>
         When left empty, it will be fetched from $(user_ocid) for $(auth_mechanism) as api_key. 
-        Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is instance_principal or session_token</td>
+        Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is instance_principal or session_token
+
+	<b>Users in Custom Domain are not supported as of now.</td>
             <td>oracleidentitycloudservice/devopsuser@oracle.com@ocitenant</td>
         </tr>
         <tr>
