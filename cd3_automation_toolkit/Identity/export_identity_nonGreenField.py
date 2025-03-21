@@ -361,7 +361,9 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                                                                            service_endpoint=idcs_endpoint)
                 list_groups_response = domain_client.list_groups(attributes=['members'], attribute_sets=['all'])
                 groups = list_groups_response.data.resources
-                while list_groups_response.has_next_page:
+                page_done = []
+                while list_groups_response.has_next_page and list_groups_response.next_page not in page_done:
+                    page_done.append(list_groups_response.next_page)
                     list_groups_response = domain_client.list_groups(attributes=['members'], attribute_sets=['all'],page=list_groups_response.next_page)
                     groups.extend(list_groups_response.data.resources)
 

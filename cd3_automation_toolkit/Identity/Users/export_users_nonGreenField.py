@@ -143,12 +143,12 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
                     display_name = user_info.display_name
                     email = None
                     recovery_email = None
-
-                    for email_info in user_info.emails:
-                        if email_info.primary:
-                            email = email_info.value
-                        elif email_info.type == "recovery":
-                            recovery_email = email_info.value
+                    if hasattr(user_info.emails, "email_info"):
+                        for email_info in user_info.emails:
+                            if email_info.primary:
+                                email = email_info.value
+                            elif email_info.type == "recovery":
+                                recovery_email = email_info.value
 
 
                     tf_name = commonTools.check_tf_variable(username)

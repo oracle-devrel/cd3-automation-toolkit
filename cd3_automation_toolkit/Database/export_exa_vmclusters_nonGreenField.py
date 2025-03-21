@@ -81,7 +81,7 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
             values_for_column[col_header].append(key_name)
         elif col_header == 'Client Network Details':
             values_for_column[col_header].append(client_network)
-        elif col_header == 'Backup Network Detailse':
+        elif col_header == 'Backup Network Details':
             values_for_column[col_header].append(backup_network)
         elif (col_header == "NSGs"):
             values_for_column[col_header].append(nsg_names)

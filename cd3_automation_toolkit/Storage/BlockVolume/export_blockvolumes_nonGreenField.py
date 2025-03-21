@@ -139,7 +139,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             source_ocids[commonTools.check_tf_variable(blockvols.display_name.strip())] = tmp_key
         autotune_type = ''
         max_vpus_per_gb = ''
-        if len(blockvols.autotune_policies) == 0:
+        if blockvols.autotune_policies == None:
             autotune_type = ''
             max_vpus_per_gb = ''
         elif len(blockvols.autotune_policies) == 1:
