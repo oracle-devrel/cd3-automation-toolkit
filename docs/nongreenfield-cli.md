@@ -3,7 +3,7 @@
 !!! important
     - Toolkit will **over-write** the data in specific tabs of CD3 Excel sheet with exported content from OCI while the other tabs remain intact.
     - Differential state import of the objects will be performed, ie the import statements will be generated only for the objects which are not already there in state file.
-
+    - While exporting same service multiple times, be cautious to review the terraform plan changes and then apply.
 
 **Step 1:** 
 <br>Choose the Blank CD3 Excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>
