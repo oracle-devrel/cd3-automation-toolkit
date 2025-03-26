@@ -135,6 +135,8 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [ExaCS](tabs.md#exacs)
  
  - [ADB](tabs.md#adb-tab)
+
+ - [MySQL](tabs.md#mysql-tab)
  
  
 #### Monitoring Services
