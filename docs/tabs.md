@@ -602,6 +602,57 @@ On re-running the same option you will find the previously existing files being 
   - Currently toolkit supports ADB creation in Shared Infra only,
   </blockquote>
 
+## :dolphin: MySQL Tab
+
+`Use this Tab to create MySQL Database Systems in the OCI tenancy.`
+
+### 💾 MySQL DB System
+
+On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete MySQL DBs"** submenu will allow to create MySQL Database Systems in the OCI tenancy.
+
+<div class="admonition info">
+<p class="admonition-title">Output File</p>
+Output terraform file generated: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;customer_name&gt;_mysql-dbsystems.auto.tfvars</code> where <em>&lt;region&gt;</em> directory is the region specified for the MySQL DB System.
+</div>
+
+### :clipboard: Commonly used Fields and its description
+| Fields | Description |
+|---|---|
+|Backup policy is enabled | Specifies if automatic backups are enabled.|
+|Backup policy pitr policy is enabled | Specifies if PITR is enabled or disabled |
+| Backup policy Retention in days | Number of days to retain an automatic backup. |
+| Backup policy window start time | The start of a 30-minute window of time in which daily, automated backups occur. This should be in the format of the "Time" portion of an RFC3339-formatted timestamp. Any second or sub-second time data will be truncated to zero. At some point in the window, the system may incur a brief service disruption as the backup is performed. |
+| Crash Recovery is Enabled Data Storage (in Gbs) | Whether to run the DB System with InnoDB Redo Logs and the Double Write Buffer enabled or disabled, and whether to enable or disable syncing of the Binary Logs. |
+| Database Management is Enabled | Whether to enable monitoring via the Database Management service. |
+| Deletion policy automatic backup retention | Specifies if any automatic backups created for a DB System should be retained or deleted when the DB System is deleted. |
+| Deletion policy final backup | Specifies whether or not a backup is taken when the DB System is deleted. REQUIRE_FINAL_BACKUP: a backup is taken if the DB System is deleted. SKIP_FINAL_BACKUP: a backup is not taken if the DB System is deleted. |
+| Deletion policy is deleted protected | Specifies whether the DB System can be deleted. Set to true to prevent deletion, false (default) to allow. |
+| Maintenance window start time | The start time of the maintenance window. This string is of the format: "{day-of-week} {time-of-day}". "{day-of-week}" is a case-insensitive string like "mon", "tue", &c. "{time-of-day}" is the "Time" portion of an RFC3339-formatted timestamp. Any second or sub-second time data will be truncated to zero. If you set the read replica maintenance window to "" or if not specified, the read replica is set same as the DB system maintenance window. |
+| Port | The port for primary endpoint of the DB System to listen on. |
+| Port_x | The TCP network port on which X Plugin listens for connections. This is the X Plugin equivalent of port. |
+| Source Type | The specific source identifier. Use BACKUP for creating a new database by restoring from a backup. Use IMPORTURL for creating a new database from a URL Object Storage PAR. |
+| Configuration id | The OCID of the Configuration to be used for this DB System. |
+
+
+### :gear: MySQL Configurations
+On choosing **`Database`** in the SetUpOCI menu and **`Add/Modify/Delete MySQL Configurations`** submenu will allow to create MySQL Database Systems in the OCI tenancy.
+
+!!! note
+    Output terraform file generated: `outdir/region/customer_name_mysql-configurations.auto.tfvars` where region directory is the region specified for the MySQL DB System.
+
+
+Once terraform apply is done, you can view the resources under **Databases -> HeatWave MySQL -> DB System** in OCI console for MySQL DB System and **Databases -> HeatWave MySQL -> Configurations** for MySQL Configurations.
+
+!!! note 
+    On re-running the same option you will find the previously existing files being backed up under directory → `outdir/region/service_dir/backup_mysql/Date-Month-Time`
+
+
+[Reference for OCI Mysql Configuration Variables](https://docs.oracle.com/en-us/iaas/mysql-database/doc/configuration-variables.html)
+
+!!! Important
+    - Currently Heatwave is not supported as part of CD3 deployment.
+
+
 ## Notifications Tab
 
 On choosing **"Management Services"** in the SetUpOCI menu and **"Add/Modify/Delete Notification"** and **"Add/Modify/Delete Events"** submenu will allow to manage events and notifications in OCI tenancy.

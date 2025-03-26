@@ -123,7 +123,7 @@
             </div>
             <p><a href="../cd3exceltabs#database"><b>Database</b></a></p>
             <div class="description">
-                <p><i>Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW</i></p>
+                <p><i>Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW, MySQL(DB Systems and configurations)</i></p>
             </div>
             <p><a href="../cd3exceltabs#sddcs-tab"><b>SDDCs</b></a></p>
             <div class="description">
