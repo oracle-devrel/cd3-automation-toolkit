@@ -375,6 +375,7 @@ class commonTools():
         if resource_name in ntk_only_resources:
             pass
         else:
+            print("\n")
             if resource_name in ["Compartments","IAM Policies","IAM Groups","IAM Users","Network Sources","Tagging Objects"]:
                 input_compartment_names = None
             elif resource_name == "Clone Firewall Policy":

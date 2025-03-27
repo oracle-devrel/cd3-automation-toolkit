@@ -2252,8 +2252,9 @@ if non_gf_tenancy:
     print("\nworkflow_type set to export_resources. Export existing OCI objects and Synch with TF state")
     print("We recommend to not have any existing tfvars/tfstate files for export out directory")
     export_regions = get_region_list(rm=False,vizoci=False)
-    export_tags_list = get_tags_list()
     compartments = ct.get_compartment_map(var_file, "OCI Resources")
+    export_tags_list = get_tags_list()
+
     inputs = [
         Option("Export All OCI Resources", export_all, "OCI Resources"),
         Option('Export Identity', export_identityOptions, 'Identity'),
