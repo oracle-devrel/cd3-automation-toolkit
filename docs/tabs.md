@@ -602,21 +602,25 @@ On re-running the same option you will find the previously existing files being 
   - Currently toolkit supports ADB creation in Shared Infra only,
   </blockquote>
 
-## :dolphin: MySQL Tab
+## :dolphin: MySQL Tabs
 
-`Use this Tab to create MySQL Database Systems in the OCI tenancy.`
+`Use this to create MySQL Database Systems and Configurations in the OCI tenancy.`
 
-### 💾 MySQL DB System
 
-On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete MySQL DBs"** submenu will allow to create MySQL Database Systems in the OCI tenancy.
+On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete MySQL DBs"** submenu will allow to create MySQL Database Systems and Configurations in the OCI tenancy.
 
 <div class="admonition info">
 <p class="admonition-title">Output File</p>
-Output terraform file generated: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;customer_name&gt;_mysql-dbsystems.auto.tfvars</code> where <em>&lt;region&gt;</em> directory is the region specified for the MySQL DB System.
+Output terraform files generated: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;customer_name&gt;_mysql-dbsystems.auto.tfvars</code> and <code>&lt;outdir&gt;/&lt;region&gt;/&lt;customer_name&gt;_mysql-configurations.auto.tfvars</code> where <em>&lt;region&gt;</em> directory is the region specified for the MySQL DB System.
 </div>
 
-### :clipboard: Commonly used Fields and its description
-| Fields | Description |
+Once terraform apply is done, you can view the resources under **Databases -> HeatWave MySQL -> DB System** in OCI console for MySQL DB System and **Databases -> HeatWave MySQL -> Configurations** for MySQL Configurations.
+
+On re-running the same option you will find the previously existing files being backed up under directory → ```<outdir>/<region>/<service_dir>/backup_mysql/Date-Month-Time```
+
+
+### :clipboard: Excel sheet Columns and its Description
+| Column | Description |
 |---|---|
 |Backup policy is enabled | Specifies if automatic backups are enabled.|
 |Backup policy pitr policy is enabled | Specifies if PITR is enabled or disabled |
@@ -634,17 +638,7 @@ Output terraform file generated: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;custome
 | Configuration id | The OCID of the Configuration to be used for this DB System. |
 
 
-### :gear: MySQL Configurations
-On choosing **`Database`** in the SetUpOCI menu and **`Add/Modify/Delete MySQL Configurations`** submenu will allow to create MySQL Database Systems in the OCI tenancy.
 
-!!! note
-    Output terraform file generated: `outdir/region/customer_name_mysql-configurations.auto.tfvars` where region directory is the region specified for the MySQL DB System.
-
-
-Once terraform apply is done, you can view the resources under **Databases -> HeatWave MySQL -> DB System** in OCI console for MySQL DB System and **Databases -> HeatWave MySQL -> Configurations** for MySQL Configurations.
-
-!!! note 
-    On re-running the same option you will find the previously existing files being backed up under directory → `outdir/region/service_dir/backup_mysql/Date-Month-Time`
 
 
 [Reference for OCI Mysql Configuration Variables](https://docs.oracle.com/en-us/iaas/mysql-database/doc/configuration-variables.html)
