@@ -637,11 +637,21 @@ On re-running the same option you will find the previously existing files being 
 | Source Type | The specific source identifier. Use BACKUP for creating a new database by restoring from a backup. Use IMPORTURL for creating a new database from a URL Object Storage PAR. |
 | Configuration id | The OCID of the Configuration to be used for this DB System. |
 
+!!! Important 
+    For **`users_variable_name`** and **`users_variable_value`** in the excel sheet the accepted format for this field, **`<users_variable_name>_<users_variable_value>`**
+    For example : **`BINLOG_ROW_METADATA`** is the user variable and **`FULL`** is the value then the accepted value in users_variable_name should be **`BINLOG_ROW_METADATA_FULL`** and its respective users_variable_value should be **`FULL`**
+
+    | MySQL Configuration Variables | Supported Values |
+    |---|---|
+    |BINLOG_ROW_IMAGE |	FULL |
+    | BINLOG_ROW_METADATA_FULL	| FULL |
+    | BINLOG_ROW_METADATA_MINIMAL	| MINIMAL |
+    | BINLOG_ROW_METADATA_FULL | FULL |
+    | GROUP_REPLICATION_CONSISTENCY_BEFORE| BEFORE| 
 
 
+    [Reference for OCI Mysql Configuration Variables](https://docs.oracle.com/en-us/iaas/mysql-database/doc/configuration-variables.html)
 
-
-[Reference for OCI Mysql Configuration Variables](https://docs.oracle.com/en-us/iaas/mysql-database/doc/configuration-variables.html)
 
 !!! Important
     - Currently Heatwave is not supported as part of CD3 deployment.
