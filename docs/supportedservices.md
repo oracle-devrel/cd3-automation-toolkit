@@ -97,7 +97,7 @@
             </div>
             <p><a href="../cd3exceltabs#network"><b>Network</b></a></p>
             <div class="description">
-                <p><i>VCNs, Subnets, VLANs, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Remote Peering Connections, Application Load Balancers, Network Load Balancers</i></p>
+                <p><i>VCNs, Subnets, VLANs, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Remote Peering Connections</i></p>
             </div>
             <p><a href="../cd3exceltabs#network-firewall"><b>OCI Network Firewall</b></a></p>
             <div class="description">
@@ -106,6 +106,16 @@
             <p><a href="../cd3exceltabs#private-dns"><b>DNS Management</b></a></p>
             <div class="description">
                 <p><i>Private DNS - Views, Zones, RRSets/Records and Resolvers</i></p>
+            </div>
+        </div>
+        <div class="service-card">
+            <div class="card-title">
+                <h3>Load Balancers</h3>
+                <img src="../images/loadbalancer.png" alt="Load Balancer"> 
+            </div>
+            <p><a href="../cd3exceltabs#load-balancer"><b>Load Balancer</b></a></p>
+            <div class="description">
+                <p><i>Application Load Balancers, Network Load Balancers</i></p>
             </div>
         </div>
         <div class="service-card">
