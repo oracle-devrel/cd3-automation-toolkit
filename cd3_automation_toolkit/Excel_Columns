@@ -11,7 +11,8 @@
     "Users" :
     {
         "Family Name" : "family_name",
-        "User Name" : "name"
+        "User Name" : "name",
+        "MFA Status" : "urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status"
     },
     "Policies" :
     {

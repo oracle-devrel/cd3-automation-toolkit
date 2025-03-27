@@ -41,7 +41,7 @@ region_mapping = {
     'zurich': 'eu-zurich-1'
 }
 
-def print_mysql(region, vnc_client, mysql_db, values_for_column, ntk_compartment_name, state, ct, row):
+def print_mysql(region, vnc_client, mysql_db, values_for_column, ntk_compartment_name, state, ct, mysql_aas_client):
     mysql_tf_name = commonTools.check_tf_variable(mysql_db.display_name)
     mysql_subnet_id = mysql_db.subnet_id
 
@@ -66,40 +66,24 @@ def print_mysql(region, vnc_client, mysql_db, values_for_column, ntk_compartment
     if hasattr(mysql_db, 'configuration_id') and mysql_db.configuration_id:
         config_id = mysql_db.configuration_id
         try:
-            # Create MySQL client with the same config as the parent client
-            config_copy = dict(vnc_client.base_client.config)
-            # Create a copy of the config and set the region from Excel row
-            config_copy = config_copy.copy()
-            excel_region = row['Region'].lower().strip()
-            config_copy['region'] = region_mapping.get(excel_region, excel_region)
+            config_obj = mysql_aas_client.get_configuration(mysql_db.configuration_id).data
+        except Exception as e2:
+            print(f"\nWarning2: Could not fetch configuration details for {mysql_db.display_name}: {str(e2)}")
+            config_obj = None
             
-            # Try with both client types
-            try:
-                mysql_client = oci.mysql.MysqlaasClient(config=config_copy, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=vnc_client.base_client.signer)
-                config_obj = mysql_client.get_configuration(mysql_db.configuration_id).data
-            except Exception as e1:
-                try:
-                    mysql_client = oci.mysql.MysqlaasClient(config=config_copy, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=vnc_client.base_client.signer)
-                    config_obj = mysql_client.get_configuration(mysql_db.configuration_id).data
-                except Exception as e2:
-                    print(f"\nWarning2: Could not fetch configuration details for {mysql_db.display_name}: {str(e2)}")
-                    config_obj = None
-            
-            if hasattr(config_obj, 'display_name'):
-                config_name = config_obj.display_name
+        if hasattr(config_obj, 'display_name'):
+            config_name = config_obj.display_name
                 
-                # Get configuration compartment name
-                for comp_name, comp_id in ct.ntk_compartment_ids.items():
-                    if comp_id == config_obj.compartment_id:
-                        config_compartment_name = comp_name
-                        break
+            # Get configuration compartment name
+            for comp_name, comp_id in ct.ntk_compartment_ids.items():
+                if comp_id == config_obj.compartment_id:
+                    config_compartment_name = comp_name
+                    break
                 
-                # Format configuration name similar to subnet_name
-                if config_compartment_name and config_name:
-                    config_id = config_compartment_name +'@' + config_name
+            # Format configuration name similar to subnet_name
+            if config_compartment_name and config_name:
+                config_id = config_compartment_name +'@' + config_name
                 
-        except Exception as e:
-            print(f"\nWarning1: Could not fetch configuration details for {mysql_db.display_name}: {str(e)}")
 
     # Check if resource exists in terraform state
     tf_resource = f'module.mysql_db_system[\\"{mysql_tf_name}\\"].oci_mysql_mysql_db_system.db_system'
@@ -125,9 +109,6 @@ def print_mysql(region, vnc_client, mysql_db, values_for_column, ntk_compartment
                 values_for_column[col_header].append(config_name)
             else:
                 values_for_column[col_header].append("")
-        elif col_header == 'Hostname Label':
-            hostname = mysql_db.hostname_label if mysql_db.hostname_label else mysql_db.display_name.lower().replace("-", "")
-            values_for_column[col_header].append(hostname)
         elif col_header == 'Shape':
             values_for_column[col_header].append(mysql_db.shape_name)
         elif col_header == 'Network Details':
@@ -244,14 +225,14 @@ def export_mysql_db(inputfile, outdir, service_dir, config, signer, ct, export_c
         
         region = reg.capitalize()
         vnc_client = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+        mysql_client = oci.mysql.DbSystemClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+        mysql_aas_client = oci.mysql.MysqlaasClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
         for ntk_compartment_name in export_compartments:
-            mysql_dbs = oci.pagination.list_call_get_all_results(oci.mysql.DbSystemClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer).list_db_systems,
-                                                               compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
-                                                               lifecycle_state="ACTIVE")
+            mysql_dbs = oci.pagination.list_call_get_all_results(mysql_client.list_db_systems,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="ACTIVE")
             for mysql_db in mysql_dbs.data:
 
-                mysql_db = oci.mysql.DbSystemClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer).get_db_system(mysql_db.id).data
+                mysql_db = mysql_client.get_db_system(mysql_db.id).data
                 # Tags filter
                 defined_tags = mysql_db.defined_tags
                 tags_list = []
@@ -268,7 +249,7 @@ def export_mysql_db(inputfile, outdir, service_dir, config, signer, ct, export_c
                 if check == False:
                     continue
 
-                print_mysql(region, vnc_client, mysql_db, values_for_column, ntk_compartment_name, state, ct, df.iloc[0])
+                print_mysql(region, vnc_client, mysql_db, values_for_column, ntk_compartment_name, state, ct, mysql_aas_client)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print("{0} MySQL Database Systems exported into CD3.\n".format(len(values_for_column["Region"])))

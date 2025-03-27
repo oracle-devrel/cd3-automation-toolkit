@@ -974,6 +974,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 igw_info = None
                 ngw_info = None
                 sgw_info = None
+                drg_info = None
                 drg_attachment_info = None
 
                 for drg_attachment_info in DRG_Attachments.data:

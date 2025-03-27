@@ -1437,11 +1437,6 @@ def create_mysql(execute_all=False,prim_options=[]):
         Option('Add/Modify/Delete MySQL DB Systems', Database.create_terraform_mysql_db, 'Processing MySQL-DBSystems Tab'),
         Option('Add/Modify/Delete MySQL Configurations', Database.create_terraform_mysql_configuration, 'Processing MySQL-Configurations Tab'),
     ]
-    if prim_options:
-        options = match_options(options, prim_options)
-    else:
-        if not execute_all:
-            options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, service_dir_mysql_dbsystem, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_mysql_dbsystem])

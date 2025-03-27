@@ -52,6 +52,10 @@ def create_terraform_mysql_db(inputfile, outdir, service_dir, prefix, ct):
     for i in df.index:
         region = str(df.loc[i, 'Region']).strip().lower()
 
+        if (region in commonTools.endNames):
+            break
+        region=region.strip().lower()
+
         # Skip if region is not in regions
         if region not in [x.lower() for x in ct.all_regions]:
             print(f"\nERROR!!! Invalid Region {str(df.loc[i, 'Region']).strip()} in MySQL DB System sheet. Skipping row!", file=sys.stderr)
@@ -68,7 +72,8 @@ def create_terraform_mysql_db(inputfile, outdir, service_dir, prefix, ct):
         # Initialize the template dictionary
         tempdict = {
             'display_tf_name': commonTools.check_tf_variable(str(df.loc[i, 'Display Name']).strip()),
-            'compartment_name': str(df.loc[i, 'Compartment Name']).strip(),
+            #'compartment_name': str(df.loc[i, 'Compartment Name']).strip(),
+            'compartment_name': commonTools.check_tf_variable(str(df.loc[i, 'Compartment Name']).strip()),
             'display_name': str(df.loc[i, 'Display Name']).strip(),
             'description': str(df.loc[i, 'Description']).strip(),
             'hostname_label': str(df.loc[i, 'Hostname Label']).strip(),
@@ -102,23 +107,39 @@ def create_terraform_mysql_db(inputfile, outdir, service_dir, prefix, ct):
                 # Split into compartment and name
                 config_parts = config_id.split('@')
                 if len(config_parts) == 2:
-                    config_compartment_name = config_parts[0].strip()
+                    config_compartment_name = commonTools.check_tf_variable(config_parts[0].strip())
                     config_name = config_parts[1].strip()
                     
                     # Set both the configuration_id and configuration_compartment_id
                     tempdict['configuration_compartment_id'] = config_compartment_name
                     tempdict['configuration_id'] = config_name
+                    # Add depends_on attribute to ensure MySQL configuration is created first
+                    tempdict['depends_on_mysql_configuration'] = True
                 else:
-                    print(f"\nWARNING: Invalid configuration_id format: {config_id}. Expected format: compartment@name", file=sys.stderr)
+                    print(f"\nWARNING: Invalid configuration_id format: {config_id}. Expected format: compartment@name",
+                          file=sys.stderr)
                     tempdict['configuration_id'] = config_id
-                    tempdict['configuration_compartment_id'] = tempdict['compartment_name']  # Use MySQL compartment as default
+                    tempdict['configuration_compartment_id'] = tempdict[
+                        'compartment_name']  # Use MySQL compartment as default
+                    tempdict['depends_on_mysql_configuration'] = False
             else:
-                # If it's not in compartment@name format, use it directly (assuming it's an OCID)
-                tempdict['configuration_id'] = config_id
-                tempdict['configuration_compartment_id'] = tempdict['compartment_name']  # Use MySQL compartment as default
+                # If it's not in compartment@name format, check if it's an OCID or just a name
+                if config_id.startswith('ocid1.'):
+                    # It's an OCID, no dependency needed
+                    tempdict['configuration_id'] = config_id
+                    tempdict['configuration_compartment_id'] = tempdict[
+                        'compartment_name']  # Use MySQL compartment as default
+                    tempdict['depends_on_mysql_configuration'] = False
+                else:
+                    # It's just a name, we need to add dependency
+                    tempdict['configuration_id'] = config_id
+                    tempdict['configuration_compartment_id'] = tempdict[
+                        'compartment_name']  # Use MySQL compartment as default
+                    tempdict['depends_on_mysql_configuration'] = True
         else:
             tempdict['configuration_id'] = ''
             tempdict['configuration_compartment_id'] = tempdict['compartment_name']  # Use MySQL compartment as default
+            tempdict['depends_on_mysql_configuration'] = False
 
         # Process Availability Domain
         ad = str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).strip()
@@ -139,7 +160,7 @@ def create_terraform_mysql_db(inputfile, outdir, service_dir, prefix, ct):
         if subnet_name and subnet_name.lower() != 'nan':
             subnet_parts = subnet_name.split('@')
             if len(subnet_parts) == 2:
-                network_compartment = subnet_parts[0].strip()
+                network_compartment = commonTools.check_tf_variable(subnet_parts[0].strip())
                 vcn_subnet = subnet_parts[1].strip()
                 vcn_subnet_parts = vcn_subnet.split('::')
                 if len(vcn_subnet_parts) == 2:
