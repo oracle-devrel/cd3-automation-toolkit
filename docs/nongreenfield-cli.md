@@ -66,12 +66,12 @@ python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 
     Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
 
-<br>⬇️ After fetching the compartment details, the toolkit will display the menu options as shown below:
+<br>⬇️ After fetching the compartment details, users have options to export their resources only from specific regions, compartments, and resources with specific Tags if required. The toolkit will display the menu options as shown below:
 
 
 !!! example  "Example Execution"
 
-      <img src = "../images/demo_setupocimenu_cli_export.png" width=90% height=90%>
+      <img src = "../images/demo_setupocimenu_cli_export.png" width=100% height=100%>
 
 
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.

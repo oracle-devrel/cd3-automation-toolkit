@@ -38,7 +38,7 @@ Click on the setupoci pipeline and select **Build with Parameters** from left si
 <br>Specify region and compartment from where the data has to be exported. Multiple options can be selected to export from multiple regions/compartments. If resources have to be exported from all regions/compartments, do not select any option from the dropdown. 
 <br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter is needed.
 
-<img width=500 height=500 alt="Screenshot 2024-01-17 at 7 10 56 PM" src="../images/jenkins_filters.jpg"><br>
+<img width=1000 height=1000 alt="Screenshot 2024-01-17 at 7 10 56 PM" src="../images/jenkins_filters.jpg"><br>
 <br>Click on **Build** at the bottom.<br>
 
 
