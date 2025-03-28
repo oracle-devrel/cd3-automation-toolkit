@@ -14,7 +14,7 @@ mysql_db_system = {
        ##Add New MySQL Database System for {{ region|lower }} here##
 }
 {% else %}
-    "{{ display_name }}" = {
+    "{{ display_tf_name }}" = {
             compartment_id                = "{{ compartment_name }}"
             network_compartment_id       = "{{ network_compartment_id }}"
             mysql_db_system_display_name                  = "{{ display_name }}"
