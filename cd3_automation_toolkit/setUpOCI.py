@@ -163,6 +163,10 @@ def get_tags_list(resource_name=[]):
         input_tags_list = input(tags_list_str.format(resource_name))
 
     input_tags_list = list(map(lambda x: x.strip(), input_tags_list.split(','))) if input_tags_list else []
+    if input_tags_list ==[]:
+        print("\nFetching OCI resources with all Tags...")
+    else:
+        print("\nFetching OCI Resources with Tags... " + str(input_tags_list))
     return input_tags_list
 
 

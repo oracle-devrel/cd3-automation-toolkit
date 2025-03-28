@@ -24,17 +24,10 @@ mysql_db_system = {
             mysql_db_system_availability_domain          = "{{ availability_domain }}"
             mysql_db_system_fault_domain                 = "{{ fault_domain }}"
             configuration_compartment_id = "{{ configuration_compartment_id }}"
+            configuration_id = "{{ configuration_id }}"
             {% if depends_on_mysql_configuration %}
-            # Skip data source lookup for configurations created in the same Terraform run
-            skip_datasource_lookup = true
-            # Use the configuration name directly
-            configuration_name = "{{ configuration_id }}"
-            # Set an empty configuration_id to force the module to use the name
-            configuration_id = ""
             # Add explicit depends_on to ensure configuration is created first
             depends_on = ["module.mysql_configurations[\"{{ configuration_id }}\"]"]
-            {% else %}
-            configuration_id = "{{ configuration_id }}"
             {% endif %}
             mysql_shape_name                   = "{{ shape }}"
             vcn_names                     = "{{ vcn_names }}"
