@@ -20,9 +20,9 @@ mysql_configuration = {
     compartment_id                   = "{{ compartment_tf_name }}"
     mysql_configuration_shape_name   = "{{ shape_name }}"
     mysql_configuration_display_name = "{{ display_name }}"
-{%- if description and description != "nan" and description != "" %}
+{% if description and description != "nan" and description != "" %}
     mysql_configuration_description  = "{{ description }}"
-{%- endif %}
+{% endif %}
 {%- for key in config_keys() %}
 {%- if key.startswith('mysql_configuration_variables_') %}
 {%- set value = config_value(key) %}
