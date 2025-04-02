@@ -373,7 +373,10 @@ class commonTools():
             #print("Please fetch compartments first from CD3 Services option from main menu")
             exit(1)
         if resource_name in ntk_only_resources:
-            pass
+            if resource_name == "Validator":
+                return var_ocids
+            else:
+                pass
         else:
             print("\n")
             if resource_name in ["Compartments","IAM Policies","IAM Groups","IAM Users","Network Sources","Tagging Objects"]:

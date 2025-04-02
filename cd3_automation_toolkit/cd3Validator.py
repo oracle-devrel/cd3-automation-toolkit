@@ -1945,7 +1945,7 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
 
     #ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
     #print("Getting Compartments OCIDs...")
-    ct.get_compartment_map(var_file,'Validator')
+    all_comp_ocids = ct.get_compartment_map(var_file,'Validator')
 
     vcnobj = parseVCNs(filename)
     subnetobj = parseSubnets(filename)
@@ -1971,25 +1971,25 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
         if ('Validate Policies' in options[0]):
             log("\n============================= Verifying Policies Tab ==========================================\n")
             print("\nValidating Policies Tab..")
-            policies_check = validate_policies(filename,ct.ntk_compartment_ids)
+            policies_check = validate_policies(filename,all_comp_ocids)
             errors =  policies_check
         if ('Validate Tags' in options[0]):
             log("\n============================= Verifying Tags Tab ==========================================\n")
             print("\nValidating Tags Tab..")
-            tags_check = validate_tags(filename,ct.ntk_compartment_ids)
+            tags_check = validate_tags(filename,all_comp_ocids)
             errors = tags_check
 
         if ('Validate Budgets' in options[0]):
             log("\n============================= Verifying Budgets Tab ==========================================\n")
             print("\nValidating Budgets Tab..")
-            budgets_check = validate_budgets(filename,ct.ntk_compartment_ids)
+            budgets_check = validate_budgets(filename,all_comp_ocids)
             errors = budgets_check
             final_check.append(budgets_check)
 
         if ('Validate KMS' in options[0]):
             log("\n============================= Verifying KMS Tab ==========================================\n")
             print("\nValidating KMS Tab..")
-            kms_check = validate_kms(filename,ct.ntk_compartment_ids)
+            kms_check = validate_kms(filename,all_comp_ocids)
             errors = kms_check
 
 
@@ -2001,19 +2001,19 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
             log("\n====================== Note: LPGs will not be verified ====================================\n")
             print("\nValidating VCNs Tab..")
             print("NOTE: LPGs will not be verified")
-            vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj) #, config)
+            vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, all_comp_ocids, vcnobj) #, config)
 
             log("============================= Verifying SubnetsVLANs Tab ==========================================\n")
             print("\nValidating SubnetsVLANs Tab..")
-            subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
+            subnet_check, subnet_cidr_check = validate_subnets(filename, all_comp_ocids, vcnobj)
 
             log("============================= Verifying DHCP Tab ==========================================\n")
             print("\nValidating DHCP Tab..")
-            dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
+            dhcp_check = validate_dhcp(filename, all_comp_ocids, vcnobj)
 
             log("============================= Verifying DRGs Tab ==========================================\n")
             print("\nValidating DRGs Tab..")
-            drgv2_check = validate_drgv2(filename, ct.ntk_compartment_ids, vcnobj)
+            drgv2_check = validate_drgv2(filename, all_comp_ocids, vcnobj)
 
             if any([vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
                 errors = True
@@ -2021,31 +2021,31 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
         if ('Validate DNS' in options[0]):
             log("\n============================= Verifying DNS Tabs ==========================================\n")
             print("\nValidating DNS Tab..")
-            dns_check = validate_dns(filename,ct.ntk_compartment_ids)
+            dns_check = validate_dns(filename,all_comp_ocids)
             errors = dns_check
 
         if ('Validate Instances' in options[0]):
             log("\n============================= Verifying Instances Tab ==========================================\n")
             print("\nValidating Instances Tab..")
-            instances_check = validate_instances(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
+            instances_check = validate_instances(filename,all_comp_ocids,subnetobj,vcn_subnet_list,vcn_nsg_list)
             errors = instances_check
 
         if ('Validate Block Volumes' in options[0]):
             log("\n============================= Verifying BlockVolumes Tab ==========================================\n")
             print("\nValidating BlockVolumes Tab..")
-            bvs_check = validate_blockvols(filename,ct.ntk_compartment_ids)
+            bvs_check = validate_blockvols(filename,all_comp_ocids)
             errors = bvs_check
 
         if ('Validate FSS' in options[0]):
             log("\n============================= Verifying FSS Tab ==========================================\n")
             print("\nValidating FSS Tab..")
-            fss_check = validate_fss(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
+            fss_check = validate_fss(filename,all_comp_ocids,subnetobj,vcn_subnet_list,vcn_nsg_list)
             errors = fss_check
 
         if ('Validate Buckets' in options[0]):
             log("\n============================= Verifying Buckets Tab ==========================================\n")
             print("\nValidating Buckets Tab..")
-            buckets_check = validate_buckets(filename,ct.ntk_compartment_ids)
+            buckets_check = validate_buckets(filename,all_comp_ocids)
             errors = buckets_check
 
             # Prints the final result; once the validation is complete

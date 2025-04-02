@@ -19,8 +19,7 @@ ARG DOWNLOAD_PROVIDER=YES
 ARG TF_OCI_PROVIDER=6.30.0
 ARG TF_NULL_PROVIDER=3.2.3
 
-RUN microdnf update -y && \
-    microdnf install -y sudo && \
+RUN microdnf install -y sudo && \
     groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID -d /$USERNAME -m $USERNAME && \
     echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \

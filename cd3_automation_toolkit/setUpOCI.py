@@ -882,7 +882,7 @@ def export_management_services(prim_options=[]):
 
 
 def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_regions, export_tags_list):
-    compartments = ct.get_compartment_map(var_file,'Notifications')
+    #compartments = ct.get_compartment_map(var_file,'Notifications')
     ManagementServices.export_notifications(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     create_management_services(prim_options=['Add/Modify/Delete Notifications'])
     print("\n\nExecute import_commands_notifications.sh script created under each region directory to synch TF with OCI Notifications\n")
