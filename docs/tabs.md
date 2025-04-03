@@ -401,7 +401,7 @@ On re-running the same option you will find the previously existing files being 
 
 
 !!! Important  
-    As of the latest CD3 release, the export of FSS is supported only by region and compartment, not based on Tags. 
+    As of the CD3 v2025.1.0, the export of FSS is supported only by region and compartment, not based on Tags. 
 
 
 ## Load Balancers
