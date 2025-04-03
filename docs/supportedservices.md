@@ -124,7 +124,7 @@
         </div>
         <div class="service-card">
             <div class="card-title">
-                <h3>Database</h3>
+                <h3>Databases</h3>
                 <img src="../images/database.png" alt="Database Icon"> 
             </div>
             <p><a href="../cd3exceltabs#oracle-database"><b>Oracle Database</b></a></p>
