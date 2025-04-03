@@ -3,7 +3,7 @@
 !!! note 
     1. Automation Tool Kit *DOES NOT* support the creation/export of duplicate resources.<br>
     2. Automation Tool Kit *DOES NOT* support sharing of Block Volumes.<br>
-    3. As of the latest CD3 release, the export of FSS is supported only by Regions and Compartments, not based on Tags. 
+    3. As of the CD3 v2025.1.0, the export of FSS is supported only by Regions and Compartments, not based on Tags. 
 
 !!! WARNING
     1. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed.
