@@ -659,6 +659,8 @@ On re-running the same option you will find the previously existing files being 
 
 !!! Important
     - Currently Heatwave is not supported as part of CD3 deployment.
+    - Creating a custom MySQL configuration and using it as part of a MySQL DB system simultaneously is not supported at the moment. You need to create the custom MySQL configuration first and then use it as part of the MySQL DB system.
+    For example: If you are creating a custom MySQL configuration called "mysql-config-1" and want to use it as part of a MySQL DB system called "mysql-db-1", you must create the MySQL configuration "mysql-config-1" first and then use it when creating the MySQL DB system.
 
 
 ## Notifications Tab
