@@ -400,6 +400,10 @@ Once terraform apply is done, you can view the resources under *File Storage →
 On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_FSS/<Date>-<Month>-<Time>```.
 
 
+!!! Important  
+    As of the latest CD3 release, the export of FSS is supported only by region and compartment, not based on Tags. 
+
+
 ## Load Balancers
 
 Automation Tool Kit allows you to create Load Balancers. Components that you can create using the Tool Kit includes:

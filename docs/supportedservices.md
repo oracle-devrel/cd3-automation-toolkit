@@ -110,16 +110,6 @@
         </div>
         <div class="service-card">
             <div class="card-title">
-                <h3>Load Balancers</h3>
-                <img src="../images/loadbalancer.png" alt="Load Balancer"> 
-            </div>
-            <p><a href="../cd3exceltabs#load-balancer"><b>Load Balancer</b></a></p>
-            <div class="description">
-                <p><i>Application Load Balancers, Network Load Balancers</i></p>
-            </div>
-        </div>
-        <div class="service-card">
-            <div class="card-title">
                 <h3>Infrastructure</h3>
                 <img src="../images/infrastructure.png" alt="Infrastructure Icon"> 
             </div>
@@ -131,29 +121,31 @@
             <div class="description">
                 <p><i>FSS, Block and Boot Volumes, Backup Policies, Object Storage Buckets</i></p>
             </div>
-            <p><a href="../cd3exceltabs#database"><b>Database</b></a></p>
-            <div class="description">
-                <p><i>Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW, MySQL(DB Systems and configurations)</i></p>
+        </div>
+        <div class="service-card">
+            <div class="card-title">
+                <h3>Database</h3>
+                <img src="../images/database.png" alt="Database Icon"> 
             </div>
-            <p><a href="../cd3exceltabs#sddcs-tab"><b>SDDCs</b></a></p>
+            <p><a href="../cd3exceltabs#oracle-database"><b>Oracle Database</b></a></p>
             <div class="description">
-                <p><i>Oracle Cloud VMWare Solutions</i></p>
+                <p><i>Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW</i></p>
+            </div>
+             <p><a href="../cd3exceltabs#mysql-database"><b>MySQL Database</b></a></p>
+            <div class="description">
+                <p><i>MySQL(DB Systems and configurations)</i></p>
             </div>
         </div>
         <div class="service-card">
             <div class="card-title">
-                <h3>Observability & Management</h3>
-                <img src="../images/observability.png" alt="Observability Icon"> 
+                <h3>Load Balancers</h3>
+                <img src="../images/loadbalancer.png" alt="Load Balancer"> 
             </div>
-            <p><a href="../cd3exceltabs#monitoring-services"><b>Monitoring</b></a></p>
+            <p><a href="../cd3exceltabs#load-balancer"><b>Load Balancer</b></a></p>
             <div class="description">
-                <p><i>Events, Notifications, Alarms, Service Connector Hub (SCH)</i></p>
+                <p><i>Application Load Balancers, Network Load Balancers</i></p>
             </div>
-            <p><a href="../cd3exceltabs#logging-services"><b>Logging Services</b></a></p>
-            <div class="description">
-                <p><i>VCN Flow Logs, LBaaS access and error Logs, OSS Buckets Logs, Firewall Logs, FSS Logs</i></p>
-            </div>
-        </div>
+        </div> 
         <div class="service-card">
             <div class="card-title">
                 <h3>Developer Services</h3>
@@ -162,6 +154,16 @@
             <p><a href="../cd3exceltabs#developer-services"><b>Developer Services</b></a></p>
             <div class="description">
                 <p><i>Upload to Resource Manager, Oracle Kubernetes Engine (OKE)</i></p>
+            </div>
+        </div>
+        <div class="service-card">
+            <div class="card-title">
+                <h3>OCVS</h3>
+                <img src="../images/infrastructure.png" alt="OCVS Icon"> 
+            </div>
+            <p><a href="../cd3exceltabs#sddcs-tab"><b>SDDCs</b></a></p>
+            <div class="description">
+                <p><i>Oracle Cloud VMWare Solutions</i></p>
             </div>
         </div>
         <div class="service-card">
@@ -182,6 +184,20 @@
                 <p><i>Cloud Guard</i></p>
             </div>
         </div>
+        <div class="service-card">
+            <div class="card-title">
+                <h3>Observability & Management</h3>
+                <img src="../images/observability.png" alt="Observability Icon"> 
+            </div>
+            <p><a href="../cd3exceltabs#monitoring-services"><b>Monitoring</b></a></p>
+            <div class="description">
+                <p><i>Events, Notifications, Alarms, Service Connector Hub (SCH)</i></p>
+            </div>
+            <p><a href="../cd3exceltabs#logging-services"><b>Logging Services</b></a></p>
+            <div class="description">
+                <p><i>VCN Flow Logs, LBaaS access and error Logs, OSS Buckets Logs, Firewall Logs, FSS Logs</i></p>
+            </div>
+        </div>         
         <div class="service-card">
             <div class="card-title">
                 <h3>Other OCI Tools</h3>

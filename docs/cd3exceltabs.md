@@ -129,12 +129,15 @@ Click on the links below to know about the specifics of each tab in the excel sh
  <a href="../terraform/storage#buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> 
  
 
-#### Database
+#### Oracle Database
  - [DBSystems-VM-BM](tabs.md#dbsystems-vm-bm-tab)
  
  - [ExaCS](tabs.md#exacs)
  
  - [ADB](tabs.md#adb-tab)
+ 
+
+#### MySQL Database
 
  - [MySQL](tabs.md#mysql-tabs)
  
