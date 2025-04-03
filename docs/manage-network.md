@@ -54,12 +54,13 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 		- When using the toolkit with Jenkins, this will be automatically executed.
 		- This will run export of rules for all compartments/tags. Security rules/Route rules for only those VCNs which are part of CD3 VCNs tab will be written to the excel. Similarly DRG Route Rules for only those DRGs which are part of CD3 DRGs tab will be written to the excel.
 		- VCNs/DRGs having duplicate names in tenancy is not supported.
+   
                 - Make sure to download updated CD3 excel sheet under artifacts.<br><br>
            	  <img width="870" alt="rpc" src="../images/export_network_rules.png">
 	 
 	
 
-8. Executing terraform plan for network shows 'Up-to-Date' with no changes.
+9. Executing terraform plan for network shows 'Up-to-Date' with no changes.
 
 This completes the steps for Creating the Network in OCI and exporting the rules to the CD3 Excel Sheet using the Automation Toolkit.
 
