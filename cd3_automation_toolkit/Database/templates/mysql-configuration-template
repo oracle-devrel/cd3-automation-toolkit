@@ -1,0 +1,69 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+############################
+# Database
+# Create MySQL Configuration
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c"
+# Sample import command:
+# terraform import "module.mysql_configurations[\"<<config terraform variable name>>\"].oci_mysql_mysql_configuration.configuration" <configuration ocid>
+############################
+
+mysql_configuration = {
+{% elif count == 2 %}
+}
+{% else %}
+  {{ config_display_tf_name }} = {
+    compartment_id                   = "{{ compartment_tf_name }}"
+    mysql_configuration_shape_name   = "{{ shape_name }}"
+    mysql_configuration_display_name = "{{ display_name }}"
+{% if description and description != "nan" and description != "" %}
+    mysql_configuration_description  = "{{ description }}"
+{% endif %}
+{%- for key in config_keys() %}
+{%- if key.startswith('mysql_configuration_variables_') %}
+{%- set value = config_value(key) %}
+{%- if value.lower() in ['true', 'false'] %}
+    {{ key }} = {{ value.lower() }}
+{%- else %}
+    {{ key }} = "{{ value }}"
+{%- endif %}
+{%- endif %}
+{%- endfor %}
+  }{% if not loop.last %},{% endif %}
+  {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+
+{% endif %}

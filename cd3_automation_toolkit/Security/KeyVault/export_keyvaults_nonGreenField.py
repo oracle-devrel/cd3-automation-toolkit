@@ -17,7 +17,7 @@ from commonTools import *
 from oci.exceptions import TransientServiceError
 
 # Execution of the code begins here
-def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_regions=[], export_compartments=[]):
+def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_regions=[], export_compartments=[],export_tags=[]):
     global values_for_column_kms
     global cd3file,tf_or_tofu
     tf_or_tofu = ct.tf_or_tofu
@@ -75,6 +75,22 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                 get_vault_data = kms_vault_client.get_vault(vault_id=vault.id).data
                 key_count = 0
                 if vault.lifecycle_state not in ["DELETED", "PENDING_DELETION", "SCHEDULING_DELETION"]:
+                    # Tags filter
+                    defined_tags = get_vault_data.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     try:
                         replicas = kms_vault_client.list_vault_replicas(vault_id=vault.id).data
                         for replica in replicas:
@@ -97,6 +113,23 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                             for key in keys.data:
                                 first_key = False
                                 if key.lifecycle_state not in ["DELETED", "PENDING_DELETION", "SCHEDULING_DELETION"]:
+
+                                    # Tags filter
+                                    defined_tags = key.defined_tags
+                                    tags_list = []
+                                    for tkey, tval in defined_tags.items():
+                                        for kk, vv in tval.items():
+                                            tag = tkey + "." + kk + "=" + vv
+                                            tags_list.append(tag)
+
+                                    if export_tags == []:
+                                        check = True
+                                    else:
+                                        check = any(e in tags_list for e in export_tags)
+                                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                                    if check == False:
+                                        continue
+
                                     key_count += 1
                                     total_keys += 1
                                     key_tf_name = commonTools.check_tf_variable(key.display_name)

@@ -32,7 +32,7 @@ def print_quotas(values_for_columns,region, quota,quota_policy):
             values_for_columns = commonTools.export_tags(quota, col_header, values_for_columns)
 
 # Execution of the code begins here
-def export_quotas_nongreenfield(inputfile, outdir, service_dir, config, signer, ct):
+def export_quotas_nongreenfield(inputfile, outdir, service_dir, config, signer, ct,export_tags):
     global tf_import_cmd
     global values_for_column_quotas
     global sheet_dict_quotas
@@ -81,6 +81,23 @@ def export_quotas_nongreenfield(inputfile, outdir, service_dir, config, signer, 
         for quota_info in quotas_list.data:
             quota_policy = ""
             quota = quotas_client.get_quota(quota_id=quota_info.id).data
+
+            # Tags filter
+            defined_tags = quota.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
             for statement in quota.statements:
                 quota_policy +="\n"+str(statement)
 

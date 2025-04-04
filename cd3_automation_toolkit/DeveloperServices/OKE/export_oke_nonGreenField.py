@@ -434,7 +434,7 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
              values_for_column_oke = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_oke,values_for_column_oke)
 
 # Execution of the code begins here
-def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global importCommands
     global tf_import_cmd
     global values_for_column_oke
@@ -495,13 +495,30 @@ def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compart
                                                                            compartment_name],
                                                                        lifecycle_state=["ACTIVE"],sort_by="TIME_CREATED")
             clusterList.extend(clusterResponse.data)
-            total_resources +=len(clusterList)
+            #total_resources +=len(clusterList)
             for cluster_info in clusterList:
                 empty_cluter = True
                 nodepool_count = 0
                 nodepool_info = None
                 nodepool_type=""
 
+                # Tags filter
+                defined_tags = cluster_info.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
+                total_resources = total_resources + 1
                 cluster_display_name = cluster_info.name
                 cluster_tf_name = commonTools.check_tf_variable(cluster_display_name)
                 tf_resource = f'module.clusters[\\"{str(cluster_tf_name)}\\"].oci_containerengine_cluster.cluster'
@@ -524,6 +541,22 @@ def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compart
 
                     for nodepool_info in nodepoolList:
                         if nodepool_info.lifecycle_state!="ACTIVE":
+                            continue
+
+                        # Tags filter
+                        defined_tags = nodepool_info.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
                             continue
 
                         empty_cluter = False
@@ -557,6 +590,7 @@ def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compart
                                 tempsshDict[reg + "::" + commonTools.check_tf_variable(cluster_display_name + "_" + nodepool_info.name) + "_" + nodepool_info.id[-6:]] = nodepool_info.ssh_public_key
 
                         print_oke(values_for_column_oke,reg, compartment_name, compartment_name_nodepool,nodepool_count,nodepool_info,cluster_info,network,nodepool_type,ct)
+
 
                 if(empty_cluter==True):
                     print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nodepool,nodepool_count, nodepool_info,cluster_info,network,nodepool_type,ct)

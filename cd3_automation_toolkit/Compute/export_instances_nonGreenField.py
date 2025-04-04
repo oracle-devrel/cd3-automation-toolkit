@@ -33,6 +33,11 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances[col_header].append(os_dname)
         elif (col_header == "Shape"):
             values_for_column_instances[col_header].append(shape)
+        elif (col_header == "Boot Volume Size In GBs"):
+            size = bdet.size_in_gbs
+            if size < 50:
+                size=""
+            values_for_column_instances[col_header].append(size)
         elif (col_header == "SSH Key Var Name"):
             values_for_column_instances[col_header].append(key_name)
         elif (col_header == "Compartment Name"):
@@ -81,7 +86,7 @@ def find_vnic(ins_id, compartment_id):
         return net
 
 
-def __get_instances_info(compartment_name, compartment_id, reg_name, display_names, ad_names, ct,state):
+def __get_instances_info(compartment_name, compartment_id, reg_name, display_names, ad_names, export_tags, ct,state):
     config.__setitem__("region", ct.region_dict[reg_name])
     compute = oci.core.ComputeClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     network = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -102,10 +107,26 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
                 if (not any(e in AD_name for e in ad_names)):
                     continue
 
-            # Continue to next one if display names donot match the filter
+            # Continue to next one if display names do not match the filter
             if (display_names is not None):
                 if (not any(e in ins_dname for e in display_names)):
                     continue
+
+            # Tags filter
+            ins_defined_tags = ins.defined_tags
+            tags_list=[]
+            for tkey,tval in ins_defined_tags.items():
+                for kk,vv in tval.items():
+                    tag = tkey+"."+kk+"="+vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            #None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
 
             # Continue to next one if it's an OKE instance
             if 'oke-' in ins_dname:
@@ -113,7 +134,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
                 if 'Oracle-Tags' in ins_defined_tags.keys():
                     if 'CreatedBy' in ins_defined_tags['Oracle-Tags'].keys():
                         created_by = ins_defined_tags['Oracle-Tags']['CreatedBy']
-                        if created_by == 'oke':
+                        if ".nodepool." in created_by or created_by == 'oke':
                             continue
 
             ins_fd = ins.fault_domain  # FD
@@ -279,7 +300,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
 
 
 # Execution of the code begins here
-def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export_compartments=[], export_regions=[],display_names=[],ad_names=[]):
+def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export_compartments=[], export_regions=[],export_tags=[],display_names=[],ad_names=[]):
     cd3file = inputfile
 
     if ('.xls' not in cd3file):
@@ -330,7 +351,7 @@ def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export
         except Exception as e:
             pass
         for ntk_compartment_name in export_compartments:
-           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, display_names, ad_names,ct,state)
+           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, display_names, ad_names,export_tags,ct,state)
 
     # writing image ocids and SSH keys into variables file
     var_data = {}

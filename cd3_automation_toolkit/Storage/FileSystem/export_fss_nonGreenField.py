@@ -359,7 +359,7 @@ def __get_mount_info(cname, ntk_compartment_ids, compartment_id, reg, availabili
 
 
 # Execution of the code begins here
-def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_compartments=[], export_regions=[]):
+def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global tf_or_tofu
     tf_or_tofu = ct.tf_or_tofu
     tf_state_list = [tf_or_tofu, "state", "list"]

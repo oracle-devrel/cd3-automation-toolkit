@@ -110,7 +110,7 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
     if ct.identity_domain_enabled:
         for domain_key, idcs_endpoint in export_domains.items():
             domain_name = domain_key.split("@")[1]
-            domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,
+            domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                                        service_endpoint=idcs_endpoint)
             list_users_response = domain_client.list_users() # change this to pagination once api supports
             users = list_users_response.data.resources
@@ -143,12 +143,12 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
                     display_name = user_info.display_name
                     email = None
                     recovery_email = None
-
-                    for email_info in user_info.emails:
-                        if email_info.primary:
-                            email = email_info.value
-                        elif email_info.type == "recovery":
-                            recovery_email = email_info.value
+                    if hasattr(user_info.emails, "email_info"):
+                        for email_info in user_info.emails:
+                            if email_info.primary:
+                                email = email_info.value
+                            elif email_info.type == "recovery":
+                                recovery_email = email_info.value
 
 
                     tf_name = commonTools.check_tf_variable(username)

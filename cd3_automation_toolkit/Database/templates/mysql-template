@@ -1,0 +1,86 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+############################
+# MySQL Database System
+# MySQL Database System - tfvars
+# Allowed Values:
+# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Database--Prod" where "Database" is the parent of "Prod" compartment
+# configuration_id can be specified either as an OCID or in the format "compartment@name"
+############################
+mysql_db_system = {
+       ##Add New MySQL Database System for {{ region|lower }} here##
+}
+{% else %}
+    "{{ display_tf_name }}" = {
+            compartment_id                = "{{ compartment_name }}"
+            network_compartment_id       = "{{ network_compartment_id }}"
+            mysql_db_system_display_name                  = "{{ display_name }}"
+            mysql_db_system_description                   = "{{ description }}"
+            mysql_db_system_hostname_label               = "{{ hostname_label }}"
+            mysql_db_system_is_highly_available          = {{ is_highly_available|lower }}
+            mysql_db_system_availability_domain          = "{{ availability_domain }}"
+            mysql_db_system_fault_domain                 = "{{ fault_domain }}"
+            configuration_compartment_id = "{{ configuration_compartment_id }}"
+            configuration_id = "{{ configuration_id }}"
+            {% if depends_on_mysql_configuration %}
+            # Add explicit depends_on to ensure configuration is created first
+            depends_on = ["module.mysql_configurations[\"{{ configuration_id }}\"]"]
+            {% endif %}
+            mysql_shape_name                   = "{{ shape }}"
+            vcn_names                     = "{{ vcn_names }}"
+            subnet_id                    = "{{ subnet_id }}"
+            mysql_db_system_admin_username              = "{{ admin_username }}"
+            mysql_db_system_admin_password              = "{{ admin_password }}"
+            mysql_db_system_ip_address                  = "{{ ip_address }}"
+            mysql_db_system_backup_policy_is_enabled     = {{ backup_policy_is_enabled|lower }}
+            mysql_db_system_backup_policy_pitr_policy_is_enabled = {{ backup_policy_pitr_policy_is_enabled|lower }}
+            mysql_db_system_backup_policy_retention_in_days = {{ backup_policy_retention_in_days }}
+            mysql_db_system_backup_policy_window_start_time = "{{ backup_policy_window_start_time }}"
+            mysql_db_system_crash_recovery       = "{{ crash_recovery }}"
+            mysql_db_system_data_storage_size_in_gb      = {{ data_storage.data_storage_size_in_gb }}
+            mysql_db_system_database_management  = "{{ database_management }}"
+            mysql_db_system_deletion_policy_automatic_backup_retention = "{{ deletion_policy_automatic_backup_retention }}"
+            mysql_db_system_deletion_policy_final_backup = "{{ deletion_policy_final_backup }}"
+            mysql_db_system_deletion_policy_is_delete_protected = {{ deletion_policy_is_delete_protected|lower }}
+            mysql_db_system_maintenance_window_start_time = "{{ maintenance_window_start_time }}"
+            mysql_db_system_port             = {{ port }}
+            mysql_db_system_port_x             = {{ port_x }}
+            mysql_db_system_source_type             = "{{ source.source_type }}"
+            mysql_db_system_data_storage_is_auto_expand_enabled = {{ data_storage.is_auto_expand_storage_enabled|lower }}
+            mysql_db_system_secure_connections_certificate_type = "{{ secure_connections.certificate_generation_type }}"
+            mysql_db_system_secure_connections_is_ssl_enabled = {{ secure_connections.is_ssl_enabled|lower }}
+            {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+        },
+{% endif %}

@@ -153,6 +153,23 @@ def execute_options(options, *args, **kwargs):
                 with section(option.text):
                     option.callback(*args, **kwargs)
 
+def get_tags_list(resource_name=[]):
+    if devops:
+        input_tags_list = ct.tag_filter
+    else:
+        if resource_name == []:
+            resource_name = 'OCI resources'
+        tags_list_str = "\nEnter tags (comma separated without spaces if multiple) for {} which you want to export; Press 'Enter' to export all resources - eg TagNameSpace.TagKey1=TagValue1,TagNameSpace.TagKey2=TagValue2 : "
+        input_tags_list = input(tags_list_str.format(resource_name))
+
+    input_tags_list = list(map(lambda x: x.strip(), input_tags_list.split(','))) if input_tags_list else []
+    if input_tags_list ==[]:
+        print("\nFetching OCI resources with all Tags...")
+    else:
+        print("\nFetching OCI Resources with Tags... " + str(input_tags_list))
+    return input_tags_list
+
+
 def get_region_list(rm,vizoci):
     if rm == False and vizoci==False:
         if devops:
@@ -337,6 +354,25 @@ def validate_firewall_cd3(execute_all=False):
         print("Exiting CD3 Firewall Validation...")
 
 ################## Export Functions ##########################
+def export_all(prim_options=[]):
+    print("\n")
+    print("Exports all services supported by CD3 except OCI Network Firewall and Management Services.")
+    print("All tabs in input excel sheet will get over written.")
+    print("\n")
+    export_identityOptions(prim_options=["Export Compartments","Export Groups","Export Policies", "Export Users", "Export Network Sources"])
+    export_governance(prim_options=["Export Tags","Export Quotas"])
+    export_cost_management(prim_options=['Export Budgets'])
+    export_network(prim_options=["Export all Network Components"])
+    export_dns_management(prim_options=["Export DNS Views/Zones/Records","Export DNS Resolvers"],export_all=True)
+    export_compute(prim_options=["Export Dedicated VM Hosts","Export Instances (excludes instances launched by OKE)"],export_all=True)
+    export_storage(prim_options=["Export Block Volumes/Block Backup Policy","Export File Systems","Export Object Storage Buckets"],export_all=True)
+    export_databases(prim_options=["Export Virtual Machine or Bare Metal DB Systems","Export EXA Infra and EXA VMClusters",'Export ADBs','Export MySQL DBs'])
+    export_loadbalancer(prim_options=["Export Load Balancers","Export Network Load Balancers"])
+    export_developer_services(prim_options=["Export OKE cluster and Nodepools"])
+    export_security(prim_options=["Export KMS (Keys/Vaults)"])
+    print("-------------------------------------------------Exporting SDDCs  ---------------------------------------------------")
+    export_sddc(prim_options=[])
+
 def export_identityOptions(prim_options=[]):
     options = [Option("Export Compartments", export_compartments, 'Exporting Compartments'),
                Option("Export Groups",export_groups, 'Exporting Groups'),
@@ -362,7 +398,7 @@ def export_compartments(inputfile, outdir,config, signer, ct):
 
 def export_policies(inputfile, outdir,config, signer, ct):
     resource = 'IAM Policies'
-    compartments = ct.get_compartment_map(var_file, resource)
+    #compartments = ct.get_compartment_map(var_file, resource)
     Identity.export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_compartments=compartments)
     options = [Option(None, create_policies, 'Processing Policies Tab'), ]
     execute_options(options)
@@ -405,7 +441,7 @@ def export_governance(prim_options=[]):
     execute_options(options)
 
 def export_tags(prim_options=[]):
-    compartments = ct.get_compartment_map(var_file, 'Tagging Objects')
+    #compartments = ct.get_compartment_map(var_file, 'Tagging Objects')
     Governance.export_tags_nongreenfield(inputfile, outdir, service_dir_tagging, config, signer, ct, export_compartments=compartments)
     options = [Option(None, create_tags, 'Processing Tags Tab'), ]
     execute_options(options)
@@ -414,7 +450,7 @@ def export_tags(prim_options=[]):
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_tagging])
 
 def export_quotas(prim_options=[]):
-    Governance.export_quotas_nongreenfield(inputfile, outdir, service_dir_quota, config, signer, ct)
+    Governance.export_quotas_nongreenfield(inputfile, outdir, service_dir_quota, config, signer, ct, export_tags=export_tags_list)
     options = [Option(None, create_quotas, 'Processing Quotas Tab'), ]
     execute_options(options)
     print("\n\nExecute import_commands_quotas.sh script created under home region directory to synch TF with OCI Quota\n")
@@ -432,8 +468,7 @@ def export_cost_management(prim_options=[]):
     execute_options(options)
 
 def export_budget(prim_options=[]):
-    compartments = ct.get_compartment_map(var_file, 'Budgets')
-    CostManagement.export_budgets_nongreenfield(inputfile, outdir, service_dir_budget, config, signer, ct,export_regions)
+    CostManagement.export_budgets_nongreenfield(inputfile, outdir, service_dir_budget, config, signer, ct,export_regions,export_tags_list)
     options = [Option(None, create_budgets, 'Processing Budgets Tab')]
     execute_options(options)
     print("\n\nExecute import_commands_budgets.sh script created under each region directory to synch TF with OCI Tags\n")
@@ -461,7 +496,7 @@ def export_network(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions,export_tags_list)
 
     print("=====================================================================================================================")
     print("NOTE: Make sure to execute import_commands_network_major-objects.sh before executing the other scripts.")
@@ -473,11 +508,11 @@ def export_network(prim_options=[]):
     service_dirs = [service_dir_network, service_dir_nsg, service_dir_vlan,'rpc']
     update_path_list(regions_path=regions_path, service_dirs=service_dirs)
 
-def export_networking(inputfile, outdir,config, signer, ct, export_regions):
+def export_networking(inputfile, outdir,config, signer, ct, export_regions,export_tags_list):
     service_dirs = []
     service_dir = outdir_struct
-    compartments = ct.get_compartment_map(var_file,'Network Objects')
-    Network.export_networking(inputfile, outdir, service_dir,config, signer, ct, export_compartments=compartments, export_regions=export_regions)
+    #compartments = ct.get_compartment_map(var_file,'Network Objects')
+    Network.export_networking(inputfile, outdir, service_dir,config, signer, ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     options = [ Option(None, Network.create_major_objects, 'Processing VCNs and DRGs Tab'), ]
     execute_options(options, inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy)
 
@@ -510,10 +545,10 @@ def export_networking(inputfile, outdir,config, signer, ct, export_regions):
     for service in [service_dir_network,service_dir_vlan,service_dir_nsg]:
         service_dirs.append(service_dir_network) if service_dir_network not in service_dirs else service_dirs
 
-def export_major_objects(inputfile, outdir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'VCN Major Objects')
-    Network.export_major_objects(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions)
-    Network.export_drg_routetable(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
+def export_major_objects(inputfile, outdir, config, signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'VCN Major Objects')
+    Network.export_major_objects(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
+    Network.export_drg_routetable(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list, _tf_import_cmd=True)
     options = [
         Option(None, Network.create_major_objects, 'Processing VCNs and DRGs Tab'),
     ]
@@ -529,29 +564,35 @@ def export_major_objects(inputfile, outdir, config, signer, ct, export_regions):
     ]
     execute_options(options, inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy,network_connectivity_in_setupoci='', modify_network=False)
 
+    options = [
+    Option(None, Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
+    ]
+    execute_options(options, inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy)
+
+
     print("\n\nExecute import_commands_network_major-objects.sh and import_commands_network_drg_routerules.sh scripts created under each region directory to synch TF with OCI Network objects\n")
 
-def export_dhcp(inputfile, outdir,config,signer,ct,export_regions):
-    compartments = ct.get_compartment_map(var_file,'DHCP')
-    Network.export_dhcp(inputfile, outdir, service_dir_network,config, signer, ct, export_compartments=compartments, export_regions=export_regions)
+def export_dhcp(inputfile, outdir,config,signer,ct,export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'DHCP')
+    Network.export_dhcp(inputfile, outdir, service_dir_network,config, signer, ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     options = [
         Option(None, Network.create_terraform_dhcp_options, 'Processing DHCP Tab'),
         ]
     execute_options(options, inputfile, outdir, service_dir_network,prefix, ct, non_gf_tenancy)
     print("\n\nExecute import_commands_network_dhcp.sh script created under each region directory to synch TF with OCI Network objects\n")
 
-def export_secrules(inputfile, outdir,config,signer,ct,export_regions):
-    compartments = ct.get_compartment_map(var_file,'SecRulesInOCI')
-    Network.export_seclist(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
+def export_secrules(inputfile, outdir,config,signer,ct,export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'SecRulesInOCI')
+    Network.export_seclist(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list,_tf_import_cmd=True)
     options = [
         Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         ]
     execute_options(options, inputfile, outdir,service_dir_network, prefix, ct, non_gf_tenancy)
     print("\n\nExecute import_commands_network_secrules.sh script created under each region directory to synch TF with OCI Network objects\n")
 
-def export_routerules(inputfile, outdir,config,signer,ct,export_regions):
-    compartments = ct.get_compartment_map(var_file,'RouteRulesInOCI')
-    Network.export_routetable(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
+def export_routerules(inputfile, outdir,config,signer,ct,export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'RouteRulesInOCI')
+    Network.export_routetable(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list,_tf_import_cmd=True)
     options = [
         Option(None, Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
         ]
@@ -559,10 +600,10 @@ def export_routerules(inputfile, outdir,config,signer,ct,export_regions):
     print("\n\nExecute import_commands_network_routerules.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
-def export_subnets_vlans(inputfile, outdir,config,signer,ct,export_regions):
+def export_subnets_vlans(inputfile, outdir,config,signer,ct,export_regions,export_tags_list):
     service_dir = outdir_struct
-    compartments = ct.get_compartment_map(var_file,'Subnets')
-    Network.export_subnets_vlans(inputfile, outdir, service_dir,config, signer, ct, export_compartments=compartments, export_regions=export_regions)
+    #compartments = ct.get_compartment_map(var_file,'Subnets')
+    Network.export_subnets_vlans(inputfile, outdir, service_dir,config, signer, ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     options = [
         Option(None, Network.create_terraform_subnet_vlan, 'Processing SubnetsVLANs Tab for Subnets'),
     ]
@@ -579,9 +620,9 @@ def export_subnets_vlans(inputfile, outdir,config,signer,ct,export_regions):
     print("\nExecute import_commands_network_vlans.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
-def export_nsg(inputfile, outdir,config,signer,ct,export_regions):
-    compartments = ct.get_compartment_map(var_file,'NSGs')
-    Network.export_nsg(inputfile, outdir,service_dir_nsg, config,signer,ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
+def export_nsg(inputfile, outdir,config,signer,ct,export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'NSGs')
+    Network.export_nsg(inputfile, outdir,service_dir_nsg, config,signer,ct, export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list,_tf_import_cmd=True)
     options = [
         Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'),
         ]
@@ -597,11 +638,11 @@ def export_firewall_policies(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions,export_tags_list)
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_firewall])
 
-def export_firewallpolicy(inputfile, outdir, config, signer, ct, export_regions,name_filter=""):
-    compartments = ct.get_compartment_map(var_file, 'Firewall Policies')
+def export_firewallpolicy(inputfile, outdir, config, signer, ct, export_regions,export_tags_list,name_filter=""):
+    #compartments = ct.get_compartment_map(var_file, 'Firewall Policies')
     filter_str1 = "Enter comma separated list of display name patterns of the Policies or press \"ENTER\" to export all policies: "
     if not devops:
         policy_name_str = input(filter_str1)
@@ -609,18 +650,18 @@ def export_firewallpolicy(inputfile, outdir, config, signer, ct, export_regions,
         policy_name_str = ct.fwl_pol_pattern_filter if ct.fwl_pol_pattern_filter else None
 
     policies = list(map(lambda x: x.strip(), policy_name_str.split(','))) if policy_name_str else None
-    Security.export_firewallpolicy(inputfile, outdir, service_dir_firewall, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_policies=policies)
+    Security.export_firewallpolicy(inputfile, outdir, service_dir_firewall, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list,export_policies=policies)
     create_firewall_policy(inputfile, outdir, service_dir_firewall, prefix, ct,execute_all=True)
     print("\n\nExecute import_commands_firewallpolicy.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
 
-def export_firewalls(inputfile, outdir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file, 'Firewalls')
-    Security.export_firewall(inputfile, outdir, service_dir_firewall, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_firewalls(inputfile, outdir, config, signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file, 'Firewalls')
+    Security.export_firewall(inputfile, outdir, service_dir_firewall, config,signer,ct, export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list)
     create_firewall(inputfile, outdir, service_dir_firewall, prefix, ct)
     print("\n\nExecute import_commands_firewall.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
 
 
-def export_compute(prim_options=[]):
+def export_compute(prim_options=[],export_all=False):
     options = [Option("Export Dedicated VM Hosts", export_dedicatedvmhosts, 'Exporting Dedicated VM Hosts'),
                Option("Export Instances (excludes instances launched by OKE)", export_instances, 'Exporting Instances')]
 
@@ -628,11 +669,11 @@ def export_compute(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions,export_tags_list,export_all)
 
-def export_dedicatedvmhosts(inputfile, outdir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'Dedicated VM Hosts')
-    Compute.export_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, config, signer, ct, export_compartments=compartments, export_regions=export_regions)
+def export_dedicatedvmhosts(inputfile, outdir, config, signer, ct, export_regions,export_tags_list,export_all):
+    #compartments = ct.get_compartment_map(var_file,'Dedicated VM Hosts')
+    Compute.export_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, config, signer, ct, export_compartments=compartments, export_regions=export_regions, export_tags = export_tags_list)
     #create_compute(prim_options=['Add/Modify/Delete Dedicated VM Hosts'])
     options = [Option(None, create_dedicatedvmhosts, 'Processing Dedicated VM Hosts Tab'),]
     execute_options(options)
@@ -642,14 +683,18 @@ def export_dedicatedvmhosts(inputfile, outdir, config, signer, ct, export_region
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dedicated_vm_host])
 
 
-def export_instances(inputfile, outdir,config,signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'Instances')
+def export_instances(inputfile, outdir,config,signer, ct, export_regions,export_tags_list,export_all):
+    #compartments = ct.get_compartment_map(var_file,'Instances')
     print("Enter values for below filters to restrict the export for Instances; Press 'Enter' to use empty value for the filter")
     filter_str1 = "Enter comma separated list of display name patterns of the instances: "
     filter_str2 = "Enter comma separated list of ADs of the instances eg AD1,AD2,AD3: "
     if not devops:
-        display_name_str = input(filter_str1)
-        ad_name_str = input(filter_str2)
+        if export_all==True:
+            display_name_str=None
+            ad_name_str=None
+        else:
+            display_name_str = input(filter_str1)
+            ad_name_str = input(filter_str2)
     else:
         display_name_str = ct.ins_pattern_filter if ct.ins_pattern_filter else None
         ad_name_str = ct.ins_ad_filter if ct.ins_ad_filter else None
@@ -657,7 +702,7 @@ def export_instances(inputfile, outdir,config,signer, ct, export_regions):
     display_names =  list(map(lambda x: x.strip(), display_name_str.split(','))) if display_name_str else None
     ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
 
-    Compute.export_instances(inputfile, outdir, service_dir_instance,config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
+    Compute.export_instances(inputfile, outdir, service_dir_instance,config,signer,ct, export_compartments=compartments, export_regions=export_regions, export_tags = export_tags_list, display_names = display_names, ad_names = ad_names)
     options = [Option(None, create_instances, 'Processing Instances Tab'), ]
     execute_options(options)
     print("\n\nExecute import_commands_instances.sh script created under each region directory to synch TF with OCI Instances\n")
@@ -665,7 +710,7 @@ def export_instances(inputfile, outdir,config,signer, ct, export_regions):
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_instance])
 
 
-def export_storage(prim_options=[]):
+def export_storage(prim_options=[],export_all=False):
     options = [Option("Export Block Volumes/Block Backup Policy",export_block_volumes,'Exporting Block Volumes'),
                Option("Export File Systems", export_fss, 'Exporting FSS'),
                Option("Export Object Storage Buckets", export_buckets, 'Exporting Object Storage Buckets')]
@@ -673,16 +718,20 @@ def export_storage(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions,export_tags_list,export_all)
 
-def export_block_volumes(inputfile, outdir,config,signer,ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'Block Volumes')
+def export_block_volumes(inputfile, outdir,config,signer,ct, export_regions,export_tags_list,export_all):
+    #compartments = ct.get_compartment_map(var_file,'Block Volumes')
     print("Enter values for below filters to restrict the export for Block Volumes; Press 'Enter' to use empty value for the filter")
     filter_str1 = "Enter comma separated list of display name patterns of the Block Volumes: "
     filter_str2 = "Enter comma separated list of ADs of the Block Volumes eg AD1,AD2,AD3: "
     if not devops:
-        display_name_str = input(filter_str1)
-        ad_name_str = input(filter_str2)
+        if export_all==True:
+            display_name_str=None
+            ad_name_str=None
+        else:
+            display_name_str = input(filter_str1)
+            ad_name_str = input(filter_str2)
     else:
         display_name_str = ct.bv_pattern_filter if ct.bv_pattern_filter else None
         ad_name_str = ct.bv_ad_filter if ct.bv_ad_filter else None
@@ -690,7 +739,7 @@ def export_block_volumes(inputfile, outdir,config,signer,ct, export_regions):
     display_names = list(map(lambda x: x.strip(), display_name_str.split(','))) if display_name_str else None
     ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
 
-    Storage.export_blockvolumes(inputfile, outdir, service_dir_block_volume, config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
+    Storage.export_blockvolumes(inputfile, outdir, service_dir_block_volume, config,signer,ct, export_compartments=compartments, export_regions=export_regions, export_tags = export_tags_list, display_names = display_names, ad_names = ad_names)
     options = [Option(None, create_block_volumes, 'Processing BlockVolumes Tab'), ]
     execute_options(options)
     print("\n\nExecute import_commands_blockvolumes.sh script created under each region directory to synch TF with OCI Block Volume Objects\n")
@@ -698,9 +747,9 @@ def export_block_volumes(inputfile, outdir,config,signer,ct, export_regions):
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_block_volume])
 
 
-def export_fss(inputfile, outdir,config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'FSS objects')
-    Storage.export_fss(inputfile, outdir, service_dir_fss, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_fss(inputfile, outdir,config, signer, ct, export_regions,export_tags_list,export_all):
+    #compartments = ct.get_compartment_map(var_file,'FSS objects')
+    Storage.export_fss(inputfile, outdir, service_dir_fss, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags = export_tags_list)
     options = [Option(None, create_fss, 'Processing FSS Tab'), ]
     execute_options(options)
     print("\n\nExecute import_commands_fss.sh script created under each region directory to synch TF with OCI FSS objects\n")
@@ -708,9 +757,9 @@ def export_fss(inputfile, outdir,config, signer, ct, export_regions):
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_fss])
 
 
-def export_buckets(inputfile, outdir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file, 'Buckets')
-    Storage.export_buckets(inputfile, outdir, service_dir_object_storage, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_buckets(inputfile, outdir, config, signer, ct, export_regions,export_tags_list,export_all):
+    #compartments = ct.get_compartment_map(var_file, 'Buckets')
+    Storage.export_buckets(inputfile, outdir, service_dir_object_storage, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags = export_tags_list)
     options = [Option(None, create_buckets, 'Processing Buckets Tab'), ]
     execute_options(options)
     print("\n\nExecute import_commands_buckets.sh script created under each region directory to synch TF with OCI Object Storage Buckets\n")
@@ -725,11 +774,11 @@ def export_loadbalancer(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions,export_tags_list)
 
-def export_lbr(inputfile, outdir,config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'LBR objects')
-    Network.export_lbr(inputfile, outdir, service_dir_loadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_lbr(inputfile, outdir,config, signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'LBR objects')
+    Network.export_lbr(inputfile, outdir, service_dir_loadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     options = [Option(None, create_lb, 'Processing LBaaS Tabs'), ]
     execute_options(options)
     print("\n\nExecute import_commands_lbr.sh script created under each region directory to synch TF with OCI LBR objects\n")
@@ -737,9 +786,9 @@ def export_lbr(inputfile, outdir,config, signer, ct, export_regions):
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_loadbalancer])
 
 
-def export_nlb(inputfile, outdir,config,signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'NLB objects')
-    Network.export_nlb(inputfile, outdir, service_dir_networkloadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_nlb(inputfile, outdir,config,signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'NLB objects')
+    Network.export_nlb(inputfile, outdir, service_dir_networkloadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     options = [Option(None, create_nlb, 'Processing NLB Tabs'), ]
     execute_options(options)
     print("\n\nExecute import_commands_nlb.sh script created under each region directory to synch TF with OCI NLB objects\n")
@@ -752,11 +801,11 @@ def export_security(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions,export_tags_list)
 
-def export_kms(inputfile, outdir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file, 'KMS')
-    Security.export_keyvaults(inputfile, outdir, service_dir_kms, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_kms(inputfile, outdir, config, signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file, 'KMS')
+    Security.export_keyvaults(inputfile, outdir, service_dir_kms, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     options = [Option(None, create_kms, 'Processing KMS Tab')]
     execute_options(options)
     print("\n\nExecute import_commands_kms.sh script created under each region directory to synch TF with OCI Key Vaults\n")
@@ -767,16 +816,17 @@ def export_kms(inputfile, outdir, config, signer, ct, export_regions):
 def export_databases(prim_options=[]):
     options = [Option("Export Virtual Machine or Bare Metal DB Systems",export_dbsystems_vm_bm,'Exporting VM and BM DB Systems'),
                Option("Export EXA Infra and EXA VMClusters", export_exa_infra_vmclusters, 'Exporting EXA Infra and EXA VMClusters'),
-                Option('Export ADBs', export_adbs, 'Exporting Autonomous Databases')]
+               Option('Export ADBs', export_adbs, 'Exporting Autonomous Databases'),
+               Option('Export MySQL DBs', export_mysql, 'Exporting MySQL Databases and Configurations')]
     if prim_options:
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions,export_tags_list)
 
-def export_dbsystems_vm_bm(inputfile, outdir,config,signer, ct,export_regions):
-    compartments = ct.get_compartment_map(var_file,'VM and BM DB Systems')
-    Database.export_dbsystems_vm_bm(inputfile, outdir, service_dir_dbsystem_vm_bm, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
+def export_dbsystems_vm_bm(inputfile, outdir,config,signer, ct,export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'VM and BM DB Systems')
+    Database.export_dbsystems_vm_bm(inputfile, outdir, service_dir_dbsystem_vm_bm, config,signer,ct, export_compartments=compartments, export_regions= export_regions,export_tags=export_tags_list)
     options = [Option(None, create_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab')]
     execute_options(options)
     print("\n\nExecute import_commands_dbsystems-vm-bm.sh script created under each region directory to synch TF with DBSystems\n")
@@ -784,10 +834,10 @@ def export_dbsystems_vm_bm(inputfile, outdir,config,signer, ct,export_regions):
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dbsystem_vm_bm])
 
 
-def export_exa_infra_vmclusters(inputfile, outdir,config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'EXA Infra and EXA VMClusters')
-    Database.export_exa_infra(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
-    Database.export_exa_vmclusters(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
+def export_exa_infra_vmclusters(inputfile, outdir,config, signer, ct, export_regions, export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'EXA Infra and EXA VMClusters')
+    Database.export_exa_infra(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions,export_tags = export_tags_list)
+    Database.export_exa_vmclusters(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions, export_tags=export_tags_list)
     options = [Option(None, create_exa_infra_vmclusters, '')]
     execute_options(options)
     print("\n\nExecute import_commands_exa-infra.sh and import_commands_exa-vmclusters.sh scripts created under each region directory to synch TF with Exa-Infra and Exa-VMClusters\n")
@@ -795,14 +845,27 @@ def export_exa_infra_vmclusters(inputfile, outdir,config, signer, ct, export_reg
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_database_exacs])
 
 
-def export_adbs(inputfile, outdir,config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'ADBs')
-    Database.export_adbs(inputfile, outdir, service_dir_adb, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
+def export_adbs(inputfile, outdir,config, signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'ADBs')
+    Database.export_adbs(inputfile, outdir, service_dir_adb, config,signer,ct, export_compartments=compartments, export_regions= export_regions, export_tags=export_tags_list)
     options = [Option(None, create_adb, 'Processing ADB Tab')]
     execute_options(options)
     print("\n\nExecute import_commands_adb.sh script created under each region directory to synch TF with OCI ADBs\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_adb])
+
+
+def export_mysql(inputfile, outdir,config,signer, ct,export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file, 'MySQL DB Systems and Configurations')
+    Database.export_mysql_db(inputfile, outdir, service_dir_mysql_dbsystem, config, signer, ct,
+                          export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list)
+    Database.export_mysql_configuration(inputfile, outdir, service_dir_mysql_dbsystem, config, signer, ct,
+                                        export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list)
+    options = [Option(None, create_mysql, '')]
+    execute_options(options,execute_all=True)
+    print("\n\nExecute import_commands_mysql-dbsystems.sh and import_commands_mysql-configurations.sh scripts created under each region directory to synch TF with OCI MySQLs\n")
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_mysql_dbsystem])
+
 
 def export_management_services(prim_options=[]):
     options = [Option("Export Notifications",export_notifications,'Exporting Notifications'),
@@ -813,32 +876,32 @@ def export_management_services(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, service_dir_managementservices, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, service_dir_managementservices, config, signer, ct, export_regions, export_tags_list)
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_managementservices])
 
 
-def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'Notifications')
-    ManagementServices.export_notifications(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_regions, export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'Notifications')
+    ManagementServices.export_notifications(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     create_management_services(prim_options=['Add/Modify/Delete Notifications'])
     print("\n\nExecute import_commands_notifications.sh script created under each region directory to synch TF with OCI Notifications\n")
 
-def export_events(inputfile, outdir, service_dir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'Events')
-    ManagementServices.export_events(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_events(inputfile, outdir, service_dir, config, signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'Events')
+    ManagementServices.export_events(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list)
     create_management_services(prim_options=['Add/Modify/Delete Events'])
     print("\n\nExecute import_commands_events.sh script created under each region directory to synch TF with OCI Events\n")
 
-def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'Alarms')
-    ManagementServices.export_alarms(inputfile, outdir, service_dir, config,signer,ct,  export_compartments=compartments, export_regions=export_regions)
+def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_regions, export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'Alarms')
+    ManagementServices.export_alarms(inputfile, outdir, service_dir, config,signer,ct,  export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list)
     create_management_services(prim_options=['Add/Modify/Delete Alarms'])
     print("\n\nExecute import_commands_alarms.sh script created under each region directory to synch TF with OCI Alarms\n")
 
-def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'Service Connectors')
-    ManagementServices.export_service_connectors(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'Service Connectors')
+    ManagementServices.export_service_connectors(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     create_management_services(prim_options=['Add/Modify/Delete ServiceConnectors'])
     print("\n\nExecute import_commands_serviceconnectors.sh script created under each region directory to synch TF with OCI Service Connectors\n")
 
@@ -849,11 +912,11 @@ def export_developer_services(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, config, signer, ct, export_regions,export_tags_list)
 
-def export_oke(inputfile, outdir, config,signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file,'OKE')
-    DeveloperServices.export_oke(inputfile, outdir, service_dir_oke,config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+def export_oke(inputfile, outdir, config,signer, ct, export_regions,export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'OKE')
+    DeveloperServices.export_oke(inputfile, outdir, service_dir_oke,config,signer,ct, export_compartments=compartments, export_regions=export_regions, export_tags=export_tags_list)
     options = [Option(None, create_oke, 'Processing OKE Tab')]
     execute_options(options,inputfile, outdir, prefix, '', '', ct)
     print("\n\nExecute import_commands_oke.sh script created under each region directory to synch TF with OKE\n")
@@ -862,14 +925,14 @@ def export_oke(inputfile, outdir, config,signer, ct, export_regions):
 
 
 def export_sddc(prim_options=[]):
-    compartments = ct.get_compartment_map(var_file,'SDDCs')
-    SDDC.export_sddc(inputfile, outdir, service_dir_sddc,config,signer,ct, export_compartments=compartments, export_regions=export_regions)
+    #compartments = ct.get_compartment_map(var_file,'SDDCs')
+    SDDC.export_sddc(inputfile, outdir, service_dir_sddc,config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     SDDC.create_terraform_sddc(inputfile, outdir, service_dir_sddc, prefix, ct)
     print("\n\nExecute import_commands_sddcs.sh script created under each region directory to synch TF with SDDC\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_sddc])
 
-def export_dns_management(prim_options=[]):
+def export_dns_management(prim_options=[],export_all=False):
     options = [Option("Export DNS Views/Zones/Records", export_dns_views_zones_rrsets,
                       'Exporting DNS Views/Zones/Records'),
                Option("Export DNS Resolvers", export_dns_resolvers, 'Exporting DNS Resolvers')
@@ -878,16 +941,19 @@ def export_dns_management(prim_options=[]):
         options = match_options(options, prim_options)
     else:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, service_dir_dns, config, signer, ct, export_regions)
+    execute_options(options, inputfile, outdir, service_dir_dns, config, signer, ct, export_regions,export_tags_list,export_all)
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dns])
 
 
-def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file, 'DNS Views ,attached zones and rrsets')
+def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer, ct, export_regions,export_tags_list,export_all):
+    #compartments = ct.get_compartment_map(var_file, 'DNS Views ,attached zones and rrsets')
     filter_str1 = "Do you want to export default views/zones/records (y|n), Default is n: "
     if not devops:
-        dns_filter = "n" if input(filter_str1).lower() != 'y' else "y"
+        if export_all==True:
+            dns_filter = "n"
+        else:
+            dns_filter = "n" if input(filter_str1).lower() != 'y' else "y"
     else:
         dns_filter = None
         if ct.default_dns:
@@ -896,12 +962,12 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
             if ct.default_dns.lower() == "true":
                 dns_filter = "y"
         dns_filter = dns_filter if dns_filter else None
-    Network.export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer, ct, dns_filter=dns_filter, export_compartments=compartments, export_regions=export_regions)
+    Network.export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer, ct, dns_filter=dns_filter, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     options = [Option(None, create_dns, 'Processing DNS-Views-Zones-Records Tab')]
     execute_options(options)
-def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_regions):
-    compartments = ct.get_compartment_map(var_file, 'DNS Resolvers')
-    Network.export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions=export_regions)
+def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_regions, export_tags_list,export_all):
+    #compartments = ct.get_compartment_map(var_file, 'DNS Resolvers')
+    Network.export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions=export_regions,export_tags=export_tags_list)
     options = [Option(None, create_dns_resolvers, 'Processing DNS-Resolvers Tab')]
     execute_options(options)
 
@@ -1117,7 +1183,8 @@ def export_modify_security_rules(inputfile, outdir, service_dir, prefix, ct, non
 
 def export_security_rules(inputfile, outdir, service_dir, config, signer, ct, non_gf_tenancy):
     compartments = ct.get_compartment_map(var_file, 'OCI Security Rules')
-    Network.export_seclist(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions= export_regions, _tf_import_cmd=False)
+    export_tags_list = get_tags_list('OCI Security Rules')
+    Network.export_seclist(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions= export_regions, export_tags=export_tags_list, _tf_import_cmd=False)
 
 def export_modify_route_rules(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy,sub_options=[]):
     execute_all = False
@@ -1142,7 +1209,8 @@ def export_modify_route_rules(inputfile, outdir, service_dir, prefix, ct, non_gf
 
 def export_route_rules(inputfile, outdir, service_dir, config, signer, ct, non_gf_tenancy):
     compartments = ct.get_compartment_map(var_file, 'OCI Route Rules')
-    Network.export_routetable(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions= export_regions, _tf_import_cmd=False)
+    export_tags_list = get_tags_list('OCI Route Rules')
+    Network.export_routetable(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions= export_regions, export_tags=export_tags_list,_tf_import_cmd=False)
 
 def export_modify_drg_route_rules(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy,sub_options=[]):
     execute_all = False
@@ -1167,7 +1235,8 @@ def export_modify_drg_route_rules(inputfile, outdir, service_dir, prefix, ct, no
 
 def export_drg_route_rules(inputfile, outdir, service_dir, config, signer, ct, non_gf_tenancy):
     compartments = ct.get_compartment_map(var_file,'OCI DRG Route Rules')
-    Network.export_drg_routetable(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions= export_regions, _tf_import_cmd=False)
+    export_tags_list = get_tags_list('OCI DRG Route Rules')
+    Network.export_drg_routetable(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions= export_regions, export_tags=export_tags_list,_tf_import_cmd=False)
 
 
 def export_modify_nsgs(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy,sub_options=[]):
@@ -1185,7 +1254,8 @@ def export_modify_nsgs(inputfile, outdir, service_dir, prefix, ct, non_gf_tenanc
 
 def export_nsgs(inputfile, outdir, service_dir, prefix, ct):
     compartments = ct.get_compartment_map(var_file,'OCI NSGs')
-    Network.export_nsg(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions= export_regions, _tf_import_cmd=False)
+    export_tags_list = get_tags_list('OCI NSGs')
+    Network.export_nsg(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions= export_regions, export_tags=export_tags_list, _tf_import_cmd=False)
 
 def create_vlans(inputfile, outdir, service_dir,  prefix,ct, non_gf_tenancy, network_vlan_in_setupoci='vlan'):
     Network.create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy=non_gf_tenancy, network_vlan_in_setupoci='vlan',modify_network=True)
@@ -1333,12 +1403,12 @@ def create_nlb():
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_networkloadbalancer])
 
-
 def create_databases(execute_all=False,prim_options=[]):
     options = [
         Option('Add/Modify/Delete Virtual Machine or Bare Metal DB Systems', create_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab'),
         Option('Add/Modify/Delete EXA Infra and EXA VM Clusters', create_exa_infra_vmclusters, ''),
         Option('Add/Modify/Delete ADBs', create_adb, 'Processing ADB Tab'),
+        Option('Add/Modify/Delete MySQL DBs', create_mysql,''),
     ]
     if prim_options:
         options = match_options(options, prim_options)
@@ -1365,6 +1435,15 @@ def create_adb():
     Database.create_terraform_adb(inputfile, outdir, service_dir_adb, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_adb])
+
+def create_mysql(execute_all=False,prim_options=[]):
+    options = [
+        Option('Add/Modify/Delete MySQL DB Systems', Database.create_terraform_mysql_db, 'Processing MySQL-DBSystems Tab'),
+        Option('Add/Modify/Delete MySQL Configurations', Database.create_terraform_mysql_configuration, 'Processing MySQL-Configurations Tab'),
+    ]
+    execute_options(options, inputfile, outdir, service_dir_mysql_dbsystem, prefix, ct)
+    # Update modified path list
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_mysql_dbsystem])
 
 
 def create_management_services(execute_all=False,prim_options=[]):
@@ -1980,7 +2059,9 @@ def create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_al
             Option('Add/Modify/Delete Decryption Rules', Security.fwpolicy_create_decryptrules,
                    'Processing Firewall-Policy-DecryptRule Tab'),
             Option('Add/Modify/Delete Decryption Profile', Security.fwpolicy_create_decryptionprofile,
-                   'Processing Firewall-Policy-DecryptProfile Tab'),
+                   'Processing Firewall-Policy-Decryption Tab'),
+            Option('Add/Modify/Delete Tunnel Inspection Rules', Security.fwpolicy_create_tunnelinspect,
+               'Processing Firewall-Policy-TunnelInspect Tab'),
         ]
     if sub_options and sub_options != ['']:
         options = match_options(options, sub_options)
@@ -2175,7 +2256,11 @@ if non_gf_tenancy:
     print("\nworkflow_type set to export_resources. Export existing OCI objects and Synch with TF state")
     print("We recommend to not have any existing tfvars/tfstate files for export out directory")
     export_regions = get_region_list(rm=False,vizoci=False)
+    compartments = ct.get_compartment_map(var_file, "OCI Resources")
+    export_tags_list = get_tags_list()
+
     inputs = [
+        Option("Export All OCI Resources", export_all, "OCI Resources"),
         Option('Export Identity', export_identityOptions, 'Identity'),
         Option('Export Governance', export_governance, 'Governance'),
         Option('Export Cost Management', export_cost_management, 'Cost Management'),
@@ -2228,7 +2313,7 @@ else:
     menu = True
     while menu:
         if non_gf_tenancy:
-            options = show_options(inputs, quit=True, index=1)
+            options = show_options(inputs, quit=True, index=0)
         else:
             options = show_options(inputs, quit=True, extra='\nSee example folder for sample input files\n', index=0)
         if 'q' in options:

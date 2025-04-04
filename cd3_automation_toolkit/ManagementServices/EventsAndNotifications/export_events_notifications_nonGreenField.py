@@ -169,7 +169,7 @@ def events_rows(values_for_column_events, region, ntk_compartment_name, event_na
             values_for_column_events = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_events,values_for_column_events)
 
 # Execution for Events export starts here
-def export_events(inputfile, outdir, service_dir, config, signer, ct,export_compartments=[], export_regions=[]):
+def export_events(inputfile, outdir, service_dir, config, signer, ct,export_compartments=[], export_regions=[],export_tags=[]):
     global rows
     global tf_import_cmd
     global values_for_column_events
@@ -230,6 +230,23 @@ def export_events(inputfile, outdir, service_dir, config, signer, ct,export_comp
 
             for event in evts.data:
                 event_info = evt.get_rule(event.id).data
+
+                # Tags filter
+                defined_tags = event_info.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun,state)
 
             ievts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
@@ -237,6 +254,23 @@ def export_events(inputfile, outdir, service_dir, config, signer, ct,export_comp
 
             for event in ievts.data:
                 event_info = evt.get_rule(event.id).data
+
+                # Tags filter
+                defined_tags = event_info.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun,state)
 
     commonTools.write_to_cd3(values_for_column_events, cd3file, sheetName)
@@ -252,7 +286,7 @@ def export_events(inputfile, outdir, service_dir, config, signer, ct,export_comp
                 importCommandsfile.write(init_commands + importCommands[reg])
 
 # Execution for Notifications export starts here
-def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global rows
     global tf_import_cmd
     global values_for_column_events
@@ -311,12 +345,44 @@ def export_notifications(inputfile, outdir, service_dir, config, signer, ct, exp
 
                 #sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 for topic in topics.data:
+
+                    # Tags filter
+                    defined_tags = topic.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     total_resources+=1
                     #subscriptions get created in same comp as topic
                     sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],topic_id = topic.topic_id)
                     i=0
                     sbpn = None
                     for sbpn in sbpns.data:
+                        # Tags filter
+                        defined_tags = sbpn.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            continue
                         i=i+1
                         print_notifications(values_for_column_notifications, region, ntk_compartment_name, sbpn,topic, i, fun,state)
                     # Empty Topic - No Subscription in the same compartment as Topic's

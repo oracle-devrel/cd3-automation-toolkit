@@ -117,7 +117,7 @@ def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name,
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 # Execution of the code begins here
-def export_adbs(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
+def export_adbs(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -176,6 +176,24 @@ def export_adbs(inputfile, outdir, service_dir, config, signer, ct, export_compa
             adbs = oci.pagination.list_call_get_all_results(adb_client.list_autonomous_databases,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
             for adb in adbs.data:
                 adb = adb_client.get_autonomous_database(adb.id).data
+
+                # Tags filter
+                defined_tags = adb.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags==[]:
+                    check=True
+                else:
+                    check = any(e in tags_list for e in export_tags )
+
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name,state,ct)
 
 

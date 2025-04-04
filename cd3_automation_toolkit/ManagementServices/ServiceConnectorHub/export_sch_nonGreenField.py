@@ -18,7 +18,7 @@ oci_obj_names = {}
 
 
 def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_client, stream_client,
-                           notification_client, func_client, ct, values_for_column, ntk_compartment_name,state):
+                           notification_client, func_client, ct, values_for_column, ntk_compartment_name,export_tags,state):
     volume_comp = ""
     log_source_list = []
     target_la_string = ""
@@ -39,6 +39,23 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
 
     for schs in SCH_LIST.data:
         sch_details = sch_client.get_service_connector(service_connector_id=schs.id)
+
+        # Tags filter
+        defined_tags = sch_details.data.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
+
         sch_id = schs.id
         sch_compartment_id = schs.compartment_id
 
@@ -298,7 +315,7 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
 
 # Execution of the code begins here
 def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],
-                              export_regions=[]):
+                              export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -368,7 +385,7 @@ def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct
                                                                 sort_by="timeCreated")
             get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_client,
                                    stream_client, notification_client, func_client, ct, values_for_column,
-                                   ntk_compartment_name,state)
+                                   ntk_compartment_name,export_tags, state)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print("{0} Service Connectors exported into CD3.\n".format(len(values_for_column["Region"])))

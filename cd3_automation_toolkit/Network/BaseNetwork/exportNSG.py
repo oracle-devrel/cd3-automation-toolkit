@@ -161,7 +161,7 @@ def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg,state):
         importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(nsg.id)}'
 
 # Execution of the code begins here
-def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartments,export_regions,_tf_import_cmd):
+def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartments,export_regions,export_tags,_tf_import_cmd):
     global tf_import_cmd
     global values_for_column_nsgs
     global sheet_dict_nsgs
@@ -215,6 +215,22 @@ def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartm
                                                             lifecycle_state="AVAILABLE")
 
             for vcn in vcns.data:
+                # Tags filter
+                defined_tags = vcn.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 vcn_info = vnc.get_vcn(vcn.id).data
                 for ntk_compartment_name_again in export_compartments:
                     NSGs = oci.pagination.list_call_get_all_results(vnc.list_network_security_groups,
@@ -223,6 +239,21 @@ def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartm
                                                                     lifecycle_state="AVAILABLE")
 
                     for nsg in NSGs.data:
+                        # Tags filter
+                        defined_tags = nsg.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            continue
                         NSGSLs = oci.pagination.list_call_get_all_results(vnc.list_network_security_group_security_rules, network_security_group_id= nsg.id, sort_by="TIMECREATED")
                         i = 1
                         for nsgsl in NSGSLs.data:

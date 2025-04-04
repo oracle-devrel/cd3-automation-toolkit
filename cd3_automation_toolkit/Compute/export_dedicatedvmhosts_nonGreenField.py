@@ -19,7 +19,24 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def print_dedicatedvmhosts(region, dedicatedvmhost, values_for_column, ntk_compartment_name,state):
+def print_dedicatedvmhosts(region, dedicatedvmhost, values_for_column, ntk_compartment_name,export_tags, state):
+
+    # Tags filter
+    defined_tags = dedicatedvmhost.defined_tags
+    tags_list = []
+    for tkey, tval in defined_tags.items():
+        for kk, vv in tval.items():
+            tag = tkey + "." + kk + "=" + vv
+            tags_list.append(tag)
+
+    if export_tags == []:
+        check = True
+    else:
+        check = any(e in tags_list for e in export_tags)
+    # None of Tags from export_tags exist on this instance; Dont export this instance
+    if check == False:
+        return
+
     dedicatedvmhost_tf_name = commonTools.check_tf_variable(dedicatedvmhost.display_name)
     tf_resource = f'module.dedicated-hosts[\\"{dedicatedvmhost_tf_name}\\"].oci_core_dedicated_vm_host.dedicated_vm_host'
     if tf_resource not in state["resources"]:
@@ -47,7 +64,7 @@ def print_dedicatedvmhosts(region, dedicatedvmhost, values_for_column, ntk_compa
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 # Execution of the code begins here
-def export_dedicatedvmhosts(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_dedicatedvmhosts(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -102,11 +119,12 @@ def export_dedicatedvmhosts(inputfile, outdir, service_dir, config, signer, ct, 
         compute_client = oci.core.ComputeClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
         for ntk_compartment_name in export_compartments:
+
             dedicatedvmhosts = oci.pagination.list_call_get_all_results(compute_client.list_dedicated_vm_hosts,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="ACTIVE")
 
             for dedicatedvmhost in dedicatedvmhosts.data:
                 dedicatedvmhost=compute_client.get_dedicated_vm_host(dedicatedvmhost.id).data
-                print_dedicatedvmhosts(region, dedicatedvmhost,values_for_column, ntk_compartment_name,state)
+                print_dedicatedvmhosts(region, dedicatedvmhost,values_for_column, ntk_compartment_name,export_tags,state)
 
     # writing data
     for reg in export_regions:
