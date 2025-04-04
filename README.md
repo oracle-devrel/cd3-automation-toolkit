@@ -7,7 +7,7 @@
 
 <br>
 
-  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.4.2) &nbsp;•&nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/excel-templates/) &nbsp;•&nbsp;[CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp;•&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;•&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/tutorials/) &nbsp;•&nbsp;[Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724) &nbsp;•&nbsp;[Slack Channel](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/queries) 
+  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.4.3) &nbsp;•&nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/excel-templates/) &nbsp;•&nbsp;[CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp;•&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;•&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/tutorials/) &nbsp;•&nbsp;[Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724) &nbsp;•&nbsp;[Slack Channel](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/queries) 
   
 <br>
 
@@ -21,7 +21,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 🚀 Click the below button to quickly launch CD3 toolkit container in Oracle Cloud and start managing your Infra as Code. 
 <br>
 
-[![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)
+[![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/main.zip)
 
 <br>
 
@@ -81,7 +81,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 
 📝 Creating Terraform Code for each module/resource can be cumbersome and requires Terraform expertise.
 
-🔁 Manually created infrastrucutre is hard to rebuild for different environments or regions.
+🔁 Manually created infrastructure is hard to rebuild for different environments or regions.
 
 <br>
 
@@ -90,7 +90,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 
 The toolkit transforms input data from Excel files into Terraform files, enabling seamless creation of infrastructure in OCI.
 
-**CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and IaC(terraform) to gain complete control over your OCI resources lifecycle. 
+**CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and IaC(terraform) and continue to manage your OCI resources using CD3.
 
 📜 The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing DevOps CI/CD ecosystem.
 
@@ -138,10 +138,10 @@ This project is open source.  Please submit your contributions by raising an <b>
 <br>
 
 ## ⚠️ License
-Copyright (c) 2022 Oracle and/or its affiliates.
+Copyright (c) 2024 Oracle and/or its affiliates.
 
 Licensed under the Universal Permissive License (UPL), Version 1.0.
 
-See [LICENSE](LICENSE) for more details. 
+See [LICENSE](LICENSE.txt) for more details. 
 
 ORACLE AND ITS AFFILIATES DO NOT PROVIDE ANY WARRANTY WHATSOEVER, EXPRESS OR IMPLIED, FOR ANY SOFTWARE, MATERIAL OR CONTENT OF ANY KIND CONTAINED OR PRODUCED WITHIN THIS REPOSITORY, AND IN PARTICULAR SPECIFICALLY DISCLAIM ANY AND ALL IMPLIED WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.  FURTHERMORE, ORACLE AND ITS AFFILIATES DO NOT REPRESENT THAT ANY CUSTOMARY SECURITY REVIEW HAS BEEN PERFORMED WITH RESPECT TO ANY SOFTWARE, MATERIAL OR CONTENT CONTAINED OR PRODUCED WITHIN THIS REPOSITORY. IN ADDITION, AND WITHOUT LIMITING THE FOREGOING, THIRD PARTIES MAY HAVE POSTED SOFTWARE, MATERIAL OR CONTENT TO THIS REPOSITORY WITHOUT ANY REVIEW. USE AT YOUR OWN RISK.
