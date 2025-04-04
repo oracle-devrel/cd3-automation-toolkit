@@ -45,8 +45,24 @@ def insert_values(values_for_column,oci_objs, region, comp_name, vcn_name, rulet
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict,values_for_column)
 
 
-def print_secrules(seclists,region,vcn_name,comp_name,state):
+def print_secrules(seclists,region,vcn_name,comp_name,export_tags,state):
     for seclist in seclists.data:
+        # Tags filter
+        defined_tags = seclist.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
+
         isec_rules = seclist.ingress_security_rules
         esec_rules = seclist.egress_security_rules
         display_name = seclist.display_name
@@ -210,7 +226,7 @@ def print_secrules(seclists,region,vcn_name,comp_name,state):
                 print(printstr)
 
 # Execution of the code begins here
-def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_compartments,export_regions,_tf_import_cmd):
+def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_compartments,export_regions,export_tags,_tf_import_cmd):
     global tf_import_cmd
     global values_for_column
     global sheet_dict
@@ -245,6 +261,8 @@ def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_comp
                                         "import_commands_network_secrules.sh")
             importCommands[reg] = ''
 
+    else:
+        vcns_check = parseVCNs(cd3file)
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
@@ -262,11 +280,34 @@ def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_comp
         for ntk_compartment_name in export_compartments:
                 vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 for v in vcns.data:
+                    # Tags filter
+                    defined_tags = v.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     vcn_id = v.id
                     vcn_name=v.display_name
+                    if not tf_import_cmd:
+                        # Process only those VCNs which are present in cd3(and have been created via TF)
+                        check = vcn_name, reg
+                        #rtname = str(df.loc[i, 'Route Table Name']).strip()
+                        if (check not in vcns_check.vcn_names):
+                            print(f'skipping sec list as its vcn {vcn_name} is not in VCNs tab')
+                            continue
                     for ntk_compartment_name_again in export_compartments:
                             seclists = oci.pagination.list_call_get_all_results(vcn.list_security_lists,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
-                            print_secrules(seclists,region,vcn_name,ntk_compartment_name_again,state)
+                            print_secrules(seclists,region,vcn_name,ntk_compartment_name_again,export_tags,state)
 
     commonTools.write_to_cd3(values_for_column,cd3file,"SecRulesinOCI")
     print("SecRules exported to CD3\n")

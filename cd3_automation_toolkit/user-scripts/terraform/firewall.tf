@@ -168,6 +168,20 @@ module "decryption_rules" {
   secret                     = each.value.secret
 }
 
+module "tunnelinspect_rules" {
+  source                     = "./modules/security/firewall/tunnel-inspect"
+  for_each                   = var.tunnelinspect_rules != null ? var.tunnelinspect_rules : {}
+  depends_on                 = [module.policies, module.address_lists]
+  action                     = each.value.action
+  rule_name                  = each.value.rule_name
+  network_firewall_policy_id = length(regexall("ocid1.networkfirewallpolicy.oc*", each.value.network_firewall_policy_id)) > 0 ? each.value.network_firewall_policy_id : merge(module.policies.*...)[each.value.network_firewall_policy_id]["policy_tf_id"]
+  source_address             = each.value.condition[0].source_address != null ? each.value.condition[0].source_address : []
+  destination_address        = each.value.condition[0].destination_address != null ? each.value.condition[0].destination_address : []
+  after_rule                 = each.value.after_rule
+  before_rule                = each.value.before_rule
+  protocol        = each.value.protocol
+}
+
 
 #############################
 # Module Block - Network Firewall Logging

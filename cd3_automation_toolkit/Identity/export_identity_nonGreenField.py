@@ -357,11 +357,13 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
         if ct.identity_domain_enabled:
             for domain_key, idcs_endpoint in export_domains.items():
                 domain_name = domain_key.split("@")[1]
-                domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,
+                domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                                            service_endpoint=idcs_endpoint)
                 list_groups_response = domain_client.list_groups(attributes=['members'], attribute_sets=['all'])
                 groups = list_groups_response.data.resources
-                while list_groups_response.has_next_page:
+                page_done = []
+                while list_groups_response.has_next_page and list_groups_response.next_page not in page_done:
+                    page_done.append(list_groups_response.next_page)
                     list_groups_response = domain_client.list_groups(attributes=['members'], attribute_sets=['all'],page=list_groups_response.next_page)
                     groups.extend(list_groups_response.data.resources)
 

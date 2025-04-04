@@ -106,7 +106,7 @@ dbsystems_vm_bm = {
             {% if nsgs %}
             nsg_ids                 = [{{ nsgs }}]
             {%else%}
-            nsg_ids                 = null
+            nsg_ids                 = []
             {% endif %}
 
             {% if db_system_display_name %}

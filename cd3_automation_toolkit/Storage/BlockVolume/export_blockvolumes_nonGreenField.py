@@ -62,9 +62,25 @@ def volume_attachment_info(compute,ct,volume_id,export_compartments):
     return attachments,attachment_id, instance_name, attachment_type
 
 
-def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names,export_compartments,state):
+def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names,export_compartments,export_tags, state):
     volume_comp = ''
     for blockvols in BVOLS.data:
+        # Tags filter
+        defined_tags = blockvols.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
+
         volume_id = blockvols.id
         volume_compartment_id = blockvols.compartment_id
         AD_name = blockvols.availability_domain
@@ -123,7 +139,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             source_ocids[commonTools.check_tf_variable(blockvols.display_name.strip())] = tmp_key
         autotune_type = ''
         max_vpus_per_gb = ''
-        if len(blockvols.autotune_policies) == 0:
+        if blockvols.autotune_policies == None:
             autotune_type = ''
             max_vpus_per_gb = ''
         elif len(blockvols.autotune_policies) == 1:
@@ -198,7 +214,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 # Execution of the code begins here
-def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[], display_names = [], ad_names = []):
+def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[], export_tags=[],display_names = [], ad_names = []):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -252,7 +268,7 @@ def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, expo
 
         for ntk_compartment_name in export_compartments:
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
-                print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names, export_compartments,state)
+                print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names, export_compartments,export_tags, state)
 
         # writing volume source into variables file
         var_data = {}

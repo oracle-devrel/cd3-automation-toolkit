@@ -21,12 +21,28 @@ from commonTools import *
 importCommands = {}
 oci_obj_names = {}
 
-def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, nlb_compartment_name,cmpt,vcn,nlb,state):
+def print_nlb_backendset_backendserver(region, values_for_column_bss,NLBs, nlb_compartment_name,cmpt,vcn,nlb,export_tags, state, ct):
 
     for eachnlb in NLBs.data:
         cnt_bss = 0
         nlb_display_name = eachnlb.display_name
         tf_name = commonTools.check_tf_variable(nlb_display_name)
+
+        # Tags filter
+        defined_tags = eachnlb.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
 
         # Filter out the NLBs provisioned by oke
         eachnlb_defined_tags = eachnlb.defined_tags
@@ -144,8 +160,26 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
     return values_for_column_bss
 
 
-def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartment_name,vcn,ct,state):
+def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartment_name,vcn,export_tags,ct,state):
+
     for eachnlb in NLBs.data:
+
+        # Tags filter
+        defined_tags = eachnlb.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
+
 
         # Filter out the NLBs provisioned by oke
         eachnlb_defined_tags = eachnlb.defined_tags
@@ -283,7 +317,7 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
     return values_for_column_lis
 
 # Execution of the code begins here
-def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compartments, export_regions):
+def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compartments, export_regions,export_tags):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -297,6 +331,7 @@ def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compart
     global listener_to_cd3,tf_or_tofu
     tf_or_tofu = ct.tf_or_tofu
     tf_state_list = [tf_or_tofu, "state", "list"]
+    total_resources = 0
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -320,7 +355,6 @@ def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compart
 
     file_name = 'import_commands_nlb.sh'
     resource = 'import_nlb'
-    total_resources = 0
 
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
@@ -350,10 +384,27 @@ def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compart
                 NLBs = oci.pagination.list_call_get_all_results(nlb.list_network_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
                 if NLBs.data != [] and importCommands[reg] == '':
-                    total_resources += len(NLBs.data)
+                    for eachnlb in NLBs.data:
 
-                values_for_column_lis = print_nlb_listener(region, outdir, values_for_column_lis,NLBs,compartment_name,vcn,ct,state)
-                values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs,compartment_name,cmpt,vcn,nlb,state)
+                        # Tags filter
+                        defined_tags = eachnlb.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            continue
+                        total_resources +=1
+
+                values_for_column_lis = print_nlb_listener(region, outdir, values_for_column_lis,NLBs,compartment_name,vcn,export_tags,ct,state)
+                values_for_column_bss = print_nlb_backendset_backendserver(region, values_for_column_bss,NLBs,compartment_name,cmpt,vcn,nlb,export_tags, state,ct)
 
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "NLB-Listeners")
     commonTools.write_to_cd3(values_for_column_bss, cd3file, "NLB-BackendSets-BackendServers")

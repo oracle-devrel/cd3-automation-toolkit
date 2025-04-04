@@ -48,7 +48,7 @@ def print_exa_infra(region, exa_infra, values_for_column, ntk_compartment_name,s
 # Execution of the code begins here
 
 
-def export_exa_infra(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_exa_infra(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -105,6 +105,22 @@ def export_exa_infra(inputfile, outdir, service_dir, config, signer, ct, export_
         for ntk_compartment_name in export_compartments:
             exa_infras = oci.pagination.list_call_get_all_results(db_client.list_cloud_exadata_infrastructures,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
             for exa_infra in exa_infras.data:
+                # Tags filter
+                defined_tags = exa_infra.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 print_exa_infra(region, exa_infra,values_for_column, ntk_compartment_name,state)
 
 

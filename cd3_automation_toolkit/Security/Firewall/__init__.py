@@ -14,4 +14,5 @@ from .export_firewallpolicy_nonGreenField import export_firewallpolicy
 from .export_firewall_nonGreenField import export_firewall
 from .clone_firewallpolicy import clone_firewallpolicy
 from .cloneexport_firewallpolicy_nonGreenField import cloneexport_firewallpolicy
-from .delete_firewallpolicy import  delete_firewallpolicy
+from .delete_firewallpolicy import delete_firewallpolicy
+from .fwpolicy_create_tunnelinspection import fwpolicy_create_tunnelinspect

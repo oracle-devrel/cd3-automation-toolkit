@@ -43,7 +43,7 @@ adb = {
             database_edition         = "{{ database_edition }}" #Only for BYOL license model
             {% endif %}
 
-            {% if data_storage_size_in_tb == "" %}
+            {% if data_storage_size_in_tb != "" and data_storage_size_in_tb != "nan" %}
             data_storage_size_in_tbs = {{ data_storage_size_in_tb }}
             {% endif %}
             db_version               = "19c"

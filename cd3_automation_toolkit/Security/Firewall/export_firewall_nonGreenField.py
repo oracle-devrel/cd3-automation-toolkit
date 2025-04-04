@@ -22,8 +22,25 @@ importCommands = {}
 oci_obj_names = {}
 AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else ("AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else " NULL"))
 
-def print_firewall(region, ct, values_for_column_fw, fws, fw_compartment_name, vcn, fw,state):
+def print_firewall(region, export_tags, ct, values_for_column_fw, fws, fw_compartment_name, vcn, fw,state):
     for eachfw in fws.data:
+
+        # Tags filter
+        defined_tags = eachfw.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
+
         fw_display_name = eachfw.display_name
         tf_name = commonTools.check_tf_variable(fw_display_name)
         tf_resource = f'module.firewalls[\\"{str(tf_name)}\\"].oci_network_firewall_network_firewall.network_firewall'
@@ -102,7 +119,7 @@ def print_firewall(region, ct, values_for_column_fw, fws, fw_compartment_name, v
 
 
 # Execution of the code begins here
-def export_firewall(inputfile, _outdir, service_dir, config, signer, ct, export_compartments, export_regions):
+def export_firewall(inputfile, _outdir, service_dir, config, signer, ct, export_compartments, export_regions, export_tags):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -165,7 +182,7 @@ def export_firewall(inputfile, _outdir, service_dir, config, signer, ct, export_
             fws = oci.pagination.list_call_get_all_results(fw.list_network_firewalls, compartment_id=ct.ntk_compartment_ids[compartment_name], lifecycle_state="ACTIVE")
             # fwpolicies = oci.pagination.list_call_get_all_results(fwpolicy.list_network_firewall_policies,compartment_id=ct.ntk_compartment_ids[compartment_name],lifecycle_state = "ACTIVE")
 
-            values_for_column_fw = print_firewall(region, ct, values_for_column_fw, fws, compartment_name, vcn, fw,state)
+            values_for_column_fw = print_firewall(region, export_tags, ct, values_for_column_fw, fws, compartment_name, vcn, fw,state)
 
     # writing data
     init_commands = f'\n######### Writing import for Network Firewall Objects #########\n\n#!/bin/bash\n{tf_or_tofu} init'

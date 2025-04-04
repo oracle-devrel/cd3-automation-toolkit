@@ -22,14 +22,30 @@ from oci.network_load_balancer import NetworkLoadBalancerClient
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
 
-importCommands,importCommands_nfp,importCommands_nfao,importCommands_ulo,importCommands_slo,importCommands_alo,importCommands_sro,importCommands_mso,importCommands_dpo,importCommands_dro,importCommands_fpo = {},{},{},{},{},{},{},{},{},{},{}
+importCommands,importCommands_nfp,importCommands_nfao,importCommands_ulo,importCommands_slo,importCommands_alo,importCommands_sro,importCommands_mso,importCommands_dpo,importCommands_dro,importCommands_fpo,importCommands_tio = {},{},{},{},{},{},{},{},{},{},{},{}
 oci_obj_names = {}
 
 
-def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies, fwpolicy_compartment_name,state):
+def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies, fwpolicy_compartment_name,export_tags,state):
     if not clone:
         print("Exporting Policy details for " + region)
     for eachfwpolicy in fwpolicies:
+            # Tags filter
+            defined_tags = eachfwpolicy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
             fwpolicy_display_name = eachfwpolicy.display_name
             if clone :
                 fwpolicy_display_name = target_pol[src_pol.index(fwpolicy_display_name)]
@@ -53,10 +69,26 @@ def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies, fw
 
     return values_for_column_fwpolicy
 
-def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, fwclient,state):
+def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, fwclient,export_tags,state):
     if not clone:
         print("Exporting Address-list details " + region)
     for policy in fwpolicies:
+            # Tags filter
+            defined_tags = policy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
             policy_id = policy.id
             addpolicy_display_name = policy.display_name
             if clone:
@@ -97,10 +129,25 @@ def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, 
 
     return values_for_column_fwaddress
 
-def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, fwclient,state):
+def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, fwclient,export_tags,state):
     if not clone:
         print("Exporting Url-list details " + region)
     for urlpolicy in fwpolicies:
+            # Tags filter
+            defined_tags = urlpolicy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
             urlpolicy_id = urlpolicy.id
             urlpolicy_display_name = urlpolicy.display_name
             if clone:
@@ -137,10 +184,26 @@ def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, 
 
     return values_for_column_fwurllist
 
-def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicies, fwclient,state):
+def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicies, fwclient,export_tags,state):
     if not clone:
         print("Exporting Service and Service-list details " + region)
     for servicelistpolicy in fwpolicies:
+
+            # Tags filter
+            defined_tags = servicelistpolicy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
 
             servicelistpolicy_id = servicelistpolicy.id
             servicelistpolicy_display_name = servicelistpolicy.display_name
@@ -237,10 +300,27 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
 
     return values_for_column_fwservicelist
 
-def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, fwclient,state):
+def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, fwclient,export_tags,state):
     if not clone:
         print("Exporting Application and Application-list details " + region)
     for applistpolicy in fwpolicies:
+
+            # Tags filter
+            defined_tags = applistpolicy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
             applistpolicy_id = applistpolicy.id
             applistpolicy_display_name = applistpolicy.display_name
             if clone:
@@ -332,10 +412,26 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, 
 
     return values_for_column_fwapplist
 
-def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicies, fwclient,state):
+def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicies, fwclient,export_tags,state):
     if not clone:
         print("Exporting Security rules details " + region)
     for secrulespolicy in fwpolicies:
+            # Tags filter
+            defined_tags = secrulespolicy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
             secrulespolicy_id = secrulespolicy.id
             secrulespolicy_display_name = secrulespolicy.display_name
             if clone:
@@ -424,10 +520,26 @@ def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicies
                         values_for_column_fwsecrules = commonTools.export_tags(secrulespolicy, col_header,values_for_column_fwsecrules)
 
     return values_for_column_fwsecrules
-def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies, fwclient, vault, compartment, kmsvault,state):
+def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies, fwclient, vault, compartment, export_tags,kmsvault,state):
     if not clone:
         print("Exporting Mapped secret details " + region)
     for secretpolicy in fwpolicies:
+            # Tags filter
+            defined_tags = secretpolicy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
             secretpolicy_id = secretpolicy.id
             secretpolicy_display_name = secretpolicy.display_name
             if clone:
@@ -470,10 +582,26 @@ def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies, fw
 
     return values_for_column_fwsecret
 
-def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile, fwpolicies, fwclient,state):
+def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile, fwpolicies, fwclient,export_tags,state):
     if not clone:
         print("Exporting Decryption Profile details " + region)
     for decryptionprofile in fwpolicies:
+            # Tags filter
+            defined_tags = decryptionprofile.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
             decryptionprofile_id = decryptionprofile.id
             decryptionprofile_display_name = decryptionprofile.display_name
             if clone:
@@ -536,10 +664,27 @@ def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile
                         values_for_column_fwdecryptprofile = commonTools.export_tags(decryptionprofile, col_header,values_for_column_fwdecryptprofile)
 
     return values_for_column_fwdecryptprofile
-def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpolicies, fwclient,state):
+def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpolicies, fwclient,export_tags,state):
     if not clone:
         print("Exporting Decryption rules details " + region)
     for decryptrulepolicy in fwpolicies:
+            # Tags filter
+            defined_tags = decryptrulepolicy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
+
             decryptrulepolicy_id = decryptrulepolicy.id
             decryptrulepolicy_display_name = decryptrulepolicy.display_name
             if clone:
@@ -599,11 +744,90 @@ def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpo
                         values_for_column_fwdecryptrule = commonTools.export_tags(decryptrulepolicy, col_header,values_for_column_fwdecryptrule)
     return values_for_column_fwdecryptrule
 
+def  print_firewall_tunnelinspect(region, ct, values_for_column_fwtunnelinspect, fwpolicies, fwclient,export_tags,state):
+    if not clone:
+        print("Exporting Tunnel inspections rules details " + region)
+    for tunnelinspectrulepolicy in fwpolicies:
+
+            # Tags filter
+            defined_tags = tunnelinspectrulepolicy.defined_tags
+            tags_list = []
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
+
+            if export_tags == []:
+                check = True
+            else:
+                check = any(e in tags_list for e in export_tags)
+            # None of Tags from export_tags exist on this instance; Dont export this instance
+            if check == False:
+                continue
+
+
+            tunnelinspectrulepolicy_id = tunnelinspectrulepolicy.id
+            tunnelinspectrulepolicy_display_name = tunnelinspectrulepolicy.display_name
+            if clone:
+                tunnelinspectrulepolicy_display_name = target_pol[src_pol.index(tunnelinspectrulepolicy_display_name)]
+            tunnelinspectrulepolicy_tf_name = commonTools.check_tf_variable(tunnelinspectrulepolicy_display_name)
+            fwtunnelinspectrules = oci.pagination.list_call_get_all_results(fwclient.list_tunnel_inspection_rules, tunnelinspectrulepolicy_id)
+            tunnelinspectrule_info = fwtunnelinspectrules.data
+            for tirules in tunnelinspectrule_info:
+                tirule_info = fwclient.get_tunnel_inspection_rule(tirules.parent_resource_id, tirules.name).data
+                tirules_display_name = tirules.name
+                tirules_tf_name = commonTools.check_tf_variable(tirules_display_name)
+                tf_resource = f'module.tunnelinspect_rules[\\"{str(tunnelinspectrulepolicy_tf_name)}_{str(tirules_tf_name)}\\"].oci_network_firewall_network_firewall_policy_tunnel_inspection_rule.network_firewall_policy_tunnel_inspection_rule'
+                if not clone and tf_resource not in state["resources"]:
+                    importCommands_tio[reg] += f'\n{tf_or_tofu} import "{tf_resource}" networkFirewallPolicies/{tunnelinspectrulepolicy_id}/tunnelInspectionRules/{tirules_display_name}'
+
+                rsrc_detail = ""
+                rdst_detail = ""
+                if tirule_info.condition.source_address != None:
+                    for rsrc in tirule_info.condition.source_address:
+                        rsrc_detail = rsrc_detail + "," + rsrc
+                    if (rsrc_detail != ""):
+                        rsrc_detail = rsrc_detail[1:]
+                if tirule_info.condition.destination_address != None:
+                    for rdst in tirule_info.condition.destination_address:
+                        rdst_detail = rdst_detail + "," + rdst
+                    if (rdst_detail != ""):
+                        rdst_detail = rdst_detail[1:]
+                if tirule_info.position.after_rule == None and tirule_info.position.before_rule == None:
+                    dposition = None
+                elif tirule_info.position.after_rule == None:
+                    dposition = None
+                elif tirule_info.position.before_rule == None:
+                    dposition = "after_rule::" + tirule_info.position.after_rule
+                else:
+                    dposition = "after_rule::" + tirule_info.position.after_rule
+
+                for col_header in values_for_column_fwtunnelinspect:
+                    if col_header == 'Region':
+                        values_for_column_fwtunnelinspect[col_header].append(region)
+                    elif col_header == 'Firewall Policy':
+                        values_for_column_fwtunnelinspect[col_header].append(tunnelinspectrulepolicy_display_name)
+                    elif col_header == 'Rule Name':
+                        values_for_column_fwtunnelinspect[col_header].append(tirules_display_name)
+                    elif col_header == 'Source Address':
+                        values_for_column_fwtunnelinspect[col_header].append(rsrc_detail)
+                    elif col_header == 'Destination Address':
+                        values_for_column_fwtunnelinspect[col_header].append(rdst_detail)
+                    elif col_header == 'Action':
+                        values_for_column_fwtunnelinspect[col_header].append(tirule_info.action)
+                    elif col_header == 'Position':
+                        values_for_column_fwtunnelinspect[col_header].append(dposition)
+                    elif col_header.lower() in commonTools.tagColumns:
+                        values_for_column_fwtunnelinspect = commonTools.export_tags(tunnelinspectrulepolicy, col_header,values_for_column_fwtunnelinspect)
+    return values_for_column_fwtunnelinspect
+
+
+
 # Execution of the code begins here
-def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, export_compartments, export_regions, export_policies,target_policies=[],attached_policy_only="",clone_policy=False):
+def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, export_compartments, export_regions, export_tags, export_policies,target_policies=[],attached_policy_only="",clone_policy=False):
     global tf_import_cmd
     global sheet_dict
-    global importCommands,importCommands_nfp,importCommands_nfao,importCommands_ulo,importCommands_slo,importCommands_alo,importCommands_sro,importCommands_mso,importCommands_dpo,importCommands_dro,importCommands_fpo
+    global importCommands,importCommands_nfp,importCommands_nfao,importCommands_ulo,importCommands_slo,importCommands_alo,importCommands_sro,importCommands_mso,importCommands_dpo,importCommands_dro,importCommands_fpo,importCommands_tio
     global values_for_vcninfo
     global cd3file
     global reg
@@ -617,7 +841,7 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
     global values_for_column_fwsecret
     global values_for_column_fwdecryptprofile
     global values_for_column_fwdecryptrule
-
+    global values_for_column_fwtunnelinspect
     global sheet_dict_fwpolicy
     global sheet_dict_fwaddress
     global sheet_dict_fwurllist
@@ -655,7 +879,7 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
     df, values_for_column_fwsecret = commonTools.read_cd3(cd3file, "Firewall-Policy-Secret")
     df, values_for_column_fwdecryptprofile = commonTools.read_cd3(cd3file, "Firewall-Policy-DecryptProfile")
     df, values_for_column_fwdecryptrule = commonTools.read_cd3(cd3file, "Firewall-Policy-DecryptRule")
-
+    df, values_for_column_fwtunnelinspect = commonTools.read_cd3(cd3file, "Firewall-Policy-TunnelInspect")
     # Get dict for columns from Excel_Columns
     #sheet_dict_fwpolicy = ct.sheet_dict[sheetname]
     #sheet_dict_fwaddress = ct.sheet_dict["Firewall-Policy-Address"]
@@ -673,7 +897,7 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
             importCommands[reg], importCommands_nfp[reg], importCommands_nfao[reg], importCommands_ulo[reg], \
             importCommands_slo[reg], importCommands_alo[reg], importCommands_sro[reg], importCommands_mso[reg], \
             importCommands_dpo[reg], importCommands_dro[reg], importCommands_fpo[
-                reg] = "", "", "", "", "", "", "", "", "", "", ""
+                reg], importCommands_tio[reg]= "", "", "", "", "", "", "", "", "", "", "", ""
 
 
     # Fetch Network firewall Policy Details
@@ -702,6 +926,23 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
             for eachfwpolicy in fw_data:
                 if export_policies is not None:
                     eachfwpolicy1 = fwclient.get_network_firewall_policy(network_firewall_policy_id=eachfwpolicy.id).data
+
+                    # Tags filter
+                    defined_tags = eachfwpolicy1.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     fwpolicy_display_name1 = eachfwpolicy1.display_name
                     if (fwpolicy_display_name1 in export_policies):
                         if clone:
@@ -718,16 +959,16 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
                     fwpolicies.append(eachfwpolicy)
 
             #fwpolicies.append(data)
-            values_for_column_fwpolicy = print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies,compartment_name,state)
-            values_for_column_fwaddress = print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, fwclient,state)
-            values_for_column_fwurllist = print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, fwclient,state)
-            values_for_column_fwservicelist = print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicies, fwclient,state)
-            values_for_column_fwapplist = print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, fwclient,state)
-            values_for_column_fwsecrules = print_firewall_secrules(region, ct, values_for_column_fwsecrules,fwpolicies, fwclient,state)
-            values_for_column_fwsecret = print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies,fwclient, vault, compartment, kmsvault,state)
-            values_for_column_fwdecryptprofile = print_firewall_decryptprofile(region, ct,values_for_column_fwdecryptprofile,fwpolicies, fwclient,state)
-            values_for_column_fwdecryptrule = print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule,fwpolicies, fwclient,state)
-        print(importCommands_nfp[reg])
+            values_for_column_fwpolicy = print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies,compartment_name,export_tags,state)
+            values_for_column_fwaddress = print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, fwclient,export_tags,state)
+            values_for_column_fwurllist = print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, fwclient,export_tags,state)
+            values_for_column_fwservicelist = print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicies, fwclient,export_tags,state)
+            values_for_column_fwapplist = print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, fwclient,export_tags,state)
+            values_for_column_fwsecrules = print_firewall_secrules(region, ct, values_for_column_fwsecrules,fwpolicies, fwclient,export_tags,state)
+            values_for_column_fwsecret = print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies,fwclient, vault, compartment, export_tags,kmsvault,state)
+            values_for_column_fwdecryptprofile = print_firewall_decryptprofile(region, ct,values_for_column_fwdecryptprofile,fwpolicies, fwclient,export_tags,state)
+            values_for_column_fwdecryptrule = print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule,fwpolicies, fwclient,export_tags,state)
+            values_for_column_fwtunnelinspect = print_firewall_tunnelinspect(region, ct, values_for_column_fwtunnelinspect,fwpolicies,fwclient,export_tags,state)
     if clone:
         commonTools.write_to_cd3(values_for_column_fwpolicy, cd3file, "Firewall-Policy",append=True)
         commonTools.write_to_cd3(values_for_column_fwaddress, cd3file, "Firewall-Policy-AddressList",append=True)
@@ -738,6 +979,7 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
         commonTools.write_to_cd3(values_for_column_fwsecret, cd3file, "Firewall-Policy-Secret",append=True)
         commonTools.write_to_cd3(values_for_column_fwdecryptprofile, cd3file, "Firewall-Policy-DecryptProfile",append=True)
         commonTools.write_to_cd3(values_for_column_fwdecryptrule, cd3file, "Firewall-Policy-DecryptRule",append=True)
+        commonTools.write_to_cd3(values_for_column_fwtunnelinspect, cd3file, "Firewall-Policy-TunnelInspect", append=True)
     else:
         commonTools.write_to_cd3(values_for_column_fwpolicy, cd3file, "Firewall-Policy")
         commonTools.write_to_cd3(values_for_column_fwaddress, cd3file, "Firewall-Policy-AddressList")
@@ -748,18 +990,17 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
         commonTools.write_to_cd3(values_for_column_fwsecret, cd3file, "Firewall-Policy-Secret")
         commonTools.write_to_cd3(values_for_column_fwdecryptprofile, cd3file, "Firewall-Policy-DecryptProfile")
         commonTools.write_to_cd3(values_for_column_fwdecryptrule, cd3file, "Firewall-Policy-DecryptRule")
-
+        commonTools.write_to_cd3(values_for_column_fwtunnelinspect, cd3file, "Firewall-Policy-TunnelInspect")
         print("Firewall Policies exported to CD3\n")
 
         # writing data
         init_commands = f'\n######### Writing import for Network firewall policy Objects #########\n\n#!/bin/bash\n{tf_or_tofu} init'
-        importCommands_message = ["Policy","Address Objects","url list Objects","service list Objects","application list Objects","Security Rules Objects","Mapped Secret Objects","Decrypt profile Objects","decryption Rules Objects","policy Objects"]
+        importCommands_message = ["Policy","Address Objects","url list Objects","service list Objects","application list Objects","Security Rules Objects","Mapped Secret Objects","Decrypt profile Objects","decryption Rules Objects","policy Objects","Tunnel Inspect Objects"]
         for reg in export_regions:
             count = 0
             all_importCommands = [importCommands_nfp[reg], importCommands_nfao[reg], importCommands_ulo[reg], importCommands_slo[reg],
                                   importCommands_alo[reg], importCommands_sro[reg], importCommands_mso[reg], importCommands_dpo[reg],
-                                  importCommands_dro[reg], importCommands_fpo[reg]]
-            print(importCommands_nfp[reg])
+                                  importCommands_dro[reg], importCommands_fpo[reg], importCommands_tio[reg]]
             for item in all_importCommands:
                 if item != "":
                     importCommands[reg] += f'\n\n######### Writing import for Network firewall {importCommands_message[count]} #########\n\n'

@@ -71,7 +71,7 @@ def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_nam
         importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {alarm.id}'
 
 # Execution of the code begins here
-def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
+def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -131,6 +131,21 @@ def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_com
 
             for alarmSummary in alarms.data:
                 alarm=mclient.get_alarm(alarmSummary.id).data
+                # Tags filter
+                defined_tags = alarm.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
                 print_alarms(region, alarm,ncpclient,values_for_column, ntk_compartment_name,ct,state)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)

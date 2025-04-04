@@ -137,7 +137,7 @@ def print_resolvers(resolver_tf_name, resolver, values_for_column,state, **value
             values_for_column = commonTools.export_tags(resolver, col_header, values_for_column)
 
 # Execution of the code begins here
-def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -199,6 +199,23 @@ def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, exp
             for vcn in vcns.data:
                 resolver_id = vnc_client.get_vcn_dns_resolver_association(vcn.id).data.dns_resolver_id
                 resolver = dns_client.get_resolver(resolver_id).data
+
+                # Tags filter
+                defined_tags = resolver.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 endpoint_map = get_e_map(region, dns_client, vnc_client, ct, resolver, ntk_compartment_name)
                 vcn_name = vnc_client.get_vcn(resolver.attached_vcn_id).data.display_name
                 resolver_tf_name = vcn_name

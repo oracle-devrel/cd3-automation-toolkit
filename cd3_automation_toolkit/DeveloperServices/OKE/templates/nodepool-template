@@ -70,7 +70,7 @@ nodepools = {
         pod_nsg_ids = [{{ pod_nsgs }}]
         {% endif %}
         {% if pod_communication_subnet %}
-        pod_subnet_id = "{{ pod_communication_subnet}}"
+        pod_subnet_ids = "{{ pod_communication_subnet}}"
         {% else %}
         pod_subnet_ids = ""
         {% endif %}

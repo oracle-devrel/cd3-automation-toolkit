@@ -986,6 +986,7 @@ variable "mysql_db_system" {
   type = map(object({
     compartment_id                                             = string
     network_compartment_id                                     = string
+    configuration_compartment_id                               = string
     mysql_db_system_display_name                               = string
     configuration_id                                           = string
     mysql_shape_name                                           = string
@@ -2228,6 +2229,21 @@ variable "decryption_rules" {
   default = {}
 }
 
+variable "tunnelinspect_rules" {
+  type = map(object({
+    action                     = string
+    rule_name                  = string
+    network_firewall_policy_id = string
+    condition = optional(list(object({
+      destination_address = optional(list(string))
+      source_address = optional(list(string))
+    })))
+    protocol = optional(string)
+    after_rule         = optional(string)
+    before_rule        = optional(string)
+  }))
+  default = {}
+}
 #########################
 ####### Firewall Logs ########
 #########################

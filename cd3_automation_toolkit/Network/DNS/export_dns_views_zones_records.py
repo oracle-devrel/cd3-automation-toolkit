@@ -98,7 +98,7 @@ def print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
             values_for_column = commonTools.export_tags(view_data, col_header, values_for_column)
 
 # Execution of the code begins here
-def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer, ct, dns_filter, export_compartments=[], export_regions=[]):
+def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer, ct, dns_filter, export_compartments=[], export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -161,6 +161,22 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
                 if view_default == 'n' and view_data.is_protected == True:
                     continue
 
+                # Tags filter
+                defined_tags = view_data.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 #view_data = dns_client.get_view(view.id).data
                 view_tf_name = str(view_data.display_name)
                 zones = oci.pagination.list_call_get_all_results(dns_client.list_zones,
@@ -169,9 +185,28 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
                                                                  scope="PRIVATE", view_id=view_data.id).data
                 if zones:
                 ## Add if empty view
+                    print_zone=False
                     for zone_data in zones:
                         if zone_default == 'n' and zone_data.is_protected == True:
                             continue
+
+                        # Tags filter
+                        defined_tags = zone_data.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            continue
+
+                        print_zone=True
                         zone_tf_name = view_tf_name + "_" + str(zone_data.name).replace(".", "_")
                         rrsets = get_rrset(zone_data, dns_client, record_default)
                         if rrsets:
@@ -185,6 +220,9 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
                             print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
                 else:
                     print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
+                if print_zone==False:
+                    print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
+
                 tf_resource = f'module.dns-views[\\"{view_tf_name}\\"].oci_dns_view.view'
                 if tf_resource not in state["resources"]:
                     importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(view_data.id)}'

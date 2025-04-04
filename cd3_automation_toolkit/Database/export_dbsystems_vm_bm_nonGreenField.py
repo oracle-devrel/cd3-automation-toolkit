@@ -105,7 +105,7 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
 
 # Execution of the code begins here
 
-def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
+def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -172,6 +172,23 @@ def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, e
         for ntk_compartment_name in export_compartments:
             db_systems = oci.pagination.list_call_get_all_results(db_client.list_db_systems,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
             for db_system in db_systems.data:
+
+                # Tags filter
+                defined_tags = db_system.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
                 # Get ssh keys for db system
                 key_name = commonTools.check_tf_variable(db_system.display_name+"_"+db_system.hostname)
                 db_ssh_keys= db_system.ssh_public_keys

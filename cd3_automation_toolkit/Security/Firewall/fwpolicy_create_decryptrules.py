@@ -178,4 +178,4 @@ def fwpolicy_create_decryptrules(inputfile, outdir, service_dir, prefix, ct):
             oname[reg] = open(outfile[reg], 'a')
             oname[reg].write(decryptrules_str[reg])
             oname[reg].close()
-            print(outfile[reg] + " containing TF for Firewall Policy security rules has been updated for region " + reg)
+            print(outfile[reg] + " containing TF for Firewall Policy Decryption Rules has been updated for region " + reg)

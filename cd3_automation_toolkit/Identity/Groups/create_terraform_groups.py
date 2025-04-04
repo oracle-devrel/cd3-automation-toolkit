@@ -108,7 +108,7 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
 
         for columnname in dfcolumns:
             # Column value
-            if 'Description' in columnname.lower():
+            if 'description' in columnname.lower():
                 columnvalue = str(df[columnname][i])
                 tempdict = {'description': columnvalue}
             else:

@@ -869,6 +869,99 @@ def validate_FirewallPolicyDecryptionRule(filename, fwpolicy_list, fulladdreslis
         return False
 
 
+def validate_FirewallPolicyTunnelInspectRule(filename, fwpolicy_list, fulladdreslist, ct):
+    fwpolicytunnelinspectrule_empty_check = False
+    fwpolicytunnelinspectrule_invalid_check = False
+    fwpolicytunnelinspectrule_check = []
+    fwpolicytunnelinspectrule_nameg_length = False
+    fwpolicytunnelinspectrulesa_check = []
+    fwpolicytunnelinspectruleda_check = []
+    fwpolicytunnelinspectrulepost_check = []
+
+    dffwpolicytunnelinspectrule = data_frame(filename, 'Firewall-Policy-TunnelInspect')
+    dfcolumns = dffwpolicytunnelinspectrule.columns.values.tolist()
+
+    dffwtunnleinspectrule = data_frame(filename, 'Firewall-Policy-TunnelInspect')
+    dffwtunnleinspectrule_list = dffwtunnleinspectrule['Rule Name'].astype(str)
+    dffwtunnleinspectrulepolicy_list = dffwtunnleinspectrule['Firewall Policy'].astype(str)
+    fulltunnelinspectrulelist = dffwtunnleinspectrulepolicy_list + '::' + dffwtunnleinspectrule_list
+
+    for i in dffwpolicytunnelinspectrule.index:
+        region = str(dffwpolicytunnelinspectrule.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        if region == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "Region".')
+            fwpolicytunnelinspectrule_empty_check = True
+        elif region not in ct.all_regions:
+            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            fwpolicytunnelinspectrule_invalid_check = True
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(dffwpolicytunnelinspectrule.loc[i, columnname]).strip()
+            if (columnname == 'Firewall Policy'):
+                if columnvalue.lower() == 'nan':
+                    log(f'ROW {i + 3} : Empty value at column Policy Name.')
+                    fwpolicytunnelinspectrule_empty_check = True
+                else:
+                    # Cross check the Policy names in Firewall Policy sheet with OCI.
+                    fwpolicytunnelinspectrule_check.append(
+                        compare_values(fwpolicy_list.tolist(), columnvalue, [i, 'Policy Name', 'Firewall-Policy']))
+            if (columnname == 'Rule Name'):
+                if columnvalue.lower() == 'nan':
+                    log(f'ROW {i + 3} : Empty value at column Rule Name.')
+                    fwpolicytunnelinspectrule_empty_check = True
+                if columnvalue.lower() != 'nan':
+                    if (len(columnvalue) > 63) or (len(columnvalue) < 2):
+                        log(f'ROW {i + 3} : Tunnel inspection rule Name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 63.')
+                        fwpolicytunnelinspectrule_nameg_length = True
+                    if (validate_names(columnvalue) == True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Tunnel inspection Rule Name')
+                        fwpolicytunnelinspectrule_invalid_check == True
+            if (columnname == 'Source Address'):
+                if columnvalue.lower() != 'nan':
+                    sa_list = columnvalue.split(",")
+                    for eachsa in sa_list:
+                        fwpolicyname = str(dffwpolicytunnelinspectrule.loc[i, 'Firewall Policy']).strip()
+                        finalsalist = fwpolicyname + '::' + eachsa
+                        fwpolicytunnelinspectrulesa_check.append(compare_values(fulladdreslist.tolist(), finalsalist,[i, 'Source Address','Firewall-Policy-Address','Address list']))
+            if (columnname == 'Destination Address'):
+                if columnvalue.lower() != 'nan':
+                    da_list = columnvalue.split(",")
+                    for eachda in da_list:
+                        fwpolicyname = str(dffwpolicytunnelinspectrule.loc[i, 'Firewall Policy']).strip()
+                        finaldalist = fwpolicyname + '::' + eachda
+                        fwpolicytunnelinspectruleda_check.append(compare_values(fulladdreslist.tolist(), finaldalist,[i, 'Destination Address','Firewall-Policy-Address','Address list']))
+            if (columnname == 'Action'):
+                if (columnvalue not in ['INSPECT', 'INSPECT_AND_CAPTURE_LOG', 'Inspect', 'Inspect_And_Capture_Log', 'inspect', 'inspect_and_capture_log','Inspect_and_capture_log']):
+                    log(f'ROW {i + 3} : Action "{columnvalue}" is not a valid option, it should be either INSPECT/INSPECT_AND_CAPTURE_LOG.')
+                    fwpolicytunnelinspectrule_invalid_check = True
+
+            if (columnname == 'Position'):
+                if columnvalue.lower() != 'nan':
+                    post = columnvalue.split('::')
+                    if len(post) != 2:
+                        log(f'ROW {i + 3} : Position value in "{post}" does not have all/correct required details')
+                        fwpolicytunnelinspectrule_invalid_check = True
+                    else:
+                        if (post[0] not in ['before_rule', 'after_rule']):
+                            log(f'ROW {i + 3} : Position condition in "{post[0]}" is not a valid option, it should be either before_rule/after_rule')
+                        if post[1].lower() != 'nan':
+                            fwpolicyname = str(dffwpolicytunnelinspectrule.loc[i, 'Firewall Policy']).strip()
+                            finalrulepost = fwpolicyname + '::' + post[1]
+                            fwpolicytunnelinspectrulepost_check.append(
+                                compare_values(fulltunnelinspectrulelist.tolist(), finalrulepost,[i, 'Position', 'Firewall-Policy-TunnelInspect', 'Rule name']))
+
+    if any([fwpolicytunnelinspectrule_empty_check, fwpolicytunnelinspectrule_invalid_check,
+            fwpolicytunnelinspectrule_nameg_length]) or any(fwpolicytunnelinspectrule_check) or any(
+            fwpolicytunnelinspectrulesa_check) or any(fwpolicytunnelinspectruleda_check) or  any(
+            fwpolicytunnelinspectrulepost_check):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
 def validate_FirewallPolicySecurityRule(filename, fwpolicy_list, fulladdreslist, fullservicelist, fullappslist, fullurlslist,ct):
     fwpolicysecurityrule_empty_check = False
     fwpolicysecurityrule_invalid_check = False
@@ -1140,9 +1233,10 @@ def validate_firewall_cd3(filename, var_file, prefix, outdir, config,signer,ct):
     log("\n============================= Verifying Firewall-Policy-SecRule Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-Secrules Tab..")
     fw_policysecurityrule_check = validate_FirewallPolicySecurityRule(filename, fwpolicy_list, fulladdreslist, fullservicelist, fullappslist, fullurlslist,ct)
-
+    print("\nProcessing Firewall-Policy-TunnelInspect Tab..")
+    fw_policytunnelinspect_check = validate_FirewallPolicyTunnelInspectRule(filename, fwpolicy_list, fulladdreslist, ct)
     # Prints the final result; once the validation is complete
-    if any([Firewall_check, fw_policy_check, fw_policyapp_check, fw_policyurl_check, fw_policyservice_check, fw_policyaddress_check, fw_policysecrets_check, fw_policydecryption_check, fw_policydecryptionrule_check, fw_policysecurityrule_check]):
+    if any([Firewall_check, fw_policy_check, fw_policyapp_check, fw_policyurl_check, fw_policyservice_check, fw_policyaddress_check, fw_policysecrets_check, fw_policydecryption_check, fw_policydecryptionrule_check, fw_policysecurityrule_check, fw_policytunnelinspect_check]):
         log("=======")
         log("Summary:")
         log("=======")

@@ -141,12 +141,28 @@ def insert_values(values_for_column, oci_objs, sheet_dict, region, comp_name, di
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
-def print_lbr_hostname_certs(region, ct, outdir, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, network,
+def print_lbr_hostname_certs(region, ct, outdir, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, export_tags, network,
                              service_dir):
     for eachlbr in LBRs.data:
 
         # Fetch LBR Name
         display_name = eachlbr.display_name
+
+        # Tags filter
+        defined_tags = eachlbr.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
@@ -411,10 +427,26 @@ def print_lbr_hostname_certs(region, ct, outdir, values_for_column_lhc, lbr, LBR
     return values_for_column_lhc
 
 
-def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs, lbr_compartment_name):
+def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs, lbr_compartment_name,export_tags):
     certs = CertificatesClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
     for eachlbr in LBRs.data:
+
+        # Tags filter
+        defined_tags = eachlbr.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
@@ -574,9 +606,25 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
     return values_for_column_bss
 
 
-def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name):
+def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name,export_tags):
     for eachlbr in LBRs.data:
         sslcerts = None
+
+        # Tags filter
+        defined_tags = eachlbr.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
@@ -692,8 +740,24 @@ def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name
     return values_for_column_lis
 
 
-def print_rule(region, ct, values_for_column_rule, LBRs, lbr_compartment_name):
+def print_rule(region, ct, values_for_column_rule, LBRs, lbr_compartment_name,export_tags):
     for eachlbr in LBRs.data:
+
+        # Tags filter
+        defined_tags = eachlbr.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
@@ -808,8 +872,24 @@ def print_rule(region, ct, values_for_column_rule, LBRs, lbr_compartment_name):
     return values_for_column_rule
 
 
-def print_prs(region, ct, values_for_column_prs, LBRs, lbr_compartment_name):
+def print_prs(region, ct, values_for_column_prs, LBRs, lbr_compartment_name,export_tags):
     for eachlbr in LBRs.data:
+
+        # Tags filter
+        defined_tags = eachlbr.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
@@ -854,10 +934,24 @@ def print_prs(region, ct, values_for_column_prs, LBRs, lbr_compartment_name):
     return values_for_column_prs
 
 
-def print_routing_policies(region, ct, values_for_column_rp, LBRs, lbr_compartment_name):
+def print_routing_policies(region, ct, values_for_column_rp, LBRs, lbr_compartment_name,export_tags):
     for eachlbr in LBRs.data:
-        # Retrieve the routing policies for the load balancer
-        routing_policies = eachlbr.routing_policies
+
+        # Tags filter
+        defined_tags = eachlbr.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
 
         # Filter out the LBs provisioned by OKE
         eachlbr_defined_tags = eachlbr.defined_tags
@@ -866,6 +960,9 @@ def print_routing_policies(region, ct, values_for_column_rp, LBRs, lbr_compartme
                 created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
                 if 'ocid1.cluster' in created_by:
                     continue
+
+        # Retrieve the routing policies for the load balancer
+        routing_policies = eachlbr.routing_policies
 
         # Fetch the compartment name
         lbr_comp_id = eachlbr.compartment_id
@@ -920,7 +1017,7 @@ def print_routing_policies(region, ct, values_for_column_rp, LBRs, lbr_compartme
 
 
 # Execution of the code begins here
-def export_lbr(inputfile, outdir, service_dir, config1, signer1, ct, export_compartments, export_regions):
+def export_lbr(inputfile, outdir, service_dir, config1, signer1, ct, export_compartments, export_regions,export_tags):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -1007,17 +1104,33 @@ def export_lbr(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
                                                             compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                             lifecycle_state="ACTIVE")
             values_for_column_lhc = print_lbr_hostname_certs(region, ct, outdir, values_for_column_lhc, lbr, LBRs,
-                                                             compartment_name, network, service_dir)
-            values_for_column_lis = print_listener(region, ct, values_for_column_lis, LBRs, compartment_name)
+                                                             compartment_name, export_tags, network, service_dir)
+            values_for_column_lis = print_listener(region, ct, values_for_column_lis, LBRs, compartment_name,export_tags)
             values_for_column_bss = print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
-                                                                   compartment_name)
-            values_for_column_rule = print_rule(region, ct, values_for_column_rule, LBRs, compartment_name)
-            values_for_column_prs = print_prs(region, ct, values_for_column_prs, LBRs, compartment_name)
-            values_for_column_rp = print_routing_policies(region, ct, values_for_column_rp, LBRs, compartment_name)
+                                                                   compartment_name,export_tags)
+            values_for_column_rule = print_rule(region, ct, values_for_column_rule, LBRs, compartment_name,export_tags)
+            values_for_column_prs = print_prs(region, ct, values_for_column_prs, LBRs, compartment_name,export_tags)
+            values_for_column_rp = print_routing_policies(region, ct, values_for_column_rp, LBRs, compartment_name,export_tags)
 
 
             for eachlbr in LBRs.data:
-                total_resources+=1
+                # Tags filter
+                defined_tags = eachlbr.defined_tags
+                tags_list = []
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
+
+                if export_tags == []:
+                    check = True
+                else:
+                    check = any(e in tags_list for e in export_tags)
+                # None of Tags from export_tags exist on this instance; Dont export this instance
+                if check == False:
+                    continue
+
+                total_resources += 1
 
                 # Filter out the LBs provisioned by oke
                 eachlbr_defined_tags = eachlbr.defined_tags

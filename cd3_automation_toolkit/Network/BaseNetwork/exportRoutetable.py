@@ -8,46 +8,137 @@ import subprocess as sp
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 
-def get_network_entity_name(config,signer,network_identity_id):
+def get_network_entity_name(config,signer,network_identity_id,export_tags):
     vcn1 = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     if('internetgateway' in network_identity_id):
         igw=vcn1.get_internet_gateway(network_identity_id)
         network_entity_comp_id=igw.data.compartment_id
+
+        # Tags filter for DRG attachment
+        defined_tags = igw.data.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+
+        # None of Tags from export_tags exist on this instance or not in the compartment specified for export; Dont export this instance
+        if check == False or network_entity_comp_id not in export_compartment_ids:
+            network_identity_name = "igw:" + igw.data.id
+        else:
+            network_identity_name = "igw:" + igw.data.display_name
+        '''
         if network_entity_comp_id in export_compartment_ids:
             network_identity_name = "igw:"+igw.data.display_name
         else:
             network_identity_name = "igw:" + igw.data.id
+        '''
+
         return  network_identity_name
 
     elif ('servicegateway' in network_identity_id):
         sgw = vcn1.get_service_gateway(network_identity_id)
         network_entity_comp_id = sgw.data.compartment_id
+
+        # Tags filter for DRG attachment
+        defined_tags = sgw.data.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+
+        # None of Tags from export_tags exist on this instance or not in the compartment specified for export; Dont export this instance
+        if check == False or network_entity_comp_id not in export_compartment_ids:
+            network_identity_name = "sgw:" + sgw.data.id
+        else:
+            network_identity_name = "sgw:" + sgw.data.display_name
+
+        '''
         if network_entity_comp_id in export_compartment_ids:
             network_identity_name = "sgw:" + sgw.data.display_name
         else:
             network_identity_name = "sgw:"+sgw.data.id
+        '''
         return network_identity_name
 
 
     elif ('natgateway' in network_identity_id):
         ngw = vcn1.get_nat_gateway(network_identity_id)
         network_entity_comp_id = ngw.data.compartment_id
+
+        # Tags filter for DRG attachment
+        defined_tags = ngw.data.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+
+        # None of Tags from export_tags exist on this instance or not in the compartment specified for export; Dont export this instance
+        if check == False or network_entity_comp_id not in export_compartment_ids:
+            network_identity_name = "ngw:" + ngw.data.id
+        else:
+            network_identity_name = "ngw:" + ngw.data.display_name
+        '''
         if network_entity_comp_id in export_compartment_ids:
             network_identity_name = "ngw:" + ngw.data.display_name
         else:
             network_identity_name = "ngw:"+ngw.data.id
+        '''
+
         return network_identity_name
 
     elif ('localpeeringgateway' in network_identity_id):
         lpg = vcn1.get_local_peering_gateway(network_identity_id)
         network_entity_comp_id = lpg.data.compartment_id
+
+        # Tags filter for DRG attachment
+        defined_tags = lpg.data.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+
+        # None of Tags from export_tags exist on this instance or not in the compartment specified for export; Dont export this instance
+        if check == False or network_entity_comp_id not in export_compartment_ids:
+            network_identity_name = "lpg:" + lpg.data.id
+        else:
+            network_identity_name = "lpg:" + lpg.data.display_name
+
+        '''
         if network_entity_comp_id in export_compartment_ids:
             network_identity_name = "lpg:" + lpg.data.display_name
         else:
             network_identity_name = "lpg:"+lpg.data.id
+        '''
+
         return network_identity_name
     elif ('drgattachment' in network_identity_id):
         drg_attach = vcn1.get_drg_attachment(network_identity_id)
+
+
 
         if (drg_attach.data.network_details is not None):
             drg_attach_type = drg_attach.data.network_details.type
@@ -63,22 +154,44 @@ def get_network_entity_name(config,signer,network_identity_id):
     elif ('drg' in network_identity_id):
         drg = vcn1.get_drg(network_identity_id)
         network_entity_comp_id = drg.data.compartment_id
+
+        # Tags filter for DRG attachment
+        defined_tags = drg.data.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+
+        # None of Tags from export_tags exist on this instance or not in the compartment specified for export; Dont export this instance
+        if check == False or network_entity_comp_id not in export_compartment_ids:
+            network_identity_name = "drg:" + drg.data.id
+        else:
+            network_identity_name = "drg:" + drg.data.display_name
+
+        '''
         if network_entity_comp_id in export_compartment_ids:
             network_identity_name = "drg:" + drg.data.display_name
         else:
             network_identity_name = "drg:"+drg.data.id
+        '''
         return network_identity_name
 
-        """
-    elif ('privateip' in network_identity_id):
-        privateip = vcn1.get_private_ip(network_identity_id)
-        network_identity_name = "privateip:"+privateip.data.ip_address
-        return network_identity_name
-        """
+        '''
+        elif ('privateip' in network_identity_id):
+            privateip = vcn1.get_private_ip(network_identity_id)
+            network_identity_name = "privateip:"+privateip.data.ip_address
+            return network_identity_name
+        '''
     else:
         return network_identity_id
 
-def insert_values(routetable,values_for_column,region,comp_name,name,routerule):
+def insert_values(routetable,values_for_column,region,comp_name,name,routerule,export_tags):
     for col_header in values_for_column.keys():
         if (col_header == "Region"):
             values_for_column[col_header].append(region)
@@ -91,7 +204,7 @@ def insert_values(routetable,values_for_column,region,comp_name,name,routerule):
 
         elif (routerule != None and col_header == 'Route Destination Object'):
             network_entity_id = routerule.network_entity_id
-            network_entity_name = get_network_entity_name(config, signer, network_entity_id)
+            network_entity_name = get_network_entity_name(config, signer, network_entity_id,export_tags)
             values_for_column[col_header].append(network_entity_name)
             if ('internetgateway' in network_entity_id):
                 if (routerule.destination not in values_for_vcninfo['igw_destinations']):
@@ -107,7 +220,7 @@ def insert_values(routetable,values_for_column,region,comp_name,name,routerule):
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict,values_for_column)
 
 
-def insert_values_drg(routetable,import_drg_route_distribution_name,values_for_column_drg,region,comp_name,name,routerule):
+def insert_values_drg(routetable,import_drg_route_distribution_name,values_for_column_drg,region,comp_name,name,routerule,export_tags):
     for col_header in values_for_column_drg.keys():
         if (col_header == "Region"):
             values_for_column_drg[col_header].append(region)
@@ -122,7 +235,7 @@ def insert_values_drg(routetable,import_drg_route_distribution_name,values_for_c
 
         elif (routerule != None and col_header == 'Next Hop Attachment'):
             next_hop_attachment_id=routerule.next_hop_drg_attachment_id
-            network_entity_name = get_network_entity_name(config, signer, next_hop_attachment_id)
+            network_entity_name = get_network_entity_name(config, signer, next_hop_attachment_id,export_tags)
             values_for_column_drg[col_header].append(network_entity_name)
 
         else:
@@ -131,16 +244,16 @@ def insert_values_drg(routetable,import_drg_route_distribution_name,values_for_c
 
 
 
-def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,import_drg_route_distribution_name,drg_rules,region,comp_name,state):
+def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,import_drg_route_distribution_name,drg_rules,region,comp_name,export_tags,state):
     drg_rt_name = drg_display_name + "_" + drg_route_table_name
     drg_rt_tf_name = commonTools.check_tf_variable(drg_rt_name)
     if (not drg_rules.data):
-        insert_values_drg(drg_rt_info, import_drg_route_distribution_name,values_for_column_drg, region, comp_name, drg_display_name, None)
+        insert_values_drg(drg_rt_info, import_drg_route_distribution_name,values_for_column_drg, region, comp_name, drg_display_name, None,export_tags)
         if not tf_import_cmd_drg:
             print(drg_route_table_name)
     i=1
     for rule in drg_rules.data:
-        insert_values_drg(drg_rt_info, import_drg_route_distribution_name,values_for_column_drg, region, comp_name, drg_display_name, rule)
+        insert_values_drg(drg_rt_info, import_drg_route_distribution_name,values_for_column_drg, region, comp_name, drg_display_name, rule,export_tags)
         if not tf_import_cmd_drg:
             print(drg_route_table_name)
         else:
@@ -150,8 +263,24 @@ def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,impor
                     importCommands_drg[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" drgRouteTables/{str(drg_rt_info.id)}/routeRules/{str(rule.id)}'
         i=i+1
 
-def print_routetables(routetables,region,vcn_name,comp_name,gw_route_table_ids,state):
+def print_routetables(routetables,region,vcn_name,comp_name,export_tags,gw_route_table_ids,state):
     for routetable in routetables.data:
+        # Tags filter
+        defined_tags = routetable.defined_tags
+        tags_list = []
+        for tkey, tval in defined_tags.items():
+            for kk, vv in tval.items():
+                tag = tkey + "." + kk + "=" + vv
+                tags_list.append(tag)
+
+        if export_tags == []:
+            check = True
+        else:
+            check = any(e in tags_list for e in export_tags)
+        # None of Tags from export_tags exist on this instance; Dont export this instance
+        if check == False:
+            continue
+
         rules = routetable.route_rules
         display_name = routetable.display_name
         dn=display_name
@@ -174,12 +303,12 @@ def print_routetables(routetables,region,vcn_name,comp_name,gw_route_table_ids,s
                 importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(routetable.id)}'
 
         if(not rules):
-            insert_values(routetable, values_for_column, region, comp_name, vcn_name,None)
+            insert_values(routetable, values_for_column, region, comp_name, vcn_name,None,export_tags)
             if not tf_import_cmd:
                 print(dn)
 
         for rule in rules:
-            insert_values(routetable, values_for_column, region, comp_name, vcn_name,rule)
+            insert_values(routetable, values_for_column, region, comp_name, vcn_name,rule,export_tags)
             desc = str(rule.description)
             if (desc == "None"):
                 desc = ""
@@ -187,7 +316,7 @@ def print_routetables(routetables,region,vcn_name,comp_name,gw_route_table_ids,s
                 print(dn + "," +str(rule.destination)+","+desc)
 
 # Execution of the code begins here for drg route table
-def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export_compartments,export_regions,_tf_import_cmd):
+def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export_compartments,export_regions,export_tags,_tf_import_cmd):
     # Read the arguments
     global tf_import_cmd_drg
     global values_for_column_drg
@@ -226,6 +355,8 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
                 commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "import_network",
                                         "import_commands_network_drg_routerules.sh")
             importCommands_drg[reg] = ""
+    else:
+        drgv2=parseDRGs(cd3file)
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
@@ -245,21 +376,82 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
                 drgs = oci.pagination.list_call_get_all_results(vcn.list_drgs,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 for drg in drgs.data:
+
+                    # Tags filter
+                    defined_tags = drg.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
+
                     #DRG v1
+                    DRG_Name = drg.display_name
                     if drg.default_drg_route_tables is None:
                         continue
+                    if not tf_import_cmd_drg:
+                        try:
+                            if (DRG_Name not in drgv2.drg_names[reg]):
+                                print(f'skipping DRG route table as its DRG {DRG_Name} is not part of DRGs tab in cd3')
+                                continue
+                        except KeyError:
+                            print("skipping DRG route table as no DRG is declared for region " + reg )
+                            continue
 
                     # Get DRG RT Tables for the DRG - They are in same compartment s DRG by default
                     DRG_RTs = oci.pagination.list_call_get_all_results(vcn.list_drg_route_tables, drg_id=drg.id)
                     for drg_route_table_info in DRG_RTs.data:
+                        # Tags filter
+                        defined_tags = drg_route_table_info.defined_tags
+                        tags_list = []
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
+
+                        if export_tags == []:
+                            check = True
+                        else:
+                            check = any(e in tags_list for e in export_tags)
+                        # None of Tags from export_tags exist on this instance; Dont export this instance
+                        if check == False:
+                            continue
+
                         drg_info = drg
                         drg_route_table_id = drg_route_table_info.id
                         drg_route_table_name = drg_route_table_info.display_name
                         drg_display_name = drg_info.display_name
                         import_drg_route_distribution_name = ''
                         import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
+
                         if (import_drg_route_distribution_id != None):
                             import_drg_route_distribution_info = vcn.get_drg_route_distribution(import_drg_route_distribution_id).data
+
+                            # Tags filter
+                            defined_tags = import_drg_route_distribution_info.defined_tags
+                            if defined_tags != {}:
+                                tags_list = []
+                                for tkey, tval in defined_tags.items():
+                                    for kk, vv in tval.items():
+                                        tag = tkey + "." + kk + "=" + vv
+                                        tags_list.append(tag)
+
+                                if export_tags == []:
+                                    check = True
+                                else:
+                                    check = any(e in tags_list for e in export_tags)
+                                # None of Tags from export_tags exist on this instance; Dont export this instance
+                                if check == False:
+                                    import_drg_route_distribution_id = None
+
                             import_drg_route_distribution_name=import_drg_route_distribution_info.display_name
 
                         drg_rt_name = drg_display_name + "_" + drg_route_table_name
@@ -274,7 +466,7 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
                         drg_rt_rules = oci.pagination.list_call_get_all_results(vcn.list_drg_route_rules, drg_route_table_id,route_type="STATIC")
                         #drg_rt_rules = None
                         print_drg_routerules(drg_route_table_info, drg_display_name,drg_route_table_name, import_drg_route_distribution_name,
-                                             drg_rt_rules, region, ntk_compartment_name,state)
+                                             drg_rt_rules, region, ntk_compartment_name,export_tags,state)
 
     commonTools.write_to_cd3(values_for_column_drg, cd3file, "DRGRouteRulesinOCI")
     print("DRG RouteRules exported to CD3\n")
@@ -291,7 +483,7 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
 
 
 # Execution of the code begins here for route table export
-def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export_compartments,export_regions,_tf_import_cmd):
+def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export_compartments,export_regions,export_tags,_tf_import_cmd):
     # Read the arguments
     global tf_import_cmd
     global values_for_column
@@ -336,6 +528,8 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
                 commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "import_network",
                                         "import_commands_network_routerules.sh")
             importCommands[reg] = ''
+    else:
+        vcns_check = parseVCNs(cd3file)
 
     export_compartment_ids = []
     for comp in export_compartments:
@@ -359,8 +553,30 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
                 gw_route_table_ids = []
                 vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 for v in vcns.data:
+                    # Tags filter
+                    defined_tags = v.defined_tags
+                    tags_list = []
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
+
+                    if export_tags == []:
+                        check = True
+                    else:
+                        check = any(e in tags_list for e in export_tags)
+                    # None of Tags from export_tags exist on this instance; Dont export this instance
+                    if check == False:
+                        continue
                     vcn_id = v.id
                     vcn_name=v.display_name
+                    if not tf_import_cmd:
+                        # Process only those VCNs which are present in cd3(and have been created via TF)
+                        check = vcn_name, reg
+                        # rtname = str(df.loc[i, 'Route Table Name']).strip()
+                        if (check not in vcns_check.vcn_names):
+                            print(f'skipping route table for vcn {vcn_name} in region {reg}')
+                            continue
                     IGWs = oci.pagination.list_call_get_all_results(vcn.list_internet_gateways,
                                                                     compartment_id=ct.ntk_compartment_ids[
                                                                         ntk_compartment_name],
@@ -385,7 +601,7 @@ def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export
 
                     for ntk_compartment_name_again in export_compartments:
                             routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-                            print_routetables(routetables,region,vcn_name,ntk_compartment_name_again,gw_route_table_ids,state)
+                            print_routetables(routetables,region,vcn_name,ntk_compartment_name_again,export_tags,gw_route_table_ids,state)
     commonTools.write_to_cd3(values_for_column,cd3file,"RouteRulesinOCI")
     print("RouteRules exported to CD3\n")
 

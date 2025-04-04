@@ -67,6 +67,7 @@ class commonTools():
         self.identity_domain_enabled = False
         self.reg_filter = None
         self.comp_filter = None
+        self.tag_filter = None
         self.vizoci_comp_filter = None
         self.default_dns = None
         self.generate_graphs = None
@@ -148,6 +149,8 @@ class commonTools():
             if 'comp_filter' in i:
                 self.comp_filter = (i.split("=")[1])[2:][:-2]
                 self.comp_filter = self.comp_filter if self.comp_filter else "null"
+            if 'tag_filter' in i:
+                self.tag_filter = (i.split("=",1)[1])[2:][:-2]
 
             if 'vizoci_comp_filter' in i:
                 self.vizoci_comp_filter = (i.split("=")[1])[2:][:-2]
@@ -370,8 +373,12 @@ class commonTools():
             #print("Please fetch compartments first from CD3 Services option from main menu")
             exit(1)
         if resource_name in ntk_only_resources:
-            pass
+            if resource_name == "Validator":
+                return var_ocids
+            else:
+                pass
         else:
+            print("\n")
             if resource_name in ["Compartments","IAM Policies","IAM Groups","IAM Users","Network Sources","Tagging Objects"]:
                 input_compartment_names = None
             elif resource_name == "Clone Firewall Policy":
