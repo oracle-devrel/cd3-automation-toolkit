@@ -1,15 +1,15 @@
 -------------------------------------
 CD3 Automation Toolkit Tag v2025.1.0
-Apr 4th, 2024
+Apr 4th, 2025
 -------------------------------------
 1. Introduced new service - MySQL Database.
 2. Included Tunnel Inspection for OCI Network Firewall.
 3. Introduced filtering of resources using tags during export workflow.
 4. Moved compartment filter before showing export options to make it common for all services when using toolkit with CLI.
-5. Running Create/Modify Network through Jenkins will automatically call export of rules after successful terraform apply.
+5. Introduced a new option (option 0) in setUpOCI menu via CLI to export all resources together.
+6. Running Create/Modify Network through Jenkins will automatically call export of rules after successful terraform apply.
    This was a manual process earlier. User should download the updated CD3 under artifacts.
-6. Small bug fixes wrt RPC, Block Volumes, Compartments etc
-
+7. Small bug fixes wrt RPC, Block Volumes, Compartments etc
 
 -------------------------------------
 CD3 Automation Toolkit Tag v2024.4.3
