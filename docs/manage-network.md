@@ -55,7 +55,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 		- This will run export of rules for all compartments/tags. Security rules/Route rules for only those VCNs which are part of CD3 VCNs tab will be written to the excel. Similarly DRG Route Rules for only those DRGs which are part of CD3 DRGs tab will be written to the excel.
 		- VCNs/DRGs having duplicate names in tenancy is not supported.
                 
-		- <b>Make sure to download updated CD3 excel sheet under artifacts.<br><br>
+		- <b>Make sure to download updated CD3 excel sheet under artifacts.</b><br><br>
            	  <img width="870" alt="rpc" src="../images/export_network_rules.png">
 	 
 	
@@ -134,9 +134,14 @@ Modifying the Networking components using Automation Toolkit involves three simp
 3. To Validate the CD3 excel Tabs - choose option _'Validate CD3'_ and _'Validate Networks'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<prefix>/<prefix>_cd3validator.logs.``` If there are errors, rectify them accordingly and proceed to the next step. <br>
 
 4. Choose option _'Modify Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<prefix\>_major-objects.auto.tfvars_ and more will be generated under the folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```. Existing files will move into respective backup folders.<br>
-   **Note-**: Make sure to export Sec Rules, Route Rules, DRG Route Rules to CD3 Excel Sheet before executing this option. <br>
+   
+    **Note-**: Make sure to export Sec Rules, Route Rules, DRG Route Rules to CD3 Excel Sheet before executing this option. <br>
 
 5. Look at the terraform plan and apply. Running terraform apply completes the modification of Networking components in OCI. Verify the components in console.
+
+6. Export rules again into excel sheet to get it in synch with console.<br>
+   **Note-**: Rules will be automatically exported when using toolkit with Jenkins.
+
 
 ### Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform
 Follow the below process to export the rules to the same CD3 Excel Sheet as the one used to Create Network, and to sync the Terraform files with OCI whenever a user adds, modifies or deletes rules in OCI Console manually.
