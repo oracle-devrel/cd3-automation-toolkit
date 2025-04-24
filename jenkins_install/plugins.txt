@@ -19,7 +19,7 @@ uno-choice:latest
 file-parameters:latest
 scriptler:latest
 ansicolor:latest
-pipeline-graph-view:latest
+pipeline-graph-view:243.vc9e11fec486a_
 javax-mail-api:latest
 jdk-tool:latest
 trilead-api:latest
