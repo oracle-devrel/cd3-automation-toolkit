@@ -31,10 +31,11 @@ def print_nlb_backendset_backendserver(region, values_for_column_bss,NLBs, nlb_c
         # Tags filter
         defined_tags = eachnlb.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -167,10 +168,11 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
         # Tags filter
         defined_tags = eachnlb.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -389,10 +391,11 @@ def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compart
                         # Tags filter
                         defined_tags = eachnlb.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True

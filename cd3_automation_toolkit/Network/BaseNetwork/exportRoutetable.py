@@ -17,10 +17,11 @@ def get_network_entity_name(config,signer,network_identity_id,export_tags):
         # Tags filter for DRG attachment
         defined_tags = igw.data.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -48,10 +49,11 @@ def get_network_entity_name(config,signer,network_identity_id,export_tags):
         # Tags filter for DRG attachment
         defined_tags = sgw.data.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -80,10 +82,11 @@ def get_network_entity_name(config,signer,network_identity_id,export_tags):
         # Tags filter for DRG attachment
         defined_tags = ngw.data.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -111,10 +114,11 @@ def get_network_entity_name(config,signer,network_identity_id,export_tags):
         # Tags filter for DRG attachment
         defined_tags = lpg.data.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -158,10 +162,11 @@ def get_network_entity_name(config,signer,network_identity_id,export_tags):
         # Tags filter for DRG attachment
         defined_tags = drg.data.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -268,10 +273,11 @@ def print_routetables(routetables,region,vcn_name,comp_name,export_tags,gw_route
         # Tags filter
         defined_tags = routetable.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -380,10 +386,11 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
                     # Tags filter
                     defined_tags = drg.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -412,10 +419,11 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
                         # Tags filter
                         defined_tags = drg_route_table_info.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True
@@ -437,8 +445,8 @@ def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, ex
 
                             # Tags filter
                             defined_tags = import_drg_route_distribution_info.defined_tags
+                            tags_list = []
                             if defined_tags != {}:
-                                tags_list = []
                                 for tkey, tval in defined_tags.items():
                                     for kk, vv in tval.items():
                                         tag = tkey + "." + kk + "=" + vv

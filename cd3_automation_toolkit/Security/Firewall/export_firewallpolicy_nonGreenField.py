@@ -33,10 +33,11 @@ def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies, fw
             # Tags filter
             defined_tags = eachfwpolicy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -76,10 +77,11 @@ def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, 
             # Tags filter
             defined_tags = policy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -136,10 +138,11 @@ def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, 
             # Tags filter
             defined_tags = urlpolicy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -192,10 +195,11 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
             # Tags filter
             defined_tags = servicelistpolicy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -308,10 +312,11 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, 
             # Tags filter
             defined_tags = applistpolicy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -419,10 +424,11 @@ def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicies
             # Tags filter
             defined_tags = secrulespolicy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -527,10 +533,11 @@ def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies, fw
             # Tags filter
             defined_tags = secretpolicy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -589,10 +596,11 @@ def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile
             # Tags filter
             defined_tags = decryptionprofile.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -671,10 +679,11 @@ def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpo
             # Tags filter
             defined_tags = decryptrulepolicy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -752,10 +761,11 @@ def  print_firewall_tunnelinspect(region, ct, values_for_column_fwtunnelinspect,
             # Tags filter
             defined_tags = tunnelinspectrulepolicy.defined_tags
             tags_list = []
-            for tkey, tval in defined_tags.items():
-                for kk, vv in tval.items():
-                    tag = tkey + "." + kk + "=" + vv
-                    tags_list.append(tag)
+            if defined_tags:
+                for tkey, tval in defined_tags.items():
+                    for kk, vv in tval.items():
+                        tag = tkey + "." + kk + "=" + vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True
@@ -930,10 +940,11 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
                     # Tags filter
                     defined_tags = eachfwpolicy1.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True

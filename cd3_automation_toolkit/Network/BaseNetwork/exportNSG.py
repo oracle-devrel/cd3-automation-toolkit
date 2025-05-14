@@ -218,10 +218,11 @@ def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartm
                 # Tags filter
                 defined_tags = vcn.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True
@@ -242,10 +243,11 @@ def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartm
                         # Tags filter
                         defined_tags = nsg.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True

@@ -687,10 +687,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 # Tags filter for DRG attachment
                 defined_tags = drg_attachment_info.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True
@@ -708,10 +709,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 # Tags filter for DRG
                 defined_tags = drg_info.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True
@@ -952,10 +954,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 # Tags filter
                 defined_tags = vcn_info.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True
@@ -982,10 +985,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     # Tags filter
                     defined_tags = drg_attachment_info.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -1006,10 +1010,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     # Tags filter
                     defined_tags = drg_info.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -1031,10 +1036,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     # Tags filter
                     defined_tags = igw.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -1062,10 +1068,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     # Tags filter
                     defined_tags = ngw.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -1093,10 +1100,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     # Tags filter
                     defined_tags = sgw.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -1126,10 +1134,11 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                     # Tags filter
                     defined_tags = lpg.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -1226,10 +1235,11 @@ def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compa
                 # Tags filter
                 defined_tags = vcn.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True
@@ -1250,10 +1260,11 @@ def export_dhcp(inputfile, outdir, service_dir, config, signer, ct, export_compa
                         # Tags filter
                         defined_tags = dhcp.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True
@@ -1353,10 +1364,11 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                 # Tags filter
                 defined_tags = vcn.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True
@@ -1381,10 +1393,11 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                         # Tags filter
                         defined_tags = subnet.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True
@@ -1400,10 +1413,11 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                         # Tags filter
                         defined_tags = vnc.get_dhcp_options(dhcp_id).data.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True
@@ -1423,10 +1437,11 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                         # Tags filter
                         defined_tags = vnc.get_route_table(rt_id).data.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True
@@ -1448,10 +1463,11 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                             # Tags filter
                             defined_tags = vnc.get_security_list(sl_id).data.defined_tags
                             tags_list = []
-                            for tkey, tval in defined_tags.items():
-                                for kk, vv in tval.items():
-                                    tag = tkey + "." + kk + "=" + vv
-                                    tags_list.append(tag)
+                            if defined_tags:
+                                for tkey, tval in defined_tags.items():
+                                    for kk, vv in tval.items():
+                                        tag = tkey + "." + kk + "=" + vv
+                                        tags_list.append(tag)
 
                             if export_tags == []:
                                 check = True
@@ -1498,10 +1514,11 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                         # Tags filter
                         defined_tags = vlan.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True
@@ -1518,10 +1535,11 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                         # Tags filter
                         defined_tags = vnc.get_route_table(rt_id).data.defined_tags
                         tags_list = []
-                        for tkey, tval in defined_tags.items():
-                            for kk, vv in tval.items():
-                                tag = tkey + "." + kk + "=" + vv
-                                tags_list.append(tag)
+                        if defined_tags:
+                            for tkey, tval in defined_tags.items():
+                                for kk, vv in tval.items():
+                                    tag = tkey + "." + kk + "=" + vv
+                                    tags_list.append(tag)
 
                         if export_tags == []:
                             check = True
@@ -1543,10 +1561,11 @@ def export_subnets_vlans(inputfile, outdir, service_dir, config, signer, ct, exp
                             # Tags filter
                             defined_tags = vnc.get_network_security_group(nsg_id).data.defined_tags
                             tags_list = []
-                            for tkey, tval in defined_tags.items():
-                                for kk, vv in tval.items():
-                                    tag = tkey + "." + kk + "=" + vv
-                                    tags_list.append(tag)
+                            if defined_tags:
+                                for tkey, tval in defined_tags.items():
+                                    for kk, vv in tval.items():
+                                        tag = tkey + "." + kk + "=" + vv
+                                        tags_list.append(tag)
 
                             if export_tags == []:
                                 check = True

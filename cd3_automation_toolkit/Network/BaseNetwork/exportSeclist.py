@@ -50,10 +50,11 @@ def print_secrules(seclists,region,vcn_name,comp_name,export_tags,state):
         # Tags filter
         defined_tags = seclist.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -283,10 +284,11 @@ def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_comp
                     # Tags filter
                     defined_tags = v.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True

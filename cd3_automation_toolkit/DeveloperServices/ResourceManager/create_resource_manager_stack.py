@@ -346,7 +346,14 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
                 create_job_details.operation = "IMPORT_TF_STATE"
                 create_job_details.stack_id = stack_ocid
                 print("Uploading Terraform State file to Resource Manager for stack " + rm_name + "..............")
-                ocs_stack.create_job(create_job_details)
+                try:
+                    ocs_stack.create_job(create_job_details)
+                except Exception as e:
+                    print("\n")
+                    print(str(e))
+                    if ('Request Entity Too Large' in str(e)):
+                        print("\nError!!! Skipping state import for Resource Manager stack "+rm_name)
+                        pass
 
             rm_dir_zip = region_dir + '/' + prefix + '-' + region +'.zip'
             # Take a backup of zip file if it exists
@@ -458,7 +465,14 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
                     create_job_details.operation = "IMPORT_TF_STATE"
                     create_job_details.stack_id = stack_ocid
                     print("Uploading Terraform State file to Resource Manager for stack "+service_rm_name+"..............")
-                    ocs_stack.create_job(create_job_details)
+                    try:
+                        ocs_stack.create_job(create_job_details)
+                    except Exception as e:
+                        print("\n")
+                        print(str(e))
+                        if ('Request Entity Too Large' in str(e)):
+                            print("\nError!!! Skipping state import for Resource Manager stack " + service_rm_name)
+                            pass
 
                 shutil.rmtree(rm_dir + "/" + service_dir)
 

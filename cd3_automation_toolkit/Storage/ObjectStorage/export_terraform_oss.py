@@ -222,10 +222,11 @@ def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_co
                     # Tags filter
                     defined_tags = bucket_data.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -275,9 +276,10 @@ def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_co
                             rp_name = str(item.name)
                             rp_id = str(item.id)
                             rp_destination_bucket_name = str(item.destination_bucket_name)
-                            rp_destination_region_name = str(item.destination_region_name)
-                            region_parts = rp_destination_region_name.split("-")
-                            rp_destination_region_name = region_parts[-2]
+                            rp_destination_region_namee = str(item.destination_region_name)
+                            #region_parts = rp_destination_region_name.split("-")
+                            #rp_destination_region_name = region_parts[-2]
+                            rp_destination_region_name = [k for k, v in ct.region_dict.items() if v == rp_destination_region_namee][0]
                             rp_data = rp_name + "::" + rp_destination_region_name + "::" + rp_destination_bucket_name
                     else:
                         rp_data = None
