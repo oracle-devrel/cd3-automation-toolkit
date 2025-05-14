@@ -78,10 +78,11 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                     # Tags filter
                     defined_tags = get_vault_data.defined_tags
                     tags_list = []
-                    for tkey, tval in defined_tags.items():
-                        for kk, vv in tval.items():
-                            tag = tkey + "." + kk + "=" + vv
-                            tags_list.append(tag)
+                    if defined_tags:
+                        for tkey, tval in defined_tags.items():
+                            for kk, vv in tval.items():
+                                tag = tkey + "." + kk + "=" + vv
+                                tags_list.append(tag)
 
                     if export_tags == []:
                         check = True
@@ -117,10 +118,11 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                     # Tags filter
                                     defined_tags = key.defined_tags
                                     tags_list = []
-                                    for tkey, tval in defined_tags.items():
-                                        for kk, vv in tval.items():
-                                            tag = tkey + "." + kk + "=" + vv
-                                            tags_list.append(tag)
+                                    if defined_tags:
+                                        for tkey, tval in defined_tags.items():
+                                            for kk, vv in tval.items():
+                                                tag = tkey + "." + kk + "=" + vv
+                                                tags_list.append(tag)
 
                                     if export_tags == []:
                                         check = True

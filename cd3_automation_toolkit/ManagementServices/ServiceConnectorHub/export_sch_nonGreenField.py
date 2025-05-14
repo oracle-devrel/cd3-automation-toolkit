@@ -43,10 +43,11 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
         # Tags filter
         defined_tags = sch_details.data.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True

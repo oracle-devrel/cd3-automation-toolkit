@@ -203,10 +203,11 @@ def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, exp
                 # Tags filter
                 defined_tags = resolver.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True

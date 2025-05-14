@@ -912,6 +912,7 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
                     # Cross check the VCN names in Instances and VCNs sheet
                     #vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Subnet Name', 'SubnetsVLANs'])
                     if ("::" not in columnvalue):
+                        log(f'ROW {i + 3} : Invalid syntax at column "Network Details"')
                         vcn_subnet_check = True
 
 

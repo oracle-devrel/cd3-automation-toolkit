@@ -115,10 +115,11 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
             # Tags filter
             ins_defined_tags = ins.defined_tags
             tags_list=[]
-            for tkey,tval in ins_defined_tags.items():
-                for kk,vv in tval.items():
-                    tag = tkey+"."+kk+"="+vv
-                    tags_list.append(tag)
+            if ins_defined_tags:
+                for tkey,tval in ins_defined_tags.items():
+                    for kk,vv in tval.items():
+                        tag = tkey+"."+kk+"="+vv
+                        tags_list.append(tag)
 
             if export_tags == []:
                 check = True

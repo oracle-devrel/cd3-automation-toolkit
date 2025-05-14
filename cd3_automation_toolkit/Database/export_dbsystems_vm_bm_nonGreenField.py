@@ -176,10 +176,11 @@ def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, e
                 # Tags filter
                 defined_tags = db_system.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True

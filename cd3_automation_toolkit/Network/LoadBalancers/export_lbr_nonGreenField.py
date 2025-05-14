@@ -151,10 +151,11 @@ def print_lbr_hostname_certs(region, ct, outdir, values_for_column_lhc, lbr, LBR
         # Tags filter
         defined_tags = eachlbr.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -435,10 +436,11 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
         # Tags filter
         defined_tags = eachlbr.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -613,10 +615,11 @@ def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name
         # Tags filter
         defined_tags = eachlbr.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -746,10 +749,11 @@ def print_rule(region, ct, values_for_column_rule, LBRs, lbr_compartment_name,ex
         # Tags filter
         defined_tags = eachlbr.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -878,10 +882,11 @@ def print_prs(region, ct, values_for_column_prs, LBRs, lbr_compartment_name,expo
         # Tags filter
         defined_tags = eachlbr.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -940,10 +945,11 @@ def print_routing_policies(region, ct, values_for_column_rp, LBRs, lbr_compartme
         # Tags filter
         defined_tags = eachlbr.defined_tags
         tags_list = []
-        for tkey, tval in defined_tags.items():
-            for kk, vv in tval.items():
-                tag = tkey + "." + kk + "=" + vv
-                tags_list.append(tag)
+        if defined_tags:
+            for tkey, tval in defined_tags.items():
+                for kk, vv in tval.items():
+                    tag = tkey + "." + kk + "=" + vv
+                    tags_list.append(tag)
 
         if export_tags == []:
             check = True
@@ -1117,10 +1123,11 @@ def export_lbr(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
                 # Tags filter
                 defined_tags = eachlbr.defined_tags
                 tags_list = []
-                for tkey, tval in defined_tags.items():
-                    for kk, vv in tval.items():
-                        tag = tkey + "." + kk + "=" + vv
-                        tags_list.append(tag)
+                if defined_tags:
+                    for tkey, tval in defined_tags.items():
+                        for kk, vv in tval.items():
+                            tag = tkey + "." + kk + "=" + vv
+                            tags_list.append(tag)
 
                 if export_tags == []:
                     check = True

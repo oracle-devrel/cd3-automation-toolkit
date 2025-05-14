@@ -7,6 +7,7 @@ import sys
 import pathlib
 import urllib.request
 import oci
+from copy import deepcopy
 from oci.identity import IdentityClient
 from oci.config import DEFAULT_LOCATION
 from openpyxl import load_workbook
@@ -66,7 +67,8 @@ class commonTools():
         self.domain_filter = None
         self.identity_domain_enabled = False
         self.reg_filter = None
-        self.comp_filter = None
+        #Should be None but changed to "null" to do a quick fix for ct.get_compartment_map
+        self.comp_filter = "null"
         self.tag_filter = None
         self.vizoci_comp_filter = None
         self.default_dns = None
@@ -291,7 +293,17 @@ class commonTools():
         idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
         homeregion=""
+        new_config = deepcopy(config)
         for rs in regionsubscriptions.data:
+            try:
+
+                new_config.__setitem__("region", rs.region_name)
+                idc = IdentityClient(config=new_config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+                ADs_data = idc.list_availability_domains(compartment_id=config['tenancy'])
+            except Exception as e:
+                print("Skipping subscribed region "+rs.region_name+" . Check if domain is replicated for this region")
+                continue
+
             if (rs.is_home_region == True):
                 homeregion = rs.region_name
             for k, v in self.region_dict.items():
@@ -303,11 +315,12 @@ class commonTools():
 
         # return subs region list to caller
         subs_region_list = []
-        for reg in regionsubscriptions.data:
-            status = getattr(reg, 'status')
+        for rs in regionsubscriptions.data:
+            status = getattr(rs, 'status')
             if status == "READY":
-                region_name = getattr(reg, 'region_name')
-                subs_region_list.append(region_name.split("-")[1])
+                for k, v in self.region_dict.items():
+                    if (rs.region_name == v):
+                        subs_region_list.append(k)
         return subs_region_list
 
     #Get Compartment OCIDs
@@ -378,6 +391,8 @@ class commonTools():
             else:
                 pass
         else:
+
+            #Code needs to change as we are not passing individual resource name now. But "OCI Resources" as export filter for compartments.
             print("\n")
             if resource_name in ["Compartments","IAM Policies","IAM Groups","IAM Users","Network Sources","Tagging Objects"]:
                 input_compartment_names = None
@@ -1298,9 +1313,37 @@ class cd3Services():
             os.chdir("../")
 
         tempStr = '#Region:Region_Key\n'
+        reg_dict = {}
+
         for reg in regions_list:
-            cd3key = str(reg.name.split('-')[1]).lower()
+            cd3key = str(reg.name.split('-',1)[1]).lower()
+
+            if 'dcc' in cd3key:
+                cd3key = str(cd3key.split('-',1)[1]).lower()
+
             name = str(reg.name).lower()
+            reg_dict[cd3key] = name
+
+        keys = []
+        new_reg_dict={}
+        for key,val in reg_dict.items():
+            keyy = key.split("-")[0]
+            if keyy not in keys:
+                keys.append(keyy)
+                new_reg_dict[keyy]=val
+            else:
+                new_reg_dict[key] = val
+
+                #replace prev
+                old_val = new_reg_dict[keyy]
+                old_val_key = str(old_val.split('-', 1)[1]).lower()
+                if 'dcc' in old_val_key:
+                    old_val_key = str(old_val_key.split('-', 1)[1]).lower()
+
+                new_reg_dict[old_val_key] = old_val
+                new_reg_dict.pop(keyy)
+
+        for cd3key,name in new_reg_dict.items():
             line = cd3key + ":" + name
             tempStr = tempStr + line + '\n'
 

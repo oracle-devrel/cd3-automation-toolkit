@@ -473,13 +473,11 @@ try:
     devops_user_key = config.get('Default', 'oci_devops_git_key').strip()
 
     # Check if Jenkins was installed during image build
-
     if environ.get('USE_DEVOPS') is None:
         use_devops_docker = "yes"
     else:
         use_devops_docker = os.environ['USE_DEVOPS']
         use_devops_docker=use_devops_docker.lower()
-
 
     if use_devops_docker != use_devops:
         use_devops = "no"

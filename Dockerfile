@@ -62,11 +62,12 @@ sudo unzip terraform-provider-null_${TF_NULL_PROVIDER}_linux_amd64.zip -d /cd3us
 sudo cp -r /cd3user/.terraform.d/plugins/registry.terraform.io /cd3user/.terraform.d/plugins/registry.opentofu.org && \
 sudo chown -R cd3user:cd3user /cd3user/ && \
 sudo rm -rf terraform-provider-null_${TF_NULL_PROVIDER}_linux_amd64.zip terraform-provider-oci_${TF_OCI_PROVIDER}_linux_amd64.zip ;\
+
 fi
 
 ##################################### START INSTALLING JENKINS ###################################
-ARG JENKINS_VERSION=2.444
-ARG JENKINS_SHA=ab093a455fc35951c9b46361002e17cc3ed7c59b0943bbee3a57a363f3370d2e
+ARG JENKINS_VERSION=2.504.1
+ARG JENKINS_SHA=81026db18b0c4aad6b62cf408e4c42e5797661b41c517b37df606238e89b9df1
 ARG JENKINS_PLUGIN_MANAGER_VERSION=2.12.13
 ARG PLUGIN_CLI_URL=https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/${JENKINS_PLUGIN_MANAGER_VERSION}/jenkins-plugin-manager-${JENKINS_PLUGIN_MANAGER_VERSION}.jar
 
