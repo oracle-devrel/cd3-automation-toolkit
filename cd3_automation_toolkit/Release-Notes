@@ -1,4 +1,13 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2025.1.2
+May 14th, 2025
+-------------------------------------
+1. Jenkins version upgrade to 2.504.1
+2. Ability to process DRCC regions.
+3. Ability to process regions where there are two data centers like Singapore.
+4. Minor Bug fixes for defined tags filter, cd3Validator, RM stack upload.
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2025.1.1
 Apr 26th, 2025
 -------------------------------------
