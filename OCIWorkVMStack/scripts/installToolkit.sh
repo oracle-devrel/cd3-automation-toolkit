@@ -46,26 +46,6 @@ sudo yum install -y git >> $logfile 2>&1
 stop_exec
 
 
-start=$(date +%s.%N)
-username=cd3user
-#sudo mkdir -p /$username/mount_path
-sudo mkdir -p /$username/
-NOW=$( date '+%F_%H:%M:%S' )
-toolkit_dir="/tmp/githubCode_"$NOW
-
-mkdir -p $toolkit_dir
-logfile="/$toolkit_dir/installToolkit.log"
-tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
-
-
-stop_exec () {
-if [[ $? -ne 0 ]] ; then
-   echo $? >> $logfile 2>&1
-   echo "Error encountered in CD3 Automation Toolkit Container Setup. Please do setup Manually" >> $logfile 2>&1
-   exit 1
-fi
-}
-
 sudo systemctl stop oracle-cloud-agent.service >> $logfile 2>&1
 cd /etc/yum.repos.d/
 for i in $( ls *.osms-backup ); do sudo mv $i ${i%.*}; done
