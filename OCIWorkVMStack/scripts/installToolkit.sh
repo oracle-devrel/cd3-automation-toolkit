@@ -7,6 +7,8 @@ sudo mkdir -p /$username/
 NOW=$( date '+%F_%H:%M:%S' )
 toolkit_dir="/tmp/githubCode_"+$NOW
 
+mkdir -p $toolkit_dir
+logfile="/$toolkit_dir/installToolkit.log"
 tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
 
 
@@ -45,7 +47,7 @@ stop_exec
 
 echo "***Install Podman***" >> $logfile 2>&1
 echo "########################################################" >> $logfile 2>&1
-osrelase=`cat /etc/oracle-release`
+osrelease=`cat /etc/oracle-release`
 if [[ $osrelase == "Oracle Linux Server release 7".* ]] ; then
      sudo yum install -y podman podman-docker >> $logfile 2>&1
      stop_exec
@@ -59,13 +61,12 @@ fi
 sudo podman --version >> $logfile 2>&1
 
 echo "***Download Toolkit***" >> $logfile 2>&1
-sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade $toolkit_dir >> $logfile 2>&1
+sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade $toolkit_dir
 #Get version from release-Notes of code downloaded
 version="v2025.1.1"
 stop_exec
 
 sudo mkdir -p /$username/$version
-logfile="/$username/$version/installToolkit.log"
 
 sudo sh -c "echo '########################################################################' >> /etc/motd"
 sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"
