@@ -1,21 +1,14 @@
 #!/bin/bash
 
-username=cd3user
-sudo mkdir -p /$username/mount_path
-logfile="/$username/mount_path/installToolkit.log"
-toolkit_dir="/tmp/githubCode"
-tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
 start=$(date +%s.%N)
-sudo sh -c "echo '########################################################################' >> /etc/motd"
-sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"
-sudo sh -c "echo '########################################################################' >> /etc/motd"
-sudo sh -c "echo 'Please wait for couple of minutes for container to become active if you' >> /etc/motd"
-sudo sh -c "echo 'are logging in for first time to after VM Provisioning. Toolkit initial' >> /etc/motd"
-sudo sh -c "echo 'setup log is present at - /cd3user/mount_path/installToolkit.log' >> /etc/motd"
-sudo sh -c "echo 'To verify podman container run command: sudo podman ps -a' >> /etc/motd"
-sudo sh -c "echo 'To connect to container run command: sudo podman exec -it cd3_toolkit bash' >> /etc/motd"
-sudo sh -c "echo 'if you want to stop seeing these messages at login remove in /etc/motd' >> /etc/motd"
-sudo sh -c "echo '###########################################################################' >> /etc/motd"
+username=cd3user
+#sudo mkdir -p /$username/mount_path
+sudo mkdir -p /$username/
+NOW=$( date '+%F_%H:%M:%S' )
+toolkit_dir="/tmp/githubCode_"+$NOW
+
+tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
+
 
 stop_exec () {
 if [[ $? -ne 0 ]] ; then
@@ -66,8 +59,25 @@ fi
 sudo podman --version >> $logfile 2>&1
 
 echo "***Download Toolkit***" >> $logfile 2>&1
-sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git $toolkit_dir >> $logfile 2>&1
+sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade $toolkit_dir >> $logfile 2>&1
+#Get version from release-Notes of code downloaded
+version="v2025.1.1"
 stop_exec
+
+sudo mkdir -p /$username/$version
+logfile="/$username/$version/installToolkit.log"
+
+sudo sh -c "echo '########################################################################' >> /etc/motd"
+sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"
+sudo sh -c "echo '########################################################################' >> /etc/motd"
+sudo sh -c "echo 'Please wait for couple of minutes for container to become active if you' >> /etc/motd"
+sudo sh -c "echo 'are logging in for first time to after VM Provisioning. Toolkit initial' >> /etc/motd"
+sudo sh -c "echo 'setup log is present at - /cd3user/"+$version+"/installToolkit.log' >> /etc/motd"
+sudo sh -c "echo 'To verify podman container run command: sudo podman ps -a' >> /etc/motd"
+sudo sh -c "echo 'To connect to container run command: sudo podman exec -it cd3_toolkit bash' >> /etc/motd"
+sudo sh -c "echo 'if you want to stop seeing these messages at login remove in /etc/motd' >> /etc/motd"
+sudo sh -c "echo '###########################################################################' >> /etc/motd"
+
 
 curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
 metadata=$(cat /tmp/metadata.json)
