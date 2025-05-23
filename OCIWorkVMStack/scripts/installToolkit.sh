@@ -4,6 +4,52 @@ start=$(date +%s.%N)
 username=cd3user
 #sudo mkdir -p /$username/mount_path
 sudo mkdir -p /$username/
+NOW=$( date '+%F_%H-%M-%S' )
+toolkit_dir="/tmp/githubCode_"$NOW
+
+mkdir -p $toolkit_dir
+logfile="/tmp/installToolkit.log_"$NOW
+tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
+
+
+stop_exec () {
+if [[ $? -ne 0 ]] ; then
+   echo $? >> $logfile 2>&1
+   echo "Error encountered in CD3 Automation Toolkit Container Setup. Please do setup Manually" >> $logfile 2>&1
+   exit 1
+fi
+}
+
+sudo systemctl stop oracle-cloud-agent.service >> $logfile 2>&1
+cd /etc/yum.repos.d/
+for i in $( ls *.osms-backup ); do sudo mv $i ${i%.*}; done
+echo "***SELinux permissive***" >> $logfile 2>&1
+sudo setenforce 0
+sudo sed -c -i "s/\SELINUX=.*/SELINUX=permissive/" /etc/sysconfig/selinux
+
+echo "***cd3user setup***" >> $logfile 2>&1
+sudo useradd -u 1001 $username
+sudo sh -c "echo $username ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$username"
+sudo chmod 0440 /etc/sudoers.d/$username
+sudo chmod 775 -R /$username
+sudo chown -R $username:$username /$username
+sudo usermod -aG $username opc
+sudo mkdir /home/$username/.ssh
+sudo chown -R $username:$username /home/$username/.ssh
+sudo chmod 700 /home/$username/.ssh
+sudo cp /home/opc/.ssh/authorized_keys /home/$username/.ssh/authorized_keys
+sudo chown -R $username:$username /home/$username/.ssh/authorized_keys
+sudo chmod 600 /home/$username/.ssh/authorized_keys
+
+echo "***Install git***" >> $logfile 2>&1
+sudo yum install -y git >> $logfile 2>&1
+stop_exec
+
+
+start=$(date +%s.%N)
+username=cd3user
+#sudo mkdir -p /$username/mount_path
+sudo mkdir -p /$username/
 NOW=$( date '+%F_%H:%M:%S' )
 toolkit_dir="/tmp/githubCode_"$NOW
 
@@ -80,7 +126,7 @@ sudo sh -c "echo 'if you want to stop seeing these messages at login remove in /
 sudo sh -c "echo '###########################################################################' >> /etc/motd"
 
 
-curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
+sudo curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
 metadata=$(cat /tmp/metadata.json)
 user_id=$(echo "$metadata" | jq -r '.metadata.current_user_ocid')
 cust_name=$(echo "$metadata" | jq -r '.metadata.tenancy_name')
@@ -92,14 +138,13 @@ sudo sed -c -i "s/region=.*/region=$config_region/" $tenancyconfig_properties
 sudo sed -c -i "s/user_ocid=.*/user_ocid=$user_id/" $tenancyconfig_properties
 
 echo "***Building container image***" >> $logfile 2>&1
-cd /tmp
-cd githubCode
+cd $toolkit_dir
 sudo podman build --platform linux/amd64 -t cd3_toolkit -f Dockerfile --pull --no-cache . >> $logfile 2>&1
 stop_exec
 sudo podman images >> $logfile 2>&1
 
 echo "***Setting Up podman Container***" >> $logfile 2>&1
-sudo podman run --name cd3_toolkit -it -p 8443:8443 -d -v /cd3user/mount_path:/cd3user/tenancies  cd3_toolkit bash >> $logfile 2>&1
+sudo podman run --name cd3_toolkit -it -p 8443:8443 -d -v /cd3user/$version:/cd3user/tenancies  cd3_toolkit bash >> $logfile 2>&1
 stop_exec
 sudo podman ps -a >> $logfile 2>&1
 echo "Connect to Container using command - sudo podman exec -it cd3_toolkit bash " >> $logfile 2>&1
