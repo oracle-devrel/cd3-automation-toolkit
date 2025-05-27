@@ -87,7 +87,7 @@ fi
 sudo podman --version >> $logfile 2>&1
 
 echo "***Download Toolkit***" >> $logfile 2>&1
-sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade $toolkit_dir
+sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container $toolkit_dir
 
 #Get version from release-Notes of code downloaded
 version="v2025.1.1"
