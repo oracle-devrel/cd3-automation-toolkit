@@ -351,9 +351,12 @@ def create_bucket(config, signer):
 # Execution of code begins here
 parser = argparse.ArgumentParser(description="Connects the container to tenancy")
 parser.add_argument("propsfile", help="Full Path of properties file. eg tenancyconfig.properties")
+parser.add_argument('--upgradeToolkit', default=False)
 args = parser.parse_args()
 config = configparser.RawConfigParser()
 config.read(args.propsfile)
+
+upgradeToolkit = args.upgradeToolkit
 
 current_time=str(datetime.datetime.now())
 
@@ -405,6 +408,11 @@ config_file_path = config_files + "/" + prefix + "_oci_config"
 terraform_files = customer_tenancy_dir + "/terraform_files/"
 outdir_safe=terraform_files+"/.safe"
 setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
+
+# Get it from release-notes of current dir
+version = "v2025.1.1"
+t_v = version.replace(".","-")
+
 
 # Read Config file Variables
 try:
@@ -510,7 +518,7 @@ try:
 
         # Bucket Name
         if remote_state_bucket == '' or remote_state_bucket == "\n":
-            bucket_name = prefix + "-automation-toolkit-bucket"
+            bucket_name = prefix + "-cd3"+t_v+"-bucket"
         else:
             bucket_name = remote_state_bucket.strip()
 
@@ -537,7 +545,8 @@ if not os.path.exists(customer_tenancy_dir+'/othertools_files'):
 dir_values = []
 
 # Copy input properties file to customer_tenancy_dir
-shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
+if upgradeToolkit != True:
+    shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
 
 # 1. Copy outdir_structure_file
 
@@ -572,11 +581,20 @@ _session_token_file=''
 _key_path = ''
 if auth_mechanism=='api_key': # or auth_mechanism=='session_token':
     print("\nCopying Private Key File..........")
-    # Move Private PEM Key File
     filename = os.path.basename(key_path)
-    #shutil.copy(key_path, key_path + "_backup_"+ datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-'))
-    shutil.copy(key_path, config_files + "/" + filename)
     _key_path = config_files + "/" + filename
+    #shutil.copy(key_path, key_path + "_backup_"+ datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-'))
+    # Move Private PEM Key File
+    if upgradeToolkit != True:
+        shutil.copy(key_path, config_files + "/" + filename)
+
+        f = open(config_files + "/" + prefix + "_" + os.path.basename(args.propsfile), "r")
+        data = f.read()
+        data = data.replace("key_path=", "key_path=" + _key_path)
+        f = open(config_files + "/" + prefix + "_" + os.path.basename(args.propsfile), "w")
+        f.write(data)
+        f.close()
+
     os.chmod(_key_path,0o600)
 
 # 3. Create config file
@@ -672,7 +690,7 @@ if remote_state == "yes":
         new_config.__setitem__("region", ct.region_dict[home_region])
 
         identity_client = oci.identity.IdentityClient(config=new_config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-        cred_name = prefix+"-automation-toolkit-csk"
+        cred_name = prefix+"-cd3-csk"
 
         # Get user ocid for DevOps User Name
         if "ocid1.user.oc" not in remote_state_user:
@@ -1063,9 +1081,9 @@ if use_devops == 'yes':
     f.close()
 
     if devops_repo == '' or devops_repo == "\n":
-        topic_name = prefix + "-automation-toolkit-topic"
-        project_name = prefix + "-automation-toolkit-project"
-        repo_name = prefix + "-automation-toolkit-repo"
+        topic_name = prefix + "-cd3" + t_v + "-topic"
+        project_name = prefix + "-cd3" + t_v + "-project"
+        repo_name = prefix + "-cd3" + t_v + "-repo"
         devops_exists = False
     else:
         topic_name = ''
