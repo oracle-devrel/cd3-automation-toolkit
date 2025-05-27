@@ -12,6 +12,17 @@ logfile="/tmp/installToolkit.log_"$NOW
 tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
 
 
+sudo sh -c "echo '########################################################################' >> /etc/motd"
+sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"
+sudo sh -c "echo '########################################################################' >> /etc/motd"
+sudo sh -c "echo 'Please wait for couple of minutes for container to become active if you' >> /etc/motd"
+sudo sh -c "echo 'are logging in for first time to after VM Provisioning. Toolkit initial' >> /etc/motd"
+sudo sh -c "echo 'setup log is present at - /cd3user/version/installToolkit.log' >> /etc/motd"
+sudo sh -c "echo 'To verify podman container run command: sudo podman ps -a' >> /etc/motd"
+sudo sh -c "echo 'To connect to container run command: sudo podman exec -it cd3_toolkit bash' >> /etc/motd"
+sudo sh -c "echo 'if you want to stop seeing these messages at login remove in /etc/motd' >> /etc/motd"
+sudo sh -c "echo '###########################################################################' >> /etc/motd"
+
 stop_exec () {
 if [[ $? -ne 0 ]] ; then
    echo $? >> $logfile 2>&1
@@ -19,32 +30,6 @@ if [[ $? -ne 0 ]] ; then
    exit 1
 fi
 }
-
-sudo systemctl stop oracle-cloud-agent.service >> $logfile 2>&1
-cd /etc/yum.repos.d/
-for i in $( ls *.osms-backup ); do sudo mv $i ${i%.*}; done
-echo "***SELinux permissive***" >> $logfile 2>&1
-sudo setenforce 0
-sudo sed -c -i "s/\SELINUX=.*/SELINUX=permissive/" /etc/sysconfig/selinux
-
-echo "***cd3user setup***" >> $logfile 2>&1
-sudo useradd -u 1001 $username
-sudo sh -c "echo $username ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$username"
-sudo chmod 0440 /etc/sudoers.d/$username
-sudo chmod 775 -R /$username
-sudo chown -R $username:$username /$username
-sudo usermod -aG $username opc
-sudo mkdir /home/$username/.ssh
-sudo chown -R $username:$username /home/$username/.ssh
-sudo chmod 700 /home/$username/.ssh
-sudo cp /home/opc/.ssh/authorized_keys /home/$username/.ssh/authorized_keys
-sudo chown -R $username:$username /home/$username/.ssh/authorized_keys
-sudo chmod 600 /home/$username/.ssh/authorized_keys
-
-echo "***Install git***" >> $logfile 2>&1
-sudo yum install -y git >> $logfile 2>&1
-stop_exec
-
 
 sudo systemctl stop oracle-cloud-agent.service >> $logfile 2>&1
 cd /etc/yum.repos.d/
@@ -87,27 +72,14 @@ fi
 sudo podman --version >> $logfile 2>&1
 
 echo "***Download Toolkit***" >> $logfile 2>&1
-sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container $toolkit_dir
+sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container $toolkit_dir >> $logfile 2>&1
+stop_exec
 
 #Get version from release-Notes of code downloaded
 version="v2025.1.1"
 stop_exec
 
-sudo mkdir -p /$username/$version
-
-sudo sh -c "echo '########################################################################' >> /etc/motd"
-sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"
-sudo sh -c "echo '########################################################################' >> /etc/motd"
-sudo sh -c "echo 'Please wait for couple of minutes for container to become active if you' >> /etc/motd"
-sudo sh -c "echo 'are logging in for first time to after VM Provisioning. Toolkit initial' >> /etc/motd"
-sudo sh -c "echo 'setup log is present at - /cd3user/"$version"/installToolkit.log' >> /etc/motd"
-sudo sh -c "echo 'To verify podman container run command: sudo podman ps -a' >> /etc/motd"
-sudo sh -c "echo 'To connect to container run command: sudo podman exec -it cd3_toolkit bash' >> /etc/motd"
-sudo sh -c "echo 'if you want to stop seeing these messages at login remove in /etc/motd' >> /etc/motd"
-sudo sh -c "echo '###########################################################################' >> /etc/motd"
-
-
-sudo curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
+curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
 metadata=$(cat /tmp/metadata.json)
 user_id=$(echo "$metadata" | jq -r '.metadata.current_user_ocid')
 cust_name=$(echo "$metadata" | jq -r '.metadata.tenancy_name')
@@ -119,13 +91,14 @@ sudo sed -c -i "s/region=.*/region=$config_region/" $tenancyconfig_properties
 sudo sed -c -i "s/user_ocid=.*/user_ocid=$user_id/" $tenancyconfig_properties
 
 echo "***Building container image***" >> $logfile 2>&1
+name="cd3_toolkit_"$version
 cd $toolkit_dir
-sudo podman build --platform linux/amd64 -t cd3_toolkit -f Dockerfile --pull --no-cache . >> $logfile 2>&1
+sudo podman build --platform linux/amd64 -t $name -f Dockerfile --pull --no-cache . >> $logfile 2>&1
 stop_exec
 sudo podman images >> $logfile 2>&1
 
 echo "***Setting Up podman Container***" >> $logfile 2>&1
-sudo podman run --name cd3_toolkit -it -p 8443:8443 -d -v /cd3user/$version:/cd3user/tenancies  cd3_toolkit bash >> $logfile 2>&1
+sudo podman run --name $name -it -p 8443:8443 -d -v /cd3user/$version:/cd3user/tenancies  $name bash >> $logfile 2>&1
 stop_exec
 sudo podman ps -a >> $logfile 2>&1
 echo "Connect to Container using command - sudo podman exec -it cd3_toolkit bash " >> $logfile 2>&1
