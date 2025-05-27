@@ -77,6 +77,7 @@ stop_exec
 
 #Get version from release-Notes of code downloaded
 version="v2025.1.1"
+sudo mkdir -p /$username/$version
 stop_exec
 
 curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
