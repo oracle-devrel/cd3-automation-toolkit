@@ -545,7 +545,7 @@ if not os.path.exists(customer_tenancy_dir+'/othertools_files'):
 dir_values = []
 
 # Copy input properties file to customer_tenancy_dir
-if upgradeToolkit != True:
+if not upgradeToolkit:
     shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
 
 # 1. Copy outdir_structure_file
@@ -585,7 +585,7 @@ if auth_mechanism=='api_key': # or auth_mechanism=='session_token':
     _key_path = config_files + "/" + filename
     #shutil.copy(key_path, key_path + "_backup_"+ datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-'))
     # Move Private PEM Key File
-    if upgradeToolkit != True:
+    if not upgradeToolkit:
         shutil.copy(key_path, config_files + "/" + filename)
 
         f = open(config_files + "/" + prefix + "_" + os.path.basename(args.propsfile), "r")
