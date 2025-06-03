@@ -25,7 +25,8 @@ git config --global --add safe.directory /tmp/downloadToolkit_$NOW
 cd /tmp/downloadToolkit_$NOW
 version=$(git describe --tags)
 version=${version:0:9}
-
+sudo mkdir /$username/$prefix
+sudo chown -R $username:$username /$username/$prefix
 stop_exec
 
 
