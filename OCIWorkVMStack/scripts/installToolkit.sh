@@ -77,7 +77,7 @@ git config --global --add safe.directory /tmp/downloadToolkit_$NOW
 #Get version from latest tag
 cd /tmp/downloadToolkit_$NOW
 version=$(git describe --tags)
-version=${version:0:9}sudo mkdir -p /$username/$version
+version=${version:0:9}
 stop_exec
 
 sudo mkdir -p /$username/$version
