@@ -24,7 +24,7 @@ sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b te
 git config --global --add safe.directory /tmp/downloadToolkit_$NOW
 cd /tmp/downloadToolkit_$NOW
 version=$(git describe --tags)
-version=${version:0:9}sudo mkdir -p /$username/$version
+version=${version:0:9}
 
 stop_exec
 
