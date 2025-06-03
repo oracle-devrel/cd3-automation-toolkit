@@ -13,12 +13,22 @@ if [[ $? -ne 0 ]] ; then
 fi
 }
 
-version="v2025.1.2"
+sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container /tmp/temp
+#Get version from latest tag
+git config --global --add safe.directory /tmp/temp
+cd /tmp/temp
+version=$(git describe --tags)
+version=${version:0:9}
+sudo rm -rf /tmp/temp
+stop_exec
+
 name="cd3_toolkit_"$version
+
 
 #################### Run createTenancyConfig.py for new version and create Prefixes ################
 read -p "Enter Current Version to be upgraded: " current_version
 echo $current_version
+current_name="cd3_toolkit_"$current_version
 
 read -p "Enter comma seperated prefix names to be ungraded: " current_prefixes
 echo $current_prefixes
@@ -45,14 +55,30 @@ do
   echo "Copying tfvars for prefix: $prefix from $current_version to $version and running terraform plan"
 
   dest_dir=/${username}/${version}/${prefix}/terraform_files
+  cd /${username}/${current_version}/${prefix}/terraform_files
   sudo find . -type f -name "*.auto.tfvars" -exec bash -c '
   dest="$1/$2"
-  dest_dir=$(dirname "$dest")
-  if [ -d "$dest_dir" ]; then
+  dest_dir_on_vm=$(dirname "$dest")
+  if [ -d "$dest_dir_on_vm" ]; then
     cp "$2" "$dest"
-    dest_dir=$(echo "$dest_dir" |sed 's/${version}/tenancies/g')
-    sudo podman exec -it $3 bash -c "cd $dest_dir; terraform init; terraform plan"
+
+    source_dir=$(echo "$dest_dir_on_vm" |sed 's/${version}/tenancies/g')
+    source_dir_on_vm=$(echo "$dest_dir_on_vm" |sed 's/${version}/${current_version}/g')
+    echo "------------------------------------------------"
+    echo "Pulling terraform state for $source_dir on $3"
+    echo "------------------------------------------------"
+    sudo podman exec -it $3 bash -c "cd $source_dir; terraform init; terraform state pull > terraform.tfstate"
+
+    cp "$source_dir_on_vm"/terraform.tfstate "$dest_dir_on_vm"/terraform.tfstate
+
+    dest_dir=$(echo "$dest_dir_on_vm " |sed 's/${version}/tenancies/g')
+    echo "------------------------------------------------"
+    echo "Pushing terraform state and running plan for $dest_dir on $4"
+    echo "------------------------------------------------"
+    sudo podman exec -it $4 bash -c "cd $dest_dir; terraform state push terraform.tfstate"
+    sudo podman exec -it $4 bash -c "cd $dest_dir; terraform init; terraform plan"
   fi
-' -- "$dest_dir" {} "$name" \;
+' -- "$dest_dir" {} "$current_name" "$name" \;
 
 done
+
