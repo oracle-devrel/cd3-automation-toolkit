@@ -73,11 +73,15 @@ sudo podman --version >> $logfile 2>&1
 
 echo "***Download Toolkit***" >> $logfile 2>&1
 sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container $toolkit_dir >> $logfile 2>&1
+git config --global --add safe.directory /tmp/downloadToolkit_$NOW
+#Get version from latest tag
+cd /tmp/downloadToolkit_$NOW
+version=$(git describe --tags)
+version=${version:0:9}sudo mkdir -p /$username/$version
 stop_exec
 
-#Get version from release-Notes of code downloaded
-version="v2025.1.1"
 sudo mkdir -p /$username/$version
+sudo chown -R $username:$username /$username/$version
 stop_exec
 
 curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
