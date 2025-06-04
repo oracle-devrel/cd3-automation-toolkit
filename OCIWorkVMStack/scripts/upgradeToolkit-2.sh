@@ -52,6 +52,9 @@ do
   sudo podman exec -it $name bash -c "cd /${username}/oci_tools/cd3_automation_toolkit/user-scripts; python createTenancyConfig.py /${username}/tenancies/${prefix}/.config_files/${prefix}_tenancyconfig.properties --upgradeToolkit True"
   echo "createTenancyConfig.py ended for prefix: $prefix"
 
+  #echo "Running Fetch Compartments for prefix: $prefix"
+  #sudo podman exec -it $name bash -c "cd /${username}/oci_tools/cd3_automation_toolkit; python setupOCI.py /${username}/tenancies/${prefix}/${prefix}_setUpOCI.properties "
+
   echo "Copying tfvars for prefix: $prefix from $current_version to $version and running terraform plan"
 
   dest_dir=/${username}/${version}/${prefix}/terraform_files
@@ -75,8 +78,8 @@ do
     echo "------------------------------------------------"
     echo "Pushing terraform state and running plan for $dest_dir on $4"
     echo "------------------------------------------------"
-    sudo podman exec -it $4 bash -c "cd $dest_dir; terraform state push terraform.tfstate"
-    sudo podman exec -it $4 bash -c "cd $dest_dir; terraform init; terraform plan"
+    sudo podman exec -it $4 bash -c "cd $dest_dir; terraform init; terraform state push terraform.tfstate"
+    sudo podman exec -it $4 bash -c "cd $dest_dir; terraform plan"
   fi
 ' -- "$dest_dir" {} "$current_name" "$name" \;
 
