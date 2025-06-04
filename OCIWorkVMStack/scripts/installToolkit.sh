@@ -78,6 +78,7 @@ git config --global --add safe.directory /tmp/downloadToolkit_$NOW
 cd /tmp/downloadToolkit_$NOW
 version=$(git describe --tags)
 version=${version:0:9}
+version=v2025.1.1
 stop_exec
 
 sudo mkdir -p /$username/$version
