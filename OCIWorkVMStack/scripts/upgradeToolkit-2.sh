@@ -59,29 +59,38 @@ do
 
   dest_dir=/${username}/${version}/${prefix}/terraform_files
   cd /${username}/${current_version}/${prefix}/terraform_files
+
+  # initialize temp unique_dir file
+  > /tmp/unique_dirs
+  chmod 777 /tmp/unique_dirs
+  # copy all the tfvars to destination path and store directories to unique_dirs file
   sudo find . -type f -name "*.auto.tfvars" -exec bash -c '
   dest="$1/$2"
   dest_dir_on_vm=$(dirname "$dest")
   if [ -d "$dest_dir_on_vm" ]; then
     cp "$2" "$dest"
-
-    source_dir=$(echo "$dest_dir_on_vm" |sed 's/${version}/tenancies/g')
-    source_dir_on_vm=$(echo "$dest_dir_on_vm" |sed 's/${version}/${current_version}/g')
-    echo "------------------------------------------------"
-    echo "Pulling terraform state for $source_dir on $3"
-    echo "------------------------------------------------"
-    sudo podman exec -it $3 bash -c "cd $source_dir; terraform init; terraform state pull > terraform.tfstate"
-
-    cp "$source_dir_on_vm"/terraform.tfstate "$dest_dir_on_vm"/terraform.tfstate
-
-    dest_dir=$(echo "$dest_dir_on_vm " |sed 's/${version}/tenancies/g')
-    echo "------------------------------------------------"
-    echo "Pushing terraform state and running plan for $dest_dir on $4"
-    echo "------------------------------------------------"
-    sudo podman exec -it $4 bash -c "cd $dest_dir; terraform init; terraform state push terraform.tfstate"
-    sudo podman exec -it $4 bash -c "cd $dest_dir; terraform plan"
+    echo $dest_dir_on_vm >> /tmp/unique_dirs
   fi
-' -- "$dest_dir" {} "$current_name" "$name" \;
+  ' -- "$dest_dir" {} \;
+  # remove duplicate lines from unique_dirs file
+  sort -u /tmp/unique_dirs -o /tmp/unique_dirs
 
+  # process each line from unique_dirs file
+  while IFS= read -r line; do
+  # Skip empty or whitespace-only lines
+  [[ -z "${line// }" ]] && continue
+  dir=$line
+  echo "Processing: $dir"
+  source_dir=$(echo "$dir" |sed "s/$version/tenancies/g")
+  echo "source dir : $source_dir"
+  source_dir_on_vm=$(echo "$dir" |sed "s/${version}/${current_version}/g")
+  sudo podman exec -it $current_name bash -c "cd $source_dir; terraform init; terraform state pull > source_tfstate;> resources_list;terraform state list|while IFS= read -r r_export; do echo $r_export >> resources_list; echo $r_export; done"
+
+ dest_dir=$(echo "$dir" |sed "s/$version/tenancies/g")
+ sudo cp "$source_dir_on_vm"/source_tfstate "$dir"/source_tfstate
+ sudo cp "$source_dir_on_vm"/resources_list "$dir"/resources_list
+ sudo chown -R $username:$username /$username/$version
+ echo "dest_dir : $dest_dir"
+ sudo podman exec -it $name bash -c "cd $dest_dir; terraform init; terraform state pull > dest_tfstate; cat resources_list|while IFS= read -r r_import; do terraform state mv --state source_tfstate --state-out dest_tfstate \"$r_import\" \"$r_import\"; done; terraform state push dest_tfstate"
+ done < "/tmp/unique_dirs"
 done
-
