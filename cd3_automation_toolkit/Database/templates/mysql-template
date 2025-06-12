@@ -25,10 +25,6 @@ mysql_db_system = {
             mysql_db_system_fault_domain                 = "{{ fault_domain }}"
             configuration_compartment_id = "{{ configuration_compartment_id }}"
             configuration_id = "{{ configuration_id }}"
-            {% if depends_on_mysql_configuration %}
-            # Add explicit depends_on to ensure configuration is created first
-            depends_on = ["module.mysql_configurations[\"{{ configuration_id }}\"]"]
-            {% endif %}
             mysql_shape_name                   = "{{ shape }}"
             vcn_names                     = "{{ vcn_names }}"
             subnet_id                    = "{{ subnet_id }}"

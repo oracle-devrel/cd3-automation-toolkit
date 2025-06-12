@@ -1,10 +1,23 @@
 # Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-#######################
-# Resource Block - RPC
-# Create RPC
-#######################
+
+
+{% for region in subscribed_regions %}
+  {% set region_keys = region.split('##') %}
+
+  {% set requester_region_key = region_keys[0] %}
+  {% set accepter_region_key = region_keys[1] %}
+
+  {# Make terraform-safe keys by replacing '-' with '_' #}
+  {% set requester_key_safe = requester_region_key.replace('-', '_') %}
+  {% set accepter_key_safe = accepter_region_key.replace('-', '_') %}
+
+  {# Use original region names as provider aliases #}
+  {% set requester_alias = requester_key_safe %}
+  {% set accepter_alias = accepter_key_safe %}
+
+
     data "oci_identity_regions" "all_regions" {}
 
     locals {
@@ -12,155 +25,145 @@
      }
 
 
-{% for region in subscribed_regions %}
-  {% set region_keys = region.split('##') %}
+  ###########################################
+  # Data Block - Network  - {{requester_region_key}} to {{accepter_region_key}}
+  ###########################################
 
-        ###########################################
-        # Data Block - Network  - {{region_keys[0]}} to {{region_keys[1]}}
-        ###########################################
+  data "oci_core_drgs" "{{requester_key_safe}}_{{accepter_key_safe}}_requester_drg" {
+    for_each = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}" ? var.requester_region : {}
+    compartment_id = var.requester_compartment_id
 
-        data "oci_core_drgs" "{{region_keys[0]}}_{{region_keys[1]}}_requester_drg" {
-          for_each = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}" ? var.requester_region : {}
-            #Required
-            compartment_id = var.requester_compartment_id
-          filter {
-            name   = "display_name"
-            values = [var.requester_drg_name]
-          }
-          provider = oci.{{region_keys[0]}}
-        }
+    filter {
+      name   = "display_name"
+      values = [var.requester_drg_name]
+    }
 
-        data "oci_core_drg_route_tables" "{{region_keys[0]}}_{{region_keys[1]}}_requester_drg_route_tables" {
-        for_each = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}" ? var.requester_region : {}
-           #Required
-           drg_id       = data.oci_core_drgs.{{region_keys[0]}}_{{region_keys[1]}}_requester_drg[each.key].drgs[0].id
+    provider = oci.{{ requester_alias }}
+  }
 
-           provider = oci.{{region_keys[0]}}
-        }
+  data "oci_core_drg_route_tables" "{{requester_key_safe}}_{{accepter_key_safe}}_requester_drg_route_tables" {
+    for_each = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}" ? var.requester_region : {}
+    drg_id = data.oci_core_drgs.{{requester_key_safe}}_{{accepter_key_safe}}_requester_drg[each.key].drgs[0].id
 
-        locals {
-         {{region_keys[0]}}_{{region_keys[1]}}_requester_drg_rt_id = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}" ? [for k,v in data.oci_core_drg_route_tables.{{region_keys[0]}}_{{region_keys[1]}}_requester_drg_route_tables["region"].drg_route_tables : v.id if v.display_name == var.requester_drg_rt_name ] : null
-         {{region_keys[0]}}_{{region_keys[1]}}_peer_region_name = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}" ? length(split(".",oci_core_remote_peering_connection.{{region_keys[0]}}_{{region_keys[1]}}_requester_rpc["region"].drg_id)[3]) > 3 ? split(".",oci_core_remote_peering_connection.{{region_keys[0]}}_{{region_keys[1]}}_requester_rpc["region"].drg_id)[3] : lookup(local.region_map,upper(split(".",oci_core_remote_peering_connection.{{region_keys[0]}}_{{region_keys[1]}}_requester_rpc["region"].drg_id)[3]),"NOT FOUND") : null
-        }
+    provider = oci.{{ requester_alias }}
+  }
 
-        ###########################################
-        # Resource Block - Network
-        # Create Requester Remote Peering Connection
-        ###########################################
+  locals {
+    {{requester_key_safe}}_{{accepter_key_safe}}_requester_drg_rt_id = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}" ? [for k,v in data.oci_core_drg_route_tables.{{requester_key_safe}}_{{accepter_key_safe}}_requester_drg_route_tables["region"].drg_route_tables : v.id if v.display_name == var.requester_drg_rt_name ] : null
 
-        resource "oci_core_remote_peering_connection" "{{region_keys[0]}}_{{region_keys[1]}}_requester_rpc" {
-            for_each = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}"  ? var.requester_region : {}
+    {{requester_key_safe}}_{{accepter_key_safe}}_peer_region_name = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}" ? length(split(".",oci_core_remote_peering_connection.{{requester_key_safe}}_{{accepter_key_safe}}_requester_rpc["region"].drg_id)[3]) > 3 ? split(".",oci_core_remote_peering_connection.{{requester_key_safe}}_{{accepter_key_safe}}_requester_rpc["region"].drg_id)[3] : lookup(local.region_map,upper(split(".",oci_core_remote_peering_connection.{{requester_key_safe}}_{{accepter_key_safe}}_requester_rpc["region"].drg_id)[3]),"NOT FOUND") : null
+  }
 
-            #Required
-            compartment_id = var.requester_compartment_id
-            drg_id         = data.oci_core_drgs.{{region_keys[0]}}_{{region_keys[1]}}_requester_drg[each.key].drgs[0].id
+  ###########################################
+  # Resource Block - Network
+  # Create Requester Remote Peering Connection
+  ###########################################
+  resource "oci_core_remote_peering_connection" "{{requester_key_safe}}_{{accepter_key_safe}}_requester_rpc" {
+    for_each = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}"  ? var.requester_region : {}
 
-            #Optional
-            display_name      = var.display_name
-            peer_id           = var.requester_peer_id
-            peer_region_name  = null
-            defined_tags      = var.defined_tags
-            freeform_tags     = var.freeform_tags
+    compartment_id = var.requester_compartment_id
+    drg_id         = data.oci_core_drgs.{{requester_key_safe}}_{{accepter_key_safe}}_requester_drg[each.key].drgs[0].id
 
-            lifecycle {
-                    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],
-                    defined_tags["Oracle-Tags.CreatedBy"]]
-            }
+    display_name      = var.display_name
+    peer_id           = var.requester_peer_id
+    peer_region_name  = null
+    defined_tags      = var.defined_tags
+    freeform_tags     = var.freeform_tags
 
-          provider = oci.{{region_keys[0]}}
-        }
+    lifecycle {
+      ignore_changes = [
+        defined_tags["Oracle-Tags.CreatedOn"],
+        defined_tags["Oracle-Tags.CreatedBy"]
+      ]
+    }
 
+    provider = oci.{{ requester_alias }}
+  }
 
-        ####################################################
-        # Resource Block - Network
-        # Create Requester Dynamic Routing Gateway Attachment
-        ####################################################
-        resource "oci_core_drg_attachment_management" "{{region_keys[0]}}_{{region_keys[1]}}_requester_drg_attachment_management" {
-          for_each = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}"  ? var.requester_region : {}
+  ####################################################
+  # Resource Block - Network
+  # Create Requester Dynamic Routing Gateway Attachment
+  ####################################################
+  resource "oci_core_drg_attachment_management" "{{requester_key_safe}}_{{accepter_key_safe}}_requester_drg_attachment_management" {
+    for_each = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}"  ? var.requester_region : {}
 
-          #Required
-          attachment_type = var.attachment_type
-          compartment_id  = var.requester_compartment_id
-          network_id      = oci_core_remote_peering_connection.{{region_keys[0]}}_{{region_keys[1]}}_requester_rpc[each.key].id
-          drg_id          = data.oci_core_drgs.{{region_keys[0]}}_{{region_keys[1]}}_requester_drg[each.key].drgs[0].id
+    attachment_type = var.attachment_type
+    compartment_id  = var.requester_compartment_id
+    network_id      = oci_core_remote_peering_connection.{{requester_key_safe}}_{{accepter_key_safe}}_requester_rpc[each.key].id
+    drg_id          = data.oci_core_drgs.{{requester_key_safe}}_{{accepter_key_safe}}_requester_drg[each.key].drgs[0].id
 
-          #Optional
-          #display_name       = var.display_name
-          drg_route_table_id = element(local.{{region_keys[0]}}_{{region_keys[1]}}_requester_drg_rt_id,0)
+    drg_route_table_id = element(local.{{requester_key_safe}}_{{accepter_key_safe}}_requester_drg_rt_id,0)
 
-          provider = oci.{{region_keys[0]}}
-        }
+    provider = oci.{{ requester_alias }}
+  }
 
+  ######################
+  # Data Block - Network
+  ######################
+  data "oci_core_drgs" "{{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg" {
+    for_each = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}"  ? var.accepter_region : {}
 
-        ######################
-        # Data Block - Network
-        ######################
-        data "oci_core_drgs" "{{region_keys[0]}}_{{region_keys[1]}}_accepter_drg" {
-          for_each = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}"  ? var.accepter_region : {}
-            #Required
-            compartment_id = var.accepter_compartment_id
-          filter {
-            name   = "display_name"
-            values = [var.accepter_drg_name]
-          }
-          provider = oci.{{region_keys[1]}}
-        }
+    compartment_id = var.accepter_compartment_id
+    filter {
+      name   = "display_name"
+      values = [var.accepter_drg_name]
+    }
 
-       data "oci_core_drg_route_tables" "{{region_keys[0]}}_{{region_keys[1]}}_accepter_drg_route_tables" {
-         for_each = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}"  ? var.accepter_region : {}
-           #Required
-           drg_id       = data.oci_core_drgs.{{region_keys[0]}}_{{region_keys[1]}}_accepter_drg[each.key].drgs[0].id
+    provider = oci.{{ accepter_alias }}
+  }
 
-           provider = oci.{{region_keys[1]}}
-        }
+  data "oci_core_drg_route_tables" "{{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg_route_tables" {
+    for_each = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}"  ? var.accepter_region : {}
+    drg_id = data.oci_core_drgs.{{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg[each.key].drgs[0].id
 
-        locals {
-         {{region_keys[0]}}_{{region_keys[1]}}_accepter_drg_rt_id = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}" ? [for k,v in data.oci_core_drg_route_tables.{{region_keys[0]}}_{{region_keys[1]}}_accepter_drg_route_tables["region"].drg_route_tables : v.id if v.display_name == var.accepter_drg_rt_name ] : null
-        }
+    provider = oci.{{ accepter_alias }}
+  }
 
-        ###########################################
-        # Resource Block - Network
-        # Create Accepter Remote Peering Connection
-        ###########################################
-        resource "oci_core_remote_peering_connection" "{{region_keys[0]}}_{{region_keys[1]}}_accepter_rpc" {
-            for_each = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}"  ? var.accepter_region : {}
+  locals {
+    {{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg_rt_id = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}" ? [for k,v in data.oci_core_drg_route_tables.{{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg_route_tables["region"].drg_route_tables : v.id if v.display_name == var.accepter_drg_rt_name ] : null
+  }
 
-            compartment_id    = var.accepter_compartment_id
-            drg_id            = data.oci_core_drgs.{{region_keys[0]}}_{{region_keys[1]}}_accepter_drg[each.key].drgs[0].id
+  ###########################################
+  # Resource Block - Network
+  # Create Accepter Remote Peering Connection
+  ###########################################
+  resource "oci_core_remote_peering_connection" "{{requester_key_safe}}_{{accepter_key_safe}}_accepter_rpc" {
+    for_each = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}"  ? var.accepter_region : {}
 
-            #Optional
-            display_name      = var.accepter_rpc_display_name
-            peer_id           = oci_core_remote_peering_connection.{{region_keys[0]}}_{{region_keys[1]}}_requester_rpc["region"].id
-            peer_region_name  = local.{{region_keys[0]}}_{{region_keys[1]}}_peer_region_name
-            defined_tags      = var.defined_tags
-            freeform_tags     = var.freeform_tags
+    compartment_id    = var.accepter_compartment_id
+    drg_id            = data.oci_core_drgs.{{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg[each.key].drgs[0].id
 
-            lifecycle {
-                    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],
-                    defined_tags["Oracle-Tags.CreatedBy"]]
-            }
+    display_name      = var.accepter_rpc_display_name
+    peer_id           = oci_core_remote_peering_connection.{{requester_key_safe}}_{{accepter_key_safe}}_requester_rpc["region"].id
+    peer_region_name  = local.{{requester_key_safe}}_{{accepter_key_safe}}_peer_region_name
+    defined_tags      = var.defined_tags
+    freeform_tags     = var.freeform_tags
 
-          provider            = oci.{{region_keys[1]}}
-        }
+    lifecycle {
+      ignore_changes = [
+        defined_tags["Oracle-Tags.CreatedOn"],
+        defined_tags["Oracle-Tags.CreatedBy"]
+      ]
+    }
 
-        ####################################################
-        # Resource Block - Network
-        # Create Accepter Dynamic Routing Gateway Attachment
-        ####################################################
-        resource "oci_core_drg_attachment_management" "{{region_keys[0]}}_{{region_keys[1]}}_accepter_drg_attachment_management" {
-          for_each = var.requester_region["region"] == "{{region_keys[0]}}" && var.accepter_region["region"] == "{{region_keys[1]}}"  ? var.accepter_region : {}
+    provider = oci.{{ accepter_alias }}
+  }
 
-          #Required
-          attachment_type     = var.attachment_type
-          compartment_id      = var.accepter_compartment_id
-          network_id          = oci_core_remote_peering_connection.{{region_keys[0]}}_{{region_keys[1]}}_accepter_rpc[each.key].id
-          drg_id              = data.oci_core_drgs.{{region_keys[0]}}_{{region_keys[1]}}_accepter_drg[each.key].drgs[0].id
+  ####################################################
+  # Resource Block - Network
+  # Create Accepter Dynamic Routing Gateway Attachment
+  ####################################################
+  resource "oci_core_drg_attachment_management" "{{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg_attachment_management" {
+    for_each = var.requester_region["region"] == "{{requester_region_key}}" && var.accepter_region["region"] == "{{accepter_region_key}}"  ? var.accepter_region : {}
 
-          #Optional
-          #display_name        = var.display_name
-          drg_route_table_id  = element(local.{{region_keys[0]}}_{{region_keys[1]}}_accepter_drg_rt_id,0)
+    attachment_type     = var.attachment_type
+    compartment_id      = var.accepter_compartment_id
+    network_id          = oci_core_remote_peering_connection.{{requester_key_safe}}_{{accepter_key_safe}}_accepter_rpc[each.key].id
+    drg_id              = data.oci_core_drgs.{{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg[each.key].drgs[0].id
 
-          provider            = oci.{{region_keys[1]}}
-        }
-#################################################END#################################################################
+    drg_route_table_id  = element(local.{{requester_key_safe}}_{{accepter_key_safe}}_accepter_drg_rt_id,0)
+
+    provider = oci.{{ accepter_alias }}
+  }
+
 {% endfor %}

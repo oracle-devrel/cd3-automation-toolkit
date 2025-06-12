@@ -1813,6 +1813,7 @@ variable "nodepools" {
     source_type                         = string
     boot_volume_size_in_gbs             = optional(number)
     ssh_public_key                      = optional(string)
+    init_script_path                    = optional(string)
     nodepool_kms_key_id                 = optional(string)
     node_defined_tags                   = optional(map(any))
     node_freeform_tags                  = optional(map(any))
