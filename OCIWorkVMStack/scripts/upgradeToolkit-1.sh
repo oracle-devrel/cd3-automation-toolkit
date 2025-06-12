@@ -63,4 +63,3 @@ duration_min=$(echo "$duration_sec%3600/60" | bc)
 execution_time=`printf "%.2f seconds" $duration_sec`
 echo "Script Execution Time in Seconds: $execution_time" >> $logfile 2>&1
 echo "Script Execution Time in Minutes: approx $duration_min Minutes" >> $logfile 2>&1
-

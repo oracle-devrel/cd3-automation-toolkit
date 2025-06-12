@@ -50,7 +50,7 @@ def create_terraform_mysql_db(inputfile, outdir, service_dir, prefix, ct):
 
     # Iterate over rows
     for i in df.index:
-        region = str(df.loc[i, 'Region']).strip().lower()
+        region = str(df.loc[i, 'Region']).strip()
 
         if (region in commonTools.endNames):
             break

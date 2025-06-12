@@ -32,7 +32,6 @@ pip install --user GitPython==3.1.40
 pip install --user PyYAML==6.0.1
 pip install --user ansible==8.7.0
 
-
 # Add Python3 site-packages to PYTHONPATH
 echo "export PYTHONPATH=\${PYTHONPATH}:/root/.local/lib/python3.9/site-packages/:/cd3user/.local/lib/python3.9/site-packages/" >> /cd3user/.bashrc
 
