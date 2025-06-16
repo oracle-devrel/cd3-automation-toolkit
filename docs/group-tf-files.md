@@ -10,13 +10,13 @@ This can be configured while <a href="../connect-container-to-oci-tenancy"><u>co
 
 A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties,  which can be used to configure single outdir or different outdir for each service.
 
-To enable independent service directories for the generated Terraform files, follow the below steps:
+By default, toolkit is configured to use different out directories for different services.
+
+**Steps to customaize directory names to be created for each OCI service -**
 
 1. Go to ``` /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties```. Enter required config details. 
 
-    Users have the option to enable or disable multiple service outdirectories based on their specific requirements.
-
-    To enable it, *outdir_structure_file* parameter which has the pre-defined path to *outdir_structure_file.properties* should be uncommented. Refer to the screenshot below:
+    Make sure that *outdir_structure_file* is set to a pre-defined path of *outdir_structure_file.properties*. Refer to the screenshot below:
    ![image](../images/grouptf-1.png)
 
 
@@ -58,9 +58,16 @@ To enable independent service directories for the generated Terraform files, fol
       <img width="953" alt="image" src="../images/grouptf-4.png">
    
      
-     Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using          terraform for large-scale infrastructures.
+     Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using terraform for large-scale infrastructures.
    
      Likewise, While doing an export from OCI to terraform, update the *tenancyconfig.properties* file with path to *outdir_structure_file.properties* similar to step1 and then follow the  <a href="../nongreenfield-cli"><u>steps to run the toolkit for Non-green field tenancies</u></a>. With this, all the .sh files with import  commands of a particular OCI service are grouped and can be easily managed.
+
+**Steps to use single out directory for all OCI services -**
+
+1. Go to ``` /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties```. Enter required config details. 
+
+    Make sure that *outdir_structure_file* is set to empty value. Refer to the screenshot below:
+   ![image](../images/grouptf-1.png)
   
     
   
