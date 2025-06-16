@@ -35,7 +35,7 @@ By default, toolkit is configured to use different out directories for different
    Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in <a href="../greenfield-cli"><u>Greenfield workflow</u></a>
 
   
- 3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder.
+ 3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder. This will create prefix folder as ```/cd3user/tenancies/<prefix>/``` and configure a seperate directory for each service inside region folder subscribed to the tenancy.
   
  4.	Go to ```/cd3user/tenancies/<prefix>/<prefix>_setUpOCI.propertiesfile ``` and add the CD3 Excel path. 
       
@@ -68,6 +68,10 @@ By default, toolkit is configured to use different out directories for different
 
     Make sure that *outdir_structure_file* is set to empty value. Refer to the screenshot below:
    ![image](../images/grouptf-1.png)
+
+2. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder. This will create prefix folder as ```/cd3user/tenancies/<prefix>/``` and tfvars/state file for each service inside the region folder subscribed for the region.
+
+3. Rest of the steps to run the toolkit remain the same.
   
     
   
