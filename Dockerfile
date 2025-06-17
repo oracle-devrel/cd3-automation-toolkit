@@ -31,6 +31,7 @@ RUN microdnf install -y sudo && \
     microdnf install -y wget && \
     microdnf install -y unzip && \
     microdnf install -y graphviz && \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
     echo 'alias vi="vim"' >> /etc/bashrc
 
 USER $USERNAME

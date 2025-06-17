@@ -11,7 +11,7 @@ locals {
   resolver_vcns_distinct = { for k, v in local.resolver_vcns : k => distinct(v)[0] }
 }
 
-data "oci_core_vcns" "oci_vcns" {
+data "oci_core_vcns" "dns_oci_vcns" {
   for_each       = local.resolver_vcns_distinct
   compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : null
   display_name   = each.key
@@ -19,7 +19,7 @@ data "oci_core_vcns" "oci_vcns" {
 
 data "oci_core_vcn_dns_resolver_association" "resolver_vcn_dns_resolver_association" {
   for_each = local.resolver_vcns_distinct
-  vcn_id   = data.oci_core_vcns.oci_vcns[each.key].virtual_networks.*.id[0]
+  vcn_id   = data.oci_core_vcns.dns_oci_vcns[each.key].virtual_networks.*.id[0]
 }
 
 ### Data for Subnet ###
@@ -35,11 +35,11 @@ locals {
     ]
   ]))
 }
-data "oci_core_subnets" "oci_subnets" {
+data "oci_core_subnets" "dns_oci_subnets" {
   for_each       = { for item in local.endpoint_subnets : item.subnet_name => item if length(regexall("ocid1.subnet.oc*", item.subnet_name)) == 0 }
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   display_name   = each.key
-  vcn_id         = data.oci_core_vcns.oci_vcns[each.value.vcn_name].virtual_networks.*.id[0]
+  vcn_id         = data.oci_core_vcns.dns_oci_vcns[each.value.vcn_name].virtual_networks.*.id[0]
 }
 
 ### Data for NSGs###
@@ -62,7 +62,7 @@ data "oci_core_network_security_groups" "endpoint_nsgs" {
   for_each       = { for nsg in local.nsgs : nsg.nsg_name => nsg if length(regexall("ocid1.networksecuritygroup.oc*", nsg.nsg_name)) == 0 }
   compartment_id = length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.nsg_name
-  vcn_id         = data.oci_core_vcns.oci_vcns[each.value.vcn_name].virtual_networks.*.id[0]
+  vcn_id         = data.oci_core_vcns.dns_oci_vcns[each.value.vcn_name].virtual_networks.*.id[0]
 }
 
 ### Data for Views ###
@@ -120,7 +120,7 @@ module "dns-resolvers" {
       listening  = endpoint.is_listening
       name       = endpoint.name
       #resolver_id = oci_dns_resolver.test_resolver.id
-      subnet_id = length(regexall("ocid1.subnet.oc*", endpoint.subnet_name)) > 0 ? endpoint.subnet_name : data.oci_core_subnets.oci_subnets[endpoint.subnet_name].subnets.*.id[0]
+      subnet_id = length(regexall("ocid1.subnet.oc*", endpoint.subnet_name)) > 0 ? endpoint.subnet_name : data.oci_core_subnets.dns_oci_subnets[endpoint.subnet_name].subnets.*.id[0]
       scope     = "PRIVATE"
 
       #Optional

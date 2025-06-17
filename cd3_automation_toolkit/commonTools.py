@@ -658,7 +658,7 @@ class commonTools():
                 multivalues = columnvalue.split("::")
                 multivalues = [str(part).strip() for part in multivalues if part]
                 tempdict = {columnname: multivalues}
-            elif columnname != 'Compartment Name':
+            elif columnname != 'Compartment Name' and "ipv6" not in columnname.lower():
                 columnname = commonTools.check_column_headers(columnname)
                 multivalues = columnvalue.split("::")
                 multivalues = [str(part).strip() for part in multivalues ]#if part]

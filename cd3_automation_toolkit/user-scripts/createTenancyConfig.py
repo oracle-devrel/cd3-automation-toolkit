@@ -249,7 +249,7 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     if not os.path.exists(devops_dir):
         os.makedirs(devops_dir)
     subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
-    subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'init'], cwd=devops_dir,stdout=subprocess.DEVNULL)
     subprocess.run(['git', 'config', '--global', 'safe.directory', devops_dir], cwd=devops_dir)
     subprocess.run(['git', 'config','--global','user.email',devops_user], cwd=devops_dir)
     subprocess.run(['git', 'config', '--global', 'user.name', devops_user], cwd=devops_dir)
@@ -258,10 +258,10 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     existing_remote = subprocess.run(['git', 'remote'], cwd=devops_dir,capture_output=True).stdout
     existing_remote = str(existing_remote).split('\'')[1][:-2]
     if existing_remote == "origin":
-        subprocess.run(['git', 'remote','remove','origin'], cwd=devops_dir,stdout=DEVNULL)
-    subprocess.run(['git', 'remote', 'add', 'origin',"ssh://"+prefix+":/"+repo_ssh_url_parts[1]], cwd=devops_dir,stdout=DEVNULL)
+        subprocess.run(['git', 'remote','remove','origin'], cwd=devops_dir,stdout=subprocess.DEVNULL)
+    subprocess.run(['git', 'remote', 'add', 'origin',"ssh://"+prefix+":/"+repo_ssh_url_parts[1]], cwd=devops_dir,stdout=subprocess.DEVNULL)
     try:
-        subprocess.run(['git', 'fetch','-q'], cwd=devops_dir,stdout=DEVNULL)
+        subprocess.run(['git', 'fetch','-q'], cwd=devops_dir,stdout=subprocess.DEVNULL)
     except Exception as e:
         print(str(e))
         f = open(safe_file, "a")
@@ -272,9 +272,9 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
 
     # Create local branch "main" from remote "main"
-    subprocess.run(['git', 'checkout', '-B', 'main'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'checkout', '-B', 'main'], cwd=devops_dir,stdout=subprocess.DEVNULL)
 
-    subprocess.run(['git', 'pull', 'origin', 'main','--rebase'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'pull', 'origin', 'main','--rebase'], cwd=devops_dir,stdout=subprocess.DEVNULL)
     f = open(devops_dir + ".gitignore", "w")
     git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\nimport_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
     f.write(git_ignore_file_data)
@@ -301,24 +301,24 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     last_commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
     current_status = subprocess.run(['git', 'status','--porcelain'], cwd=devops_dir,capture_output=True).stdout
     current_status = str(current_status).split('\'')[1]
-    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
-    subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=subprocess.DEVNULL)
+    subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig'], cwd=devops_dir,stdout=subprocess.DEVNULL)
     if current_status and files_in_repo > 0:
         repo_changes = input("\nData in local terraform_files and repo is not same, which changes you want to retain? Enter local or repo, default is local : ")
         if ("repo" in repo_changes.lower()):
             print("Ignoring local changes......")
-            subprocess.run(['git', 'branch','main', '-u', 'origin/main'], cwd=devops_dir,stdout=DEVNULL)
-            subprocess.run(['git','reset','--hard','@{u}'], cwd=devops_dir,stdout=DEVNULL)
-            subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git', 'branch','main', '-u', 'origin/main'], cwd=devops_dir,stdout=subprocess.DEVNULL)
+            subprocess.run(['git','reset','--hard','@{u}'], cwd=devops_dir,stdout=subprocess.DEVNULL)
+            subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=subprocess.DEVNULL)
         else:
             print("Updating remote with local changes.....")
 
     commit_id='None'
     try:
-        #subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
+        #subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=subprocess.DEVNULL)
         commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
         commit_id = str(commit_id).split('\'')[1][:-2]
-        subprocess.run(['git', 'push','origin','main'], cwd=devops_dir, stdout=DEVNULL)
+        subprocess.run(['git', 'push','origin','main'], cwd=devops_dir, stdout=subprocess.DEVNULL)
         print("Latest Commit to DevOps Repository done with commit id: " + commit_id)
     except git.exc.GitCommandError as e:
         if ("nothing to commit, working directory clean" in str(e)):
@@ -328,9 +328,9 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
         print("Exiting...")
         exit(1)
     # Create develop branch from main
-    subprocess.run(['git', 'checkout', '-B', 'develop','main'], cwd=devops_dir, stdout=DEVNULL)
-    subprocess.run(['git', 'pull', 'origin', 'develop','--rebase'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
-    subprocess.run(['git', 'push', 'origin', 'develop','-f'], cwd=devops_dir, stdout=DEVNULL)
+    subprocess.run(['git', 'checkout', '-B', 'develop','main'], cwd=devops_dir, stdout=subprocess.DEVNULL)
+    subprocess.run(['git', 'pull', 'origin', 'develop','--rebase'], cwd=devops_dir,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    subprocess.run(['git', 'push', 'origin', 'develop','-f'], cwd=devops_dir, stdout=subprocess.DEVNULL)
     return commit_id
 
 def create_bucket(config, signer):
@@ -410,8 +410,16 @@ outdir_safe=terraform_files+"/.safe"
 setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
 # Get it from release-notes of current dir
-version = "v2025.1.1"
+print("Fetching current toolkit version")
+tmp_dir='/tmp/temp'
+subprocess.run(["git", "clone", "https://github.com/oracle-devrel/cd3-automation-toolkit.git", "-b", "testUpgrade-container", tmp_dir], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+subprocess.run(['git', 'config', '--global', 'safe.directory',tmp_dir ])
+result = subprocess.run(["git", "describe", "--tags", "--abbrev=0"], cwd=tmp_dir, capture_output=True, text=True, check=True)
+version = result.stdout.strip()
+version =version[0:9]
 t_v = version.replace(".","-")
+shutil.rmtree(tmp_dir)
+print("Toolkit Version - "+version)
 
 
 # Read Config file Variables
