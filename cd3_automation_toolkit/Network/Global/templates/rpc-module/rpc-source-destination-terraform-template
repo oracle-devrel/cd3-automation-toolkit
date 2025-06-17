@@ -1,7 +1,11 @@
 # Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
 
+data "oci_identity_regions" "all_regions" {}
+
+locals {
+       region_map = { for region in data.oci_identity_regions.all_regions.regions : region.key => region.name }
+}
 
 {% for region in subscribed_regions %}
   {% set region_keys = region.split('##') %}
@@ -17,12 +21,6 @@
   {% set requester_alias = requester_key_safe %}
   {% set accepter_alias = accepter_key_safe %}
 
-
-    data "oci_identity_regions" "all_regions" {}
-
-    locals {
-       region_map = { for region in data.oci_identity_regions.all_regions.regions : region.key => region.name }
-     }
 
 
   ###########################################

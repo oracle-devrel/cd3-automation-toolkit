@@ -40,7 +40,7 @@ vcns = {
         {% endif %}
 
         {% if ipv6private_cidr_blocks and ipv6private_cidr_blocks != [] %}
-        ipv6private_cidr_blocks = [ {{ ipv6private_cidr_blocks }} ]
+        ipv6private_cidr_blocks = [ "{{ ipv6private_cidr_blocks }}" ]
         {% endif %}
 
         {% if is_oracle_gua_allocation_enabled and is_oracle_gua_allocation_enabled != "" %}
