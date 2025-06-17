@@ -13,6 +13,39 @@ if [[ $? -ne 0 ]] ; then
 fi
 }
 
+function copy_data_from_variables_file() {
+
+  #echo -e "\nCopying data for $START_MARKER and $END_MARKER from $SRC_FILE into $DEST_FILE "
+
+
+  # Extract block (including markers) from source
+    BLOCK=$(sudo sed -n "/$START_MARKER/,/$END_MARKER/p" "$SRC_FILE")
+
+    # Escape special characters for safe insertion
+    ESCAPED_BLOCK=$(printf '%s\n' "$BLOCK" | sed 's/[&/\]/\\&/g')
+
+    # Use awk to delete the block in DEST and insert new content
+    sudo awk -v start="$START_MARKER" -v end="$END_MARKER" -v block="$ESCAPED_BLOCK" '
+    BEGIN {
+        split(block, newblock, "\n")
+        inblock = 0
+    }
+    {
+        if ($0 ~ start) {
+            inblock = 1
+            for (i in newblock) print newblock[i]
+        } else if ($0 ~ end && inblock) {
+            inblock = 0
+            next
+        } else if (!inblock) {
+            print
+        }
+    }
+    ' "$DEST_FILE" > "/tmp/var.tmp" && sudo cp "/tmp/var.tmp" "$DEST_FILE"
+}
+
+
+
 sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container /tmp/temp
 #Get version from latest tag
 git config --global --add safe.directory /tmp/temp
@@ -48,13 +81,11 @@ do
   sudo cp /$username/$current_version/$prefix/.config_files/* /$username/$version/$prefix/.config_files
   sudo chown -R $username:$username /$username/$version
   sudo chown -R $username:$username /$username/$current_version
+  echo "--------------------------------------------------"
   echo "Running createTenancyConfig.py for prefix: $prefix"
   sudo podman exec -it $name bash -c "cd /${username}/oci_tools/cd3_automation_toolkit/user-scripts; python createTenancyConfig.py /${username}/tenancies/${prefix}/.config_files/${prefix}_tenancyconfig.properties --upgradeToolkit True"
   echo "createTenancyConfig.py ended for prefix: $prefix"
-
-  #echo "Running Fetch Compartments for prefix: $prefix"
-  #sudo podman exec -it $name bash -c "cd /${username}/oci_tools/cd3_automation_toolkit; python setupOCI.py /${username}/tenancies/${prefix}/${prefix}_setUpOCI.properties "
-
+  echo "--------------------------------------------------"
   echo "Copying tfvars for prefix: $prefix from $current_version to $version and running terraform plan"
 
   dest_dir=/${username}/${version}/${prefix}/terraform_files
@@ -74,86 +105,107 @@ do
   ' -- "$dest_dir" {} \;
   # remove duplicate lines from unique_dirs file
   sort -u /tmp/unique_dirs -o /tmp/unique_dirs
-  echo "processing all directories with tfvars files"
+  echo "--------------------------------------------------"
+  echo "Processing all directories one by one found with tfvars files"
   # process each line from unique_dirs file
 
-# Read file into an array
-mapfile -t dirs < /tmp/unique_dirs
+  # Read file into an array
+  mapfile -t dirs < /tmp/unique_dirs
 
-for dir in "${dirs[@]}"; do
-  # Skip empty lines and lines starting with "data"
-  [[ -z "$dir" || "$dir" == data* ]] && continue
+  for dir in "${dirs[@]}"; do
+    # Skip empty lines and lines starting with "data"
+    [[ -z "$dir" || "$dir" == data* ]] && continue
 
-  echo "Processing $dir"
+    echo -e "\nProcessing $dir --->"
 
-  source_dir=$(echo "$dir" | sed "s/$version/tenancies/g")
-  source_dir_on_vm=$(echo "$dir" | sed "s/${version}/${current_version}/g")
+    source_dir=$(echo "$dir" | sed "s/$version/tenancies/g")
+    source_dir_on_vm=$(echo "$dir" | sed "s/${version}/${current_version}/g")
 
-  # Run Terraform in source container
-  sudo podman exec -i "$current_name" bash -c "
-    cd \"$source_dir\" || exit 1
-    terraform init
-    terraform state pull > source_tfstate
-    terraform state list > resources_list
-  "
+    # Run Terraform in source container
+    sudo podman exec -i "$current_name" bash -c "
+      cd \"$source_dir\" || exit 1
+      terraform init
+      terraform state pull > source_tfstate
+      terraform state list > resources_list
+    "
 
-  echo "Moving to new container"
+    echo -e "\nMoving to new version container\n"
 
-  dest_dir=$(echo "$dir" | sed "s/$version/tenancies/g")
-  echo "Dest dir: $dest_dir"
+    dest_dir=$(echo "$dir" | sed "s/$version/tenancies/g")
+    echo "Dest dir: $dest_dir"
 
-  # Copy state files from source VM directory
-  sudo cp "$source_dir_on_vm/source_tfstate" "$dir/" || { echo "Failed to copy source_tfstate"; continue; }
-  sudo cp "$source_dir_on_vm/resources_list" "$dir/" || { echo "Failed to copy resources_list"; continue; }
-  sudo chown -R "$username:$username" "/$username/$version"
+    # Copy state files from source VM directory
+    sudo cp "$source_dir_on_vm/source_tfstate" "$dir/" || { echo "Failed to copy source_tfstate"; continue; }
+    sudo cp "$source_dir_on_vm/resources_list" "$dir/" || { echo "Failed to copy resources_list"; continue; }
+    sudo chown -R "$username:$username" "/$username/$version"
 
-  # Run Terraform in destination container
-  sudo podman exec -i "$name" bash -c "
-    cd \"$dest_dir\" || exit 1
-    terraform init
-    terraform state pull > dest_tfstate
-    while IFS= read -r r_import || [[ -n \"\$r_import\" ]]; do
-      [[ -z \"\$r_import\" || \"\$r_import\" =~ ^# || \"\$r_import\" == data* ]] && continue
-      terraform state mv --state source_tfstate --state-out dest_tfstate \"\$r_import\" \"\$r_import\"
-    done < resources_list
-    echo 'Pushing to state'
-    terraform state push dest_tfstate
-  "
-  current_region=$(basename "$(dirname "$dir")")
-  SRC_FILE="$source_dir_on_vm/variables_$current_region.tf"
-  DEST_FILE="$dir/variables_$current_region.tf"
-  #START_MARKER="variable \"instance_ssh_keys\""
-  #END_MARKER="#instance_ssh_keys_END#"
-  START_MARKER="#START_compartment_ocids#"
-  END_MARKER="#compartment_ocids_END#"
+    # Run Terraform in destination container
+    sudo podman exec -i "$name" bash -c "
+      cd \"$dest_dir\" || exit 1
+      terraform init
+      terraform state pull > dest_tfstate
+      while IFS= read -r r_import || [[ -n \"\$r_import\" ]]; do
+        [[ -z \"\$r_import\" || \"\$r_import\" =~ ^# || \"\$r_import\" == data* ]] && continue
+        terraform state mv --state source_tfstate --state-out dest_tfstate \"\$r_import\" \"\$r_import\"
+      done < resources_list
+      echo -e '\nPushing to state'
+      terraform state push dest_tfstate
+    "
 
-  # Extract block (including markers) from source
-  BLOCK=$(sudo sed -n "/$START_MARKER/,/$END_MARKER/p" "$SRC_FILE")
+    echo -e '\nCopying contents of variables_<region>.tf file'
+    current_region=$(basename "$(dirname "$dir")")
+    SRC_FILE="$source_dir_on_vm/variables_$current_region.tf"
+    DEST_FILE="$dir/variables_$current_region.tf"
 
-  # Escape special characters for safe insertion
-  ESCAPED_BLOCK=$(printf '%s\n' "$BLOCK" | sed 's/[&/\]/\\&/g')
+    START_MARKER="#START_compartment_ocids#"
+    END_MARKER="#compartment_ocids_END#"
+    copy_data_from_variables_file
 
-  # Use awk to delete the block in DEST and insert new content
-  sudo awk -v start="$START_MARKER" -v end="$END_MARKER" -v block="$ESCAPED_BLOCK" '
-  BEGIN {
-      split(block, newblock, "\n")
-      inblock = 0
-  }
-  {
-      if ($0 ~ start) {
-          inblock = 1
-          for (i in newblock) print newblock[i]
-      } else if ($0 ~ end && inblock) {
-          inblock = 0
-          next
-      } else if (!inblock) {
-          print
-      }
-  }
-  ' "$DEST_FILE" > "/tmp/var.tmp" && sudo cp "/tmp/var.tmp" "$DEST_FILE"
+    START_MARKER="#START_instance_source_ocids#"
+    END_MARKER="#instance_source_ocids_END#"
+    copy_data_from_variables_file
 
-  echo "Updated '$DEST_FILE' in-place with content from '$SRC_FILE'."
-  echo "Done processing $dir"
-done
+    START_MARKER="#START_instance_ssh_keys#"
+    END_MARKER="#instance_ssh_keys_END#"
+    copy_data_from_variables_file
+
+    START_MARKER="#START_blockvolume_source_ocids#"
+    END_MARKER="#blockvolume_source_ocids_END#"
+    copy_data_from_variables_file
+
+    START_MARKER="#START_fss_source_snapshot_ocids#"
+    END_MARKER="#fss_source_snapshot_ocids_END#"
+    copy_data_from_variables_file
+
+    START_MARKER="#START_oke_source_ocids#"
+    END_MARKER="#oke_source_ocids_END#"
+    copy_data_from_variables_file $START_MARKER $END_MARKER $SRC_FILE $DEST_FILE
+
+    START_MARKER="#START_oke_ssh_keys#"
+    END_MARKER="#oke_ssh_keys_END#"
+    copy_data_from_variables_file $START_MARKER $END_MARKER $SRC_FILE $DEST_FILE
+
+    START_MARKER="#START_sddc_ssh_keys#"
+    END_MARKER="#sddc_ssh_keys_END#"
+    copy_data_from_variables_file
+
+    START_MARKER="#START_exacs_ssh_keys#"
+    END_MARKER="#exacs_ssh_keys_END#"
+    copy_data_from_variables_file
+
+    START_MARKER="#START_dbsystem_ssh_keys#"
+    END_MARKER="#dbsystem_ssh_keys_END#"
+    copy_data_from_variables_file
+
+    echo -e "\nUpdated '$DEST_FILE' in-place with content from '$SRC_FILE'"
+
+    echo "Done processing $dir"
+    echo "--------------------------------------------------"
+  done
+  echo "Done Configuring prefix $prefix"
+  echo -e "\nPushing local files to GIT Repo"
+  sudo podman exec -it $name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git add .; git commit -m 'Push from upgrade script to new version GIT Repo'; git push --set-upstream origin develop; git checkout main; git pull origin main; git merge develop; git push origin main; git checkout develop"
+
+  echo "--------------------------------------------------"
 
 done
