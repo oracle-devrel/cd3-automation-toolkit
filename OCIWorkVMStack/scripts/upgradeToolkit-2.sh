@@ -151,7 +151,12 @@ do
     "
 
     echo -e '\nCopying contents of variables_<region>.tf file'
-    current_region=$(basename "$(dirname "$dir")")
+    IFS='/' read -ra parts <<< "$dir"
+    current_region="${parts[-2]}"
+    if [ "$current_region" = "." ]; then
+      current_region="${parts[-1]}"
+    fi
+
     SRC_FILE="$source_dir_on_vm/variables_$current_region.tf"
     DEST_FILE="$dir/variables_$current_region.tf"
 
