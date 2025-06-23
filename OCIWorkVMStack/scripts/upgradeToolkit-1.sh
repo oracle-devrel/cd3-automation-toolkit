@@ -3,7 +3,7 @@
 start=$(date +%s.%N)
 username=cd3user
 NOW=$( date '+%F_%H-%M-%S' )
-toolkit_dir="/tmp/downloadToolkit_"$NOW
+toolkit_dir="/tmp/downloadToolkit_upgrade_"$NOW
 
 mkdir -p $toolkit_dir
 logfile="/tmp/upgradeToolkit-1.log_"$NOW
@@ -21,8 +21,8 @@ fi
 echo "***Download Toolkit***" >> $logfile 2>&1
 sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container $toolkit_dir
 #Get version from latest tag
-git config --global --add safe.directory /tmp/downloadToolkit_$NOW
-cd /tmp/downloadToolkit_$NOW
+git config --global --add safe.directory $toolkit_dir
+cd $toolkit_dir
 version=$(git describe --tags)
 version=${version:0:9}
 sudo mkdir /$username/$version

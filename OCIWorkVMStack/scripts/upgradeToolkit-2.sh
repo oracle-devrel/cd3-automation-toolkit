@@ -61,7 +61,14 @@ read -p "Enter Current Version to be upgraded: " current_version
 echo $current_version
 current_name="cd3_toolkit_"$current_version
 
-read -p "Enter comma seperated prefix names to be ungraded: " current_prefixes
+if [ ! -d "/$userdir/$current_version" ] && sudo podman container exists "$current_name"; then
+  echo -e "Valid Version. Proceeding further...\n"
+else
+  echo "Invalid Version. Exiting!!!"
+  exit 1
+fi
+
+read -p "Enter comma separated prefix names to be ungraded: " current_prefixes
 echo $current_prefixes
 
 # Setting IFS (input field separator) value as ","
@@ -75,6 +82,11 @@ read -ra arr <<< "$current_prefixes"
 echo "Python script execution will start now" >> $logfile 2>&1
 for prefix in "${arr[@]}";
 do
+  if [ ! -d "/$username/$current_version/$prefix" ]; then
+    echo "Invalid Prefix $prefix. Continuing with next!!!"
+    continue
+  fi
+
   sudo mkdir -p /$username/$version/$prefix/.config_files
   sudo cp /$username/$current_version/$prefix/.config_files/* /$username/$version/$prefix/.config_files
   sudo chown -R $username:$username /$username/$version
@@ -148,6 +160,7 @@ do
       done < resources_list
       echo -e '\nPushing to state'
       terraform state push dest_tfstate
+
     "
 
     echo -e '\nCopying contents of variables_<region>.tf file'
