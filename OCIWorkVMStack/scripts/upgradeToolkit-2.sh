@@ -102,6 +102,29 @@ do
   sudo podman exec -it $name bash -c "cd /${username}/oci_tools/cd3_automation_toolkit/user-scripts; python createTenancyConfig.py /${username}/tenancies/${prefix}/.config_files/${prefix}_tenancyconfig.properties --upgradeToolkit True"
   echo "createTenancyConfig.py ended for prefix: $prefix"
   echo "--------------------------------------------------"
+
+  echo -e "Checking GIT repo configuration for prefix $prefix  and version $current_version"
+  current_git_status=$(sudo podman exec -it $current_name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git status")
+  echo $current_git_status
+
+  echo -e "Checking GIT repo configuration for prefix $prefix  and version $version"
+  git_status=$(sudo podman exec -it $name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git status")
+  echo $git_status
+
+  text="fatal: not a git repository"
+
+  if [[ "$current_git_status" != *"$text"* && "$git_status" != *"$text"* ]]; then
+    echo "\nGIT is configured properly for both versions for prefix $prefix. Proceeding with GIT operations\n"
+    git=1
+  else if [[ "$current_git_status" == *"$text"* && "$git_status" == *"$text"* ]]; then
+    echo "\nGIT is not configured for both versions for prefix $prefix. Proceeding without GIT operations\n"
+    git=0
+  else
+    echo "\nGIT status not same for both versions for this prefix $prefix. Exiting!!!\n"
+  fi
+  fi
+
+
   echo "Copying tfvars for prefix: $prefix from $current_version to $version and running terraform plan"
 
   dest_dir=/${username}/${version}/${prefix}/terraform_files
@@ -225,9 +248,10 @@ do
     echo "--------------------------------------------------"
   done
   echo "Done Configuring prefix $prefix"
-  echo -e "\nPushing local files to GIT Repo"
-  sudo podman exec -it $name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git add .; git commit -m 'Push from upgrade script to new version GIT Repo'; git push --set-upstream origin develop; git checkout main; git pull origin main; git merge develop; git push origin main; git checkout develop"
-
+  if [ "$git" == 1 ]; then
+    echo -e "\nPushing local files to GIT Repo"
+    sudo podman exec -it $name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git add .; git commit -m 'Push from upgrade script to new version GIT Repo'; git push --set-upstream origin develop; git checkout main; git pull origin main; git merge develop; git push origin main; git checkout develop"
+  fi
   echo "--------------------------------------------------"
 
 done
