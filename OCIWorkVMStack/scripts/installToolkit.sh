@@ -19,7 +19,7 @@ sudo sh -c "echo 'Please wait for couple of minutes for container to become acti
 sudo sh -c "echo 'are logging in for first time to after VM Provisioning. Toolkit initial' >> /etc/motd"
 sudo sh -c "echo 'setup log is present at - /cd3user/<version>/installToolkit.log' >> /etc/motd"
 sudo sh -c "echo 'To verify podman container run command: sudo podman ps -a' >> /etc/motd"
-sudo sh -c "echo 'To connect to container run command: sudo podman exec -it cd3_toolkit bash' >> /etc/motd"
+sudo sh -c "echo 'To connect to container run command: sudo podman exec -it cd3_toolkit_<version> bash' >> /etc/motd"
 sudo sh -c "echo 'if you want to stop seeing these messages at login remove in /etc/motd' >> /etc/motd"
 sudo sh -c "echo '###########################################################################' >> /etc/motd"
 

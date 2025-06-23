@@ -1,14 +1,20 @@
 #!/bin/bash
 
+
+
 start=$(date +%s.%N)
 username=cd3user
 NOW=$( date '+%F_%H-%M-%S' )
 logfile="/tmp/upgradeToolkit-2.log_"$NOW
 
+# Redirect all output to log file
+export LOG_FILE=$logfile
+exec > $LOG_FILE
+exec 2>&1
+
 stop_exec () {
 if [[ $? -ne 0 ]] ; then
-   echo $? >> $logfile 2>&1
-   echo "Error encountered in CD3 Automation Toolkit Container Setup. Please do setup Manually" >> $logfile 2>&1
+   echo "Error encountered in CD3 Automation Toolkit Container Setup. Please do setup Manually"
    exit 1
 fi
 }
@@ -79,7 +85,7 @@ read -ra arr <<< "$current_prefixes"
 
 # Print each value of the array by using the loop
 
-echo "Python script execution will start now" >> $logfile 2>&1
+echo "Python script execution will start now"
 for prefix in "${arr[@]}";
 do
   if [ ! -d "/$username/$current_version/$prefix" ]; then
