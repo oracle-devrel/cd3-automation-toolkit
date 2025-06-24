@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 start=$(date +%s.%N)
 username=cd3user
 NOW=$( date '+%F_%H-%M-%S' )
@@ -11,6 +9,7 @@ logfile="/tmp/upgradeToolkit-2.log_"$NOW
 export LOG_FILE=$logfile
 exec > $LOG_FILE
 exec 2>&1
+echo "redirecting all logs to $LOG_FILE"
 
 stop_exec () {
 if [[ $? -ne 0 ]] ; then
@@ -63,7 +62,9 @@ name="cd3_toolkit_"$version
 
 
 #################### Run createTenancyConfig.py for new version and create Prefixes ################
-read -p "Enter Current Version to be upgraded: " current_version
+#sudo read -p "Enter Current Version to be upgraded: " current_version > /dev/tty
+echo -n "Enter Current Version to be upgraded: " > /dev/tty
+read current_version < /dev/tty
 echo $current_version
 current_name="cd3_toolkit_"$current_version
 
@@ -74,7 +75,9 @@ else
   exit 1
 fi
 
-read -p "Enter comma separated prefix names to be ungraded: " current_prefixes
+#sudo read -p "Enter comma separated prefix names to be ungraded: " current_prefixes > /dev/tty
+echo -n "Enter comma separated prefix names to be ungraded: " > /dev/tty
+read current_prefixes < /dev/tty
 echo $current_prefixes
 
 # Setting IFS (input field separator) value as ","
@@ -99,7 +102,7 @@ do
   sudo chown -R $username:$username /$username/$current_version
   echo "--------------------------------------------------"
   echo "Running createTenancyConfig.py for prefix: $prefix"
-  sudo podman exec -it $name bash -c "cd /${username}/oci_tools/cd3_automation_toolkit/user-scripts; python createTenancyConfig.py /${username}/tenancies/${prefix}/.config_files/${prefix}_tenancyconfig.properties --upgradeToolkit True"
+  sudo podman exec -it $name bash -c "cd /${username}/oci_tools/cd3_automation_toolkit/user-scripts; python createTenancyConfig.py /${username}/tenancies/${prefix}/.config_files/${prefix}_tenancyconfig.properties --upgradeToolkit True" 2>&1 > /dev/tty
   echo "createTenancyConfig.py ended for prefix: $prefix"
   echo "--------------------------------------------------"
 
@@ -116,20 +119,21 @@ do
   if [[ "$current_git_status" != *"$text"* && "$git_status" != *"$text"* ]]; then
     echo "\nGIT is configured properly for both versions for prefix $prefix. Proceeding with GIT operations\n"
     git=1
-  else if [[ "$current_git_status" == *"$text"* && "$git_status" == *"$text"* ]]; then
+  elif [[ "$current_git_status" == *"$text"* && "$git_status" == *"$text"* ]]; then
     echo "\nGIT is not configured for both versions for prefix $prefix. Proceeding without GIT operations\n"
     git=0
   else
     echo "\nGIT status not same for both versions for this prefix $prefix. Exiting!!!\n"
   fi
-  fi
-
 
   echo "Copying tfvars for prefix: $prefix from $current_version to $version and running terraform plan"
 
   dest_dir=/${username}/${version}/${prefix}/terraform_files
   cd /${username}/${current_version}/${prefix}/terraform_files
-
+  if [ "$git" == 1 ]; then
+    echo -e "\nPulling from git main"
+    sudo podman exec -it $current_name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git checkout main; git pull origin main"
+  fi
   # initialize temp unique_dir file
   > /tmp/unique_dirs
   sudo chmod 777 /tmp/unique_dirs
@@ -147,6 +151,10 @@ do
   echo "--------------------------------------------------"
   echo "Processing all directories one by one found with tfvars files"
   # process each line from unique_dirs file
+  if [ "$git" == 1 ]; then
+    echo -e "\ncheckout develop back in source dir"
+    sudo podman exec -it $current_name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git checkout develop"
+  fi
 
   # Read file into an array
   mapfile -t dirs < /tmp/unique_dirs
@@ -189,7 +197,7 @@ do
       done < resources_list
       echo -e '\nPushing to state'
       terraform state push dest_tfstate
-
+      rm -rf dest_tfstate* source_tfstate* resources_list
     "
 
     echo -e '\nCopying contents of variables_<region>.tf file'
