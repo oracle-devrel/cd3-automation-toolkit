@@ -9,7 +9,6 @@ logfile="/tmp/upgradeToolkit-2.log_"$NOW
 export LOG_FILE=$logfile
 exec 3>&1
 exec > "$logfile" 2>&1
-# print this to terminal
 echo "redirecting all logs to $LOG_FILE" >&3
 
 stop_exec () {
@@ -49,7 +48,6 @@ function copy_data_from_variables_file() {
 }
 
 
-
 sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container /tmp/temp
 #Get version from latest tag
 git config --global color.ui false
@@ -66,8 +64,8 @@ name="cd3_toolkit_"$version
 #################### Run createTenancyConfig.py for new version and create Prefixes ################
 #sudo read -p "Enter Current Version to be upgraded: " current_version > /dev/tty
 echo -n "Enter Current Version to be upgraded: " >&3
-# read input from terminal
 read current_version < /dev/tty
+echo $current_version
 current_name="cd3_toolkit_"$current_version
 
 if [ ! -d "/$userdir/$current_version" ] && sudo podman container exists "$current_name"; then
@@ -80,6 +78,7 @@ fi
 #sudo read -p "Enter comma separated prefix names to be upgraded: " current_prefixes > /dev/tty
 echo -n "Enter comma separated prefix names to be upgraded: " >&3
 read current_prefixes < /dev/tty
+echo $current_prefixes >&3
 
 # Setting IFS (input field separator) value as ","
 IFS=','
@@ -130,22 +129,31 @@ do
   echo "Copying tfvars for prefix: $prefix from $current_version to $version and running terraform plan" >&3
 
   dest_dir=/${username}/${version}/${prefix}/terraform_files
-  cd /${username}/${current_version}/${prefix}/terraform_files
   if [ "$git" == 1 ]; then
     echo -e "\nPulling from git main"
-    sudo podman exec -it $current_name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git checkout main; git pull origin main"
+    sudo podman exec -it "$current_name" bash -c "
+    cd /${username}/tenancies/${prefix}/terraform_files/ || exit 1
+    git remote get-url origin
+    git_url=\$(git remote get-url origin)
+    echo \"Cloning from: \$git_url\"
+    git clone \"\$git_url\" ../main_repo
+    cd ../main_repo || exit 1
+    git checkout main
+    git pull origin main
+"
   fi
+  cd /${username}/${current_version}/${prefix}/main_repo
   # initialize temp unique_dir file
   > /tmp/unique_dirs
   sudo chmod 777 /tmp/unique_dirs
   # copy all the tfvars to destination path and store directories to unique_dirs file
   sudo find . -type f -name "*.auto.tfvars" -exec bash -c '
   dest="$1/$2"
-
+  echo $2
   dest_dir_on_vm=$(dirname "$dest")
   if [ -d "$dest_dir_on_vm" ]; then
     sudo cp "$2" "$dest"
-
+    echo $dest_dir_on_vm
     echo $dest_dir_on_vm >> /tmp/unique_dirs
   fi
   ' -- "$dest_dir" {} \;
@@ -154,10 +162,10 @@ do
   echo "--------------------------------------------------"
   echo "Processing all directories one by one found with tfvars files"
   # process each line from unique_dirs file
-  if [ "$git" == 1 ]; then
-    echo -e "\ncheckout develop back in source dir"
-    sudo podman exec -it $current_name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git checkout develop;git config --global color.ui true"
-  fi
+ # if [ "$git" == 1 ]; then
+ #   echo -e "\ncheckout develop back in source dir"
+ #   sudo podman exec -it $current_name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git checkout develop;git config --global color.ui true"
+ # fi
 
   # Read file into an array
   mapfile -t dirs < /tmp/unique_dirs
@@ -169,8 +177,10 @@ do
     echo -e "\nProcessing $dir --->"
 
     source_dir=$(echo "$dir" | sed "s/$version/tenancies/g")
+    source_dir=$(echo "$source_dir" | sed "s/terraform_files/main_repo/g")
+    echo "Source dir: $source_dir"
     source_dir_on_vm=$(echo "$dir" | sed "s/${version}/${current_version}/g")
-    echo $source_dir >&3
+    source_dir_on_vm=$(echo "$source_dir_on_vm" | sed "s/terraform_files/main_repo/g")
     # Run Terraform in source container
     sudo podman exec -i "$current_name" bash -c "
       cd \"$source_dir\" || exit 1
