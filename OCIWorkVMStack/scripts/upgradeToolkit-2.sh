@@ -65,7 +65,6 @@ name="cd3_toolkit_"$version
 #sudo read -p "Enter Current Version to be upgraded: " current_version > /dev/tty
 echo -n "Enter Current Version to be upgraded: " >&3
 read current_version < /dev/tty
-echo $current_version
 current_name="cd3_toolkit_"$current_version
 
 if [ ! -d "/$userdir/$current_version" ] && sudo podman container exists "$current_name"; then
@@ -78,7 +77,6 @@ fi
 #sudo read -p "Enter comma separated prefix names to be upgraded: " current_prefixes > /dev/tty
 echo -n "Enter comma separated prefix names to be upgraded: " >&3
 read current_prefixes < /dev/tty
-echo $current_prefixes >&3
 
 # Setting IFS (input field separator) value as ","
 IFS=','
@@ -101,7 +99,7 @@ do
   sudo chown -R $username:$username /$username/$version
   sudo chown -R $username:$username /$username/$current_version
   echo "--------------------------------------------------"
-  echo "Running createTenancyConfig.py for prefix: $prefix" >&3
+  echo -e "\nRunning createTenancyConfig.py for prefix: $prefix" >&3
   sudo podman exec -it $name bash -c "cd /${username}/oci_tools/cd3_automation_toolkit/user-scripts; python createTenancyConfig.py /${username}/tenancies/${prefix}/.config_files/${prefix}_tenancyconfig.properties --upgradeToolkit True" 2>&1 > /dev/tty
   echo "createTenancyConfig.py ended for prefix: $prefix"
   echo "--------------------------------------------------"
@@ -275,12 +273,12 @@ do
     echo "Done processing $dir"
     echo "--------------------------------------------------"
   done
-  echo "Done Configuring prefix $prefix"
+  echo "Done Configuring prefix $prefix" >&3
   if [ "$git" == 1 ]; then
     echo -e "\nPushing local files to GIT Repo"
     sudo podman exec -it $name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git config --global color.ui false;git add .; git commit -m 'Push from upgrade script to new version GIT Repo'; git push --set-upstream origin develop; git checkout main; git pull origin main; git merge develop; git push origin main; git checkout develop;git config --global color.ui true"
   fi
-  echo "--------------------------------------------------"
+  echo "--------------------------------------------------" >&3
 
 done
 sed -i 's/\r//g' $LOG_FILE
