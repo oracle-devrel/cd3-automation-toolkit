@@ -87,6 +87,7 @@ read -ra arr <<< "$current_prefixes"
 # Print each value of the array by using the loop
 
 echo "Python script execution will start now"
+
 for prefix in "${arr[@]}";
 do
   if [ ! -d "/$username/$current_version/$prefix" ]; then
@@ -115,13 +116,13 @@ do
   text="fatal: not a git repository"
 
   if [[ "$current_git_status" != *"$text"* && "$git_status" != *"$text"* ]]; then
-    echo "\nGIT is configured properly for both versions for prefix $prefix. Proceeding with GIT operations\n"
+    echo -e "\nGIT is configured properly for both versions for prefix $prefix. Proceeding with GIT operations\n"
     git=1
   elif [[ "$current_git_status" == *"$text"* && "$git_status" == *"$text"* ]]; then
-    echo "\nGIT is not configured for both versions for prefix $prefix. Proceeding without GIT operations\n"
+    echo -e "\nGIT is not configured for both versions for prefix $prefix. Proceeding without GIT operations\n"
     git=0
   else
-    echo "\nGIT status not same for both versions for this prefix $prefix. Exiting!!!\n"
+    echo -e "\nGIT status not same for both versions for this prefix $prefix. Exiting!!!\n"
   fi
 
   echo "Copying tfvars for prefix: $prefix from $current_version to $version and running terraform plan" >&3
@@ -172,6 +173,8 @@ do
 
   # Read file into an array
   mapfile -t dirs < /tmp/unique_dirs
+  echo -e '\nCreating State files and copying contents of variables_<region>.tf files' >&3
+
 
   for dir in "${dirs[@]}"; do
     # Skip empty lines and lines starting with "data"
@@ -277,9 +280,26 @@ do
   if [ "$git" == 1 ]; then
     echo -e "\nPushing local files to GIT Repo"
     sudo podman exec -it $name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git config --global color.ui false;git add .; git commit -m 'Push from upgrade script to new version GIT Repo'; git push --set-upstream origin develop; git checkout main; git pull origin main; git merge develop; git push origin main; git checkout develop;git config --global color.ui true"
-    rm -rf /${username}/${current_version}/${prefix}/${src}
+    sudo rm -rf /${username}/${current_version}/${prefix}/${src}
   fi
   echo "--------------------------------------------------" >&3
 
 done
+
+echo -e "\nLogin to new Container using - " >&3
+echo "sudo podman exec -it cd3_toolkit_${version} bash" >&3
+echo -e "\n#########################################" >&3
+echo "Next Steps for using toolkit via Jenkins" >&3
+echo "#########################################" >&3
+echo "Start Jenkins using  - /usr/share/jenkins/jenkins.sh &" >&3
+echo "Access Jenkins using - https://<IP Address of the machine hosting docker container>:8444" >&3
+echo -e "\n######################################" >&3
+echo "Next Steps for using toolkit via CLI" >&3
+echo "######################################" >&3
+echo "Modify /${username}/tenancies/<prefix>/<prefix>_setUpOCI.properties with input values for cd3file and workflow_type" >&3
+echo "cd /${username}/oci_tools/cd3_automation_toolkit/" >&3
+echo "python setUpOCI.py /${username}/tenancies/<prefix>/<prefix>_setUpOCI.properties" >&3
+
+
+
 sed -i 's/\r//g' $LOG_FILE
