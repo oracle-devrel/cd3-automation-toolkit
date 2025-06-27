@@ -99,6 +99,9 @@ sudo sed -c -i "s/user_ocid=.*/user_ocid=$user_id/" $tenancyconfig_properties
 echo "***Building container image***" >> $logfile 2>&1
 name="cd3_toolkit_"$version
 cd $toolkit_dir
+sudo chmod +x OCIWorkVMStack/scripts/upgradeToolkit*.sh
+alias upgrade-toolkit-launch-new-container=/$toolkit_dir/OCIWorkVMStack/scripts/upgradeToolkit-1.sh
+alias upgrade-toolkit-update-prefixes=/$toolkit_dir/OCIWorkVMStack/scripts/upgradeToolkit-2.sh
 sudo podman build --platform linux/amd64 -t $name -f Dockerfile --pull --no-cache . >> $logfile 2>&1
 stop_exec
 sudo podman images >> $logfile 2>&1
