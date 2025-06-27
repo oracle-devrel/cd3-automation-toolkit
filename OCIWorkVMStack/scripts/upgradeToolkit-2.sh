@@ -140,9 +140,14 @@ do
     cd ../main_repo || exit 1
     git checkout main
     git pull origin main
-"
+    "
+    src=main_repo
+  else
+    src=terraform_files
   fi
-  cd /${username}/${current_version}/${prefix}/main_repo
+  cd /${username}/${current_version}/${prefix}/${src}
+  echo "Source Dir: $PWD" >&3
+  
   # initialize temp unique_dir file
   > /tmp/unique_dirs
   sudo chmod 777 /tmp/unique_dirs
@@ -177,10 +182,10 @@ do
     echo -e "\nProcessing $dir --->"
 
     source_dir=$(echo "$dir" | sed "s/$version/tenancies/g")
-    source_dir=$(echo "$source_dir" | sed "s/terraform_files/main_repo/g")
+    source_dir=$(echo "$source_dir" | sed "s/terraform_files/$src/g")
     echo "Source dir: $source_dir"
     source_dir_on_vm=$(echo "$dir" | sed "s/${version}/${current_version}/g")
-    source_dir_on_vm=$(echo "$source_dir_on_vm" | sed "s/terraform_files/main_repo/g")
+    source_dir_on_vm=$(echo "$source_dir_on_vm" | sed "s/terraform_files/$src/g")
     # Run Terraform in source container
     sudo podman exec -i "$current_name" bash -c "
       cd \"$source_dir\" || exit 1
