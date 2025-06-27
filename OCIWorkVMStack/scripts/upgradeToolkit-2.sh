@@ -277,6 +277,7 @@ do
   if [ "$git" == 1 ]; then
     echo -e "\nPushing local files to GIT Repo"
     sudo podman exec -it $name bash -c "cd /${username}/tenancies/${prefix}/terraform_files/; git config --global color.ui false;git add .; git commit -m 'Push from upgrade script to new version GIT Repo'; git push --set-upstream origin develop; git checkout main; git pull origin main; git merge develop; git push origin main; git checkout develop;git config --global color.ui true"
+    rm -rf /${username}/${current_version}/${prefix}/${src}
   fi
   echo "--------------------------------------------------" >&3
 
