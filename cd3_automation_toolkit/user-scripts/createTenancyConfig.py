@@ -1147,18 +1147,20 @@ if use_devops == "yes":
     logging.info("Common Jenkins Home: " +jenkins_home)
     logging.info("DevOps Project Name and Repo Name: "+project_name+ ", "+repo_name+ " in "+rg+".")
     logging.info("Folder configured for OCI DevOps GIT: "+terraform_files+" Initial Commit ID from createTenancyConfig.py: "+commit_id)
-    logging.info("\n#########################################")
-    logging.info("Next Steps for using toolkit via Jenkins")
-    logging.info("#########################################")
-    logging.info("Start Jenkins using  - /usr/share/jenkins/jenkins.sh &")
-    logging.info("Access Jenkins using - https://<IP Address of the machine hosting docker container>:8443")
+    if not upgradeToolkit:
+        logging.info("\n#########################################")
+        logging.info("Next Steps for using toolkit via Jenkins")
+        logging.info("#########################################")
+        logging.info("Start Jenkins using  - /usr/share/jenkins/jenkins.sh &")
+        logging.info("Access Jenkins using - https://<IP Address of the machine hosting docker container>:8443")
 
-logging.info("\n######################################")
-logging.info("Next Steps for using toolkit via CLI")
-logging.info("######################################")
-logging.info("Modify "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties with input values for cd3file and workflow_type")
-logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit/")
-logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
+if not upgradeToolkit:
+    logging.info("\n######################################")
+    logging.info("Next Steps for using toolkit via CLI")
+    logging.info("######################################")
+    logging.info("Modify "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties with input values for cd3file and workflow_type")
+    logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit/")
+    logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
 
 with open(outfile, 'r') as log_file:
     data = log_file.read().rstrip()
