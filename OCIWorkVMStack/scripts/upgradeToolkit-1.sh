@@ -9,8 +9,9 @@ mkdir -p $toolkit_dir
 logfile="/tmp/upgradeToolkit-1.log_"$NOW
 # Redirect all output to log file
 export LOG_FILE=$logfile
-exec > $LOG_FILE
-exec 2>&1
+exec 3>&1
+exec > "$logfile" 2>&1
+echo "Redirecting all logs to $LOG_FILE" >&3
 
 tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
 
@@ -23,7 +24,7 @@ if [[ $? -ne 0 ]] ; then
 fi
 }
 
-echo "***Download Toolkit***"
+echo "***Download latest Toolkit***" >&3
 sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b testUpgrade-container $toolkit_dir
 #Get version from latest tag
 git config --global --add safe.directory $toolkit_dir
@@ -48,7 +49,7 @@ sudo sed -c -i "s/user_ocid=.*/user_ocid=$user_id/" $tenancyconfig_properties
 
 
 
-echo "***Building container image***"
+echo "***Building container image***" >&3
 name="cd3_toolkit_"$version
 cd $toolkit_dir
 sudo podman build --platform linux/amd64 -t $name -f Dockerfile --pull --no-cache .
@@ -56,7 +57,7 @@ stop_exec
 sudo podman images
 
 
-echo "***Setting Up podman Container***"
+echo "***Setting Up podman Container***" >&3
 sudo podman run --name $name -it -p 8444:8443 -d -v /cd3user/$version:/cd3user/tenancies  $name bash
 stop_exec
 sudo podman ps -a
@@ -66,5 +67,5 @@ echo "Connect to Container using command - sudo podman exec -it cd3_toolkit bash
 duration_sec=$(echo "$(date +%s.%N) - $start" | bc)
 duration_min=$(echo "$duration_sec%3600/60" | bc)
 execution_time=`printf "%.2f seconds" $duration_sec`
-echo "Script Execution Time in Seconds: $execution_time"
-echo "Script Execution Time in Minutes: approx $duration_min Minutes"
+echo "Script Execution Time in Seconds: $execution_time" >&3
+echo "Script Execution Time in Minutes: approx $duration_min Minutes" >&3
