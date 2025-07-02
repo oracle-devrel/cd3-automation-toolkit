@@ -100,6 +100,9 @@ echo "***Building container image***" >> $logfile 2>&1
 name="cd3_toolkit_"$version
 cd $toolkit_dir
 sudo chmod +x OCIWorkVMStack/scripts/upgradeToolkit*.sh
+sudo echo "alias upgrade-toolkit_launch-container=$toolkit_dir/OCIWorkVMStack/scripts/upgradeToolkit-1.sh" >> /home/opc/.bashrc
+sudo echo "alias upgrade-toolkit_copy-prefixes=$toolkit_dir/OCIWorkVMStack/scripts/upgradeToolkit-2.sh" >> /home/opc/.bashrc
+source /home/opc/.bashrc
 alias upgrade-toolkit-launch-new-container=/$toolkit_dir/OCIWorkVMStack/scripts/upgradeToolkit-1.sh
 alias upgrade-toolkit-update-prefixes=/$toolkit_dir/OCIWorkVMStack/scripts/upgradeToolkit-2.sh
 sudo podman build --platform linux/amd64 -t $name -f Dockerfile --pull --no-cache . >> $logfile 2>&1
