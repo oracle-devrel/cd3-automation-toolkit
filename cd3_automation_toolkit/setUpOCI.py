@@ -2082,6 +2082,8 @@ global updated_paths
 global import_scripts
 updated_paths = []
 import_scripts = []
+# Opt-in to IMDS lookup
+oci.regions.enable_instance_metadata_service()
 exec_start_time = datetime.datetime.now()
 parser = argparse.ArgumentParser(description='Sets Up OCI via TF')
 parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpOCI.properties")

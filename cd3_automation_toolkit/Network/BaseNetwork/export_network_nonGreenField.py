@@ -9,6 +9,7 @@ from .exportRoutetable import export_drg_routetable
 from .exportSeclist import export_seclist
 from .exportNSG import export_nsg
 import subprocess as sp
+from pathlib import Path
 
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
@@ -348,6 +349,9 @@ def get_drg_rt_name(drg_rpc_attachment_list, source_rpc_id, rpc_source_client, d
 
 def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_client, ct, values_for_column,
                       ntk_compartment_name, outdir, drg_info, drg_attachment_info, state_rpc):
+    # Get path to OCI_Regions file relative to current rpc script
+    oci_regions_path = Path(__file__).resolve().parents[2] / "OCI_Regions"
+
     # Variables
     dest_rpc_drg_name = ""
     src_drg_rt_name = ""
@@ -456,7 +460,8 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                 # Fetch Dest DRG RT name, id
                                 if dest_drg_rpc_attachment_list.data:
                                     dest_drg_rt_name, dest_drg_rt_id = get_drg_rt_name(dest_drg_rpc_attachment_list,
-                                                                                       dest_rpc_id, client,dest_rpc.drg_id)
+                                                                                       dest_rpc_id, client,
+                                                                                       dest_rpc.drg_id)
 
                                     if dest_drg_rt_name is not None:
                                         # Fetch source DRG import route distribution id, name
@@ -467,15 +472,24 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                             dest_import_rt_info = client.get_drg_route_distribution(
                                                 drg_route_distribution_id=dest_drg_rt_import_dist_id)
                                             dest_drg_rt_dist_info = dest_import_rt_info
-                                            dest_drg_rt_import_dist_name = getattr(dest_import_rt_info.data, "display_name")
+                                            dest_drg_rt_import_dist_name = getattr(dest_import_rt_info.data,
+                                                                                   "display_name")
                                             dest_import_rt_statements = client.list_drg_route_distribution_statements(
                                                 drg_route_distribution_id=dest_drg_rt_import_dist_id)
 
-                                tf_resource = f'module.rpcs[\\"{rpc_tf_name}\\"].oci_core_remote_peering_connection.{source_region.lower()}_{region.lower()}_requester_rpc[\\"region\\"]'
+                                source_region_for_tf = next(
+                                    line.split(':')[1].strip().replace("-", "_") for line in open(oci_regions_path) if
+                                    line.startswith(f"{source_region.lower()}:"))
+
+                                region_for_tf = next(
+                                    line.split(':')[1].strip().replace("-", "_") for line in open(oci_regions_path) if
+                                    line.startswith(f"{region.lower()}:"))
+
+                                tf_resource = f'module.rpcs[\\"{rpc_tf_name}\\"].oci_core_remote_peering_connection.{source_region_for_tf}_{region_for_tf}_requester_rpc[\\"region\\"]'
                                 if tf_resource not in state_rpc["resources"]:
                                     importCommands_rpc["global"].write(
                                         f'\n{tf_or_tofu} import "{tf_resource}" {str(source_rpc_id)}')
-                                tf_resource = f'module.rpcs[\\"{rpc_tf_name}\\"].oci_core_remote_peering_connection.{source_region.lower()}_{region.lower()}_accepter_rpc[\\"region\\"]'
+                                tf_resource = f'module.rpcs[\\"{rpc_tf_name}\\"].oci_core_remote_peering_connection.{source_region_for_tf}_{region_for_tf}_accepter_rpc[\\"region\\"]'
                                 if tf_resource not in state_rpc["resources"]:
                                     importCommands_rpc["global"].write(
                                         f'\n{tf_or_tofu} import "{tf_resource}" {str(dest_rpc_id)}')
@@ -587,6 +601,7 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
 
     # Close the safe_file post updates
     rpc_safe_file["global"].close()
+
 
 
 def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[],

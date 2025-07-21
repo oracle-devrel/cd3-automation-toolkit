@@ -7,7 +7,7 @@
 ############################
 locals {
   user_ids = {
-    for user in data.oci_identity_users.users.users :
+    for user in coalesce(data.oci_identity_users.users.users, []) :
       user.name => user.id
   }
 }

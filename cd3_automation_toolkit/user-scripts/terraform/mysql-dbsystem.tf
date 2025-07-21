@@ -5,15 +5,13 @@
 # Module Block - MySQL Database
 # Create MySQL DB Systems
 ############################################
-
 data "oci_mysql_mysql_configurations" "mysql_configurations" {
-  # depends_on = [module.mysql-configuration]
+  depends_on = [module.mysql_configuration]
   for_each       = var.mysql_db_system != null ? var.mysql_db_system : {}
   compartment_id = each.value.configuration_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.configuration_compartment_id)) > 0 ? each.value.configuration_compartment_id : var.compartment_ocids[each.value.configuration_compartment_id]) : var.compartment_ocids[each.value.configurations_compartment_id]
   display_name   = each.value.configuration_id
   state          = "ACTIVE"
 }
-
 data "oci_core_subnets" "oci_mysql_subnets" {
   # depends_on = [module.subnets] # Uncomment to create Network and MySQL together
   for_each       = var.mysql_db_system != null ? var.mysql_db_system : {}
@@ -21,24 +19,28 @@ data "oci_core_subnets" "oci_mysql_subnets" {
   display_name   = each.value.subnet_id
   vcn_id         = data.oci_core_vcns.oci_mysql_vcns[each.key].virtual_networks.*.id[0]
 }
-
 data "oci_core_vcns" "oci_mysql_vcns" {
   # depends_on = [module.vcns] # Uncomment to create Network and MySQL together
   for_each       = var.mysql_db_system != null ? var.mysql_db_system : {}
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.vcn_names
 }
-
-
 module "mysql_db_system" {
-
   source   = "./modules/database/mysql-dbsystem"
   for_each = var.mysql_db_system != null ? var.mysql_db_system : {}
-
+  # Add explicit depends_on for mysql_configuration
+  depends_on = [module.mysql_configuration]
   compartment_id                             = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   network_compartment_id                     = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   configuration_compartment_id               = each.value.configuration_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.configuration_compartment_id)) > 0 ? each.value.configuration_compartment_id : var.compartment_ocids[each.value.configuration_compartment_id]) : var.compartment_ocids[each.value.compartment_id]
-  configuration_id                           = length(regexall("ocid1.mysqlconfiguration.*", each.value.configuration_id)) > 0 ? each.value.configuration_id : data.oci_mysql_mysql_configurations.mysql_configurations[each.key].configurations[0].id
+
+  # Modified configuration_id handling to avoid data source lookup failures
+  configuration_id                           = length(regexall("ocid1.mysqlconfiguration.*", each.value.configuration_id)) > 0 ? each.value.configuration_id : (
+    contains(keys(var.mysql_configuration), each.value.configuration_id) ?
+    module.mysql_configuration[each.value.configuration_id].db_system_configuration_id :
+    try(data.oci_mysql_mysql_configurations.mysql_configurations[each.key].configurations[0].id, null)
+  )
+
   display_name                               = each.value.mysql_db_system_display_name
   shape_name                                 = each.value.mysql_shape_name
   admin_username                             = each.value.mysql_db_system_admin_username
@@ -69,23 +71,18 @@ module "mysql_db_system" {
   defined_tags                               = each.value.defined_tags != null ? each.value.defined_tags : null
   freeform_tags = each.value.freeform_tags != null ? each.value.freeform_tags : null
 }
-
 ############################################
 # Module Block - MySQL Database
 # Create MySQL Configurations
 ############################################
-
 data "oci_mysql_shapes" "mysql_shapes" {
     for_each       = var.mysql_configuration != null ? var.mysql_configuration : {}
     compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
     name = each.value.mysql_configuration_shape_name
 }
-
 module "mysql_configuration" {
-
   source   = "./modules/database/mysql-configuration"
   for_each = var.mysql_configuration != null ? var.mysql_configuration : {}
-
   compartment_id                              = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   mysql_configuration_shape_name = each.value.mysql_configuration_shape_name != null ? (length(regexall("(VM\\.Standard\\.(E[234]\\.[12468]|E[34]\\.(16|24|32|48|64))|MySQL\\.(VM\\.Standard\\.(E[34]\\.[12468]|E[34]\\.(16|24|32|48|64)\\.(8|16|32|64|128|256|384|512|768|1024)GB)|HeatWave\\.(BM\\.Standard(\\.E3)?|VM\\.Standard(\\.E3)?)|VM\\.Optimized3\\.[12468]\\.((8|16|32|64|128|256|384|512|768|1024)GB)|[12468]|16|32|48|64|256))", each.value.mysql_configuration_shape_name)) > 0 ? each.value.mysql_configuration_shape_name : data.oci_mysql_shapes.mysql_shapes[each.key].shapes.*.name[0]) : null
   defined_tags                                = each.value.defined_tags
@@ -165,5 +162,4 @@ module "mysql_configuration" {
   mysql_configuration_variables_tmp_table_size                              = each.value.mysql_configuration_variables_tmp_table_size
   mysql_configuration_variables_transaction_isolation                       = each.value.mysql_configuration_variables_transaction_isolation
   mysql_configuration_variables_wait_timeout                                = each.value.mysql_configuration_variables_wait_timeout
-
 }

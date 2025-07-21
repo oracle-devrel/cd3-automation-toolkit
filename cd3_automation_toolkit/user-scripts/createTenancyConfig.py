@@ -417,10 +417,10 @@ try:
     if tenancy == "" or tenancy == "\n":
         print("Tenancy ID cannot be left empty...Exiting !!")
         exit(1)
-    if ("ocid1.tenancy.oc1" in tenancy):
-        cloud_domain=".oraclecloud.com"
-    else:
-        cloud_domain=".oraclegovcloud.com"
+    # if ("ocid1.tenancy.oc1" in tenancy):
+    #     cloud_domain=".oraclecloud.com"
+    # else:
+    #     cloud_domain=".oraclegovcloud.com"
 
 
     auth_mechanism = config.get('Default', 'auth_mechanism').strip().lower()
@@ -628,6 +628,9 @@ tenancy_id=tenancy
 ## Authenticate
 ct = commonTools()
 config, signer = ct.authenticate(auth_mechanism, config_file_path)
+_realm = config['tenancy'].split(".")[2]
+cloud_domain = oci.regions.REALMS[_realm]
+
 ## Fetch OCI_regions
 cd3service = cd3Services()
 cd3service.fetch_regions(config, signer)
