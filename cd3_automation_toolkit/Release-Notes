@@ -4,7 +4,7 @@ Aug 1st, 2025
 -------------------------------------
 1. DNS terraform performance tuning.
 2. SDK support for new regions.
-3. Bug fixes related to RPC, duplicate entries of identity domain users/groups during export, OKE, MySQL DB etc.
+3. Bug fixes related to RPC, empty group creation, duplicate entries of identity domain users/groups during export, OKE, MySQL DB etc.
 
 -------------------------------------
 CD3 Automation Toolkit Tag v2025.1.2

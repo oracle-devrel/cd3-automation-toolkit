@@ -13,7 +13,7 @@ sudo dnf install python-pip -y
 #sudo ln -s /usr/bin/pip3 /usr/bin/pip
 
 # Install required Python packages
-pip install --user oci-cli==3.51.2
+pip install --user oci-cli==3.62.2
 pip install --user pycryptodomex==3.10.1
 pip install --user regex==2022.10.31
 pip install --user numpy==1.26.4
