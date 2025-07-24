@@ -629,7 +629,7 @@ tenancy_id=tenancy
 ct = commonTools()
 config, signer = ct.authenticate(auth_mechanism, config_file_path)
 _realm = config['tenancy'].split(".")[2]
-cloud_domain = oci.regions.REALMS[_realm]
+cloud_domain = "."+oci.regions.REALMS[_realm]
 
 ## Fetch OCI_regions
 cd3service = cd3Services()
