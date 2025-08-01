@@ -118,6 +118,7 @@ module "nodepools" {
   size                                = each.value.size
   is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
   cni_type                            = each.value.cni_type
+  init_script_path                    = each.value.init_script_path
   max_pods_per_node                   = each.value.max_pods_per_node
   pod_nsg_ids                         = each.value.pod_nsg_ids
   pod_subnet_ids                      = each.value.pod_subnet_ids != null ? (length(regexall("ocid1.subnet.oc*", each.value.pod_subnet_ids)) > 0 ? each.value.pod_subnet_ids : data.oci_core_subnets.oci_subnets_pod[each.key].subnets.*.id[0]) : null

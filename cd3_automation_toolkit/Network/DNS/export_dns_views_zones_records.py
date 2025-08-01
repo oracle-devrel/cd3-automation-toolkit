@@ -19,7 +19,7 @@ def get_rrset(zone_data,dns_client,record_default):
     zone_records = oci.pagination.list_call_get_all_results(dns_client.get_zone_records,zone_data.id).data
 
     for zone_record in zone_records.items:
-        if record_default == 'n' and zone_record.is_protected == True:
+        if (record_default == 'n' and zone_record.is_protected == True) or zone_record.rtype in ["SOA","NS"]:
             continue
         tmpdict = {}
         domain = zone_record.domain
@@ -75,7 +75,7 @@ def print_data(region, ntk_compartment_name, rrset, zone_data, view_data, values
             values_for_column = commonTools.export_tags(view_data, col_header, values_for_column)
 
 
-def print_empty_view(region, ntk_compartment_name, view_data, values_for_column):
+def print_empty_view(region, ntk_compartment_name, view_data, values_for_column,zone_name=""):
     for col_header in values_for_column:
         if col_header == 'Region':
             values_for_column[col_header].append(region)
@@ -85,7 +85,7 @@ def print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
             values_for_column[col_header].append(view_data.display_name)
 
         elif col_header == 'Zone':
-            values_for_column[col_header].append("")
+            values_for_column[col_header].append(zone_name)
         elif col_header == 'Domain':
             values_for_column[col_header].append("")
         elif col_header == 'RType':
@@ -214,12 +214,15 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
                         if rrsets:
                             for rrset in rrsets.values():
                                 print_data(region, ntk_compartment_name, rrset, zone_data, view_data, values_for_column,state)
-                            tf_resource = f'module.dns-zones[\\"{zone_tf_name}\\"].oci_dns_zone.zone'
-                            if tf_resource not in state["resources"]:
-                                importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(zone_data.id)}'
 
                         else:
-                            print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
+                            print_empty_view(region, ntk_compartment_name, view_data, values_for_column,zone_name=zone_data.name)
+
+                        tf_resource = f'module.dns-zones[\\"{zone_tf_name}\\"].oci_dns_zone.zone'
+                        if tf_resource not in state["resources"]:
+                            importCommands[
+                                region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(zone_data.id)}'
+
                 else:
                     print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
                 if print_zone==False:

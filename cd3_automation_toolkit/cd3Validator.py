@@ -316,7 +316,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
         for j in dfsub.keys():
             if (str(dfsub[j][i]).strip() == "NaN" or str(dfsub[j][i]).strip() == "nan" or str(dfsub[j][i]).strip() == ""):
                 # only dhcp_option_name, route table name, seclist_names and dns_label columns can be empty
-                if j in labels or commonTools.check_column_headers(j) in commonTools.tagColumns:
+                if j in labels or commonTools.check_column_headers(j) in commonTools.tagColumns or "ipv6" in j.lower():
                     pass
                 else:
                     if j == "Type(private|public)" and subnet_or_vlan.lower() == "vlan":
@@ -460,7 +460,7 @@ def validate_vcns(filename, comp_ids, vcnobj):# config):  # ,vcn_cidrs,vcn_compa
         # Check for null values and display appropriate message
         for j in dfv.keys():
             if (str(dfv[j][i]).strip() == "NaN" or str(dfv[j][i]).strip() == "nan" or str(dfv[j][i]).strip() == ""):
-                if j == 'DNS Label' or commonTools.check_column_headers(j) in commonTools.tagColumns:
+                if j == 'DNS Label' or commonTools.check_column_headers(j) in commonTools.tagColumns or "ipv6" in j.lower():
                     continue
                 else:
                     log(f'ROW {count+2} : Empty value at column "{j}".')
@@ -1780,7 +1780,7 @@ def validate_kms(filename,comp_ids):
                 pass
             else:
                 try:
-                    vault_comp_name = commonTools.check_tf_variable(vault_comp_name)
+                    vault_comp_name = commonTools.check_tf_variable(vault_compartment_name)
                     comp_id = comp_ids[vault_compartment_name]
                 except KeyError:
                     log(f'ROW {i+3} : Compartment {vault_compartment_name} does not exist in OCI.')

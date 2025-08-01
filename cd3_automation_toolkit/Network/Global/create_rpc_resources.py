@@ -20,13 +20,16 @@ from jinja2 import Environment, FileSystemLoader
 
 # Setting current working dir.
 owd = os.getcwd()
+# Get path to OCI_Regions file relative to current script
+oci_regions_path = Path(__file__).resolve().parents[2] / "OCI_Regions"
 
-def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config,signer,auth_mechanism):
+
+def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config, signer, auth_mechanism):
     subs_region_list = []
     new_subs_region_list = []
     subs_region_pairs = []
 
-    idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+    idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
 
     for reg in regionsubscriptions.data:
@@ -35,10 +38,14 @@ def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config,signe
             region_name = getattr(reg, 'region_name')
             subs_region_list.append(region_name)
 
-    for item in subs_region_list:
-        new_subs_region_list.append(item.split("-")[1])
+    # for item in subs_region_list:
+    #     new_subs_region_list.append(item.split("-")[1])
+    #
+    # for item in list(itertools.permutations(new_subs_region_list, 2)):
+    #     subs_region_pairs.append(item[0] + "##" + item[1])
 
-    for item in list(itertools.permutations(new_subs_region_list, 2)):
+    new_subs_region_list = subs_region_list.copy()
+    for item in itertools.permutations(new_subs_region_list, 2):
         subs_region_pairs.append(item[0] + "##" + item[1])
 
     # Load the template file
@@ -64,9 +71,11 @@ def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config,signe
         with open("rpc.tf", "r+") as provider_file:
             provider_file_data = provider_file.read().rstrip()
         if auth_mechanism == 'instance_principal':
-            provider_file_data = provider_file_data.replace("provider \"oci\" {", "provider \"oci\" {\nauth = \"InstancePrincipal\"")
+            provider_file_data = provider_file_data.replace("provider \"oci\" {",
+                                                            "provider \"oci\" {\nauth = \"InstancePrincipal\"")
         if auth_mechanism == 'session_token':
-            provider_file_data = provider_file_data.replace("provider \"oci\" {", "provider \"oci\" {\nauth = \"SecurityToken\"\nconfig_file_profile = \"DEFAULT\"")
+            provider_file_data = provider_file_data.replace("provider \"oci\" {",
+                                                            "provider \"oci\" {\nauth = \"SecurityToken\"\nconfig_file_profile = \"DEFAULT\"")
 
         f = open("rpc.tf", "w+")
         f.write(provider_file_data)
@@ -99,11 +108,11 @@ def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config,signe
 
 
 # Execution of the code begins here
-def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, config_file,ct, non_gf_tenancy):
+def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, config_file, ct, non_gf_tenancy):
     # Call pre-req func
     rpc_safe_file = {}
     config, signer = ct.authenticate(auth_mechanism, config_file)
-    find_subscribed_regions(inputfile, outdir, service_dir, prefix, config,signer,auth_mechanism)
+    find_subscribed_regions(inputfile, outdir, service_dir, prefix, config, signer, auth_mechanism)
 
     os.chdir(owd)
 
@@ -138,9 +147,8 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, 
     for eachregion in ct.all_regions:
         tfStr["global"] = ''
 
-
     match_list = []
-    for i in df.index:
+    for i in range(len(df) - 1):
         if str(df.loc[i, 'Attached To']).lower().startswith("rpc"):
             region = str(df.loc[i, 'Region'])
             region = region.strip().lower()
@@ -215,7 +223,7 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, 
                             accepter_compartment_name = df.loc[i + 1, 'Compartment Name']
                             accepter_compartment_name = str(accepter_compartment_name)
                             accepter_compartment_name = commonTools.check_tf_variable(accepter_compartment_name)
-                            tempdict = {'rpc_tf_name': display_tf_name, 'rpc_name':columnvalue,
+                            tempdict = {'rpc_tf_name': display_tf_name, 'rpc_name': columnvalue,
                                         'accepter_rpc_display_name': accepter_rpc_display_name,
                                         'accepter_compartment_name': accepter_compartment_name}
 
@@ -228,12 +236,19 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, 
                         if columnname == 'Attached To':
                             accepter_compartment_var_name = columnvalue.strip().split("::")
                             accepter_region = accepter_compartment_var_name[1]
+                            accepter_region = next(
+                                line.split(':')[1].strip() for line in open(oci_regions_path) if
+                                line.startswith(f"{accepter_region}:"))
                             accepter_drg_name = accepter_compartment_var_name[2]
                             tempdict = {'accepter_region': accepter_region.lower(),
                                         'accepter_drg_name': accepter_drg_name}
 
                         if columnname == 'Region':
                             requester_region = columnvalue.strip().lower()
+                            requester_region = next(
+                                line.split(':')[1].strip() for line in open(oci_regions_path) if
+                                line.startswith(f"{requester_region}:"))
+
                             tempdict = {'requester_region': requester_region}
 
                         if columnname == 'DRG Name':
@@ -293,4 +308,3 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, 
         print(outfile + " has been created inside Global dir")
         oname.write(tfStr["global"])
         oname.close()
-

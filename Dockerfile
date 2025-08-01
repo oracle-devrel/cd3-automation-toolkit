@@ -14,9 +14,9 @@ ARG USE_DEVOPS=YES
 ARG USERNAME=cd3user
 ARG USER_GID=$USER_UID
 # Whether to download Provider as part of image creation
-ARG DOWNLOAD_PROVIDER=YES
+ARG DOWNLOAD_PROVIDER=NO
 # TF Provider version
-ARG TF_OCI_PROVIDER=6.30.0
+ARG TF_OCI_PROVIDER=7.8.0
 ARG TF_NULL_PROVIDER=3.2.3
 
 RUN microdnf install -y sudo && \
@@ -31,6 +31,7 @@ RUN microdnf install -y sudo && \
     microdnf install -y wget && \
     microdnf install -y unzip && \
     microdnf install -y graphviz && \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
     echo 'alias vi="vim"' >> /etc/bashrc
 
 USER $USERNAME

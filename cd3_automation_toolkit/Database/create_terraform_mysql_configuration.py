@@ -65,6 +65,9 @@ def create_terraform_mysql_configuration(inputfile, outdir, service_dir, prefix,
     for i in df.index:
         # Get values from row
         region = str(df.loc[i, 'Region']).strip()
+        if (region in commonTools.endNames):
+            break
+        region = region.strip().lower()
         compartment_name = str(df.loc[i, 'Compartment Name']).strip()
         display_name = str(df.loc[i, 'Display Name']).strip()
         description = str(df.loc[i, 'Description']).strip()

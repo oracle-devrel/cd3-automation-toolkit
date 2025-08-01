@@ -39,6 +39,12 @@ nodepools = {
         {% if boot_volume_size_in_gbs %}
         boot_volume_size_in_gbs = {{ boot_volume_size_in_gbs }}
         {% endif %}
+        {% if is_pv_encryption_in_transit_enabled %}
+        is_pv_encryption_in_transit_enabled = {{ is_pv_encryption_in_transit_enabled }}
+        {% endif %}
+        {% if init_script_path %}
+        init_script_path = "{{ init_script_path }}"
+        {% endif %}
         {% if oke_labels and oke_labels != 'nan' and defined_tags != '' and oke_labels != [['nan']] %}
         {% if oke_labels[0] %}
         initial_node_labels = {
