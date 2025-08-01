@@ -1,11 +1,15 @@
 # **Create and Manage Resources in OCI (Greenfield Workflow)**
 ---
 
-**Step 1**: 
-<br>Choose the appropriate excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>.
-Fill the Excel with appropriate values and copy at _/cd3user/tenancies/<prefix\>_<br><br>
-**Step 2**:
-<br>Modify ```/cd3user/tenancies /<prefix>/<prefix>_setUpOCI.properties```.
+
+<span style="color: teal; font-weight: bold;">Step 1:</span>
+
+Choose the appropriate excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>.
+Fill the Excel with appropriate values and copy at `/cd3user/tenancies/<prefix>`<br>
+
+<span style="color: teal; font-weight: bold;">Step 2:</span>
+
+Modify ```/cd3user/tenancies /<prefix>/<prefix>_setUpOCI.properties```.
 <br>Update parameters: **cd3file** parameter to the location of CD3 excel file and  **workflow_type**  to **create_resources** as shown below.
 <br> The other parameters are already updated with correct values.
 ```ini
@@ -37,8 +41,10 @@ cd3file=/cd3user/tenancies/demo/CD3-demo.xlsx
 workflow_type=create_resources
 ```
 
-**Step 3**:
-<br>Execute the setUpOCI.py script to start creating the terraform/tofu configuration files.
+
+<span style="color: teal; font-weight: bold;">Step 3:</span>
+
+Execute the setUpOCI.py script to start creating the terraform/tofu configuration files.
     
 Command to Execute:
 ```
@@ -55,25 +61,31 @@ python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
     Script to fetch the compartment OCIDs into variables file has not been executed.<br>
     Do you want to run it now? (y|n):
 
-→ This prompt appears when executing the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
+⬆️ This prompt appears when executing the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
 
 !!! Note
 
     Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
 
-<br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
+<br> After fetching the compartment details, the toolkit will display the menu options as shown below:
 
 !!! example  "Example Execution"  
     <img src = "../images/demo_setupocimenu_cli_create.png", width=1500 height=1000> 
 
 
-Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.
+Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.<br>
 
-**Expected Outputs:**
-<br>It will generate tfvars files for the services selected at _/cd3user/tenancies/<prefix\>/terraform_files/<region_dir\>/<service_dir\>/_
 
-**Step 4:** 
-<br>Change the directory to  ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>``` .
+
+<span style="color: teal; font-weight: bold;">Expected Outputs:</span>
+
+The tfvars files for the selected services will be generated at the following path:
+`/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>/`
+
+
+<span style="color: teal; font-weight: bold;">Step 4:</span>
+
+Change the directory to  ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>``` .
 
   - If **terraform** is selected as the IaC tool initially, execute:
 

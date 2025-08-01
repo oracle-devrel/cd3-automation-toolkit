@@ -1,32 +1,51 @@
 # **Connect CD3 Container to OCI Tenancy**
 ---
 
-!!! note 
+Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowing it to create, update, or export resources from the tenancy.
 
-    * When a new region is subscribed to the tenancy, rerun createTenancyConfig.py by using the same tenancyconfig.properties file that was originally used. It will create new directory for the new region under `/cd3user/tenancies/<prefix>/terraform_files` without touching the existing ones and will commit the latest terraform_files folder to DevOps GIT repo.
+<br>
 
-**Step 1 - Login (Exec) into the Container**:
+**🛠️  Steps:**
+
+
+<span style="color: teal; font-weight: bold;">1 - Login (Exec) into the Container</span>
 
 * Login to the previously launched container using either <a href ="../launch-from-rmstack"><u>RM Stack</u></a> or <a href ="../launch-from-local"><u>Manual Launch</u></a>.
 
-**Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
+    === "RM Stack(Podman)"
+        ```
+        sudo podman exec -it cd3_toolkit bash
+        ```
+
+    === "Manual Launch(Docker) "
+        ```
+        sudo docker exec -it cd3_toolkit bash
+        ```
+  
+
+
+<span style="color: teal; font-weight: bold;">2 - Choose Authentication Mechanism for OCI SDK</span>
 
 * <a href ="../authmechanisms"><u>Click here</u></a> to configure any one of the available authentication mechanisms.
 
-* Make sure to assign required OCI Tenancy Access to user/instance as defined in <a href ="../prerequisites"><u>Prerequisites.</u></a>
+!!! Warning "Access Requirements"
+  
+    Make sure to assign required OCI Tenancy Access to user/instance as defined in <a href ="../prerequisites"><u>Prerequisites.</u></a>
 
   
-**Step 3 - Edit tenancyconfig.properties**:
+
+<span style="color: teal; font-weight: bold;">3 - Edit tenancyconfig.properties</span>
 
 * Run 
   ```
   cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
   ```
 
-* Fill the input parameters in ```tenancyconfig.properties``` file.
+* Fill the input parameters in ```tenancyconfig.properties``` file. Expand below tables for parameter description and sample data. 
+  Description for each parameter is also provided within the file.
 
 
-_tenancyconfig.properties_
+📋 <b><i>tenancyconfig.properties</i></b>
 
 <details>
     <summary> Parameter Description </summary>
@@ -94,7 +113,7 @@ _tenancyconfig.properties_
 
 
 <details>
-    <summary> Advanced Parameters - Fill this to use toolkit with Jenkins </summary>
+    <summary> Advanced Parameters - To use toolkit with Jenkins </summary>
     <table style="width:100%">
         <tr>
             <th style="width:25%">Parameter</th>
@@ -148,29 +167,26 @@ _tenancyconfig.properties_
 
 <br>
 
-!!! Important "Important"
+!!! tip " Important Configuration Tips"
     - Have the details ready for Authentication mechanism you are planning to use.<br>
     - Choose whether the outdir needs to be configured with OpenTofu or Terraform. Its a one time selection for that prefix and cannot be modified later.<br>
     - Review **outdir_structure_file** parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources. <br>
     - Review Advanced Parameters Section for CI/CD setup. **The toolkit can be used either with CLI or with Jenkins.** If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI. Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
 
  
-**Step 4 - Initialise the environment**:
+
+<span style="color: teal; font-weight: bold;">4 - Initialise the environment</span>
 
 * Initialise your environment to use the Automation Toolkit.
 ```
 python createTenancyConfig.py tenancyconfig.properties
 ```
 
-    !!! note 
+    !!! warning "Heads-Up!"
         * When running the CD3 container on a Linux VM host (without using the Resource Manager stack option), refer to <a href="../faq"><u>point no. 7</u></a> under FAQ to avoid any permission issues.
         * Running the above command immediately after adding API key to the user profile in OCI might result in  Authentication Errors. In such cases, retry after a minute.
 
 
-
--  Example execution of the script with Advanced Parameters for CI/CD
-
-    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy.png">
 
 
 **Output:**
@@ -270,7 +286,29 @@ python createTenancyConfig.py tenancyconfig.properties
     </table>
 
 </details>
-<br>
-The next pages will guide you to use the toolkit either via CLI or via Jenkins. You can continue with the instructions provided.
 
-[Use Toolkit with CLI](cd3-cli.md){ .md-button } [Use Toolkit with Jenkins](cd3-jenkins.md){ .md-button }
+<details>
+    <summary> Example execution of the script with Advanced Parameters for CI/CD </summary>
+
+    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy.png">
+
+</details>
+
+<br>
+
+!!! abstract "Subscribing to a new OCI Region?"
+
+    When a new region is subscribed to the tenancy, rerun `createTenancyConfig.py` by using the same `tenancyconfig.properties` file that was originally used.<br>
+    ✅ It will create new directory for the new region under `/cd3user/tenancies/<prefix>/terraform_files` without modifying the existing ones <br>
+    ✅ It will also commit the latest terraform_files folder to OCI DevOps GIT repo.
+
+
+!!! info "Managing Multiple Prefixes?" 
+    Need to manage multiple environments separately by using distinct prefixes, all within a single CD3 container?<br>
+    Check this out: [Multiple Prefixes](multiple-prefixes.md)
+
+<br>
+
+Choose how to use the toolkit and follow the corresponding instructions:
+
+[Use Toolkit with CLI](cd3-cli.md){ .md-button }    [Use Toolkit with Jenkins](cd3-jenkins.md){ .md-button }

@@ -33,3 +33,36 @@ There could be multiple reasons for this: <br>
 
 This gets resolved on its own after sometime.
 
+<br>
+
+**4. I am getting connection error for the API endpoints while executing the toolkit**
+<br>
+There are certain cases where either the region is recently released or protected realms, SDK might be missing support for those regions.
+We can see errors like the connection error because of endpoint having invalid domain for your tenancy realm.
+
+To validate the issue:
+
+  **a.** Check the error logs and inspect the domain name used in the API endpoint.<br>
+      For example: https://identity.eu-dcc-rome-1.oci.oraclecloud.com <br>
+      In this case, the domain (oci.oraclecloud.com) may not be correct for sovereign cloud. You can verify the correct endpoint by comparing it with your tenancy URL in the browser’s address bar.
+
+
+
+  **b.**  Another way is to create a small script as below and execute it on the CD3 workvm:
+
+  ```
+    import oci
+    print(oci.regions.REALMS)
+  ```
+
+  <img width="500" alt="checkrealms" src="../images/faqcheckrealms.png">
+
+ It will print all the supported realms with your SDK.
+
+
+  <img width="1486" alt="checkrealmsoutput" src="../images/faqcheckrealmsoutput.png">
+  
+**Resolution:** If you see your tenancy region is not supported, please follow this document to add that support: 
+https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdk_adding_new_region_endpoints.htm
+ 
+

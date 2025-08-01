@@ -4,28 +4,28 @@ The CD3 Automation Toolkit was previously built to generate all the output Terra
 OCI components like - Network, Instances, LBaaS, Databases etc., were maintained in a single tfstate file.
 This was not a viable option for tenancies requiring huge infrastructure.
 
-Starting with the Automation Toolkit release v10.1, it is now possible to select separate directories for each Oracle Cloud Infrastructure (OCI) service supported by the toolkit.
+Starting with the Automation Toolkit release v10.1, it is possible to select separate directories for each Oracle Cloud Infrastructure (OCI) service that is supported by the toolkit.
 
 This can be configured while <a href="../connect-container-to-oci-tenancy"><u>connecting CD3 container to the OCI tenancy</u></a>.
 
-A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties,  which can be used to configure single outdir or different outdir for each service.
+A new parameter `outdir_structure_file` has been introduced in `tenancyconfig.properties`,  which can be used to configure single outdir or different outdir for each service.
 
-To enable independent service directories for the generated Terraform files, follow the below steps:
+By default, the toolkit is configured to use different out directories for different services.
+
+**Steps to customize directory names to be created for each OCI service -**
 
 1. Go to ``` /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties```. Enter required config details. 
 
-    Users have the option to enable or disable multiple service outdirectories based on their specific requirements.
-
-    To enable it, *outdir_structure_file* parameter which has the pre-defined path to *outdir_structure_file.properties* should be uncommented. Refer to the screenshot below:
+    Make sure that *outdir_structure_file* is set to a pre-defined path of *outdir_structure_file.properties*. Refer to the screenshot below:
    ![image](../images/grouptf-1.png)
 
 
-2. Under the same user-scripts folder, open *outdir_structure_file.properties* and modify the directory names if required. They are in the format: *OCI_Service_Name=Directory_Name*.
+2. Under the same user-scripts folder, open `outdir_structure_file.properties` and modify the directory names if required. They are in the format: `OCI_Service_Name=Directory_Name`
 
 !!! note
        * Do not modify the OCI service Names specified on the left hand side.Modify the directory name specified on Right Hand Side only.
-       * Directory will be created for that service under <region> directory. Do not provide absolute path.
-       * To make any changes to the directory structure later, it is necessary to rerun the "createTenancyConfig.py" script from scratch.
+       * Directory will be created for that service under <region\> directory. Do not provide absolute path.
+       * To make any changes to the directory structure later, it is necessary to rerun the `createTenancyConfig.py` script from scratch.
        * It is mandatory to specify the directory name for each service.
   
   
@@ -35,7 +35,7 @@ To enable independent service directories for the generated Terraform files, fol
    Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in <a href="../greenfield-cli"><u>Greenfield workflow</u></a>
 
   
- 3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder.
+ 3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder. This will create prefix folder as ```/cd3user/tenancies/<prefix>/``` and configure a seperate directory for each service inside region folder subscribed to the tenancy.
   
  4.	Go to ```/cd3user/tenancies/<prefix>/<prefix>_setUpOCI.propertiesfile ``` and add the CD3 Excel path. 
       
@@ -58,9 +58,20 @@ To enable independent service directories for the generated Terraform files, fol
       <img width="953" alt="image" src="../images/grouptf-4.png">
    
      
-     Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using          terraform for large-scale infrastructures.
+     Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using terraform for large-scale infrastructures.
    
-     Likewise, While doing an export from OCI to terraform, update the *tenancyconfig.properties* file with path to *outdir_structure_file.properties* similar to step1 and then follow the  <a href="../nongreenfield-cli"><u>steps to run the toolkit for Non-green field tenancies</u></a>. With this, all the .sh files with import  commands of a particular OCI service are grouped and can be easily managed.
+     Likewise, While doing an export from OCI to terraform, update the `tenancyconfig.properties` file with path to `outdir_structure_file.properties` similar to step1 and then follow the  <a href="../nongreenfield-cli"><u>steps to run the toolkit for Non-green field tenancies</u></a>. With this, all the .sh files with import  commands of a particular OCI service are grouped and can be easily managed.
+
+**Steps to use single out directory for all OCI services -**
+
+1. Go to ``` /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties```. Enter required config details. 
+
+    Make sure that *outdir_structure_file* is set to empty value. Refer to the screenshot below:
+   ![image](../images/grouptf-5.png)
+
+2. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder. This will create prefix folder as ```/cd3user/tenancies/<prefix>/``` and tfvars/state file for each service inside the region folder subscribed for the region.
+
+3. Rest of the steps to run the toolkit remain the same.
   
     
   

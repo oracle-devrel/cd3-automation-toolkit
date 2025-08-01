@@ -2,52 +2,59 @@
 ---
 
 
-CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastructure) resources by converting Excel templates to fully functional Terraform modules within minutes ⚡️⚡️ . 
+CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly **Build, Export and Manage OCI (Oracle Cloud Infrastructure) resources** by converting Excel templates to fully functional Terraform modules within minutes 🚀 . 
 
-Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.
+ ✅ Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.
 
+
+**CD3 in a nutshell!⚡️⚡️** 
+
+<div style="max-width: 800px">
+  <iframe 
+    src="https://www.youtube.com/embed/Mb2N85GY0io" 
+    style="width: 100%; aspect-ratio: 16/9; border: none;" 
+    allowfullscreen>
+  </iframe>
+</div>
+
+<br>
+
+
+**Why do you need CD3?**
+
+
+⏳ For Enterprise infrastructures, manual resource provisioning is tedious and error-prone.
+
+📝 Creating Terraform Code for each module/resource can be cumbersome and requires Terraform expertise.
+
+🔁 Manually created infrastructure is hard to rebuild for different environments or regions.
 
 
 <br>
 
-<iframe width="800" height="500" src="https://www.youtube.com/embed/Mb2N85GY0io" frameborder="0" allowfullscreen></iframe>
-
-<br>
-<br>
+**🎬 BTS: Here’s how it’s done!**
 
 
-### <u> **CD3 Toolkit Process</u>**
+The toolkit transforms input data from Excel templates into Terraform files (auto.tfvars), enabling seamless creation of infrastructure in OCI.
 
-
-<img width="2000" height="1000" alt="CD3 Toolkit Process" src="../images/CD3-Process.png">
+**CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and IaC(terraform) and continue to manage your OCI resources using CD3 and IaC.
 
 
 <br>
-The toolkit supports 2 workflows:<br>
 
-**1. Create & Manage Resources in OCI (Greenfield Workflow):**
-
-- Use this workflow when setting up an empty OCI tenancy or creating new resources without the need to modify or use any existing resources in the tenancy.
-- The filled in input Excel file is fed to the toolkit and tfvars files are generated for the resources.
-- Modifying the same Excel sheet and re running the toolkit will generate updated tfvars files.<br>
-- The generated tfvars files can be used to deploy resources in OCI by generating a plan and approving the plan for apply. <br>
-
-**2. Export & Manage Resources in OCI (Non-Greenfield Workflow):**
-
-- Use this workflow to manage existing resources with Terraform/Tofu that were not created using CD3. First, export these resources into CD3 and the state. After the export is complete, switch to the *create_resources* (greenfield) workflow to create new resources or manage existing ones.
-- The input Excel (preferably the Blank template) is fed to the toolkit and resources are exported into CD3 Excel template. <br>
-- The toolkit then generates tfvars from the exported data in Excel file and also generates shell scripts with import commands for all the resources.<br>
-- The shell scripts have to be executed in order to have the updated state file to manage the resources further.<br>
-- Modifying the same Excel sheet and re running the toolkit will generate updated tfvars files.<br>
+**💡The CD3 payoff!**
 
 
-!!! tip
-	CD3 Automation toolkit can be used either via CLI or Jenkins.
+   ✅ Time saving ⏰ 
   
-	📖 Detailed documentation and videos are provided for both options. Check the top panel for navigation.
-
+   ✅ Faster infrastructure provisioning 🚀
+  
+   ✅ Scalability 📈
+  
+   ✅ Operational efficiency ⚙️
 
 <br>
+
 
 
 

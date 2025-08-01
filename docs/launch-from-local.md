@@ -5,15 +5,16 @@
      - With below method, users are required to clone the Devrel GitHub repo and execute commands to build and run the docker container.
 
 <br>
-**Prerequisites**
+
+**⚙️ Prerequisites**
 
 * Git
 * Any docker CLI compatible platform such as Docker or Rancher. See <a href="https://www.youtube.com/watch?v=2QNAOJpeJZc"><u>How to Install and Configure Rancher Desktop</u></a> for reference.
 * Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.
-* OCI Tenancy Access as defined in <a href="../prerequisites"><u>Prerequisistes</u></a>.
+* OCI Tenancy Access as defined in <a href="../prerequisites"><u>Prerequisites</u></a>.
 
 <details>
-    <summary> Additional Steps needed while launching Container on a Linux Platform manually </summary>
+    <summary> Additional Steps needed when launching Container on a Linux Platform manually </summary>
 Below commands create a user local user called cd3user on the VM and configures it. Also sets SELINUX to Permissive.
 
 ```
@@ -35,7 +36,13 @@ sudo chmod 700 /home/cd3user/.ssh
 ```
 
 </details>
-**Step 1 - Clone the repo**
+<br>
+
+**🛠️ Steps:**
+
+
+<span style="color: teal; font-weight: bold;">1. Clone the repo</span>
+
 
 * Open the terminal and navigate to the directory where the Git repo will be downloaded.
 * Run the git clone command as shown below:
@@ -45,7 +52,9 @@ git clone https://github.com/oracle-devrel/cd3-automation-toolkit
 ```
 * Once the cloning command is executed successfully, the repo will replicate to the local directory. 
 
-**Step 2 - Build an image**
+<br>
+
+<span style="color: teal; font-weight: bold;">2. Build an image</span>
 
 * Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).
 * If you are using mac, Edit **Dockerfile** to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues. This step is needed if you plan to use toolkit with Jenkins or OCI DevOps GIT repo.
@@ -66,18 +75,20 @@ vi Dockerfile
 docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
 ```
 
-!!! Note
+!!! Note "Important"
 	${image_tag} should be replaced with suitable tag as per your requirements/standards. eg v2024.4.1
 	The period (.) at the end of the docker build command is required.
 
-**Step 3 - Save the image (Optional)**
+<br>
+<span style="color: teal; font-weight: bold;">3. Save the image (Optional)</span>
 
 * Run  
 ```
 docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
 ```
+<br>
 
-**Step 4 - Run the container alongwith VPN (Applicable for VPN users only)**
+<span style="color: teal; font-weight: bold;">4. Run the container alongwith VPN (Applicable for VPN users only)</span>
 
 * Connect to the VPN.
 * Make sure to use version **1.9** for **Rancher deskop**, if not, install the latest.
@@ -87,7 +98,8 @@ docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
      
 * Login to the CD3 docker container using next section and set the proxies(if any) which helps to connect internet from the container.
 
-**Step 5 - Run the container**
+<br>
+<span style="color: teal; font-weight: bold;">5. Run the container</span>
 
 * Run  
 ```
@@ -104,7 +116,7 @@ docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_loca
       docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
       ```
   
-!!! Caution 
+!!! Danger "Ensure Secure Access!"
     If launching the container in cloud, make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.
 
 * Run  ```docker ps``` to see running containers on the system.

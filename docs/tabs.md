@@ -1,12 +1,22 @@
 ## Compartments Tab
 
-Use this Tab to create compartments in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create compartments in the OCI tenancy.
 
-Output terraform file generated at:  ```<outdir>/<region>/<service_dir>/<prefix>_compartments.auto.tfvars``` where *<region\>* directory is the home region.
+Use this tab to create and manage compartments in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu.
 
-Once terraform apply is done, you can view the resources under *Identity -> Compartments* in OCI console.
+<span style="color: teal; font-weight: bold;">Output File:</span> 
+```<outdir>/<region>/<service_dir>/<prefix>_compartments.auto.tfvars``` (here *<region\>* is the home region directory).
 
-On re-running the same option you will find the previously existing files being backed up under directory    ```<outdir>/<region>/<service_dir>/backup_compartments/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Identity & Security -> Compartments```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_compartments/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
+
+
 
 !!! Note
 
@@ -22,9 +32,21 @@ On re-running the same option you will find the previously existing files being 
 
 ## Groups Tab
 
-Use this Tab to create groups and dynamic Groups in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups/dynamic groups in the OCI tenancy.
+Use this tab to create and manage Groups in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu and next the `Add/Modify/Delete Groups` sub-option.
 
 The toolkit supports groups in IDCS, default and custom IAM domains now. 
+
+<span style="color: teal; font-weight: bold;">Output File:</span> 
+```<outdir>/<region>/<service_dir>/<prefix>_groups.auto.tfvars``` (here *<region\>* is the home region directory).
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Identity & Security -> Groups```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_groups/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
 
 **Note:**
 
@@ -38,11 +60,6 @@ The toolkit supports groups in IDCS, default and custom IAM domains now.
 5. Name is a mandatory field.
 6. The Default Administrator groups ("Domain_Administrators", "All Domain Users", "Administrators")  are skipped while export of groups from Identity Domain tenancies.
   
-Output terraform file generated at:  ```<outdir>/<region>/<service_dir>/<prefix>_groups.auto.tfvars``` where *<region\>* directory is the home region.
-
-Once terraform apply is done, you can view the resources under *Identity -> Groups* in OCI console.
-
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_groups/<Date>-<Month>-<Time>```.
 
 !!! Important
 
@@ -51,18 +68,28 @@ On re-running the same option you will find the previously existing files being 
 
 
 ## Policies Tab
-Use this Tab to create policies in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create policies in the OCI tenancy.
 
-Output terraform files generated at: ```<outdir>/<region>/<service_dir>/<prefix>_policies.auto.tfvars``` where *<region\>* directory is the home region.
+Use this tab to create and manage policies in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu and next the `Add/Modify/Delete Policies` sub-option.
 
-Once terraform apply is done, you can view the resources under *Identity -> Policies* in OCI console.
+<span style="color: teal; font-weight: bold;">Output File:</span> 
+```<outdir>/<region>/<service_dir>/<prefix>_policies.auto.tfvars``` (here *<region\>* is the home region directory).
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_policies/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Identity & Security -> Policies```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_groups/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
 
 
 ## Users Tab
 
-Use this Tab to create local users in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Users" submenu will allow to create users in the OCI tenancy.
+Use this tab to create and manage users in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu and next the `Add/Modify/Delete Users` sub-option.
+
+
 
 The toolkit supports users in IDCS, default and custom IAM domains now. 
 
@@ -78,32 +105,48 @@ The toolkit supports users in IDCS, default and custom IAM domains now.
 5. User Name and Description are mandatory fields for IDCS. User Email is optional.
 6. Mention the capabilities which needs to be enabled under "Enable Capabilities" column and the rest will be disabled. Currently terraform doesn't support Database Passwords and Oauth 2.0 Client Credentials in IDCS, so by default those will be enabled.
 
-Output terraform file generated: ```<outdir>/<region>/<service_dir>/<prefix>_users.auto.tfvars``` where *<region\>* directory is the home region.
-  
-Once terraform apply is done, you can view the resources under *Identity & Security -> Users* in OCI console.
-  
-On re-running the same option you will find the previously existing files being backed up under directory → ```<outdir>/<region>/<service_dir>/backup_users/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">Output File:</span> 
+```<outdir>/<region>/<service_dir>/<prefix>_users.auto.tfvars``` (here *<region\>* is the home region directory).
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Identity & Security -> Users```
 
 
-   
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_users/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
+
+
+
 ## Network Sources Tab
   
-Use this Tab to create Network Source in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Network Sources" submenu will allow to create Network Sources in the OCI tenancy.
-  
-Output terraform file generated: ```<outdir>/<region>/<service_dir>/<prefix>_networksources.auto.tfvars``` where *<region\>* directory is the home region.
-  
-Once terraform apply is done, you can view the resources under *Identity & Security -> Network Sources* in OCI console.
-  
-On re-running the same option you will find the previously existing files being backed up under directory → ```<outdir>/<region>/<service_dir>/backup_networksources/<Date>-<Month>-<Time>```.
+Use this tab to create and manage Network Sources in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu and next the `Add/Modify/Delete Network Sources` sub-option.
 
-Note - Network Source creation/updation is supported only in the home region.  
+
+<span style="color: teal; font-weight: bold;">Output File:</span> 
+```<outdir>/<region>/<service_dir>/<prefix>_networksources.auto.tfvars``` (here *<region\>* is the home region directory).
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Identity & Security -> Network Sources```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_networksources/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
+
+!!! Note 
+    Network Source creation/updation is supported only in the home region.  
     
 
 ## Tags Tab
 
-Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Tracking Tags. On choosing "Tags" in the SetUpOCI menu will allow to create Tags in the OCI tenancy.
-  
-Once this is complete you will find the generated output terraform files in below locations :
+Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Tracking Tags. This can be triggered by selecting `Governance` from the SetUpOCI menu and next `Tags` sub-option.
+
+<span style="color: teal; font-weight: bold;">Output Files:</span> 
 
 ```
  <outdir>/<region>/<service_dir>/<prefix>_tags-defaults.auto.tfvars
@@ -113,11 +156,17 @@ Once this is complete you will find the generated output terraform files in belo
  <outdir>/<region>/<service_dir>/<prefix>_tags-keys.auto.tfvars 
 
 ```
-under *<region\>* directory.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Governance -> Tag Namespaces```
 
-Once terraform apply is done, you can view the resources under *Governance -> Tag Namespaces* for the region.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_Tagging/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_Tagging/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
+  
+
 
 ## a. VCNs Tab
 
@@ -173,13 +222,8 @@ This contains information about DHCP options to be created for each VCN.
 8. Components- IGW, NGW, DRG, SGW, LPGs and NSGs are created in same compartment as the VCN.
 
 9. VCN names need to be unique for the same region. Automation ToolKit does not support duplicate values at the moment. However you can have same VCN names across different regions.
-      
 
-Output terraform files are generated under *<outdir\>/<region\>* directory.
-
-Once terraform apply is done, you can view the resources under Networking -> Virtual Cloud Networks in OCI console.
-
-Output files generated:
+<span style="color: teal; font-weight: bold;">Output Files:</span> 
 
 | File name | Description |
 | --- | --- |
@@ -191,6 +235,11 @@ Output files generated:
 |<prefix\>_vlans.auto.tfvars|	Contains TF for all VLANs for all VCNs.|
 |<prefix\>_default-dhcp.auto.tfvars	|Contains TF for default DHCP options of each VCN in each region |
 |<br><prefix\>_nsgs.auto.tfvars<br><prefix\>_nsg-rules.auto.tfvars</br></br>| Contains TF for NSGs in each region |
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking -> Virtual Cloud Networks```
+
+      
+  
 
 ## f. Rules
 After running Create Network, export the Security Rules, Route Rules, DRG Route Rules (using create_resources (Greenfield) Workflow) into the excel sheet and then modify the respective sheet to do any further modification to the rules.
@@ -223,26 +272,41 @@ Below are the details about specific columns to fill the sheet for DNS-Views-Zon
 
 8. Rows are duplicated in case of multiple child resources
 
-Output terraform files are generated under *<outdir\>/<region\>* directory.
 
-Once terraform apply is done, you can view the resources under Networking -> DNS management in OCI console
+Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Tracking Tags. This can be triggered by selecting `Governance` from the SetUpOCI menu and next `Tags` sub-option.
+
+<span style="color: teal; font-weight: bold;">Output Files:</span>```<outdir>/<region>/<service_dir>/<prefix>_dns*.auto.tfvars```
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking -> DNS management```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_dns/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
+  
 <br>
 
+
 ## Firewall Tabs
+
 OCI Network Firewall can be created using [CD3-Firewall-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Firewall-template.xlsx).
-After the required details are filled in, choose "OCI Firewall" under the SetUpOCI menu to create the Firewall and its policy. 
+After the required details are filled in, choose `OCI Firewall` under the SetUpOCI menu to create the Firewall and its policy. 
 
 It is recommended to execute the validator script for Firewall, to validate the input values before proceeding to create.
 
-Once the toolkit execution is complete,  output terraform files are generated at :
+<span style="color: teal; font-weight: bold;">Output File:</span> 
 ```<outdir>/<region>/<service_dir>/<prefix>_firewall*.auto.tfvars```
 
-Once terraform apply is done, you can view the resources under Identity and Security -> Network Firewalls for the region.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Identity & Security -> Network Firewalls```
+
 
 
 ## DNS-Resolvers-Tab
 
-Existing Resolvers need to be exported first before making any changes to those.
+Existing Resolvers need to be exported first before making any changes to them.
 Below are the details about specific columns to fill the sheet for DNS-Resolvers-Tab
 
 1. "Compartment Name" - Compartment name for VCN
@@ -265,9 +329,14 @@ Below are the details about specific columns to fill the sheet for DNS-Resolvers
 
 9. Associated Private Views can be null/blank
 
-Output terraform files are generated under *<outdir\>/<region\>* directory.
 
-Once terraform apply is done, you can view the resources under Networking -> Virtual Cloud Network -> VCN Information in OCI console
+<span style="color: teal; font-weight: bold;">Output File:</span> 
+```<outdir>/<region>/<service_dir>/<prefix>_dns*.auto.tfvars```
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking -> Virtual Cloud Network -> VCN Information```
+
+
+
 
 
 ## DedicatedVMHosts Tab
@@ -276,15 +345,18 @@ Fill up the details in **'DedicatedVMHosts'** sheet and follow the options below
 
 On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Dedicated VM Hosts"** submenu will allow to launch your VM on a dedicated host.
 
+<span style="color: teal; font-weight: bold;">Output Files:</span>```<outdir>/<region>/<service_dir>/<prefix>_dedicatedvmhosts.auto.tfvars```
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Compute -> Dedicated Virtual Machine Hosts```
 
 
-Output terraform file generated: ```<outdir>/<region>/<service_dir>/<prefix>_dedicatedvmhosts.auto.tfvars```.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_dedicatedvmhosts/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
 
-Once terraform apply is done, you can view the resources under *Compute -> Dedicated Virtual Machine Hosts* for the region.
 
-If you want to update or add new dedicated VM hosts, update the 'DedicatedVMHosts' tab in cd3 and rerun using setUpOCI.
-
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_dedicatedvmhosts/<Date>-<Month>-<Time>```.
 
 ## Instances Tab
 
@@ -354,50 +426,67 @@ Format -
 
 On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
 
+<span style="color: teal; font-weight: bold;">Output Files:</span> ```<outdir>/<region>/<service_dir>/<prefix>_instances.auto.tfvars```
 
-Output terraform file generated: ```<outdir>/<region>/<service_dir>/<prefix>_instances.auto.tfvars``` and ```<outdir>/<region>/<service_dir>/<prefix>_boot-backup-policy.auto.tfvars```  under  appropriate <region\> directory.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Compute -> Instances```
 
-Once the terraform apply is complete, view the resources under *Compute -> Instances* for the region.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_instances/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_instances/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
 
 
 
 ## BlockVolumes Tab
 
-This tab in cd3 excel sheet is used when you need to create block volumes and attach the same to the instances in the OCI tenancy. 
+This tab in CD3 excel sheet is used when you need to create block volumes and attach them to the instances in the OCI tenancy. 
 
 Automation Tool Kit does not support sharing of volumes at the moment. While export of block volumes, if the block volume is attached to multiple instances, it will just fetch details about one attachment.
 
-On choosing **"Storage"** in the SetUpOCI menu and **"Add/Modify/Delete Block Volumes/Block Backup Policy"** submenu will allow to create block volumes in OCI Tenancy.
+Selecting `Storage` from the SetUpOCI menu and then choosing `Add/Modify/Delete Block Volumes/Block Backup Policy` allows you to create block volumes in your OCI tenancy.
 
-On completion of execution, you will be able to find the output terraform file generated at : 
+<span style="color: teal; font-weight: bold;">Output Files:</span> 
 
   ```<outdir>/<region>/<service_dir>/<prefix>_blockvolumes.auto.tfvars```
 
-  ```<outdir>/<region>/<service_dir>/<prefix>_block-backup-policy.auto.tfvars```  under  appropriate *<region\>* directory.
+  ```<outdir>/<region>/<service_dir>/<prefix>_block-backup-policy.auto.tfvars```
 
-Once terraform apply is done, you can view the resources under *Block Storage -> Block Volumes*  in OCI console.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Block Storage -> Block Volumes```
 
-On re-running the option to create Block Volumes you will find the previously existing files being backed up under directory:
 
-  ```<outdir>/<region>/<service_dir>/backup_blockvolumes/<Date>-<Month>-<Time>```   and   ```<outdir>/<region>/<service_dir>/backup_BlockBackupPolicy/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_blockvolumes/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt; and  &lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_BlockBackupPolicy/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
+
 
 
 ## FSS Tab
 
-On choosing **"Storage"** in the SetUpOCI menu and **"Add/Modify/Delete File Systems"** submenu will allow to create file system storage on OCI tenancy.
 
-Note:   Freeform and Defined Tags - If specified, applies to FSS object only and not to other components like Mount Target.
-
-Once this is complete you will find the generated output terraform files in location :
-
-  ```<outdir>/<region>/<service_dir>/<prefix>_fss.auto.tfvars```
+Use this Tab to create File systems in OCI. This can be triggered by selecting `Storage` from the SetUpOCI menu and next `Add/Modify/Delete File Systems` sub-option.
 
 
-Once terraform apply is done, you can view the resources under *File Storage → File Systems* for the region.
+!!! Note 
+    Freeform and Defined Tags - If specified, applies to FSS object only and not to other components like Mount Target.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_FSS/<Date>-<Month>-<Time>```.
+
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_fss.auto.tfvars```
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Block Storage -> Block Volumes```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_blockvolumes/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> and  <code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_BlockBackupPolicy/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
 
 
 !!! Important  
@@ -406,7 +495,7 @@ On re-running the same option you will find the previously existing files being 
 
 ## Load Balancers
 
-Automation Tool Kit allows you to create Load Balancers. Components that you can create using the Tool Kit includes:
+Automation Tool Kit allows you to create Load Balancers. Components that you can create using the Tool Kit include:
 
 | Resource | Tab Name |
 |---|---|
@@ -416,9 +505,10 @@ Automation Tool Kit allows you to create Load Balancers. Components that you can
 |Path Route Set|PathRouteSet|
 |Listeners|LB-Listeners|
 
-  >NOTE : While exporting and synching the tfstate file for LBR objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and Jinja2 Templates (as a non-default attribute) and re-run the export.
+!!! Note
+    While exporting and syncing the tfstate file for Load Balancer objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and Jinja2 Templates (as a non-default attribute) and re-run the export.
 
-On choosing "Load Balancers" in the SetUpOCI menu will allow to create load balancers in OCI tenancy.
+Selecting `Load Balancers` in the SetUpOCI menu will allow to create load balancers in OCI tenancy.
 
 **Load Balancers, Hostnames , Certificates and Cipher Suites:**
 
@@ -433,89 +523,108 @@ Certificates, Hostnames and Cipher Suites are optional. Leave the related column
 
 ## LB-Hostname-Certs Tab
 
-Once this is complete you will find the generated output terraform files in location :
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_lb-hostname-certs.auto.tfvars```
 
- ```<outdir>/<region>/<service_dir>/<prefix>_lb-hostname-certs.auto.tfvars```
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking → Load Balancers```
 
 
-Once terraform apply is done, you can view the resources under *Networking → Load Balancers* for the region.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_lb-hostname-certs/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_lb-hostname-certs/<Date>-<Month>-<Time>```.
+
 
 ## LB-Backend Set and Backend Servers Tab
 
-Use the tab **LB-BackendSet-BackendServer** of CD3 Excel to create the following components of Load Balancer:
+Use the tab `LB-BackendSet-BackendServer` of CD3 Excel to create the following components of Load Balancer:
 
 - Backend Sets
 - Backend Servers
 
 
-Once this is complete you will find the generated output terraform files in location :
+<span style="color: teal; font-weight: bold;">Output Files:</span>   ```<outdir>/<region>/<service_dir>/<prefix>_lb-backendset-backendserver.auto.tfvars```
 
- ```<outdir>/<region>/<service_dir>/<prefix>_lb-backendset-backendserver.auto.tfvars```
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking → Load Balancers```
 
 
-Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_lb-backendset-backendserver/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_lb-backendset-backendserver/<Date>-<Month>-<Time>```.
+
 
 ## LB-RuleSet Tab
 
-Use the tab **LB-RuleSet** of CD3 Excel to create the following components of Load Balancer:
+Use the tab `LB-RuleSet` of CD3 Excel to create Rule Sets for Load Balancers:
 
-- Rule Sets
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_lb-ruleset.auto.tfvars```
 
-Once this is complete you will find the generated output terraform files in location :
-
- ```<outdir>/<region>/<service_dir>/<prefix>_lb-ruleset.auto.tfvars```
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking → Load Balancers```
 
 
-Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_lb-ruleset/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_lb-ruleset/<Date>-<Month>-<Time>```.
+
 
 ## LB-Path Route Set Tab
 
-Use the tab **LB-PathRouteSet** of CD3 Excel to create the following components of Load Balancer:
-
-- Path Route Sets
-
-Once this is complete you will find the generated output terraform files in location :
-
- ```<outdir>/<region>/<service_dir>/<prefix>_lb-pathrouteset.auto.tfvars```
+Use the tab `LB-PathRouteSet` of CD3 Excel to create Path Route Sets for Load Balancers:
 
 
-Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_lb-pathrouteset.auto.tfvars```
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking → Load Balancers```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_lb-ruleset/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
+
 
 ## LB-Routing Policy Tab
 
-Use the tab **LB-RoutingPolicy** of CD3 Excel to create the following components of Load Balancer:
+Use the tab `LB-RoutingPolicy` of CD3 Excel to create Routing Policies for Load Balancers:
 
-- Routing Policies
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_lb-routingpolicy.auto.tfvars```
 
-Once this is complete you will find the generated output terraform files in location :
-
- ```<outdir>/<region>/<service_dir>/<prefix>_lb-routingpolicy.auto.tfvars```
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking → Load Balancers```
 
 
-Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_lb-routingpolicy/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_lb-routingpolicy/<Date>-<Month>-<Time>```.
+
 
 ## LB-Listeners Tab
 
-Use the tab **LB-Listener** of CD3 Excel to create the following components of Load Balancer:
+Use the tab `LB-Listener` of CD3 Excel to create listener for Load Balancer:
 
-- LB Listener
+<span style="color: teal; font-weight: bold;">Output Files:</span>   ```<outdir>/<region>/<service_dir>/<prefix>_lb-listener.auto.tfvars```
 
-Once this is complete you will find the generated output terraform files in location :
-
- ```<outdir>/<region>/<service_dir>/<prefix>_lb-listener.auto.tfvars```
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Networking → Load Balancers```
 
 
-Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_LB-Listener/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_LB-Listener/<Date>-<Month>-<Time>```.
+
 
 ## DBSystems-VM-BM Tab
 
@@ -539,19 +648,24 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
        }
     }
   
-On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete Virtual Machine or Bare Metal DB Systems"** submenu will allow to create DB Systems hosted on Virtual Machine and Bare Metal.
+Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete Virtual Machine or Bare Metal DB Systems` sub-option will allow to create DB Systems hosted on Virtual Machine and Bare Metal.
 
-Output terraform file generated: 
 
-```<outdir>/<region>/<service_dir>/<prefix>_dbsystem-vm-bm.auto.tfvars``` under where *<region\>* directory is the region specified for the DB System.  
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_dbsystem-vm-bm.auto.tfvars```
 
-Once terraform apply is done, you can view the resources under **Bare Metal, VM, and Exadata-> DB Systems** in OCI console.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Oracle Database → Oracle Base Database Service → DB Systems ```
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_dbsystems-vm-bm/<Date>-<Month>-<Time>```.
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_dbsystems-vm-bm/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
+
 
 ## ExaCS
 
-You can create ExaCS in OCI by utilizing Exa-Infra and Exa-VM Cluster tabs in CD3 excel sheet.
+Users can create ExaCS in OCI by utilizing Exa-Infra and Exa-VM Cluster tabs in CD3 excel sheet.
 
 
 >Note:
@@ -573,54 +687,69 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 
 On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete EXA Infra and EXA VM Clusters"** submenu will allow to create ExaCS in OCI tenancy.
 
-Output terraform file generated: 
 
-```<outdir>/<region>/<service_dir>/<prefix>_exa-infra.auto.tfvars``` under where *<region\>* directory is the region hosting the Exa Infra.
+<span style="color: teal; font-weight: bold;">Output Files:</span>  
 
-```<outdir>/<region>/<service_dir>/<prefix>_exa-vmclusters.auto.tfvars``` under where *<region\>* directory is the region hosting the Exa VM Clusters.
+```
+   <outdir>/<region>/<service_dir>/<prefix>_exa-infra.auto.tfvars
+   <outdir>/<region>/<service_dir>/<prefix>_exa-vmclusters.auto.tfvars
+```
 
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span> ```Oracle Database -> Exadata Infrastructure and Exadata VM Clusters```
 
-Once terraform apply is done, you can view the resources under *Bare Metal, VM, and Exadata-> Exadata Infrastructure and Exadata VM Clusters* in OCI console.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_exa-infra/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> and 
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_exa-vmclusters/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
 
-
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_exa-infra/<Date>-<Month>-<Time>```
-
-and ```<outdir>/<region>/<service_dir>/backup_exa-vmclusters/<Date>-<Month>-<Time>```
 
 
 ## ADB Tab
 
 Use this Tab to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
-On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete ADBs"** submenu will allow to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
+Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete ADBs` submenu will enable creation of Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
+
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_adb.auto.tfvars```
 
 
-Output terraform file generated:  ```<outdir>/<region>/<service_dir>/<prefix>_adb.auto.tfvars``` where *<region\>* directory is the region hosting the respective ADB.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Oracle Database -> Autonomous Database```
 
-Once terraform apply is done, you can view the resources under **Oracle Database -> Autonomous Database** in OCI console.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_adb/<Date>-<Month>-<Time>```
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_adb/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
 
-**NOTE -**
-<blockquote>
-  - Currently toolkit supports ADB creation in Shared Infra only,
-  </blockquote>
+
+!!! Note 
+    Currently toolkit supports ADB creation in Shared Infra only,
+
+
 
 ## :dolphin: MySQL Tabs
 
 `Use this to create MySQL Database Systems and Configurations in the OCI tenancy.`
 
 
-On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete MySQL DBs"** submenu will allow to create MySQL Database Systems and Configurations in the OCI tenancy.
+Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete MySQL DBs` submenu will enable the creation of MySQL Database Systems and Configurations in the OCI tenancy.
 
-<div class="admonition info">
-<p class="admonition-title">Output File</p>
-Output terraform files generated: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;customer_name&gt;_mysql-dbsystems.auto.tfvars</code> and <code>&lt;outdir&gt;/&lt;region&gt;/&lt;customer_name&gt;_mysql-configurations.auto.tfvars</code> where <em>&lt;region&gt;</em> directory is the region specified for the MySQL DB System.
-</div>
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_mysql-dbsystems.auto.tfvars```
 
-Once terraform apply is done, you can view the resources under **Databases -> HeatWave MySQL -> DB System** in OCI console for MySQL DB System and **Databases -> HeatWave MySQL -> Configurations** for MySQL Configurations.
 
-On re-running the same option you will find the previously existing files being backed up under directory → ```<outdir>/<region>/<service_dir>/backup_mysql/Date-Month-Time```
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Databases -> HeatWave MySQL -> DB System```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_mysql/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
 
 
 ### :clipboard: Excel sheet Columns and its Description
@@ -664,55 +793,102 @@ On re-running the same option you will find the previously existing files being 
         For example: If you are creating a custom MySQL configuration called "mysql-config-1" and want to use it as part of a MySQL DB system called "mysql-db-1", you must create the MySQL configuration "mysql-config-1" first and then use it when creating the MySQL DB system.
 
 
+
 ## Notifications Tab
 
-On choosing **"Management Services"** in the SetUpOCI menu and **"Add/Modify/Delete Notification"** and **"Add/Modify/Delete Events"** submenu will allow to manage events and notifications in OCI tenancy.
+Use [CD3-CIS-ManagementServices-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) to create/export/manage Notifications.
 
-Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_notifications.auto.tfvars``` and *<outdir\>/<region\>/<customer_name>_events.auto.tfvars``` 
+Selecting `Management Services` in the SetUpOCI menu and `Add/Modify/Delete Notification` and `Add/Modify/Delete Events` submenu will enable creation of notifications in OCI tenancy.
 
-Once the terraform apply is complete, view the resources under **Application Integration-> Notifications & Application Integration-> Events** for the region in OCI Console.
 
-Further, on re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_events/<Date>-<Month>-<Time>``` or ```<outdir>/<region>/<service_dir>/backup_notifications/<Date>-<Month>-<Time>```
+<span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_notifications.auto.tfvars```
 
-Note: 
 
-- Notifications can not be configured for a particular resource OCID at the moment.
-- Export of Notifications supports ONS and FAAS(will put OCID for the function in the CD3). It will skip the event export if action type is OSS.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Application Integration -> Notifications```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_notifications/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+!!! Note
+    - Notifications can not be configured for a particular resource OCID currently.
+    - Export of Notifications supports ONS and FAAS(will put OCID for the function in the CD3). It will skip the event export if action type is OSS.
+
+
+
+## Events Tab
+
+Use [CD3-CIS-ManagementServices-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) to create/export/manage Events.
+
+Selecting `Management Services` in the SetUpOCI menu and `Add/Modify/Delete Events` sub-option will enable creation of Events Rules in OCI tenancy.
+
+
+<span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_events.auto.tfvars```
+
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Observability & Management -> Events```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_events/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
 
 
 ## Alarms Tab
 
-Use **CD3-ManagementServices-template.xlsx** under example folder of GIT as input file for creating/exporting Alarms.
 
-On choosing **"Management Services"** in the SetUpOCI menu and **"Add/Modify/Delete Alarms"** submenu will allow to manage alarms in OCI tenancy.
+Use [CD3-CIS-ManagementServices-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) to create/export/manage Alarms.
 
-Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_alarms.auto.tfvars``` 
+On choosing `Management Services` in the SetUpOCI menu and `Add/Modify/Delete Alarms` sub-option will allow to manage Alarms in OCI tenancy.
 
-Once the terraform apply is complete, view the resources under **Observability & Management→  Monitoring → Alarms Definition** for the region in OCI Console.
+<span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_alarms.auto.tfvars```
 
-Further, on re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/<service_dir>/backup_alarms/<Date>-<Month>-<Time>```
+
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Observability & Management ->  Monitoring → Alarms Definition```
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_alarms/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
 
 
 ## ServiceConnectors Tab
 
-Use **CD3-ManagementServices-template.xlsx** under example folder of GIT as input file for creating/exporting Service connectors.
+Use [CD3-CIS-ManagementServices-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) to create/export/manage Service Connectors.
 
-The service connector resources provisioning can be initiated by updating the corresponding excel sheet tab.
+The service connector resources provisioning can be initiated by updating the corresponding Excel sheet tab.
 
-**CIS LZ recommends to create SCH to collect audit logs for all compartments, VCN Flow Logs and Object Storage Logs and send to a particular target that can be read by SIEM. CD3 SCH automation is aligned with CIZ LZ and allow the user to deploy/provision the recommended approach by filling in the suitable data in excel sheet.**
+!!! Important
+    CIS LZ recommends to create SCH to collect audit logs for all compartments, VCN Flow Logs and Object Storage Logs and send to a particular target that can be read by SIEM. CD3 SCH automation is aligned with CIZ LZ and allow the user to deploy/provision the recommended approach by filling in the suitable data in excel sheet.
 
-Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_serviceconnectors.auto.tfvars``` 
 
-Once the terraform apply is complete, view the resources under **service connectors window** for the region in OCI Console.
+<span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_serviceconnectors.auto.tfvars```
 
-Further, on re-running the same option you will find the previously existing files being backed up under directory →  ```<outdir>/<region>/<service_dir>/backup_serviceconnectors/<Date>-<Month>-<Time>```
 
-Note - 
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Observability & Management ->  Logging -> Connectors```
 
-- The service connector resources created via automation will not have the corresponding IAM policies between source and destination entities. It has to be created separately.
-- The user will get an option to create the **IAM policy** when you click on **Edit** for the respective service connector provisioned through terraform like in below screenshot:
 
-![image](../images/tabs-1.png)
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_serviceconnectors/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+!!! Note
+    - The service connector resources created via automation will not have the corresponding IAM policies between source and destination entities. It has to be created separately.
+    - The user will get an option to create the **IAM policy** when you click on **Edit** for the respective service connector provisioned through terraform like in below screenshot:
+
+    ![image](../images/tabs-1.png)
 
 - Also, When the target kind is **'notifications'** the value for formatted messages parameter is set to **'true'** as default. Its set to **'false'** only when the source is 'streaming'.
 
@@ -759,29 +935,34 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
               }
             }
             
-On choosing **"Developer Services"** in the SetUpOCI menu and **"Add/Modify/Delete OKE Cluster and Nodepools"** submenu will allow to manage oke components in OCI tenancy.
+Selecting `Developer Services` in the SetUpOCI menu and `Add/Modify/Delete OKE Cluster and Nodepools` sub-option will allow to manage OKE components in OCI tenancy.
 
-On completion of execution, you will be able to find the output terraform file generated at : 
-
-  ```<outdir>/<region>/<service_dir>/<prefix>_oke_clusters.auto.tfvars```
-
-  ```<outdir>/<region>/<service_dir>/<prefix>_oke_nodepools.auto.tfvars``` 
+<br>
 
 
-Once terraform apply is done, you can view the resources under **Developer Services -> Kubernetes Clusters (OKE)** for the region in OCI console.
+<span style="color: teal; font-weight: bold;">Output Files:</span>  
+```
+<outdir>/<region>/<service_dir>/<prefix>_oke_clusters.auto.tfvars
+<outdir>/<region>/<service_dir>/<prefix>_oke_nodepools.auto.tfvars
+``` 
 
-On re-running the option to create oke clusters and noodepools you will find the previously existing files being backed up under directory:
-
-```<outdir>/<region>/<service_dir>/backup_oke/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Developer Services -> Kubernetes Clusters (OKE)```
 
 
-Notes:
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_oke/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
 
-- Current version of the toolkit support only single availability domain placement for the nodepool. So if a cluster is exported with nodepools having multiple placement configuration, the terraform plan will show changes similar to:
 
-![image](../images/tabs-3.png)
 
-<img src= "../images/tabs-4.png" width=50% height=50%>
+!!! Note
+    - Current version of the toolkit support only single availability domain placement for the nodepool. So if a cluster is exported with nodepools having multiple placement configuration, the terraform plan will show changes similar to:
+
+    ![image](../images/tabs-3.png)
+
+    <img src= "../images/tabs-4.png" width=50% height=50%>
 
 
 To avoid this, an ignore statement as shown below is added to ignore any changes to the placement configuration in nodepool.
@@ -796,48 +977,48 @@ To avoid this, an ignore statement as shown below is added to ignore any changes
 ## VCN FLow Logs
 This will enable Flow logs for all the subnets mentioned in 'SubnetsVLANs' tab of CD3 Excel sheet. Log group for each VCN is created under the same compartment as specified for VCN and all subnets are added as logs to this log group.
 
-Below TF file is created:
+<span style="color: teal; font-weight: bold;">Output File:</span> 
 
 | File name | Description|
 |---|---|
-|<customer_name\>_vcnflow-logging.auto.tfvars |TF variables file containing log group for each VCN and logs for eachsubnet in that VCN.|
+|<prefix\>_vcnflow-logging.auto.tfvars |TF variables file containing log group for each VCN and logs for eachsubnet in that VCN.|
   
 ## LBaaS Logs
 This will enable LBaaS logs for all the LBs mentioned in 'LB-Hostname-Certs' tab of CD3 Excel sheet. Log group for each LBaaS is created under the same compartment as specified for LBaaS and access and error log types are added as logs to this log group.
 
-Below TF file is created:
+<span style="color: teal; font-weight: bold;">Output File:</span> 
 
 | File name | Description|
 |---|---|
-|<customer_name\>_load-balancers-logging.auto.tfvars |TF variables file containing log group for each LBaaS and its error and access logs.| 
+|<prefix\>_load-balancers-logging.auto.tfvars |TF variables file containing log group for each LBaaS and its error and access logs.| 
 
 ## OSS Logs
 This will enable OSS Bucket logs for all the buckets mentioned in 'Buckets' tab of CD3 Excel sheet. Log group for each bucket is created under the same compartment as specified for bucket and read and write log type is added as logs to this log group.
 
-Below TF file is created:
+<span style="color: teal; font-weight: bold;">Output File:</span> 
 
 | File name | Description|
 |---|---|
-|<customer_name\>_buckets-logging.auto.tfvars |TF variables file containing log group for each bucket and its write logs.| 
+|<prefix\>_buckets-logging.auto.tfvars |TF variables file containing log group for each bucket and its write logs.| 
 
 ## FSS Logs
 This will enable logs for all the File systems mentioned in 'FSS' tab of CD3 Excel sheet. Log group for each File system is created under the same compartment as specified for FSS and its logs are added to the log group.
 
-Below TF file is created:
+<span style="color: teal; font-weight: bold;">Output File:</span> 
 
 | File name | Description|
 |---|---|
-|<customer_name\>_nfs-logging.auto.tfvars | TF variables file containing log group for each File system and its logs.| 
+|<prefix\>_nfs-logging.auto.tfvars | TF variables file containing log group for each File system and its logs.| 
 
 ## Firewall Logs
 
 This will enable logs for the Firewalls specified in "Firewall" sheet of the Firewall template.. Log group for each Firewall is created under the same compartment as specified for Firewall and its logs are added to the log group.
 
-Below TF file is created:
+<span style="color: teal; font-weight: bold;">Output File:</span> 
 
 | File name | Description|
 |---|---|
-|<customer_name\>_fw-logging.auto.tfvars | TF variables file containing log group for each Firewall and its logs.| 
+|<prefix\>_fw-logging.auto.tfvars | TF variables file containing log group for each Firewall and its logs.| 
 
   
 ## SDDCs Tab
@@ -864,33 +1045,42 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 Management and Workload Datastore volumes must be existing or created separately as part of **BlockVolumes** Tab.
 All the Network related information for SDDCs will be provided in **SDDCs-Network** , where the vlan should be created in **SubnetsVLANs**
 
-On choosing "Software-Defined Data Centers - OCVS" in setUpOCI menu, the toolkit will read SDDCs tab and SDDCs-Network tab. The output terraform files will be generated at :
-  ```<outdir>/<region>/<service_dir>/<prefix>_sddcs.auto.tfvars``` under appropriate *<region\>* directory.
+Selecting `Software-Defined Data Centers - OCVS` in setUpOCI menu, will read SDDCs tab and SDDCs-Network tab and create the corresponding resources
 
-Once terraform apply is done, you can view the resources under Hybrid -> Software-Defined Data Centers in OCI console.
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_sddcs.auto.tfvars```
 
-On re-running the option to create OCVS you will find the previously existing files being backed up under directory:
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Hybrid -> Software-Defined Data Centers```
 
-```<outdir>/<region>/<service_dir>/backup_sddcs/<Date>-<Month>-<Time>```.
-  
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_sddcs/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
+
   
 ## Buckets Tab
   
 This tab in cd3 excel sheet is used when you need to create Object storage buckets in the OCI tenancy.
 
-On choosing "Storage" in the SetUpOCI menu and "Add/Modify/Delete Buckets" submenu will allow to create buckets in OCI Tenancy.
+Selecting `Storage` in the SetUpOCI menu and `Add/Modify/Delete Buckets` sub-option will enable the creation buckets in OCI Tenancy.
 
-On completion of execution, you will be able to find the output terraform file generated at :
-  
-  ```<outdir>/<region>/<service_dir>/<prefix>_buckets.auto.tfvars``` 
+<span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_buckets.auto.tfvars```
 
-Once terraform apply is done, you can view the resources under Object Storage -> Buckets in OCI console.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Storage -> Object Storage -> Bucket```
 
-On re-running the option to create Buckets you will find the previously existing files being backed up under directory:
 
-```<outdir>/<region>/<service_dir>/backup_buckets/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_buckets/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
 
-> **_NOTE:_**  Currently the creation of buckets with indefinite retention rule is not supported, only export is supported.
+
+!!! Important
+    Currently the creation of buckets with indefinite retention rule is not supported, only export is supported.
   
 **CD3 Tab specifications:**
   
@@ -937,54 +1127,64 @@ On re-running the option to create Buckets you will find the previously existing
 
 The Budgets tab in CD3 Excel sheet can be used to create OCI Budgets and Budget Alert rules.
 
-Upon executing setUpOCI.py, choose "Cost Management" from the main menu and "Budgets" from its sub-options to create Budgets/Budget Alert Rules in OCI Tenancy.
+Upon executing setUpOCI.py, choose `Cost Management` from the main menu and `Budgets` from its sub-options to create Budgets/Budget Alert Rules in OCI Tenancy.
 
-On completion of execution, you will be able to find the output terraform file generated at :
-  
-  ```<outdir>/<region>/<service_dir>/<prefix>_budgets.auto.tfvars``` 
 
-Once terraform apply is done, you can view the resources under *Billing & Cost Management -> Cost Management -> Budgets* in OCI console.
+<span style="color: teal; font-weight: bold;">Output Files:</span>   ```<outdir>/<region>/<service_dir>/<prefix>_budgets.auto.tfvars```
 
-On re-running the option to create Budgets, you will find the previously existing files being backed up under directory:
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Billing & Cost Management -> Cost Management -> Budget```
 
- ```<outdir>/<region>/<service_dir>/backup_budgets/<Date>-<Month>-<Time>```.
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_budgets/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
 
 
 ## Quotas Tab
 
 The Quotas tab in CD3 Excel sheet can be used to create OCI Quota policies.
 
-Upon executing setUpOCI.py, choose "Governance" from the main menu and "Quotas" from its sub-options to create Quota policies in OCI Tenancy.
+Upon executing setUpOCI.py, choose `Governance` from the main menu and `Quotas` from its sub-options to create Quota policies in OCI Tenancy.
 
-On completion of execution, you will be able to find the output terraform file generated at :
-  
-  ```<outdir>/<region>/<service_dir>/<prefix>_quotas.auto.tfvars``` 
 
-Once terraform apply is done, you can view the resources under *Governance & Administration -> Tenancy Managememt -> Quota Policies* in OCI console.
+<span style="color: teal; font-weight: bold;">Output Files:</span>   ```<outdir>/<region>/<service_dir>/<prefix>_quotas.auto.tfvars``` 
 
-On re-running the option to create Quotas, you will find the previously existing files being backed up under directory:
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Governance & Administration -> Tenancy Managememt -> Quota Policies```
 
- ```<outdir>/<region>/<service_dir>/backup_quotas/<Date>-<Month>-<Time>```.
-  
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_quotas/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
   
 ## KMS Tab
 
 The KMS tab in CD3 Excel sheet can be used to create OCI Vaults and Keys in the OCI tenancy.
 
-Upon executing setUpOCI.py, choose "Security" from the main menu and "Add/Modify/Delete KMS (Keys/Vaults)" from its sub-options to create Keys/Vaults in OCI Tenancy.
+Upon executing setUpOCI.py, choose `Security` from the main menu and `Add/Modify/Delete KMS (Keys/Vaults)` from its sub-options to create Keys/Vaults in OCI Tenancy.
 
-On completion of execution, you will be able to find the output terraform file generated at :
-  
-  ```<outdir>/<region>/<service_dir>/<prefix>_kms.auto.tfvars``` 
+<span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_kms.auto.tfvars``` 
 
-Once terraform apply is done, you can view the resources under *Identity & Security -> Key Management & Secret Management* in OCI console.
-
-On re-running the option to create KMS, you will find the previously existing files being backed up under directory:
-
- ```<outdir>/<region>/<service_dir>/backup_kms/<Date>-<Month>-<Time>```.
+<span style="color: teal; font-weight: bold;">OCI Console Path:</span>  ```Identity & Security -> Key Management & Secret Management```
 
 
- **Toolkit currently supports:** 
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_kms/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
+
+
+**Toolkit currently supports:** 
  
  - Creation of **DEFAULT** or **VIRTUAL PRIVATE** vaults.
 
@@ -1008,18 +1208,26 @@ On re-running the option to create KMS, you will find the previously existing fi
 
   - Secrets 
   
+
 ## Cloud Guard
 
 There is currently no tab for cloud guard in the CD3 excel sheet.
 
-Upon executing setUpOCI.py, choose "Security" from the main menu and "Enable Cloud Guard" from its sub-options will enable Cloud Guard for the tenancy from specified reporting region, clones the Oracle Managed detector and responder recipes. Creates a target for root compartment with the cloned recipes.
+Upon executing setUpOCI.py, choose `Security` from the main menu and `Enable Cloud Guard` from its sub-options will enable Cloud Guard for the tenancy from specified reporting region, clones the Oracle Managed detector and responder recipes. Creates a target for root compartment with the cloned recipes.
 
-Below TF file is created:
+<span style="color: teal; font-weight: bold;">Output File:</span>
 
 | File name | Description|
 |---|---|
-|cis-cloudguard.auto.tf |vars TF variables file for enabling cloud guard and creating target for root compartment. |
+|cis-cloudguard.auto.tfvars | TF variables file for enabling cloud guard and creating target for root compartment. |
 
 <a href="../terraform/security">Click here to view sample auto.tfvars for Security components </a> 
 
 
+
+
+<h3 id="backup-info">About Backup Path</h3>
+
+When you re-run a menu option in the SetUpOCI toolkit, any previously generated `.auto.tfvars` files will be automatically backed up to: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_&lt;service&gt;/</code>.
+
+These backups help you recover previous configurations in case of mistakes, rollbacks, or comparisons during repeated runs of the same operation.

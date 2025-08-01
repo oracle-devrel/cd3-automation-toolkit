@@ -2,34 +2,43 @@
 
 ## Execute setUpOCI Pipeline
 
-**Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>.
+
+
+<span style="color: teal; font-weight: bold;">Step 1:</span>
+
+Choose the appropriate CD3 Excel sheet template from <a href="../excel-templates"><u>Excel Templates</u></a>.
 Fill the CD3 Excel with appropriate values.
 
 
-**Step 2**:
-<br>Login to Jenkins URL with user created after initialization. On the dashboard, a folder with **<prefix\>** name is present. 
+
+<span style="color: teal; font-weight: bold;">Step 2:</span>
+
+Login to Jenkins URL with user created after initialization. On the dashboard, a folder with **<prefix\>** name is present. 
 Click on it. It has the corresponding **setupoci pipeline** and **terraform_files** folder. 
 
 Click on the setupoci pipeline and select **Build with Parameters** from left side menu.
 
 <img width="2000" height="900" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="../images/jenkinsGF-1.jpg">
 
-!!! note
+!!! Warning "Jenkins User limit"
      Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
 
 
-**Step 3**:
-<br>Upload the above filled Excel sheet in **Excel_Template** section.
+
+<span style="color: teal; font-weight: bold;">Step 3:</span>
+
+Upload the above filled Excel sheet in **Excel_Template** section.
 
 <img width="1000" height="500" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="../images/jenkinsGF-2.jpg"><br>
 
 !!! info 
-    This will copy the Excel file at `/cd3user/tenancies/<prefix>` inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
+    This will copy the Excel file at `/cd3user/tenancies/<prefix>` path inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
 
 
-**Step 4:** 
-<br>Select the workflow as **Create New Resources in OCI(Greenfield Workflow)**. Choose single or multiple MainOptions as required and then corresponding SubOptions.
+
+<span style="color: teal; font-weight: bold;">Step 4:</span>
+
+Select the workflow as **Create New Resources in OCI(Greenfield Workflow)**. Choose single or multiple MainOptions as required and then corresponding SubOptions.
 <br> Check out <a href="../multiple-services-jenkins"><u>Provisioning of multiple services together </u></a> page while selecting multiple options simultaneously.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags (under Governance).
 
@@ -38,8 +47,9 @@ Click on the setupoci pipeline and select **Build with Parameters** from left si
 Click on **Build** at the bottom.
 
 
-**Step 5:** 
-<br>setUpOCI pipeline is triggered and stages are executed as shown below.<br>
+<span style="color: teal; font-weight: bold;">Step 5:</span>
+
+setUpOCI pipeline is triggered and stages are executed as shown below.<br>
 This will run the python script to generate the auto.tfvars.  Once created, it will commit to the OCI Devops GIT Repo and then it will also launch **apply** pipelines for the services chosen (Stage:ashburn/identity and Stage:ashburn/tagging in the below screenshot).
 
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="../images/jenkinsGF-4.jpg">
@@ -48,7 +58,9 @@ This will run the python script to generate the auto.tfvars.  Once created, it w
 
 Terraform/tofu pipelines are auto triggered parallely from setupoci pipeline based on the services selected (shown in the last two stages of the above screenshot). <br>
 
-**Step 1**: 
+
+
+<span style="color: teal; font-weight: bold;">Step 1:</span>
 
 Click on 'Logs' for Stage: ashburn/identity and click on the pipeline link.
 <img width="1402" height="400" alt="Screenshot 2024-01-17 at 11 58 15 AM" src="../images/jenkinsGF-5.jpg"><br>
@@ -59,31 +71,42 @@ Click on 'Logs' for Stage: ashburn/identity and click on the pipeline link.
 > &emsp; ***cd3toolkit-demo » terraform_files » ashburn » identity » apply*** <br>
 > &emsp; ***cd3toolkit-demo » terraform_files » ashburn » tagging » apply*** <br>
 
-**Step 2**: 
-<br>Stages of the terraform/tofu pipeline for apply are shown below:
+<br>
+
+<span style="color: teal; font-weight: bold;">Step 2:</span>
+
+Stages of the terraform/tofu pipeline for apply are shown below:
 
 <img width="830" height="450" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="../images/jenkinsGF-6.jpg"><br>
 
-**Step 3**:
-<br>Review Logs for Plan and OPA stages by clicking on the stage and then 'Logs'. 
+
+<span style="color: teal; font-weight: bold;">Step 3:</span>
+
+Review Logs for Plan and OPA stages by clicking on the stage and then 'Logs'. 
 
 <img width="1503" alt="Screenshot 2024-01-17 at 12 13 57 PM" src="../images/jenkinsGF-7.jpg"><br>
 
 
-**Step 4**: 
-<br>'Get Approval' stage has timeout of 24 hours, if no action is taken the pipeline will be aborted after 24 hours. Click on this stage and click 'Proceed' to proceed with apply or 'Abort' to cancel the apply.
+
+<span style="color: teal; font-weight: bold;">Step 4:</span>
+
+'Get Approval' stage has timeout of 24 hours, if no action is taken the pipeline will be aborted after 24 hours. Click on this stage and click 'Proceed' to proceed with apply or 'Abort' to cancel the apply.
 
 
 <img width="920" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/jenkinsGF-8.jpg"><br>
 
 
-**Step 5**:
-<br>Below screenshot shows Stage View after clicking on 'Proceed'. Login to the OCI console and verify that resources got created as required.
+
+<span style="color: teal; font-weight: bold;">Step 5:</span>
+
+Below screenshot shows Stage View after clicking on 'Proceed'. Login to the OCI console and verify that resources got created as required.
 
 <img width="920" height="360" alt="Screenshot 2024-01-17 at 12 13 15 PM" src="../images/jenkinsGF-9.jpg"><br>
 
-**Step 6**:
-<br>Similarly click on 'Logs' for Stage: ashburn/tagging and click on the pipeline link and 'Proceed' or 'Abort' the apply<br><br>
+
+<span style="color: teal; font-weight: bold;">Step 6:</span>
+
+Similarly click on 'Logs' for Stage: ashburn/tagging and click on the pipeline link and 'Proceed' or 'Abort' the apply<br><br>
 
 
 <br><br>

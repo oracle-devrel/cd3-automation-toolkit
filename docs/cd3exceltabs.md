@@ -1,210 +1,265 @@
-
 # OCI Services currently supported by Automation Toolkit
 
-Click on the links below to know about the specifics of each tab in the excel sheet.
-
-#### IAM/Identity
-
- - [Compartments](tabs.md#compartments-tab)
-
- - [Groups/Dynamic Groups](tabs.md#groups-tab)
-  
- - [Policies](tabs.md#policies-tab)
-
- - [Users](tabs.md#users-tab)
-
- - [NetworkSources](tabs.md#network-sources-tab)
-
-<a href="../terraform/identity"> Click here to view sample auto.tfvars for the Identity components</a> 
-	
-
-
-#### Governance
-
- - [Tags](tabs.md#tags-tab)
-
-<a href="../terraform/governance/#1-tag-namespaces">Click here to view sample auto.tfvars for Tags</a> 
-
- - [Quotas](tabs.md#quotas-tab)
-
-<a href="../terraform/governance/#4-quotas">Click here to view sample auto.tfvars for Quotas </a>
-
-
-#### Cost Management
-
-- [Budgets](tabs.md#budgets-tab)
-
-<a href="../terraform/costmanagement/#budgets">Click here to view sample auto.tfvars for Budgets </a> 
-   
-<a href="../terraform/costmanagement/#budget-alert-rules">Click here to view sample auto.tfvars for Budget Alert Rules</a>
-
-
-
-#### Network
-  
- - [VCNs](tabs.md#a-vcns-tab)
-  
- - [DRGs - VCN Attachments and RPC Attachments](tabs.md#b-drgs-tab)
-  
- - [VCN Info](tabs.md#c-vcn-info-tab)
-  
- - [DHCP](tabs.md#d-dhcp-tab)
-  
- - [SubnetsVLANs](tabs.md#e-subnetsvlans-tab)
- 
- - [DRGRouteRulesinOCI](tabs.md#f-rules)
-
- - [SecRulesinOCI](tabs.md#f-rules)
-
- - [RouteRulesinOCI](tabs.md#f-rules)
-
- - [NSGs](tabs.md#g-nsgs)
- 
-  
-
-<a href="../terraform/network">Click here to view sample auto.tfvars for all Network components- VCNs, Subnets, Gateways etc.,</a> 
-
-#### OCI Network Firewall
-
- - [Firewall](tabs.md#firewall-tabs)
- - [Firewall-Policy](tabs.md#firewall-tabs)
- - [Firewall-Policy-Applicationlist](tabs.md#firewall-tabs)
- - [Firewall-Policy-Servicelist](tabs.md#firewall-tabs)
- - [Firewall-Policy-Urllist](tabs.md#firewall-tabs)
- - [Firewall-Policy-Address](tabs.md#firewall-tabs)
- - [Firewall-Policy-Secrets](tabs.md#firewall-tabs)
- - [Firewall-Policy-Decryptprofile](tabs.md#firewall-tabs)
- - [Firewall-Policy-DecryptRule](tabs.md#firewall-tabs)
- - [Firewall-Policy-Secrules](tabs.md#firewall-tabs)
-
-<a href="../terraform/firewall">Click here to view sample auto.tfvars for all Firewall components</a>    
-
-#### Private-DNS
-  
- - [DNS-Views-Zones-Records](tabs.md#dns-views-zones-records-tab)
-  
- - [DNS-Resolvers](tabs.md#dns-resolvers-tab)
-  
-
-<a href="../terraform/dns">Click here to view sample auto.tfvars for all DNS components </a> 
-
-#### Load Balancer
-
- - [LB-Hostname-Certs tab](tabs.md#lb-hostname-certs-tab)
- 
- - [LB-Backend Set and Backend Servers](tabs.md#lb-backend-set-and-backend-servers-tab)
- 
- - [LB-RuleSet](tabs.md#lb-ruleset-tab)
- 
- - [LB-PathRouteSet](tabs.md#lb-path-route-set-tab)
- 
- - [LB-RoutingPolicy](tabs.md#lb-routing-policy-tab)
- 
- - [LB-Listener](tabs.md#lb-listeners-tab)
-
-<a href="../terraform/loadbalancer">Click here to view sample auto.tfvars for all Load Balancer components- Cipher suits,Backend sets, rule sets etc.,</a>
-
-
-#### Compute
- 
- - [DedicatedVMHosts](tabs.md#dedicatedvmhosts-tab)
- 
- - [Instances](tabs.md#instances-tab)
-
-<a href="../terraform/compute">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> 
-
- 
-#### Storage
- 
- - [BlockVolumes](tabs.md#blockvolumes-tab)
- 
- <a href="../terraform/storage#block-volumes">Click here to view sample auto.tfvars for Block Volumes </a> 
-
- - [FSS](tabs.md#fss-tab)
-
- <a href="../terraform/storage#fss">Click here to view sample auto.tfvars for File Systems </a> 
- 
- - [Object Storage Buckets](tabs.md#buckets-tab)
- 
- <a href="../terraform/storage#buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> 
- 
-
-#### Oracle Database
- - [DBSystems-VM-BM](tabs.md#dbsystems-vm-bm-tab)
- 
- - [ExaCS](tabs.md#exacs)
- 
- - [ADB](tabs.md#adb-tab)
- 
-
-#### MySQL Database
-
- - [MySQL](tabs.md#mysql-tabs)
- 
- 
-#### Monitoring Services
- 
- - [Notifications](tabs.md#notifications-tab)
- 
- - [Alarms](tabs.md#alarms-tab)
-
-<a href="../terraform/managementservices">Click here to view sample auto.tfvars for management services Alarms, Notifications, Events etc.,</a> 
- 
- - [ServiceConnectors](tabs.md#serviceconnectors-tab) 
-
-
-<a href="../terraform/sch">Click here to view sample auto.tfvars for Service Connectors</a> 
-
- 
-#### Logging Services
- 
- - [VCN Flow Logs]( tabs.md#vcn-flow-logs)
-
-<a href="../terraform/logging#vcn-flow-logs">Click here to view sample auto.tfvars for VCN Flow Logs </a> 
-
- - [LBaaS Logs]( tabs.md#lbaas-logs)
-
-<a href="../terraform/logging#load-balancer-logs">Click here to view sample auto.tfvars for Load Balancer Logs </a> 
-
- - [OSS Logs]( tabs.md#oss-logs)
-
-<a href="../terraform/logging#object-storage-logs">Click here to view sample auto.tfvars for Object storage Logs </a> 
- 
- - [FSS Logs]( tabs.md#fss-logs)
-  
-<a href="../terraform/logging#nfs-logs">Click here to view sample auto.tfvars for FSS Logs </a> 
-
- - [Firewall Logs]( tabs.md#firewall-logs)
-
-<a href="../terraform/logging#firewall-logs">Click here to view sample auto.tfvars for Firewall Logs </a> 
-
-
-#### Developer Services
- - [Upload to OCI Resource Manager Stack](../resource-manager-upload)
- 
- - [OKE]( tabs.md#oke-tab)
-
-<a href="../terraform/oke">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
-
-
-#### SDDCs tab
- 
- - [OCVS]( tabs.md#sddcs-tab)
-   
-<a href="../terraform/sddc">Click here to view sample auto.tfvars for OCVS </a> 
-
-
-#### Security
-
-- [KMS](tabs.md#kms-tab)
-
-<a href="../terraform/security/#1vaults">Click here to view sample auto.tfvars for KMS Vaults </a> 
-
-<a href="../terraform/security/#2keys">Click here to view sample auto.tfvars for KMS Keys </a> 
-
-
-- [Cloud Guard](tabs.md#cloud-guard)
-
-<a href="../terraform/security/#cloud-guard">Click here to view sample auto.tfvars for Cloud Guard </a> 
-
-
+Click on the links below to know about the specifics of each tab in the Excel templates.
+
+<style>
+  h3[id] {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  h3:target {
+    background-color: #004d40;         
+    color: #ffffff;                    
+    border-left: 6px solid #00bfa5;    
+    padding-left: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+
+  h3 img {
+    height: 30px;
+    width: 30px;
+  }
+</style>
+
+
+
+<div style="display: flex; gap: 100px;">
+
+  <!-- Left Column -->
+  <div style="flex: 1; min-width: 300px;">
+
+    <!-- IAM -->
+    <h3 id="iamidentity" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/IAM.png" alt="IAM" style="height: 30px; width: 30px;">  
+      <b>IAM / Identity</b> 
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#compartments-tab">Compartments</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#groups-tab">Groups / Dynamic Groups</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#policies-tab">Policies</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#users-tab">Users</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#network-sources-tab">Network Sources</a></li>
+      </ul>
+      <a href="../terraform/identity">🔗 Sample auto.tfvars for Identity components</a>
+    </div>
+
+    <h3 id="governance" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/governance.png" alt="Governance" style="height: 30px; width: 30px;">  
+      <b>Governance</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#tags-tab">Tags</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#quotas-tab">Quotas</a></li>
+      </ul>
+      <a href="../terraform/governance/#1-tag-namespaces">🔗 Sample auto.tfvars for Tags</a><br>
+      <a href="../terraform/governance/#4-quotas">🔗 Sample auto.tfvars for Quotas</a>
+    </div>
+
+    <h3 id="cost-management" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/cost-management.png" alt="Cost Management" style="height: 30px; width: 30px;">  
+      <b>Cost Management</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#budgets-tab">Budgets</a></li>
+      </ul>
+      <a href="../terraform/costmanagement/#budgets">🔗 Sample auto.tfvars for Budgets</a><br>
+      <a href="../terraform/costmanagement/#budget-alert-rules">🔗 Sample auto.tfvars for Budget Alert Rules</a>
+    </div>
+
+    <h3 id="network" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/network.png" alt="Network" style="height: 30px; width: 30px;">  
+      <b>Network</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#a-vcns-tab">VCNs</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#b-drgs-tab">DRGs - Attachments</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#c-vcn-info-tab">VCN Info</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#d-dhcp-tab">DHCP</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#e-subnetsvlans-tab">Subnets / VLANs</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#f-rules">DRG / Route / Sec Rules</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#g-nsgs">NSGs</a></li>
+      </ul>
+      <a href="../terraform/network">🔗 Sample auto.tfvars for Network components</a>
+    </div>
+
+    <h3 id="firewall" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/firewall.png" alt="Firewall" style="height: 30px; width: 30px;">  
+      <b>OCI Network Firewall</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#firewall-tab">Firewall</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#firewall-tab">Policy & Rules (App, URL, Secret, Decrypt, etc.)</a></li>
+      </ul>
+      <a href="../terraform/firewall">🔗 Sample auto.tfvars for Firewall components</a>
+    </div>
+
+    <h3 id="monitoring-services" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/observability.png" alt="Observability Icon" style="height: 30px; width: 30px;">  
+      <b>Monitoring Services</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#notifications-tab">Notifications</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#events-tab">Events</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#alarms-tab">Alarms</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#serviceconnectors-tab">Service Connectors</a></li>
+      </ul>
+      <a href="../terraform/managementservices">🔗 Sample auto.tfvars for Alarms, Notifications, Events</a><br>
+      <a href="../terraform/sch">🔗 Sample auto.tfvars for Service Connectors</a>
+    </div>
+
+    <h3 id="developer-services" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/oke.png" alt="Observability Icon" style="height: 30px; width: 30px;">  
+      <b>Developer Services</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="resource-manager-upload">Upload to OCI Resource Manager Stack</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#oke-tab">OKE</a></li>
+      </ul>
+      <a href="../terraform/managementservices">🔗 Sample auto.tfvars for OKE components- Clusters, Nodepools</a><br>
+    </div>
+
+    <h3 id="SDDCs" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/infrastructure.png" alt="compute Icon" style="height: 30px; width: 30px;">  
+      <b>SDDCs</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#sddcs-tab">OCVS</a></li>
+      </ul>
+      <a href="../terraform/sddc">🔗 Sample auto.tfvars for OCVS</a><br>
+    </div>
+
+    
+
+  </div>
+
+  <!-- Right Column -->
+  <div style="flex: 1; min-width: 300px;">
+
+    <h3 id="private-dns" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/network.png" alt="Network" style="height: 30px; width: 30px;">  
+      <b>Private DNS</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#dns-views-zones-records-tab">Views / Zones / Records</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#dns-resolvers-tab">Resolvers</a></li>
+      </ul>
+      <a href="../terraform/dns">🔗 Sample auto.tfvars for DNS components</a>
+    </div>
+
+    <h3 id="load-balancer" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/loadbalancer.png" alt="Load Balancer" style="height: 30px; width: 30px;">  
+      <b>Load Balancer</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#lb-hostname-certs-tab">Hostname & Certs</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#lb-backend-set-and-backend-servers-tab">Backends</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#lb-ruleset-tab">Rule Sets</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#lb-path-route-set-tab">Path Routes</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#lb-routing-policy-tab">Routing Policy</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#lb-listeners-tab">Listeners</a></li>
+      </ul>
+      <a href="../terraform/loadbalancer">🔗 Sample auto.tfvars for Load Balancer components</a>
+    </div>
+
+    <h3 id="compute" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/infrastructure.png" alt="Infrastructure Icon" style="height: 30px; width: 30px;">  
+      <b>Compute</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#dedicatedvmhosts-tab">Dedicated VM Hosts</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#instances-tab">Instances</a></li>
+      </ul>
+      <a href="../terraform/compute">🔗 Sample auto.tfvars for Compute</a>
+    </div>
+
+    <h3 id="storage" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/storage.png" alt="storage" style="height: 30px; width: 30px;">  
+      <b>Storage</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#blockvolumes-tab">Block Volumes</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#fss-tab">File Storage (FSS)</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#buckets-tab">Object Storage Buckets</a></li>
+      </ul>
+      <a href="../terraform/storage#block-volumes">🔗 Sample auto.tfvars for Block Volumes</a><br>
+      <a href="../terraform/storage#fss">🔗 Sample auto.tfvars for File Storage</a><br>
+      <a href="../terraform/storage#buckets">🔗 Sample auto.tfvars for Object Buckets</a>
+    </div>
+
+    <h3 id="oracle-dataabse" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/database.png" alt="Database Icon" style="height: 30px; width: 30px;">  
+      <b>Oracle Database</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#dbsystems-vm-bm-tab">DBSystems - VM/BM</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#exacs">Exadata CS</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#adb-tab">Autonomous DB</a></li>
+      </ul>
+    </div>
+
+    <h3 id="mysql-database" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/database.png" alt="Database Icon" style="height: 30px; width: 30px;">  
+      <b>MySQL Database</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#mysql-tab">MySQL</a></li>
+      </ul>
+    </div>
+
+
+    <h3 id="logging-services" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/logging.png" alt="Logging" style="height: 30px; width: 30px;">  
+      <b>Logging Services</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#vcn-flow-logs">VCN Flow Logs</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#lbaas-logs">LBaas Logs</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#oss-logs">OSS Logs</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#fss-logs">FSS Logs</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#firewall-logs">Firewall Logs</a></li>
+      </ul>
+      <a href="../terraform/logging#vcn-flow-logs">🔗 Sample auto.tfvars for VCN Flow Logs</a><br>
+      <a href="../terraform/logging#load-balancer-logs">🔗 Sample auto.tfvars for Load balancer Logs</a><br>
+      <a href="../terraform/logging#object-storage-logs">🔗 Sample auto.tfvars for Object storage Logs</a><br>
+      <a href="../terraform/logging#nfs-logs">🔗 Sample auto.tfvars for File Storage Logs</a><br>
+      <a href="../terraform/logging#firewall-logs">🔗 Sample auto.tfvars for Firewall Logs</a><br>
+    </div>
+
+
+
+    <h3 id="Security" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/security.png" alt="Security Icon" style="height: 30px; width: 30px;">  
+      <b>Security</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="/cd3-automation-toolkit/tabs/#kms-tab">KMS</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#cloud-guard">Cloud Guard</a></li>
+      </ul>
+      <a href="../terraform/security/#1vaults">🔗 Sample auto.tfvars for KMS Vaults</a><br>
+       <a href="../terraform/security/#2keys">🔗 Sample auto.tfvars for KMS Keys</a><br>
+    </div>
+
+
+
+
+  </div>
+</div>
