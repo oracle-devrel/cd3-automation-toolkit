@@ -1,5 +1,5 @@
 
-When deploying CD3 VM in a VCN with restricted outbound connectivity via firewall or proxy, the below URLs should be whitelisted for successful deployment of the cd3 tool with full functionality,
+When deploying CD3 VM in a VCN with restricted outbound connectivity via firewall or proxy, the below URLs should be whitelisted for successful deployment of the cd3 tool with full functionality
 
 <br>
 

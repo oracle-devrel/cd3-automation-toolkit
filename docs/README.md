@@ -1,13 +1,6 @@
 # **Getting Started** 
 ---
 
-<img width="1049" alt="CD3 Toolkit Process" src="images/CD3-Process.png">
-
-<br>
-!!! tip
-    CD3 Automation toolkit can be used either via CLI or Jenkins.   
-    📖 Detailed documentation and videos are provided for both options. Please check the left    panel for navigation.
-
 <style>
     .grid.cards {
         border-top-color: #5c926c;
@@ -21,7 +14,8 @@
 -   :material-clock-fast:{ .lg .middle } __Overview__
 
     ---
-    [Introduction](cd3-overview.md)<br>
+    [What is CD3](cd3-overview.md)<br>
+    [Workflows](cd3workflows.md)<br>
     [Architecture](architecture.md)<br>
     [Services Supported](supportedservices.md)<br>
     [Excel Templates](excel-templates.md)<br>

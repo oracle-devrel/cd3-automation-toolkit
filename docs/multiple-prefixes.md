@@ -4,18 +4,21 @@
 The toolkit allows independent management of multiple environments using the same container. This enables better resource control and custom configurations for each environment. 
 
 
-!!! note 
+!!! note "Multi-prefix with Jenkins"
 
     * With the toolkit release v2024.4.1, the toolkit supports executing createTenancyConfig.py with different values for **prefix** per container when using Jenkins.
 
 <br>
 
-**Use Case**
+
+<span style="color: teal; font-weight: bold;"> 📌 Use Case</span>
 
 * Managing Multiple Environments (Prod, Non-Prod etc.,) as separate entities within a single container.
 
 
-**Steps**
+
+
+<span style="color: teal; font-weight: bold;"> 🛠️ Steps</span>
 
 * Edit the **tenancyconfig.properties** file according to <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI</u></a>. Use a unique prefix that differs from the ones used previously. *Eg:  demo_prod,  demo_nonprod.*
 
@@ -29,7 +32,8 @@ The toolkit allows independent management of multiple environments using the sam
 
 <br>
 
-**Multi Prefix with CLI**
+
+<span style="color: teal; font-weight: bold;"> Multi Prefix with CLI</span>
 
 In the container, folders named after the specified prefix values will be created under the **/cd3user/tenancies** directory. Each environment specific folder is created with its own unique configuration specified in above steps.
 
@@ -37,11 +41,12 @@ In the container, folders named after the specified prefix values will be create
 
 <br>
 
-**Multi Prefix with Jenkins**
+
+<span style="color: teal; font-weight: bold;"> Multi Prefix with Jenkins</span>
 
 The Jenkins dashboard appears as follows when configured with two prefixes.
 
 ![jenkins](../images/multiple-prefixes-jenkins.jpg)
 
 
-Check <a href=../cd3-jenkins#bootstrapping-of-jenkins-in-the-toolkit> <u>Important Note</u></a> to enable jenkins for multiple prefixes.
+Check <a href=../cd3-jenkins#bootstrapping-of-jenkins-in-the-toolkit> <u>the first Note block</u></a> to enable jenkins for multiple prefixes.

@@ -23,24 +23,27 @@
 
 ### <b>1. setupoci Pipeline</b>
 
-This is equivalent to running *setupoci.py* from CLI. This will generate the **.auto.tfvars** files based on the CD3 Excel sheet input for the services chosen and commit them to OCI Devops GIT repo. Additionally, it also triggers **apply** pipelines for the corresponding services chosen in setupoci pipeline.
+
+This is equivalent to running *setupoci.py* from CLI. This pipeline will generate the **.auto.tfvars** files based on the CD3 Excel sheet input for the services chosen and commit them to OCI Devops GIT repo. Additionally, it also triggers **apply** pipelines for the corresponding services chosen in setupoci pipeline.
 
 Below table shows the stages executed in this pipeline along with their description:
 
 
-<b><i>setupoci Pipeline Stages</i></b>
+
+<span style="color: teal; font-weight: bold;">🛠️ setupoci Pipeline Stages</span>
+
 
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |
 | <b>Validate Input Parameters</b> | Validates input file name/size, selected parameters | Displays Unstable if any of the <br> validation fails. Pipeline stops <br> further execution in that case. |
-| <b>Update setupoci.properties</b> | Updates <prefix\>_setupoci.properties <br> with input filename and workflow_type | Displays Failed if any issue during execution |
-| <b>Execute setupoci</b> | Executes python code to generate required <br> tfvars files. The console output for this <br> stage is similar to setupoci.py execution via CLI. <br>Multiple options selected will <br> be processed <i>sequentially</i> in this stage. The Excel sheet can be downloaded from **Build artifacts** of the setupoci pipeline. | Displays Failed if any issue occurs  <br> during its execution. Further stages <br> are skipped in that case. |
-| <b>Run Import Commands</b> | Based on the workflow_type as 'Export Existing Resources from OCI', <br> this stage invokes execution of <br> import_commands_<resource\>.sh <br> shell scripts which will import the  <br> exported objects into tfstate. import_commands for <br> multiple options selected will be  <br> processed <i>sequentially</i> in this stage. <br><b> This stage is skipped for 'Create New Resources in OCI' workflow </b>| Displays Failed if any issue occurs during its execution.  <br> Further stages are skipped in that case. |
-| <b>Git Commit to develop</b> | Commits the terraform_files folder to OCI DevOps GIT Repo develop branch. <br> This will trigger respective terraform pipelines| Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, <br> navigate to  **apply** pipeline and trigger that manually </b>|
+| <b>Update setupoci.properties</b> | Updates `<prefix>_setupoci.properties` <br> with input filename and `workflow_type` | Displays Failed if any issue during execution |
+| <b>Execute setupoci</b> | - Executes python code to generate required <br> tfvars files.<br> - The console output for this <br> stage is similar to setupoci.py execution via CLI. <br> - Multiple options selected will be processed <i>sequentially</i> in this stage.<br> - The Excel sheet can be downloaded from **Build artifacts** of the setupoci pipeline. | Displays Failed if any issue occurs  <br> during its execution. Further stages <br> are skipped in that case. |
+| <b>Run Import Commands</b> | - Based on the workflow_type as 'Export Existing Resources from OCI', this stage invokes execution of `import_commands_<resource>.sh` shell scripts which will import the  exported objects into tfstate. <br> - import_commands for  multiple options selected will be  processed <i>sequentially</i> in this stage. <br> <b> This stage is skipped for 'Create New Resources in OCI' workflow </b>| Displays Failed if any issue occurs during its execution.  <br> Further stages are skipped in that case. |
+| <b>Git Commit to develop</b> | - Commits the terraform_files folder to OCI DevOps GIT Repo develop branch. <br> - This will trigger respective terraform pipelines| Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, <br> navigate to  **apply** pipeline and trigger that manually </b>|
 | <b>Trigger Pipelines</b> | Corresponding terraform/tofu **apply** pipelines <br> are auto triggered based on the service chosen | |
 
 #### a. Download CD3 Excel File
- <a href=../download-excel> <u>Click here </u></a> for the steps to download excel file after successful completion of 'Execute setupoci' stage of the pipeline. The Excel file is available as an artifact for each build of the setupoci pipeline.
+ <a href=../download-excel> <u>Click here </u></a> for the steps to download Excel file after successful completion of 'Execute setupoci' stage of the pipeline. The Excel file is available as an artifact for each build of the setupoci pipeline.
   >Note: For create_resources (Greenfield workflow), this will be the same Excel file which was uploaded to create resources in OCI. For export_resoucres (Non-Greenfield workflow), this will be the updated Excel file with exported OCI resource data.
 
 ### <b>2. terraform_files Folder</b>
@@ -52,7 +55,8 @@ Inside each service directory, pipelines for terraform/tofu **apply** and **dest
 The pipelines are either triggered automatically from setupoci pipeline or they can be triggered manually by navigating to any service directory path. 
 
 
-<b><i><b>apply</b> Pipeline Stages</I></b>
+
+<span style="color: teal; font-weight: bold;">🛠️ <i>apply</i> Pipeline Stages</span>
 
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |
@@ -67,7 +71,8 @@ The pipelines are either triggered automatically from setupoci pipeline or they 
 
 
 
-<b><i>destroy Pipeline Stages</i></b>
+
+<span style="color: teal; font-weight: bold;">🛠️<i>destroy</i> Pipeline Stages</span>
 
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |

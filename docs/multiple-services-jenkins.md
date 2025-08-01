@@ -1,6 +1,6 @@
 # Provisioning of multiple services together
 
-!!! note
+!!! Important
     For services that require network details, such as compute, database, and load balancers, the 'network' apply pipeline must be executed before launching the service pipeline, as explained below.
 
 * Multiple options can be selected simultaneously while creating resources in OCI using setUpOCI pipeline . In scenarios where one service depends on another service's availability, such as 'Network' (Create Network) and 'Compute' (Add Instances), the apply pipeline for compute will fail. Check the below image.

@@ -1,42 +1,50 @@
 # Commit Local changes to GIT
 
-!!! note
+!!! Tip "Best Practice"
     It is recommended to stick to using the toolkit either via CLI or via Jenkins.
 
-!!! note
-    The below process will push the updated files to the **develop** branch of the GIT Repository. Successful completion of the resource specific terraform-apply pipeline in Jenkins will update to the **main** branch.
+!!! info "Git push workflow"
+    The below process will push the updated terraform files to the **develop** branch of the GIT Repository. Successful completion of the resource specific terraform-apply pipeline in Jenkins will update to the **main** branch.
 
 There can be scenarios when updating the terraform_files folder manually via CLI is necessary. Below are some examples:
 
 - The setUpOCI script is executed to generate tfvars for some resources via CLI.
-- The **variables_<region\>.tf** file is modified to update image OCID or SSH Key for Compute or Database etc.
+- The `variables_<region>.tf` file is modified to update image OCID or SSH Key for Compute or Database etc.
 
- Follow below steps to sync local terraform_files folder to OCI DevOps GIT Repo:
+ Follow below steps to sync local `terraform_files` folder to OCI DevOps GIT Repo:
 
-**Step 1:**
+
+<span style="color: teal; font-weight: bold;">Step 1:</span>
  ```
    cd /cd3user/tenancies/<prefix>/terraform_files
  ```
-**Step 2:**
+
+<span style="color: teal; font-weight: bold;">Step 2:</span>
+
  ```
    git status
  ```
- Below screenshot shows changes in variables_phoenix.tf file under phoenix/compute folder.
+
+ Below screenshot shows changes in `variables_phoenix.tf` file under `phoenix/compute` folder.
   
 <img width="556" alt="Screenshot 2024-01-17 at 9 12 39 PM" src="../images/gitstatus.png">
 
-**Step 3:**
+
+<span style="color: teal; font-weight: bold;">Step 3:</span>
   ```
    git add -A .
   ```
-**Step 4:**
+
+<span style="color: teal; font-weight: bold;">Step 4:</span>
+
   ```
    git commit -m "msg"
   ```
   
 <img width="370" alt="Screenshot 2024-01-17 at 9 13 35 PM" src="../images/gitcommit.png">
 
-**Step 5:**
+
+<span style="color: teal; font-weight: bold;">Step 5:</span>
   ```
     git push
   ```

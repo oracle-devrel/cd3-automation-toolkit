@@ -156,7 +156,7 @@ After executing import_commands during export of service connectors, the terrafo
  ![image](../images/tabs-2.png)
 
 **10.**
-When exporting Virtual Private Vault's Replica to terraform, after executing the *import_commands_kms.sh* script, 
+When exporting a Vault's Replica to terraform, after executing the *import_commands_kms.sh* script, 
 the terraform plan indicates the creation of a new OCI vault replication resource. This happens because there is no terraform import command for replication resource. 
 
 As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove the *replica_region* parameter from the replica's source vault dictionary. This will allow users to add or modify other resources without creating a new replica. Check below image for reference.

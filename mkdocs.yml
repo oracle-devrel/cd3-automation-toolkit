@@ -6,7 +6,8 @@ repo_url: https://github.com/oracle-devrel/cd3-automation-toolkit
 nav:
   - Overview: 
     - cd3-overview.md
-    - Introduction: cd3-overview.md  
+    - What is CD3: cd3-overview.md  
+    - CD3 workflows: cd3workflows.md
     - Architecture: architecture.md   
     - Services Supported: supportedservices.md
     - Excel Templates: excel-templates.md
