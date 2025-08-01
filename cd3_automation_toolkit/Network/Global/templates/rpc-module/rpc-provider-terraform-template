@@ -12,11 +12,10 @@ terraform {
       source = "oracle/oci"
       configuration_aliases = [
         {% for region in subscribed_regions %}
-          {% set region_keys = region.split('-') %}
-             oci.{{region_keys[1]}},
+          oci.{{ region.replace('-', '_') }}{{ "," if not loop.last }}
         {% endfor %}
-
       ]
     }
   }
 }
+

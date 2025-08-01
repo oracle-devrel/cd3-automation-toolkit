@@ -11,3 +11,6 @@ output "dns_zone_id" {
 output "dns_zone_name" {
   value = oci_dns_zone.zone.name
 }
+output "zones" {
+  value = [for item in [oci_dns_zone.zone.id]:{"id" = "${item}"}]
+}

@@ -68,7 +68,7 @@ class commonTools():
         self.identity_domain_enabled = False
         self.reg_filter = None
         #Should be None but changed to "null" to do a quick fix for ct.get_compartment_map
-        self.comp_filter = "null"
+        self.comp_filter = None
         self.tag_filter = None
         self.vizoci_comp_filter = None
         self.default_dns = None
@@ -143,6 +143,7 @@ class commonTools():
         #os.chdir(dir)
     # Get Export filters
     def get_export_filters(self,export_filters):
+        self.comp_filter = "null"
         for i in export_filters:
             i = i.replace(" ", "")
             i = i.replace("\"", "")
@@ -657,7 +658,7 @@ class commonTools():
                 multivalues = columnvalue.split("::")
                 multivalues = [str(part).strip() for part in multivalues if part]
                 tempdict = {columnname: multivalues}
-            elif columnname != 'Compartment Name':
+            elif columnname != 'Compartment Name' and "ipv6" not in columnname.lower():
                 columnname = commonTools.check_column_headers(columnname)
                 multivalues = columnvalue.split("::")
                 multivalues = [str(part).strip() for part in multivalues ]#if part]

@@ -112,11 +112,14 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
             domain_name = domain_key.split("@")[1]
             domain_client = oci.identity_domains.IdentityDomainsClient(config=config, signer=signer,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                                        service_endpoint=idcs_endpoint)
-            list_users_response = domain_client.list_users() # change this to pagination once api supports
-            users = list_users_response.data.resources
-            while list_users_response.has_next_page:
-                list_users_response = domain_client.list_users(page=list_users_response.next_page)
-                users.extend(list_users_response.data.resources)
+            users = []
+            next_page = None
+            while True:
+                response = domain_client.list_users(page=next_page)
+                users.extend(response.data.resources)
+                if not response.next_page or len(users) == response.data.total_results:
+                    break
+                next_page = response.next_page
 
             index = 0
             for user in users:

@@ -138,6 +138,11 @@ variable "source_type" {
   default     = null
 }
 
+variable "init_script_path" {
+  type = string
+  default = null
+  }
+
 variable "boot_volume_size_in_gbs" {
   type        = number
   description = "The boot volume size for nodes in nodepool"

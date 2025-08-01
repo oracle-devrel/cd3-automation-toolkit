@@ -22,17 +22,15 @@ resource "oci_containerengine_cluster" "cluster" {
     subnet_id            = var.endpoint_subnet_id
   }
 
-  image_policy_config {
-        #Optional
-        is_policy_enabled = var.is_policy_enabled
-        dynamic "key_details" {
-            for_each = var.policy_kms_key_id != null ? [1] : []
-            content{
-            #Optional
-            kms_key_id = var.policy_kms_key_id
-            }
-        }
+  dynamic "image_policy_config" {
+    for_each = var.policy_kms_key_id != null ? [1] : []
+    content {
+    is_policy_enabled = true
+    key_details {
+    kms_key_id = var.policy_kms_key_id
     }
+    }
+  }
 
   options {
     add_ons {

@@ -209,7 +209,11 @@ def insert_values(routetable,values_for_column,region,comp_name,name,routerule,e
 
         elif (routerule != None and col_header == 'Route Destination Object'):
             network_entity_id = routerule.network_entity_id
-            network_entity_name = get_network_entity_name(config, signer, network_entity_id,export_tags)
+            try:
+                network_entity_name = get_network_entity_name(config, signer, network_entity_id,export_tags)
+            except Exception as e:
+                print("\nCheck route rules for Route Table: '"+routetable.display_name+"' and Re-Try")
+                exit(1)
             values_for_column[col_header].append(network_entity_name)
             if ('internetgateway' in network_entity_id):
                 if (routerule.destination not in values_for_vcninfo['igw_destinations']):
@@ -240,7 +244,11 @@ def insert_values_drg(routetable,import_drg_route_distribution_name,values_for_c
 
         elif (routerule != None and col_header == 'Next Hop Attachment'):
             next_hop_attachment_id=routerule.next_hop_drg_attachment_id
-            network_entity_name = get_network_entity_name(config, signer, next_hop_attachment_id,export_tags)
+            try:
+                network_entity_name = get_network_entity_name(config, signer, next_hop_attachment_id,export_tags)
+            except Exception as e:
+                print("\nCheck route rules for DRG Route Table: '"+routetable.display_name+"' and Re-Try")
+                exit(1)
             values_for_column_drg[col_header].append(network_entity_name)
 
         else:
