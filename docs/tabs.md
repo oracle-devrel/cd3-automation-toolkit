@@ -730,7 +730,7 @@ Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete ADBs` submenu w
 
 
 
-## :dolphin: MySQL Tabs
+## MySQL Tabs
 
 `Use this to create MySQL Database Systems and Configurations in the OCI tenancy.`
 
