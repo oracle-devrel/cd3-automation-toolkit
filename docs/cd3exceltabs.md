@@ -10,8 +10,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
   }
 
   h3:target {
-    background-color: #004d40;         
-    color: #ffffff;                    
+    background-color:#90E0D5 ;                           
     border-left: 6px solid #00bfa5;    
     padding-left: 16px;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -89,14 +88,14 @@ Click on the links below to know about the specifics of each tab in the Excel te
       <a href="../terraform/network">🔗 Sample auto.tfvars for Network components</a>
     </div>
 
-    <h3 id="firewall" style="display: flex; align-items: center; gap: 8px;">
+    <h3 id="networkfirewall" style="display: flex; align-items: center; gap: 8px;">
       <img src="../images/firewall.png" alt="Firewall" style="height: 30px; width: 30px;">  
       <b>OCI Network Firewall</b>
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#firewall-tab">Firewall</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#firewall-tab">Policy & Rules (App, URL, Secret, Decrypt, etc.)</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#firewall-tabs">Firewall</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#firewall-tabs">Policy & Rules (App, URL, Secret, Decrypt, etc.)</a></li>
       </ul>
       <a href="../terraform/firewall">🔗 Sample auto.tfvars for Firewall components</a>
     </div>
@@ -122,13 +121,13 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="resource-manager-upload">Upload to OCI Resource Manager Stack</a></li>
+        <li><a href="../resource-manager-upload">Upload to OCI Resource Manager Stack</a></li>
         <li><a href="/cd3-automation-toolkit/tabs/#oke-tab">OKE</a></li>
       </ul>
       <a href="../terraform/managementservices">🔗 Sample auto.tfvars for OKE components- Clusters, Nodepools</a><br>
     </div>
 
-    <h3 id="SDDCs" style="display: flex; align-items: center; gap: 8px;">
+    <h3 id="sddcs" style="display: flex; align-items: center; gap: 8px;">
       <img src="../images/infrastructure.png" alt="compute Icon" style="height: 30px; width: 30px;">  
       <b>SDDCs</b>
     </h3>
@@ -139,12 +138,6 @@ Click on the links below to know about the specifics of each tab in the Excel te
       <a href="../terraform/sddc">🔗 Sample auto.tfvars for OCVS</a><br>
     </div>
 
-    
-
-  </div>
-
-  <!-- Right Column -->
-  <div style="flex: 1; min-width: 300px;">
 
     <h3 id="private-dns" style="display: flex; align-items: center; gap: 8px;">
       <img src="../images/network.png" alt="Network" style="height: 30px; width: 30px;">  
@@ -201,7 +194,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
       <a href="../terraform/storage#buckets">🔗 Sample auto.tfvars for Object Buckets</a>
     </div>
 
-    <h3 id="oracle-dataabse" style="display: flex; align-items: center; gap: 8px;">
+    <h3 id="oracle-database" style="display: flex; align-items: center; gap: 8px;">
       <img src="../images/database.png" alt="Database Icon" style="height: 30px; width: 30px;">  
       <b>Oracle Database</b>
     </h3>
@@ -219,7 +212,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#mysql-tab">MySQL</a></li>
+        <li><a href="/cd3-automation-toolkit/tabs/#mysql-tabs">MySQL</a></li>
       </ul>
     </div>
 
@@ -244,8 +237,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </div>
 
 
-
-    <h3 id="Security" style="display: flex; align-items: center; gap: 8px;">
+    <h3 id="security" style="display: flex; align-items: center; gap: 8px;">
       <img src="../images/security.png" alt="Security Icon" style="height: 30px; width: 30px;">  
       <b>Security</b>
     </h3>
@@ -259,7 +251,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </div>
 
 
-
-
   </div>
+
 </div>
+
