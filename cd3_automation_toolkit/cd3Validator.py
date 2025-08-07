@@ -460,7 +460,7 @@ def validate_vcns(filename, comp_ids, vcnobj):# config):  # ,vcn_cidrs,vcn_compa
         # Check for null values and display appropriate message
         for j in dfv.keys():
             if (str(dfv[j][i]).strip() == "NaN" or str(dfv[j][i]).strip() == "nan" or str(dfv[j][i]).strip() == ""):
-                if j == 'DNS Label' or commonTools.check_column_headers(j) in commonTools.tagColumns or "ipv6" in j.lower():
+                if j == 'DNS Label' or commonTools.check_column_headers(j) in commonTools.tagColumns or "ipv6" in j.lower() or "Hub/Spoke" in j:
                     continue
                 else:
                     log(f'ROW {count+2} : Empty value at column "{j}".')
