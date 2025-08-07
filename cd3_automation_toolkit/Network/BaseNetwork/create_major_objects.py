@@ -603,8 +603,8 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tena
                 str(df.loc[i, 'CIDR Blocks']).lower() == 'nan' or str(df.loc[i, 'DRG Required']).lower() == 'nan' or str(
                     df.loc[i, 'IGW Required']).lower() == 'nan' or
                 str(df.loc[i, 'NGW Required']).lower() == 'nan' or str(
-                    df.loc[i, 'SGW Required']).lower() == 'nan' or str(df.loc[i, 'LPG Required']).lower() == 'nan' or
-                str(df.loc[i, 'Hub/Spoke/Peer/None']).lower() == 'nan'):
+                    df.loc[i, 'SGW Required']).lower() == 'nan' or str(df.loc[i, 'LPG Required']).lower() == 'nan'):
+                #or str(df.loc[i, 'Hub/Spoke/Peer/None']).lower() == 'nan'):
             print("\nColumn Values(except dns_label) or Rows cannot be left empty in VCNs sheet in CD3..exiting...")
             exit(1)
 
