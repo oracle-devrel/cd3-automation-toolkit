@@ -1,4 +1,4 @@
-# **Set Up OCI using Automation Toolkit with CLI**
+# **Set Up Azure using Automation Toolkit with CLI**
 ---
 !!! Important "Must Read!"
     Check out the <a href="../must-read-prerequisites"><u>Must Read</u></a> section for managing network, compute and oci firewall resources.
@@ -11,37 +11,34 @@
 
 3. Use one of the templates from <a href="../excel-templates"><u>Excel Templates</u></a> based on the workflow chosen.
 
-4. Review setUpOCI.properties file _/cd3user/tenancies/<prefix\>/<prefix\>_setUpOCI.properties_.
+4. Review setUpAzure.properties file _/cd3user/azure/<prefix\>/<prefix\>_setUpAzure.properties_.
 
-<span style="color: teal;"><b>setUpOCI.properties</b></span>
+<span style="color: teal;"><b>setUpAzure.properties</b></span>
 ```ini
 [Default]
 
-#Input variables required to run setUpOCI script
+#Input variables required to run setUpAzure script
 
-#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<prefix>/terraform_files
+#path to output directory where terraform file will be generated. eg /cd3user/azure/<prefix>/terraform_files
 outdir=
 
-#prefix for output terraform files eg <customer_name> like demotenancy
+#prefix for output terraform files eg demo
 prefix=
 
-# auth mechanism for OCI APIs - api_key,instance_principal,session_token
-auth_mechanism=
+# Auth Params
+subscription_id=
 
-#input config file for Python API communication with OCI eg /cd3user/tenancies/<prefix>/.config_files/<prefix>_config;
-config_file=
+tenant_id=
 
-# Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
-outdir_structure_file=
+client_id=
 
-# IaC Tool to be configured - Terraform(specify terraform) or OpenTofu(specify tofu)
-tf_or_tofu=tofu
+client_secret=
 
-#path to cd3 excel eg /cd3user/tenancies/<prefix>\CD3-Customer.xlsx
+#path to cd3 excel eg /cd3user/azure/<prefix>\CD3-Customer.xlsx
 cd3file=
 
-#specify create_resources to create new resources in OCI(greenfield workflow)
-#specify export_resources to export resources from OCI(non-greenfield workflow)
+#specify create_resources to create new resources in Azure(greenfield workflow)
+#specify export_resources to export resources from Azure(non-greenfield workflow)
 workflow_type=create_resources
 ```
 
@@ -57,41 +54,41 @@ workflow_type=create_resources
         <tr>
             <td>outdir</td>
             <td>Path to output directory where terraform files will be generated</td>
-            <td>/cd3user/tenancies/demo/terraform_files</td>
+            <td>/cd3user/azure/demo/terraform_files</td>
         </tr>
         <tr>
             <td>prefix</td>
             <td>Prefix for output terraform files</td>
-            <td>\</td>
+            <td>demo</td>
         </tr>
         <tr>
-            <td>auth_mechanism</td>
-            <td>Authentication Mechanism for OCI APIs</td>
-            <td>api_key</td>
+            <td> subscription_id</td>
+            <<td>azure subscription id</td>
+            <td>155d83b2-....-....-....-ff5455dc5bdc</td>
         </tr>
         <tr>
-            <td>config_file</td>
-            <td>Python config file	</td>
-            <td>/cd3user/tenancies/demo/.config_files/_config</td>
+            <td>tenant_id</td>
+            <td>azure subscription tenant id</td>
+            <td>89b6314d-....-....-....-0c37ec95f20e</td>
         </tr>
         <tr>
-            <td>outdir_structure_file</td>
-            <td>Parameter specifying single outdir or different for different services</td>
-            <td>Blank or _outdir_structure_file.properties</td>
+            <td>client_id</td>
+            <td>service principal appid</td>
+            <td>6950d59b-....-....-....-0039be18d7df</td>
         </tr>
         <tr>
-            <td>tf_or_tofu</td>
-            <td>IaC Tool to be configured - Terraform or OpenTofu</td>
-            <td>terraform or tofu</td>
+            <td>client_secret</td>
+            <td>service principal password</td>
+            <td>.1..8Q~Xtch...........L5LxiPWb2vd_oaOP</td>
         </tr>
         <tr>
             <td>cd3file</td>
             <td>Path to the Excel input file</td>
-            <td>/cd3user/tenancies/demo/CD3demo.xlsx</td>
+            <td>/cd3user/azure/demo/CD3demo.xlsx</td>
         </tr>
         <tr>
             <td>workflow_type</td>
-            <td>Create Resources in OCI or Export Resources from OCI</td>
+            <td>Create Resources in Azure or Export Resources from Azure</td>
             <td>create_resources or export_resources</td>
         </tr>
     </table>

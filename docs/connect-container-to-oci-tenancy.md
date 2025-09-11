@@ -307,8 +307,7 @@ python createTenancyConfig.py tenancyconfig.properties
     Need to manage multiple environments separately by using distinct prefixes, all within a single CD3 container?<br>
     Check this out: [Multiple Prefixes](multiple-prefixes.md)
 
-<br>
 
-Choose how to use the toolkit and follow the corresponding instructions:
+Proceed to the below instructions:
 
-[Use Toolkit with CLI](cd3-cli.md){ .md-button }    [Use Toolkit with Jenkins](cd3-jenkins.md){ .md-button }
+[Set Up OCI using Automation Toolkit](setUpOCI.md){ .md-button }
