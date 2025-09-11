@@ -20,54 +20,52 @@ nav:
       - Resource Manager Stack: launch-from-rmstack.md
       - Manual Container Launch: launch-from-local.md
       - URL Whitelisting(optional): url-whitelisting.md
-    - Connect Container to OCI: 
+
+  - Connect MultiCloud :
+    - connect-container-to-cloud.md
+    - Connect to OCI: 
       - connect-container-to-oci-tenancy.md
       - Multiple Prefixes(optional): multiple-prefixes.md
       - Delete Prefix(optional): delete-prefix.md
+    - Connect to Azure: connect-container-to-azure-subscription.md
 
-  - Use with CLI: 
-    - cd3-cli.md
-    - Before You Begin: cd3-cli.md
-    - Create in OCI  :
-      - greenfield-cli.md
-      - Steps: greenfield-cli.md
-      - OPA integration: opa-integration.md
-      
-    - Export from OCI : 
-      - nongreenfield-cli.md
-      - Steps: nongreenfield-cli.md
-      
-
-  - Use with Jenkins:
-    - cd3-jenkins.md
+  - SetUp OCI :
+    - setUpOCI.md
+    - Set Up OCI with CLI:
+      - cd3-cli.md
+      - Before You Begin: cd3-cli.md
+      - Create in OCI  : 
+        - greenfield-cli.md
+        - OPA integration: opa-integration.md
+      - Export from OCI : nongreenfield-cli.md
+    - Set Up OCI with Jenkins:
+      - cd3-jenkins.md
     - Before You Begin: cd3-jenkins.md
     - Jenkins Dashboard: jenkinsintro.md
     - Create in OCI : 
       - greenfield-jenkins.md
-      - Steps: greenfield-jenkins.md
       - Provision multiple services together: multiple-services-jenkins.md
     - Export from OCI : 
       - nongreenfield-jenkins.md
-      - Steps: nongreenfield-jenkins.md
     - Commit Local changes to GIT: sync-cli-jenkins.md
   
-  - Must Read:
+  - SetUp Azure :
+    - setUpAzure.md
+    - Set Up Azure with CLI:
+      - cd3-azr-cli.md
+  - Read More for OCI :
     - must-read-prerequisites.md
-    - Manage Network :  
-       - manage-network.md
-    - Manage Compute : 
-       - manage-compute.md
-    - Manage OCI Network Firewall : 
-       - manage-firewall.md
-
-  - Additional Features:
-    - group-tf-files.md
-    - Grouping of Terraform Files: group-tf-files.md
-    - Remote Management of Terraform State: remotestate.md
-    - OCI Resource Manager Upload: resource-manager-upload.md
-    - Support for Additional Attrs: additional-attributes.md
-    - CD3 Validator: cd3validator.md
-    - Migrate CD3 Jenkins: jobs-migration.md
+    - Manage Network : manage-network.md
+    - Manage Compute : manage-compute.md
+    - Manage OCI Network Firewall : manage-firewall.md
+    - Additional Features:
+      - group-tf-files.md
+      - Grouping of Terraform Files: group-tf-files.md
+      - Remote Management of Terraform State: remotestate.md
+      - OCI Resource Manager Upload: resource-manager-upload.md
+      - Support for Additional Attrs: additional-attributes.md
+      - CD3 Validator: cd3validator.md
+      - Migrate CD3 Jenkins: jobs-migration.md
 
   - Upgrade CD3:
     - upgrade-toolkit.md
