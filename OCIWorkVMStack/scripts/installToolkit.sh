@@ -25,9 +25,9 @@ if [[ $? -ne 0 ]] ; then
 fi
 }
 
-sudo systemctl stop oracle-cloud-agent.service >> $logfile 2>&1
-cd /etc/yum.repos.d/
-for i in $( ls *.osms-backup ); do sudo mv $i ${i%.*}; done
+#sudo systemctl stop oracle-cloud-agent.service >> $logfile 2>&1
+#cd /etc/yum.repos.d/
+#for i in $( ls *.osms-backup ); do sudo mv $i ${i%.*}; done
 echo "***SELinux permissive***" >> $logfile 2>&1
 sudo setenforce 0
 sudo sed -c -i "s/\SELINUX=.*/SELINUX=permissive/" /etc/sysconfig/selinux
@@ -39,7 +39,7 @@ sudo chmod 0440 /etc/sudoers.d/$username
 sudo chmod 775 -R /$username
 sudo chown -R $username:$username /$username
 sudo usermod -aG $username opc
-sudo mkdir /home/$username/.ssh
+sudo mkdir -p /home/$username/.ssh
 sudo chown -R $username:$username /home/$username/.ssh
 sudo chmod 700 /home/$username/.ssh
 sudo cp /home/opc/.ssh/authorized_keys /home/$username/.ssh/authorized_keys
@@ -47,23 +47,23 @@ sudo chown -R $username:$username /home/$username/.ssh/authorized_keys
 sudo chmod 600 /home/$username/.ssh/authorized_keys
 
 echo "***Install git***" >> $logfile 2>&1
-sudo yum install -y git >> $logfile 2>&1
+sudo yum --disablerepo=ol7_ksplice --disablerepo=ol8_ksplice --disablerepo=ol8_x86_64_ksplice --disablerepo=ol9_ksplice --disablerepo=ol9_x86_64_ksplice install -y git >> $logfile 2>&1
 stop_exec
 
 echo "***Install Podman***" >> $logfile 2>&1
 echo "########################################################" >> $logfile 2>&1
 osrelase=`cat /etc/oracle-release`
 if [[ $osrelase == "Oracle Linux Server release 7".* ]] ; then
-     sudo yum install -y podman podman-docker >> $logfile 2>&1
+     sudo yum --disablerepo=ol7_ksplice install -y podman podman-docker >> $logfile 2>&1
      stop_exec
 else
-    sudo yum install -y podman podman-docker >> $logfile 2>&1
+    sudo yum --disablerepo=ol8_ksplice --disablerepo=ol8_x86_64_ksplice --disablerepo=ol9_ksplice --disablerepo=ol9_x86_64_ksplice install -y podman podman-docker >> $logfile 2>&1
     stop_exec
     sudo systemctl enable podman.service
     sudo systemctl start podman.service
     stop_exec
 fi
-sudo podman --version >> $logfile 2>&1
+sudo podman --version >> $logfile 2>&1 || true
 
 echo "***Download Toolkit***" >> $logfile 2>&1
 sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git $toolkit_dir >> $logfile 2>&1
@@ -93,7 +93,7 @@ stop_exec
 sudo podman ps -a >> $logfile 2>&1
 echo "Connect to Container using command - sudo podman exec -it cd3_toolkit bash " >> $logfile 2>&1
 
-sudo systemctl start oracle-cloud-agent.service
+#sudo systemctl start oracle-cloud-agent.service
 
 duration_sec=$(echo "$(date +%s.%N) - $start" | bc)
 duration_min=$(echo "$duration_sec%3600/60" | bc)
