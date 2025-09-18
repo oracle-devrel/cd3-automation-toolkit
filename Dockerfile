@@ -35,9 +35,9 @@ RUN microdnf install -y sudo && \
     echo 'alias vi="vim"' >> /etc/bashrc
 
 USER $USERNAME
-#WORKDIR /cd3user/oci_tools/
-#COPY cd3_automation_toolkit cd3_automation_toolkit/
-#COPY othertools othertools/
+WORKDIR /cd3user/oci_tools/
+COPY cd3_automation_toolkit cd3_automation_toolkit/
+COPY othertools othertools/
 
 WORKDIR /cd3user/
 
