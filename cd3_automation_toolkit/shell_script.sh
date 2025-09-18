@@ -14,6 +14,9 @@ sudo dnf install python-pip -y
 
 # Install required Python packages
 pip install --user oci-cli==3.62.2
+pip install --user azure.identity
+pip install --user azure.mgmt.compute
+pip install --user azure.mgmt.oracledatabase
 pip install --user pycryptodomex==3.10.1
 pip install --user regex==2022.10.31
 pip install --user numpy==1.26.4
@@ -33,10 +36,10 @@ pip install --user PyYAML==6.0.1
 pip install --user ansible==8.7.0
 
 # Add Python3 site-packages to PYTHONPATH
-echo "export PYTHONPATH=\${PYTHONPATH}:/root/.local/lib/python3.9/site-packages/:/cd3user/.local/lib/python3.9/site-packages/" >> /cd3user/.bashrc
+echo "export PYTHONPATH=\${PYTHONPATH}:/root/.local/lib/python3.9/site-packages/:/home/cd3user/.local/lib/python3.9/site-packages/" >> /home/cd3user/.bashrc
 
 # Add Python binaries to PATH
-echo "PATH=\$PATH:/cd3user/.local/bin" >> /cd3user/.bashrc
+#echo "PATH=\$PATH:/cd3user/.local/bin" >> /cd3user/.bashrc
 
 
 # Download and install Terraform

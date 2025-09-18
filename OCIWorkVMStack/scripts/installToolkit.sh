@@ -1,7 +1,8 @@
 #!/bin/bash
 
 username=cd3user
-sudo mkdir -p /$username/mount_path
+sudo mkdir -p /$username/mount_path/tenancies
+sudo mkdir -p /$username/mount_path/oci_tools
 logfile="/$username/mount_path/installToolkit.log"
 toolkit_dir="/tmp/githubCode"
 tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
@@ -67,6 +68,8 @@ sudo podman --version >> $logfile 2>&1 || true
 
 echo "***Download Toolkit***" >> $logfile 2>&1
 sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git $toolkit_dir >> $logfile 2>&1
+cp -r $toolkit_dir/cd3_automation_toolkit /cd3user/oci_tools/
+cp -r $toolkit_dir/othertools /cd3user/oci_tools/
 stop_exec
 
 curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json

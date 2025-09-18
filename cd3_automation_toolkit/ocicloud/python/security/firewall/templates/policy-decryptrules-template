@@ -1,0 +1,42 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#############################
+# Firewall Policy Decryption Rules
+# Firewall Policy Decryption Rule - tfvars
+# Allowed Values:
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# action can be NO_DECRYPT or DECRYPT
+# Sample import command for Firewall Policy Decryption Rules:
+# terraform import "module.decryption_rules[\"<<decryption-rule terraform variable name>>\"].oci_network_firewall_network_firewall_policy_decryption_rule.network_firewall_policy_decryption_rule\"  networkFirewallPolicies/<<firewall-policy ocid>>/decryptionRules/<<decryption-rule ocid>>
+############################
+
+decryption_rules = {
+    ##Add New Decryption rules for {{ region|lower }} here##
+}
+{% else %}
+  {% if rule_name != "" and rule_name != "nan" and rule_name != null %}
+  {{ policy_tf_name }}_{{rule_tf_name}} = {
+        rule_name = "{{ rule_name }}"
+        action = "{{ action }}"
+        network_firewall_policy_id = "{{ policy_tf_name }}"
+        condition = [{
+            {% if source_address != '' %}
+            source_address = [{{ src_address }}]
+            {% endif %}
+            {% if destination_address != '' %}
+            destination_address = [{{ dst_address }}]
+            {% endif %}
+         }]
+        {% if secret_name != '' %}
+        secret = "{{ secret_name }}"
+        {% endif %}
+        {% if decryption_profile != '' %}
+        decryption_profile = "{{ decrypt_name }}"
+        {% endif %}
+        {% if position != '' %}
+        {{placement}} = "{{ rule_place }}"
+        {% endif %}
+    },
+  {% endif %}
+{% endif %}

@@ -18,10 +18,12 @@ import time
 import oci
 from oci.object_storage import ObjectStorageClient
 from copy import deepcopy
-sys.path.append(os.getcwd()+"/..")
 import subprocess
 from os import environ
-from commonTools import *
+sys.path.append(os.getcwd())
+sys.path.append(os.getcwd()+"/..")
+from ocicloud.python.ociCommonTools import *
+from ocicloud.python.cd3Services import *
 
 
 
@@ -165,7 +167,7 @@ if use_devops == 'yes':
         repo_name = devops_repo.split("/")[1]
         devops_exists = True
 
-    ct = commonTools()
+    ct = ociCommonTools()
     config, signer = ct.authenticate(auth_mechanism, config_file_path)
     try:
         ct.get_subscribedregions(config,signer)

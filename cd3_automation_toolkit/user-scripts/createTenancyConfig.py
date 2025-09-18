@@ -17,9 +17,11 @@ import oci
 from oci.object_storage import ObjectStorageClient
 import glob
 import subprocess
-sys.path.append(os.getcwd()+"/..")
 from os import environ
-from commonTools import *
+sys.path.append(os.getcwd())
+sys.path.append(os.getcwd()+"/..")
+from ocicloud.python.ociCommonTools import *
+from ocicloud.python.cd3Services import *
 from copy import deepcopy
 from subprocess import DEVNULL
 global topic_name
@@ -203,9 +205,9 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
     # create symlink for Git Config file for SSH operations.
     src = git_config_file
-    if not os.path.exists("/cd3user/.ssh"):
-        os.makedirs("/cd3user/.ssh")
-    dst = "/cd3user/.ssh/config"
+    if not os.path.exists("/home/cd3user/.ssh"):
+        os.makedirs("/home/cd3user/.ssh")
+    dst = "/home/cd3user/.ssh/config"
     try:
         os.symlink(src,dst)
     except FileExistsError as e:
@@ -364,7 +366,7 @@ safe_file = user_dir + "/tenancies/createTenancyConfig.safe"
 auto_keys_dir = user_dir + "/tenancies/keys"
 toolkit_dir = os.path.dirname(os.path.abspath(__file__))+"/.."
 #toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
-terraform_dir = toolkit_dir + "/user-scripts/terraform"
+terraform_dir = toolkit_dir + "/ocicloud/terraform"
 variables_example_file = terraform_dir + "/variables_example.tf"
 setupoci_props_toolkit_file_path = toolkit_dir + "/setUpOCI.properties"
 
@@ -537,7 +539,7 @@ if not os.path.exists(customer_tenancy_dir+'/othertools_files'):
 dir_values = []
 
 # Copy input properties file to customer_tenancy_dir
-shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
+shutil.copy(args.propsfile,config_files+"/"+prefix+"_tenancyconfig.properties")
 
 # 1. Copy outdir_structure_file
 
@@ -626,7 +628,7 @@ elif auth_mechanism=='instance_principal':
 tenancy_id=tenancy
 
 ## Authenticate
-ct = commonTools()
+ct = ociCommonTools()
 config, signer = ct.authenticate(auth_mechanism, config_file_path)
 _realm = config['tenancy'].split(".")[2]
 cloud_domain = "."+oci.regions.REALMS[_realm]
@@ -636,7 +638,7 @@ cd3service = cd3Services()
 cd3service.fetch_regions(config, signer)
 
 #This is needed to be initialised again
-ct = commonTools()
+ct = ociCommonTools()
 try:
     ct.get_subscribedregions(config,signer)
 except Exception as e:
@@ -1134,7 +1136,7 @@ logging.info("\n######################################")
 logging.info("Next Steps for using toolkit via CLI")
 logging.info("######################################")
 logging.info("Modify "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties with input values for cd3file and workflow_type")
-logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit/")
+logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit")
 logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
 
 with open(outfile, 'r') as log_file:

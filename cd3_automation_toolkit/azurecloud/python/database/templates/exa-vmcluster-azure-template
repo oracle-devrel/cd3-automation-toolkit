@@ -1,0 +1,113 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+############################
+# Exa VM Cluster @Azure
+# Exa VM Cluster @Azure - tfvars
+############################
+
+az_oci_exa_vmclusters = {
+       ##Add New Exa-VMCluster @Azure here##
+}
+{% else %}
+
+     {{ display_tf_name }} =  {
+            az_region                = "{{ region }}"
+            resource_group_name      = "{{ container_id }}"
+
+            network_resource_group_name = "{{ network_container_id }}"
+            virtual_network_id       = "{{ vnet_name }}"
+            subnet_id                = "{{ subnet_id }}"
+
+            exadata_infrastructure_name = "{{ exadata_infrastructure_name }}"
+
+            display_name             = "{{ display_name }}"
+            hostname                 = "{{ hostname }}"
+            gi_version               = "{{ gi_version }}"
+            cpu_core_count           = "{{ cpu_core_count }}"
+            license_model            = "{{ license_model.split('_')|map('capitalize')|join }}"
+            ssh_public_keys          = ["{{ ssh_public_keys }}"]
+
+            {% if domain %}
+            domain                   = "{{ domain }}"
+            {% endif %}
+            {% if oci_zone_id %}
+            oci_zone_id              = "{{ oci_zone_id }}"
+            {% endif %}
+            {% if backup_subnet_cidr %}
+            backup_subnet_cidr       = "{{ backup_subnet_cidr }}"
+            {% endif %}
+            {% if cluster_name %}
+            cluster_name             = "{{ cluster_name }}"
+            {% endif %}
+
+            {% if diagnostics_events_enabled %}
+            diagnostics_events_enabled = {{ diagnostics_events_enabled }}
+            {% endif %}
+            {% if health_monitoring_enabled %}
+            health_monitoring_enabled  = {{ health_monitoring_enabled }}
+            {% endif %}
+            {% if incident_logs_enabled %}
+            incident_logs_enabled = {{ incident_logs_enabled }}
+            {% endif %}
+            {% if data_storage_percentage %}
+            data_storage_percentage  = {{ data_storage_percentage }}
+            {% endif %}
+            {% if data_storage_size_in_tbs %}
+            data_storage_size_in_tbs = {{ data_storage_size_in_tbs }}
+            {% endif %}
+            {% if db_node_storage_size_in_gbs %}
+            db_node_storage_size_in_gbs = {{ db_node_storage_size_in_gbs }}
+            {% endif %}
+            {% if memory_size_in_gbs %}
+            memory_size_in_gbs       = {{ memory_size_in_gbs }}
+            {% endif %}
+            {% if time_zone %}
+            time_zone                = "{{ time_zone }}"
+            {% endif %}
+            {% if local_backup_enabled %}
+            local_backup_enabled  = {{ local_backup_enabled }}
+            {% endif %}
+            {% if sparse_diskgroup_enabled %}
+            sparse_diskgroup_enabled = {{ sparse_diskgroup_enabled }}
+            {% endif %}
+            {% if scan_listener_port_tcp %}
+            scan_listener_port_tcp  = {{ scan_listener_port_tcp }}
+            {% endif %}
+            {% if scan_listener_port_tcp_ssl %}
+            scan_listener_port_tcp_ssl  = {{ scan_listener_port_tcp_ssl }}
+            {% endif %}
+            {% if system_version %}
+            system_version  = "{{ system_version }}"
+            {% endif %}
+            {% if mount_point %}
+            mount_point = "{{ mount_point }}"
+            {% endif %}
+            {% if size_in_gb %}
+            size_in_gb = {{ size_in_gb }}
+            {% endif %}
+
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Common Tags###  #}
+        {% if common_tags and common_tags != 'nan' and common_tags != '' and common_tags != [['nan']] %}
+          {% if common_tags[0] %}
+            common_tags = {
+            {% for tags in common_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+
+        {#  ###Section for adding Common Tags ends here###  #}
+        },
+
+{% endif %}
+
