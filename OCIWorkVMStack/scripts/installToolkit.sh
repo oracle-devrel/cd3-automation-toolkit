@@ -93,7 +93,7 @@ stop_exec
 sudo podman images >> $logfile 2>&1
 
 echo "***Setting Up podman Container***" >> $logfile 2>&1
-sudo podman run --name cd3_toolkit -it -p 8443:8443 -d -v /cd3user/mount_path:/cd3user/tenancies  cd3_toolkit bash >> $logfile 2>&1
+sudo podman run --name cd3_toolkit -it -p 8443:8443 -d -v /cd3user/mount_path:/cd3user  cd3_toolkit bash >> $logfile 2>&1
 stop_exec
 sudo podman ps -a >> $logfile 2>&1
 echo "Connect to Container using command - sudo podman exec -it cd3_toolkit bash " >> $logfile 2>&1
