@@ -1087,7 +1087,7 @@ def create_cost_management(prim_options=[]):
 
 
 def create_budgets():
-    errors = True
+    errors = False
     if (workflow_type == 'create_resources'):
         choices = [Option("Validate Budgets", None, None)]
         errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
