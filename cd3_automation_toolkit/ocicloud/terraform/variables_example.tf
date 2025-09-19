@@ -955,26 +955,71 @@ variable "databases" {
 
 variable "adb" {
   type = map(object({
-    admin_password           = optional(string)
-    character_set            = optional(string)
-    compartment_id           = string
-    cpu_core_count           = optional(number)
-    database_edition         = optional(string)
-    data_storage_size_in_tbs = optional(number)
-    customer_contacts        = optional(list(string))
-    db_name                  = string
-    db_version               = optional(string)
-    db_workload              = optional(string)
-    display_name             = optional(string)
-    license_model            = optional(string)
-    ncharacter_set           = optional(string)
-    network_compartment_id   = optional(string)
-    nsg_ids                  = optional(list(string))
-    subnet_id                = optional(string)
-    vcn_name                 = optional(string)
-    whitelisted_ips          = optional(list(string))
-    defined_tags             = optional(map(any))
-    freeform_tags            = optional(map(any))
+    admin_password                    = optional(string)
+    compartment_id                    = string
+    are_primary_whitelisted_ips_used  = optional(bool)
+    auto_refresh_frequency_in_seconds = optional(number)
+    auto_refresh_point_lag_in_seconds = optional(number)
+    adb_source = optional(string)
+    source_id = optional(string)
+    #source detail used as source_id
+    autonomous_database_source_backup_id = optional(string)
+    autonomous_database_id         = optional(string)
+    #storage
+    is_auto_scaling_for_storage_enabled  = optional(bool)
+    data_storage_size_in_gb              = optional(number)
+    data_storage_size_in_tbs             = optional(number)
+    autonomous_maintenance_schedule_type = optional(string)
+    character_set                        = optional(string)
+    compute_count                        = number
+    compute_model                        = string
+    ocpu_count                        = optional(number)
+    customer_contacts                    = optional(list(string))
+    data_safe_status                     = optional(string)
+    database_edition                     = optional(string)
+    db_name                              = string
+    db_version                           = optional(string)
+    db_workload                          = optional(string)
+    display_name                         = optional(string)
+    is_auto_scaling_enabled              = optional(bool)
+    #Dedicated Exadata Infrastructure
+    is_dedicated                     = optional(bool)
+    autonomous_container_database_id = optional(string)
+
+    # TDE MEK
+    kms_key_id = optional(string)
+    # ADB customer managed key
+    vault_id = optional(string)
+    # Only to Autonomous Databases on the Exadata Cloud@Customer platform
+    in_memory_percentage = optional(number)
+
+    is_local_data_guard_enabled = optional(bool)
+    is_mtls_connection_required = optional(bool)
+    tde_kms_key_id              = optional(string)
+    license_model               = optional(string)
+    ncharacter_set              = optional(string)
+    private_endpoint_ip         = optional(string)
+    private_endpoint_label      = optional(string)
+    refreshable_mode            = optional(string)
+    time_of_auto_refresh_start  = optional(string)
+    # Network
+    network_compartment_id = optional(string)
+    subnet_compartment_id = optional(string)
+    subnet_id              = optional(string)
+    vcn_name               = optional(string)
+    nsg_ids                = optional(list(string))
+    #Backup
+    backup_retention_period_in_days = optional(number)
+    is_backup_retention_locked      = optional(bool)
+    #DisasterRecoveryConfiguration
+    is_replicate_automatic_backups = optional(bool)
+    remote_disaster_recovery_type  = optional(string)
+    ##source=BACKUP_FROM_TIMESTAMP
+    timestamp           = optional(string)
+    use_latest_available_backup_time_stamp = optional(bool)
+    whitelisted_ips                        = optional(list(string))
+    defined_tags                           = optional(map(any))
+    freeform_tags                          = optional(map(any))
   }))
   default = {}
 }

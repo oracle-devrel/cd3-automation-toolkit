@@ -90,8 +90,8 @@ def create_exa_azure():
 
 def create_db_at_azure(execute_all=False):
     options = [
-        Option('Add/Modify/Delete ADB @Azure', create_adb_azure, 'Processing ADB-Azure Tab'),
-        Option('Add/Modify/Delete Exa @Azure', create_exa_azure, 'Processing Exa-Azure Tabs')
+        Option('Add/Modify/Delete ADB @Azure', create_adb_azure, 'Processing ADB-Azure Tab')
+        #Option('Add/Modify/Delete Exa @Azure', create_exa_azure, 'Processing Exa-Azure Tabs')
         # Option('Enable LBaaS Logs', enable_lb_logs, 'LBaaS Logs')
     ]
     options = show_options(options, quit=True, menu=True, index=1)

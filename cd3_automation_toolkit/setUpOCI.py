@@ -232,7 +232,7 @@ def fetch_compartments(outdir, outdir_struct, ct):
     var_files={}
     var_data = {}
     home_region = ct.home_region
-    print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /cd3user/tenancies/<customer_tenancy_name>/terraform_files")
+    print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /cd3user/tenancies/<prefix>/terraform_files")
     print("Verifying out directory and Taking backup of existing variables files...Please wait...")
     print("\nFetching Compartment Info...Please wait...")
     ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
@@ -1092,7 +1092,7 @@ def create_budgets():
         choices = [Option("Validate Budgets", None, None)]
         errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
 
-    if errors == True:
+    if errors == False:
         create_terraform_budgets(inputfile, outdir, service_dir_budget, prefix, ct)
         # Update modified path list
         update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_budget])
@@ -2192,6 +2192,7 @@ ct.get_region_ad_dict(config,signer)
 
 # Set service directories as per outdir_structure file
 # If single outdir, get service names from /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties
+#print("Creating out dir variables...\n")
 if len(outdir_struct.items())==0:
     single_outdir_config = configparser.RawConfigParser()
     outdir_config_file = os.path.dirname(os.path.abspath(__file__))+"/user-scripts/.outdir_structure_file.properties"
@@ -2205,6 +2206,7 @@ else:
         varname = "service_dir_"+str(key.replace("-","_")).strip()
         exec(varname + "= value",globals())
 
+#print("Reading varfile for compartments....\n")
 var_file = (f'{outdir}/{home_region}/{service_dir_identity}/variables_{home_region}.tf').replace('//','/')
 
 try:

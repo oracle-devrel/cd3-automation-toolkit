@@ -15,100 +15,244 @@ adb = {
 }
 {% else %}
 
-     {{ display_tf_name }} =  {
+    {{ display_tf_name }} =  {
 
-            compartment_id           = "{{ compartment_name }}"
-            db_name                  = "{{ db_name }}"
-            display_name             = "{{ adb_display_name }}"
+        compartment_id           = "{{ compartment_name }}"
+        db_name                  = "{{ db_name }}"
+        display_name             = "{{ adb_display_name }}"
 
-            admin_password           = "{{ admin_password }}"
+        admin_password           = "{{ admin_password }}"
 
-            {% if character_set != "" and character_set != "nan" %}
-            character_set            = "{{ character_set }}"
-            {% endif %}
+        {% if are_primary_whitelisted_ips_used and are_primary_whitelisted_ips_used.strip().lower() not in ["", "nan"] %}
+        are_primary_whitelisted_ips_used = {{ are_primary_whitelisted_ips_used | lower }}
+        {% endif %}
 
-            {% if ncharacter_set != "" and ncharacter_set != "nan" %}
-            ncharacter_set           = "{{ ncharacter_set }}"
-            {% endif %}
+        {% if auto_refresh_frequency_in_seconds and auto_refresh_frequency_in_seconds.strip().lower() not in ["", "nan"] %}
+        auto_refresh_frequency_in_seconds = {{ auto_refresh_frequency_in_seconds }}
+        {% endif %}
 
-            {% if customer_contacts and customer_contacts != "" and customer_contacts != "nan" %}
-            customer_contacts        = {{ customer_contacts | replace("\'","\"") }}
-            {% endif %}
 
-            cpu_core_count           = {{ cpu_core_count }}
+        {% if auto_refresh_point_lag_in_seconds and auto_refresh_point_lag_in_seconds.strip().lower() not in ["", "nan"] %}
+        auto_refresh_point_lag_in_seconds = {{ auto_refresh_point_lag_in_seconds }}
+        {% endif %}
 
-            {% if database_edition == "" %}
-            database_edition         = null
-            {% else %}
-            database_edition         = "{{ database_edition }}" #Only for BYOL license model
-            {% endif %}
 
-            {% if data_storage_size_in_tb != "" and data_storage_size_in_tb != "nan" %}
-            data_storage_size_in_tbs = {{ data_storage_size_in_tb }}
-            {% endif %}
-            db_version               = "19c"
+        {% if adb_source and adb_source.strip().lower() not in ["", "nan"] %}
+        adb_source = {{ adb_source }}
+        {% endif %}
 
-            {% if autonomous_value == 'adw' %}
-            db_workload              = "DW"
-            {% elif autonomous_value == 'atp' %}
-            db_workload              = "OLTP"
-            {% elif autonomous_value == 'json' %}
-            db_workload              = "AJD"
-            {% elif autonomous_value == 'apex' %}
-            db_workload              = "APEX"
-            {% else %}
-            db_workload              = "{{ autonomous_value }}"
-            {% endif %}
+        {% if source_id and source_id.strip().lower() not in ["", "nan"] %}
+        source_id = "{{ source_id }}"
+        {% endif %}
 
-            license_model            = "{{ license_model }}"
-            whitelisted_ips          = [{{ whitelisted_ips }}]
+        {% if autonomous_database_source_backup_id and autonomous_database_source_backup_id.strip().lower() not in ["", "nan"] %}
+        autonomous_database_source_backup_id = "{{ autonomous_database_source_backup_id.strip() }}"
+        {% endif %}
 
-            {% if network_compartment_id == "" %}
-            network_compartment_id   = null
-            {% else %}
-            network_compartment_id   = "{{ network_compartment_id }}"
-            {% endif %}
-            nsg_ids                  = [{{ nsg_ids }}]
-            {% if subnet_id == "" %}
-            subnet_id                = null
-            {% else %}
-            subnet_id                = "{{ subnet_id }}"
-            {% endif %}
-            {% if vcn_name == "" %}
-            vcn_name                 = null
-            {% else %}
-            vcn_name                 = "{{ vcn_name }}"
-            {% endif %}
+        {% if autonomous_database_id and autonomous_database_id.strip().lower() not in ["", "nan"] %}
+        autonomous_database_id = "{{ autonomous_database_id.strip() }}"
+        {% endif %}
+
+        {% if is_auto_scaling_for_storage_enabled and is_auto_scaling_for_storage_enabled.strip().lower() not in ["", "nan"] %}
+        is_auto_scaling_for_storage_enabled = {{ is_auto_scaling_for_storage_enabled | lower }}
+        {% endif %}
+
+        {% if data_storage_size_in_gb and data_storage_size_in_gb.strip().lower() not in ["", "nan"] %}
+        data_storage_size_in_gb = {{ data_storage_size_in_gb }}
+        {% endif %}
+
+        {% if data_storage_size_in_tbs and data_storage_size_in_tbs.strip().lower() not in ["", "nan"] %}
+        data_storage_size_in_tbs = {{ data_storage_size_in_tbs }}
+        {% endif %}
+
+        {% if autonomous_maintenance_schedule_type and autonomous_maintenance_schedule_type.strip().lower() not in ["", "nan"] %}
+        autonomous_maintenance_schedule_type = "{{ autonomous_maintenance_schedule_type.strip() }}"
+        {% endif %}
+
+        {% if character_set != "" and character_set != "nan" %}
+        character_set            = "{{ character_set }}"
+        {% endif %}
+
+        compute_count = {{ compute_count }}
+        compute_model = "{{ compute_model }}"
+
+        {% if customer_contacts and customer_contacts.strip().lower() not in ["", "nan"] %}
+        customer_contacts        = {{ customer_contacts | replace("\'","\"") }}
+        {% endif %}
+
+        {% if data_safe_status and data_safe_status.strip().lower() not in ["", "nan"] %}
+        data_safe_status = "{{ data_safe_status.strip() }}"
+        {% endif %}
+
+        {% if database_edition == "" %}
+        database_edition         = null
+        {% else %}
+        database_edition         = "{{ database_edition }}" #Only for BYOL license model
+        {% endif %}
+
+        {% if db_version and db_version.strip().lower() not in ["", "nan"] %}
+        db_version = "{{ db_version.strip() }}"
+        {% endif %}
+
+        {% if autonomous_value == 'adw' %}
+        db_workload              = "DW"
+        {% elif autonomous_value == 'atp' %}
+        db_workload              = "OLTP"
+        {% elif autonomous_value == 'json' %}
+        db_workload              = "AJD"
+        {% elif autonomous_value == 'apex' %}
+        db_workload              = "APEX"
+        {% else %}
+        db_workload              = "{{ autonomous_value }}"
+        {% endif %}
+
+        {% if is_auto_scaling_enabled and is_auto_scaling_enabled.strip().lower() not in ["", "nan"] %}
+        is_auto_scaling_enabled = {{ is_auto_scaling_enabled | lower }}
+        {% endif %}
+
+
+        {% if is_dedicated and is_dedicated.strip().lower() not in ["", "nan"] %}
+        is_dedicated = {{ is_dedicated | lower }}
+        {% endif %}
+
+        {% if autonomous_container_database_id and autonomous_container_database_id.strip().lower() not in ["", "nan"] %}
+        autonomous_container_database_id = "{{ autonomous_container_database_id.strip() }}"
+        {% endif %}
+
+        {% if kms_key_id and kms_key_id.strip().lower() not in ["", "nan"] %}
+        kms_key_id = "{{ kms_key_id.strip() }}"
+        {% endif %}
+
+        {% if vault_id and vault_id.strip().lower() not in ["", "nan"] %}
+        vault_id = "{{ vault_id.strip() }}"
+        {% endif %}
+
+
+        {% if in_memory_percentage and in_memory_percentage.strip().lower() not in ["", "nan"] %}
+        in_memory_percentage = {{ in_memory_percentage }}
+        {% endif %}
+
+
+        {% if is_local_data_guard_enabled and is_local_data_guard_enabled.strip().lower() not in ["", "nan"] %}
+        is_local_data_guard_enabled = {{ is_local_data_guard_enabled | lower }}
+        {% endif %}
+
+
+        {% if is_mtls_connection_required and is_mtls_connection_required.strip().lower() not in ["", "nan"] %}
+        is_mtls_connection_required = {{ is_mtls_connection_required | lower }}
+        {% endif %}
+
+        {% if tde_kms_key_id and tde_kms_key_id.strip().lower() not in ["", "nan"] %}
+        tde_kms_key_id = "{{ tde_kms_key_id.strip() }}"
+        {% endif %}
+
+        license_model            = "{{ license_model }}"
+
+        {% if ncharacter_set != "" and ncharacter_set != "nan" %}
+        ncharacter_set           = "{{ ncharacter_set }}"
+        {% endif %}
+
+        {% if ocpu_count and ocpu_count.strip().lower() not in ["", "nan"] %}
+        ocpu_count = {{ ocpu_count }}
+        {% endif %}
+
+        {% if private_endpoint_ip and private_endpoint_ip.strip().lower() not in ["", "nan"] %}
+        private_endpoint_ip = "{{ private_endpoint_ip.strip() }}"
+        {% endif %}
+
+        {% if private_endpoint_label and private_endpoint_label.strip().lower() not in ["", "nan"] %}
+        private_endpoint_label = "{{ private_endpoint_label.strip() }}"
+        {% endif %}
+
+        {% if refreshable_mode and refreshable_mode.strip().lower() not in ["", "nan"] %}
+        refreshable_mode = "{{ refreshable_mode.strip() }}"
+        {% endif %}
+
+        {% if time_of_auto_refresh_start and time_of_auto_refresh_start.strip().lower() not in ["", "nan"] %}
+        time_of_auto_refresh_start = "{{ time_of_auto_refresh_start.strip() }}"
+        {% endif %}
+
+        {% if network_compartment_id == "" %}
+        network_compartment_id   = null
+        {% else %}
+        network_compartment_id   = "{{ network_compartment_id }}"
+        {% endif %}
+        {% if subnet_compartment_id and subnet_compartment_id.strip().lower() not in ["", "nan"] %}
+        subnet_compartment_id = "{{subnet_compartment_id}}"
+        {% else %}
+        subnet_compartment_id = null
+        {% endif %}
+        {% if subnet_id == "" %}
+        subnet_id                = null
+        {% else %}
+        subnet_id                = "{{ subnet_id }}"
+        {% endif %}
+        {% if vcn_name == "" %}
+        vcn_name                 = null
+        {% else %}
+        vcn_name                 = "{{ vcn_name }}"
+        {% endif %}
+
+        nsg_ids                  = [{{ nsg_ids }}]
+
+        {% if backup_retention_period_in_days and backup_retention_period_in_days.strip().lower() not in ["", "nan"] %}
+        backup_retention_period_in_days = {{ backup_retention_period_in_days }}
+        {% endif %}
+
+
+        {% if is_backup_retention_locked and is_backup_retention_locked.strip().lower() not in ["", "nan"] %}
+        is_backup_retention_locked = {{ is_backup_retention_locked | lower }}
+        {% endif %}
+
+
+        {% if is_replicate_automatic_backups and is_replicate_automatic_backups.strip().lower() not in ["", "nan"] %}
+        is_replicate_automatic_backups = {{ is_replicate_automatic_backups | lower }}
+        {% endif %}
+
+        {% if remote_disaster_recovery_type and remote_disaster_recovery_type.strip().lower() not in ["", "nan"] %}
+        remote_disaster_recovery_type = "{{ remote_disaster_recovery_type.strip() }}"
+        {% endif %}
+
+        {% if autonomous_database_timestamp and autonomous_database_timestamp.strip().lower() not in ["", "nan"] %}
+        timestamp = "{{ autonomous_database_timestamp.strip() }}"
+        {% endif %}
+
+
+        {% if use_latest_available_backup_time_stamp and use_latest_available_backup_time_stamp.strip().lower() not in ["", "nan"] %}
+        use_latest_available_backup_time_stamp = {{ use_latest_available_backup_time_stamp | lower }}
+        {% endif %}
+
+        whitelisted_ips          = [{{ whitelisted_ips }}]
 
         {#  ##Do not modify below this line##  #}
         {#                                     #}
         {#  ###Section for adding Defined and Freeform Tags###  #}
         {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
-          {% if defined_tags[0] %}
-            defined_tags = {
+        {% if defined_tags[0] %}
+        defined_tags = {
             {% for tags in defined_tags  %}
-                {% if not loop.last %}
-                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% if not loop.last %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+            {% endfor %}
+        }
+        {% endif %}
+        {% endif %}
+        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+        {% if freeform_tags[0] %}
+        freeform_tags = {
+            {% for tags in freeform_tags %}
+                {% if not loop.last  %}
+            "{{ tags[0] }}"="{{ tags[1] }}",
                 {% else %}
-                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+            "{{ tags[0] }}"="{{ tags[1] }}"
                 {% endif %}
             {% endfor %}
-            }
-            {% endif %}
-           {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
-                    {% if freeform_tags[0] %}
-            freeform_tags = {
-                        {% for tags in freeform_tags %}
-                            {% if not loop.last  %}
-                    "{{ tags[0] }}"="{{ tags[1] }}",
-                            {% else %}
-                    "{{ tags[0] }}"="{{ tags[1] }}"
-                            {% endif %}
-                        {% endfor %}
-                        }
-                    {% endif %}
-                {% endif %}
+        }
+        {% endif %}
+        {% endif %}
         {#  ###Section for adding Defined and Freeform Tags ends here###  #}
         },
 

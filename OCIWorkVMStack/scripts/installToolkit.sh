@@ -72,6 +72,7 @@ echo "***Download Toolkit***" >> $logfile 2>&1
 sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b develop $toolkit_dir >> $logfile 2>&1
 cp -r $toolkit_dir/cd3_automation_toolkit /$mount_dir/oci_tools/
 cp -r $toolkit_dir/othertools /$mount_dir/oci_tools/
+sudo chown -R $username:$username /$mount_dir/oci_tools/
 stop_exec
 
 curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json

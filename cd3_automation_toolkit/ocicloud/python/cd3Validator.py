@@ -1464,9 +1464,9 @@ def validate_budgets(filename,comp_ids):
                     budget_check_result.append(False)
 
     if budget_check_result and False in budget_check_result:
-        return False
-    else:
         return True
+    else:
+        return False
 
 
 def validate_buckets(filename, comp_ids):
@@ -1988,7 +1988,7 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
             print("\nValidating Budgets Tab..")
             budgets_check = validate_budgets(filename,all_comp_ocids)
             errors = budgets_check
-            final_check.append(budgets_check)
+            #final_check.append(budgets_check)
 
         if ('Validate KMS' in options[0]):
             log("\n============================= Verifying KMS Tab ==========================================\n")
@@ -2053,7 +2053,9 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
             errors = buckets_check
 
             # Prints the final result; once the validation is complete
-    if any([comp_check, groups_check, policies_check, tags_check, instances_check, dns_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check,buckets_check, kms_check]) or False in final_check:
+    final_errors = False
+    if any([comp_check, groups_check, policies_check, tags_check, instances_check, dns_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check,buckets_check, kms_check, budgets_check]):# or True in final_check:
+        final_errors = True
         log("=======")
         log("Summary:")
         log("=======")
@@ -2083,7 +2085,8 @@ def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, si
         print("Invalid Choice....Exiting!!")
         exit(1)
 
-    if inspect.stack()[1].function == 'validate_cd3' or errors:
+    #if inspect.stack()[1].function == 'validate_cd3' or final_errors:
+    if final_errors:
         print("Please check the log file at " + customer_tenancy_dir + "/" + file + "\n")
 
     del(log)

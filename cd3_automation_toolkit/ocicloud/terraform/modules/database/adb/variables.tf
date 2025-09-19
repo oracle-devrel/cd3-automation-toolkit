@@ -26,11 +26,6 @@ variable "compartment_id" {
   type        = string
 }
 
-variable "cpu_core_count" {
-  description = "The number of OCPU cores to be made available to the database"
-  type        = number
-}
-
 variable "database_edition" {
   description = "The database edition of ADB"
   type        = string
@@ -105,7 +100,7 @@ variable "subnet_id" {
   default     = ""
 }
 
-variable "vcn_name" {
+variable "vcn_id" {
   type    = string
   default = ""
 }
@@ -113,4 +108,118 @@ variable "vcn_name" {
 variable "whitelisted_ips" {
   type    = list(string)
   default = []
+}
+variable "are_primary_whitelisted_ips_used" {
+  default = null
+}
+variable "auto_refresh_frequency_in_seconds" {
+  default = null
+}
+variable "auto_refresh_point_lag_in_seconds" {
+  default = null
+}
+variable "autonomous_container_database_id" {
+  default = null
+}
+variable "adb_source" {
+    default = null
+}
+variable "source_id" {
+  default = null
+}
+variable "autonomous_database_source_backup_id" {
+  default = null
+}
+variable "autonomous_database_id" {
+  default = null
+}
+
+variable "autonomous_maintenance_schedule_type" {
+  default = null
+}
+variable "backup_retention_period_in_days" {
+  default = null
+}
+variable "compute_count" {
+  default = null
+}
+variable "compute_model" {
+  default = null
+}
+variable "data_safe_status" {
+  default = null
+}
+variable "data_storage_size_in_gb" {
+  default = null
+}
+variable "disaster_recovery_type" {
+  default = null
+}
+variable "in_memory_percentage" {
+  default = null
+}
+variable "kms_key_id" {
+  default = null
+}
+variable "vault_id" {
+  default = null
+}
+variable "is_auto_scaling_enabled" {
+  default = null
+}
+variable "is_auto_scaling_for_storage_enabled" {
+  default = null
+}
+variable "is_backup_retention_locked" {
+  default = null
+}
+variable "is_dedicated" {
+  default = null
+}
+variable "is_local_data_guard_enabled" {
+  default = null
+}
+variable "is_mtls_connection_required" {
+  default = null
+}
+variable "is_replicate_automatic_backups" {
+  default = null
+}
+
+variable "ocpu_count" {
+  default = null
+}
+variable "private_endpoint_ip" {
+  default = null
+}
+variable "private_endpoint_label" {
+  default = null
+}
+variable "refreshable_mode" {
+  default = null
+}
+variable "remote_disaster_recovery_type" {
+  default = null
+}
+variable "secret_id" {
+  default = null
+}
+variable "secret_version_number" {
+  default = null
+}
+
+variable "standby_whitelisted_ips" {
+  default = null
+}
+variable "subscription_id" {
+  default = null
+}
+variable "time_of_auto_refresh_start" {
+  default = null
+}
+variable "timestamp" {
+  default = null
+}
+variable "use_latest_available_backup_time_stamp" {
+  default = null
 }

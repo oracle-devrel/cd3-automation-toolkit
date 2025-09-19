@@ -29,7 +29,7 @@ module "sub-compartments-level1" {
   depends_on = [module.iam-compartments]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.iam-compartments.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id], merge(module.iam-compartments.*...)[each.value.parent_compartment_id]["compartment_tf_id"])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete
@@ -46,7 +46,7 @@ module "sub-compartments-level2" {
   depends_on = [module.sub-compartments-level1]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level1.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id], merge(module.sub-compartments-level1.*...)[each.value.parent_compartment_id]["compartment_tf_id"])
   compartment_name        = each.value.name
   compartment_description = each.value.description
 
@@ -64,7 +64,7 @@ module "sub-compartments-level3" {
   depends_on = [module.sub-compartments-level2]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level2.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id], merge(module.sub-compartments-level2.*...)[each.value.parent_compartment_id]["compartment_tf_id"])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete
@@ -81,7 +81,7 @@ module "sub-compartments-level4" {
   depends_on = [module.sub-compartments-level3]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level3.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id], merge(module.sub-compartments-level3.*...)[each.value.parent_compartment_id]["compartment_tf_id"])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete
@@ -98,7 +98,7 @@ module "sub-compartments-level5" {
   depends_on = [module.sub-compartments-level4]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level4.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id], merge(module.sub-compartments-level4.*...)[each.value.parent_compartment_id]["compartment_tf_id"])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete

@@ -13,7 +13,7 @@ sudo dnf install python-pip -y
 #sudo ln -s /usr/bin/pip3 /usr/bin/pip
 
 # Install required Python packages
-pip install --user oci-cli==3.62.2
+pip install --user oci-cli==3.66.1
 pip install --user azure.identity
 pip install --user azure.mgmt.compute
 pip install --user azure.mgmt.oracledatabase

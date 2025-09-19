@@ -798,6 +798,9 @@ conf_file.close()
 '''
 
 # 4. Generate setUpOCI.properties file
+# copying blank template to tenancy prefix for export ready
+shutil.copy(f'{toolkit_dir}/example/CD3-Blank-template.xlsx',f'{customer_tenancy_dir}/CD3-Blank-template.xlsx')
+
 #if not os.path.isfile(setupoci_props_file_path):
 print("Creating Tenancy specific setUpOCI.properties.................")
 with open(setupoci_props_toolkit_file_path, 'r+') as setUpOci_file:
@@ -809,6 +812,7 @@ setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("aut
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("config_file=", "config_file="+config_file_path)
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("outdir_structure_file=", "outdir_structure_file="+_outdir_structure_file)
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("tf_or_tofu=", "tf_or_tofu="+tf_or_tofu)
+setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("cd3file=", "cd3file="+customer_tenancy_dir+"/CD3-Blank-template.xlsx")
 
 f = open(setupoci_props_file_path, "w+")
 f.write(setupoci_props_toolkit_file_data)
@@ -1136,7 +1140,7 @@ logging.info("\n######################################")
 logging.info("Next Steps for using toolkit via CLI")
 logging.info("######################################")
 logging.info("Modify "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties with input values for cd3file and workflow_type")
-logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit")
+logging.info("cd "+toolkit_dir)
 logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
 
 with open(outfile, 'r') as log_file:

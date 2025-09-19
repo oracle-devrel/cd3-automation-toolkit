@@ -74,9 +74,9 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or \
                 str(df.loc[i, 'Compartment Name']).lower() == 'nan' or \
-                str(df.loc[i, 'CPU Core Count']).lower() == 'nan' or \
+                str(df.loc[i, 'CPU Detail']).lower() == 'nan' or \
                 str(df.loc[i, 'DB Name']).lower() == 'nan':
-            print("\nRegion, Compartment Name, CPU Core Count and DB Name fields are mandatory. Please enter a value and try again !!")
+            print("\nRegion, Compartment Name, CPU Detail and DB Name fields are mandatory. Please enter a value and try again !!")
             print("\n** Exiting **")
             exit(1)
 
@@ -106,6 +106,36 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
                 display_tf_name = commonTools.check_tf_variable(display_tf_name)
                 tempdict = {'display_tf_name': display_tf_name}
 
+            if columnname == 'CPU Detail':
+                columnvalue = columnvalue.strip()
+                cpu_detail = columnvalue.split("::")
+                tempdict = {'compute_model': cpu_detail[0],'compute_count':cpu_detail[1].split(".")[0]}
+
+            if columnname == 'Is Auto Scaling Enabled':
+                columnvalue = columnvalue.strip()
+                tempdict = {'is_auto_scaling_enabled': columnvalue}
+
+            if columnname == 'Data Storage Size' and columnvalue != '':
+                columnvalue = columnvalue.strip().lower()
+                data_storage = columnvalue.split("::")
+                if len(data_storage) > 1:
+                    if data_storage[0] == "gb":
+                        tempdict = {'data_storage_size_in_gb' : data_storage[1]}
+                    elif data_storage[0] == "tb":
+                        tempdict = {'data_storage_size_in_tbs': data_storage[1]}
+                elif len(data_storage) == 1:
+                    tempdict = {'data_storage_size_in_tbs': columnvalue}
+
+            if columnname.lower() == 'source' and columnvalue != '':
+                columnvalue = columnvalue.strip()
+                tempdict = {'adb_source': columnvalue}
+
+
+            if columnname == 'Database Workload':
+                columnvalue = columnvalue.strip()
+                autonomous_value = commonTools.check_tf_variable(columnvalue).lower()
+                tempdict = {'autonomous_value': autonomous_value}
+
             if columnname == 'Database Workload':
                 columnvalue = columnvalue.strip()
                 autonomous_value = commonTools.check_tf_variable(columnvalue).lower()
@@ -134,16 +164,27 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
 
             subnet_id = ''
             network_compartment_id = ''
+            subnet_compartment_id = ''
             vcn_name = ''
             if columnname == "Network Details":
                 columnvalue = columnvalue.strip()
                 if ("ocid1.subnet.oc" in columnvalue):
                     network_compartment_id = "root"
                     vcn_name = ""
+                    subnet_compartment_id = "root"
                     subnet_id = columnvalue
                 elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
-                    if len(columnvalue.split("@")) == 2:
+                    if len(columnvalue.split("@")) == 3:
+                        network_compartment_id, part2 = columnvalue.split("@", 1)
+                        network_compartment_id = commonTools.check_tf_variable(network_compartment_id)
+                        vcn_name, part2 = part2.split("::", 1)
+                        subnet_compartment_id, subnet_name = part2.rsplit("@", 1)
+                        subnet_compartment_id = commonTools.check_tf_variable(subnet_compartment_id)
+                        vcn_subnet_name = f'{vcn_name}::{subnet_name}'
+
+                    elif len(columnvalue.split("@")) == 2:
                         network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
+                        subnet_compartment_id = network_compartment_id
                         vcn_subnet_name = columnvalue.split("@")[1].strip()
                     else:
                         network_compartment_id = commonTools.check_tf_variable(
@@ -158,6 +199,7 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
 
 
                 tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
+                            'subnet_compartment_id': subnet_compartment_id,
                             'subnet_id': subnet_id}
 
             if columnname == "License Model" and columnvalue.strip() == "LICENSE_INCLUDED":

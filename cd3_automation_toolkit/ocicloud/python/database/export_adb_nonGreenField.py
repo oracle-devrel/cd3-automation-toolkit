@@ -25,20 +25,28 @@ def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name,
         for item in adb.customer_contacts:
             customer_emails += ","+item.email
     adb_subnet_id = adb.subnet_id
-
+    cpu_detail = f'{adb.compute_model}::{str(adb.compute_count).split(".")[0]}'
+    if hasattr(adb, 'data_storage_size_in_gbs') :
+        data_storage = f'GB::{str(adb.data_storage_size_in_gbs)}'
+    # data_storage_size_in_tbs will be used over data_storage_size_in_gbs if available
+    if hasattr(adb, 'data_storage_size_in_tbs') and str(adb.data_storage_size_in_tbs) != "None":
+        data_storage = f'TB::{str(adb.data_storage_size_in_tbs)}'
     if (adb_subnet_id is not None):
         adb_subnet_info = vnc_client.get_subnet(adb_subnet_id)
         adb_subnet_name = adb_subnet_info.data.display_name  # Subnet-Name
         adb_vcn_name = vnc_client.get_vcn(adb_subnet_info.data.vcn_id).data.display_name
-
+        snet_comp_id = adb_subnet_info.data.compartment_id
         ntk_compartment_id = vnc_client.get_vcn(adb_subnet_info.data.vcn_id).data.compartment_id  # compartment-id
         network_compartment_name = ntk_compartment_name
         for comp_name, comp_id in ct.ntk_compartment_ids.items():
             if comp_id == ntk_compartment_id:
                 network_compartment_name = comp_name
-
-        vs = network_compartment_name + "@" + adb_vcn_name + "::" + adb_subnet_name
-
+            if comp_id == snet_comp_id:
+                ntk_comp_name = comp_name
+        if ntk_compartment_id == snet_comp_id:
+            vs = network_compartment_name + "@" + adb_vcn_name + "::" + adb_subnet_name
+        else:
+            vs = network_compartment_name + "@" + adb_vcn_name + "::"+ ntk_comp_name + "@" + adb_subnet_name
 
     # Fetch NSGs
     NSGs = adb.nsg_ids
@@ -81,10 +89,13 @@ def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name,
                 values_for_column[col_header].append(adb.database_edition)
             else:
                 values_for_column[col_header].append("")
-        elif col_header == 'CPU Core Count':
-            values_for_column[col_header].append(adb.cpu_core_count)
-        elif col_header == 'Data Storage Size in TB':
-            values_for_column[col_header].append(adb.data_storage_size_in_tbs)
+        elif col_header == 'CPU Detail':
+            values_for_column[col_header].append(cpu_detail)
+        elif col_header == 'Auto Scaling CPU':
+            values_for_column[col_header].append(str(adb.is_auto_scaling_enabled))
+        elif col_header == 'Data Storage Size':
+            values_for_column[col_header].append(data_storage)
+
         elif col_header == 'Database Workload':
             val= adb.db_workload
             if adb.db_workload == "DW":
