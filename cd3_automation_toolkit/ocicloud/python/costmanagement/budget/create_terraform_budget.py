@@ -151,7 +151,7 @@ def create_terraform_budgets(inputfile, outdir, service_dir, prefix,ct):
                 tempdict = {'budget_end_date': columnvalue.strip()}
 
             elif columnname == "Alert Recipients" and columnvalue != 'nan':
-                tempdict = {'alert_recipients': columnvalue.strip()}
+                tempdict = {'alert_recipients': columnvalue.strip().replace("\n", "\\n")}
 
             elif columnname == "Alert Message" and columnvalue != 'nan':
                 tempdict = {'alert_message': columnvalue}

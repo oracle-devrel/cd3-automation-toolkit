@@ -369,7 +369,7 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
                 values_for_column_oke[col_header].append(None)
         elif 'nodepool freeform tags' in col_header.lower() and col_header.lower() in ociCommonTools.tagColumns:
             if (nodepool_info != None):
-                values_for_column_oke = commonTools.export_tags(nodepool_info, col_header,values_for_column_oke)
+                values_for_column_oke = ociCommonTools.export_tags(nodepool_info, col_header,values_for_column_oke)
             else:
                 values_for_column_oke[col_header].append(None)
 
@@ -401,21 +401,21 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
 
         elif 'lb defined tags' in col_header.lower() and col_header.lower() in ociCommonTools.tagColumns:
             if (nodepool_count <= 1):
-                values_for_column_oke = commonTools.export_tags(cluster_info.options.service_lb_config, col_header,
+                values_for_column_oke = ociCommonTools.export_tags(cluster_info.options.service_lb_config, col_header,
                                                                 values_for_column_oke)
             else:
                 values_for_column_oke[col_header].append(None)
 
         elif 'lb freeform tags' in col_header.lower() and col_header.lower() in ociCommonTools.tagColumns:
             if (nodepool_count <= 1):
-                values_for_column_oke = commonTools.export_tags(cluster_info.options.service_lb_config, col_header,
+                values_for_column_oke = ociCommonTools.export_tags(cluster_info.options.service_lb_config, col_header,
                                                                 values_for_column_oke)
             else:
                 values_for_column_oke[col_header].append(None)
 
         elif 'volume defined tags' in col_header.lower() and col_header.lower() in ociCommonTools.tagColumns:
             if (nodepool_count <= 1):
-                values_for_column_oke = commonTools.export_tags(cluster_info.options.persistent_volume_config,
+                values_for_column_oke = ociCommonTools.export_tags(cluster_info.options.persistent_volume_config,
                                                                 col_header, values_for_column_oke)
             else:
                 values_for_column_oke[col_header].append(None)
@@ -433,7 +433,7 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
             values_for_column_oke = ociCommonTools.export_tags(cluster_info, col_header, values_for_column_oke)
         else:
              oci_objs = [cluster_info,image_policy_config, nodepool_info]
-             values_for_column_oke = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_oke,values_for_column_oke)
+             values_for_column_oke = ociCommonTools.export_extra_columns(oci_objs, col_header, sheet_dict_oke,values_for_column_oke)
 
 # Execution of the code begins here
 def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compartments=[], export_regions=[],export_tags=[]):

@@ -34,7 +34,7 @@ def print_budgets(values_for_columns, region, budget,budget_name,budget_alert_ru
             value = budget_name if budget else ""
             values_for_columns[col_header].append(value)
 
-        if (col_header == "Description"):
+        elif (col_header == "Description"):
             value = budget.description if budget else ""
             values_for_columns[col_header].append(value)
         elif (col_header == "Scope"):
@@ -187,6 +187,8 @@ def export_budgets_nongreenfield(inputfile, outdir, service_dir, config, signer,
                         alert_id = "budgets/"+budget_id+"/alertRules/"+str(budget_alert_rule.id)
                         if budget_tf_name in budget_done :
                             budget = []
+                        # if budget_done and budget_tf_name == budget_done[-1]:
+                        #     continue
                         print_budgets(values_for_column_budgets, region, budget,budget_name,budget_alert_rule,ct)
                         budget_done.append(budget_tf_name)
                         tf_resource = f'module.budget-alert-rules[\\"{alert_tf_name}\\"].oci_budget_alert_rule.alert_rule'
