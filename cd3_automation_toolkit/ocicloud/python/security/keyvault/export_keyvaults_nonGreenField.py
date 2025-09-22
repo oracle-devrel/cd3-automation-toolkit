@@ -164,7 +164,7 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                                         else:
                                                             values_for_column_kms[col_header].append('')
                                                 elif str(col_header).lower() in ["vault defined tags", "vault freeform tags"]:
-                                                    values_for_column_kms = commonTools.export_tags(vault, col_header,
+                                                    values_for_column_kms = ociCommonTools.export_tags(vault, col_header,
                                                                                                     values_for_column_kms)
 
                                                 elif col_header == 'Key Compartment Name':
@@ -186,12 +186,12 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                                     values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data.auto_key_rotation_details, 'rotation_interval_in_days') else '')
                                                 elif str(col_header).lower() in ["key defined tags" , "key freeform tags"]:
                                                     if len(key.defined_tags) != 0:
-                                                        values_for_column_kms = commonTools.export_tags(key, col_header, values_for_column_kms)
+                                                        values_for_column_kms = ociCommonTools.export_tags(key, col_header, values_for_column_kms)
                                                     else:
                                                         values_for_column_kms[col_header].append('')
                                                 else:
                                                     oci_objs = [vault, key, get_key_data, get_vault_data, get_vault_data.replica_details]
-                                                    values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
+                                                    values_for_column_kms = ociCommonTools.export_extra_columns(oci_objs, col_header,
                                                                                                              sheet_dict_kms,
                                                                                                              values_for_column_kms)
                                         else:
@@ -216,13 +216,13 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                                     values_for_column_kms[col_header].append(get_key_data.auto_key_rotation_details.rotation_interval_in_days if hasattr(get_key_data.auto_key_rotation_details,'rotation_interval_in_days') else '')
                                                 elif str(col_header).lower() in ["key defined tags", "key freeform tags"]:
                                                     if len(key.defined_tags) != 0:
-                                                        values_for_column_kms = commonTools.export_tags(key, col_header,
+                                                        values_for_column_kms = ociCommonTools.export_tags(key, col_header,
                                                                                                         values_for_column_kms)
                                                     else:
                                                         values_for_column_kms[col_header].append('')
                                                 else:
                                                     oci_objs = [key, get_key_data]
-                                                    values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
+                                                    values_for_column_kms = ociCommonTools.export_extra_columns(oci_objs, col_header,
                                                                                                              sheet_dict_kms,
                                                                                                              values_for_column_kms)
                                                     pass
@@ -245,11 +245,11 @@ def export_keyvaults(inputfile, outdir, service_dir, config, signer, ct, export_
                                         else:
                                             values_for_column_kms[col_header].append('')
                                 elif str(col_header).lower() in ["vault defined tags", "vault freeform tags"]:
-                                    values_for_column_kms = commonTools.export_tags(vault, col_header,
+                                    values_for_column_kms = ociCommonTools.export_tags(vault, col_header,
                                                                                     values_for_column_kms)
                                 else:
                                     oci_objs = [vault, get_vault_data, get_vault_data.replica_details]
-                                    values_for_column_kms = commonTools.export_extra_columns(oci_objs, col_header,
+                                    values_for_column_kms = ociCommonTools.export_extra_columns(oci_objs, col_header,
                                                                                              sheet_dict_kms,
                                                                                              values_for_column_kms)
 
