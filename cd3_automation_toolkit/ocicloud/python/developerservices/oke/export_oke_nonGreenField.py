@@ -543,6 +543,7 @@ def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compart
 
                     for nodepool_info in nodepoolList:
                         if nodepool_info.lifecycle_state!="ACTIVE":
+                            nodepool_info = None
                             continue
 
                         # Tags filter
