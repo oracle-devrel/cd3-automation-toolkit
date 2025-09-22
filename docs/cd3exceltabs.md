@@ -9,13 +9,21 @@ Click on the links below to know about the specifics of each tab in the Excel te
     gap: 20px;
   }
 
-  h3:target {
-    background-color:#90E0D5 ;                           
-    border-left: 6px solid #00bfa5;    
+  [data-md-color-scheme="oracle"] h3:target {
+    background-color: #90E0D5;       
+    border-left: 6px solid #027d6c;  
     padding-left: 16px;
+    color: #2D4954;                  
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
+  [data-md-color-scheme="slate"] h3:target {
+    background-color: #2D4954;       
+    border-left: 6px solid #90E0D5;  
+    padding-left: 16px;
+    color: #ffffff;                  
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
   h3 img {
     height: 30px;
@@ -37,11 +45,11 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#compartments-tab">Compartments</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#groups-tab">Groups / Dynamic Groups</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#policies-tab">Policies</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#users-tab">Users</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#network-sources-tab">Network Sources</a></li>
+        <li><a href="../tabs#compartments-tab">Compartments</a></li>
+        <li><a href="../tabs#groups-tab">Groups / Dynamic Groups</a></li>
+        <li><a href="../tabs#policies-tab">Policies</a></li>
+        <li><a href="../tabs#users-tab">Users</a></li>
+        <li><a href="../tabs#network-sources-tab">Network Sources</a></li>
       </ul>
       <a href="../terraform/identity">🔗 Sample auto.tfvars for Identity components</a>
     </div>
@@ -52,8 +60,8 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#tags-tab">Tags</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#quotas-tab">Quotas</a></li>
+        <li><a href="../tabs#tags-tab">Tags</a></li>
+        <li><a href="../tabs#quotas-tab">Quotas</a></li>
       </ul>
       <a href="../terraform/governance/#1-tag-namespaces">🔗 Sample auto.tfvars for Tags</a><br>
       <a href="../terraform/governance/#4-quotas">🔗 Sample auto.tfvars for Quotas</a>
@@ -65,7 +73,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#budgets-tab">Budgets</a></li>
+        <li><a href="../tabs#budgets-tab">Budgets</a></li>
       </ul>
       <a href="../terraform/costmanagement/#budgets">🔗 Sample auto.tfvars for Budgets</a><br>
       <a href="../terraform/costmanagement/#budget-alert-rules">🔗 Sample auto.tfvars for Budget Alert Rules</a>
@@ -77,13 +85,13 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#a-vcns-tab">VCNs</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#b-drgs-tab">DRGs - Attachments</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#c-vcn-info-tab">VCN Info</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#d-dhcp-tab">DHCP</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#e-subnetsvlans-tab">Subnets / VLANs</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#f-rules">DRG / Route / Sec Rules</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#g-nsgs">NSGs</a></li>
+        <li><a href="../tabs#a-vcns-tab">VCNs</a></li>
+        <li><a href="../tabs#b-drgs-tab">DRGs - Attachments</a></li>
+        <li><a href="../tabs#c-vcn-info-tab">VCN Info</a></li>
+        <li><a href="../tabs#d-dhcp-tab">DHCP</a></li>
+        <li><a href="../tabs#e-subnetsvlans-tab">Subnets / VLANs</a></li>
+        <li><a href="../tabs#f-rules">DRG / Route / Sec Rules</a></li>
+        <li><a href="../tabs#g-nsgs">NSGs</a></li>
       </ul>
       <a href="../terraform/network">🔗 Sample auto.tfvars for Network components</a>
     </div>
@@ -94,8 +102,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#firewall-tabs">Firewall</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#firewall-tabs">Policy & Rules (App, URL, Secret, Decrypt, etc.)</a></li>
+        <li><a href="../tabs#firewall-tabs">Firewall</a></li>
       </ul>
       <a href="../terraform/firewall">🔗 Sample auto.tfvars for Firewall components</a>
     </div>
@@ -105,11 +112,11 @@ Click on the links below to know about the specifics of each tab in the Excel te
       <b>Monitoring Services</b>
     </h3>
     <div style="padding-left: 20px;">
-      <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#notifications-tab">Notifications</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#events-tab">Events</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#alarms-tab">Alarms</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#serviceconnectors-tab">Service Connectors</a></li>
+      <ul>f
+        <li><a href="../tabs#notifications-tab">Notifications</a></li>
+        <li><a href="../tabs#events-tab">Events</a></li>
+        <li><a href="../tabs#alarms-tab">Alarms</a></li>
+        <li><a href="../tabs#serviceconnectors-tab">Service Connectors</a></li>
       </ul>
       <a href="../terraform/managementservices">🔗 Sample auto.tfvars for Alarms, Notifications, Events</a><br>
       <a href="../terraform/sch">🔗 Sample auto.tfvars for Service Connectors</a>
@@ -122,7 +129,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     <div style="padding-left: 20px;">
       <ul>
         <li><a href="../resource-manager-upload">Upload to OCI Resource Manager Stack</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#oke-tab">OKE</a></li>
+        <li><a href="../tabs#oke-tab">OKE</a></li>
       </ul>
       <a href="../terraform/managementservices">🔗 Sample auto.tfvars for OKE components- Clusters, Nodepools</a><br>
     </div>
@@ -133,7 +140,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#sddcs-tab">OCVS</a></li>
+        <li><a href="../tabs#sddcs-tab">OCVS</a></li>
       </ul>
       <a href="../terraform/sddc">🔗 Sample auto.tfvars for OCVS</a><br>
     </div>
@@ -145,8 +152,8 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#dns-views-zones-records-tab">Views / Zones / Records</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#dns-resolvers-tab">Resolvers</a></li>
+        <li><a href="../tabs#dns-views-zones-records-tab">Views / Zones / Records</a></li>
+        <li><a href="../tabs#dns-resolvers-tab">Resolvers</a></li>
       </ul>
       <a href="../terraform/dns">🔗 Sample auto.tfvars for DNS components</a>
     </div>
@@ -157,12 +164,12 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#lb-hostname-certs-tab">Hostname & Certs</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#lb-backend-set-and-backend-servers-tab">Backends</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#lb-ruleset-tab">Rule Sets</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#lb-path-route-set-tab">Path Routes</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#lb-routing-policy-tab">Routing Policy</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#lb-listeners-tab">Listeners</a></li>
+        <li><a href="../tabs#lb-hostname-certs-tab">Hostname & Certs</a></li>
+        <li><a href="../tabs#lb-backend-set-and-backend-servers-tab">Backends</a></li>
+        <li><a href="../tabs#lb-ruleset-tab">Rule Sets</a></li>
+        <li><a href="../tabs#lb-path-route-set-tab">Path Routes</a></li>
+        <li><a href="../tabs#lb-routing-policy-tab">Routing Policy</a></li>
+        <li><a href="../tabs#lb-listeners-tab">Listeners</a></li>
       </ul>
       <a href="../terraform/loadbalancer">🔗 Sample auto.tfvars for Load Balancer components</a>
     </div>
@@ -173,8 +180,8 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#dedicatedvmhosts-tab">Dedicated VM Hosts</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#instances-tab">Instances</a></li>
+        <li><a href="../tabs#dedicatedvmhosts-tab">Dedicated VM Hosts</a></li>
+        <li><a href="../tabs#instances-tab">Instances</a></li>
       </ul>
       <a href="../terraform/compute">🔗 Sample auto.tfvars for Compute</a>
     </div>
@@ -185,9 +192,9 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#blockvolumes-tab">Block Volumes</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#fss-tab">File Storage (FSS)</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#buckets-tab">Object Storage Buckets</a></li>
+        <li><a href="../tabs#blockvolumes-tab">Block Volumes</a></li>
+        <li><a href="../tabs#fss-tab">File Storage (FSS)</a></li>
+        <li><a href="../tabs#buckets-tab">Object Storage Buckets</a></li>
       </ul>
       <a href="../terraform/storage#block-volumes">🔗 Sample auto.tfvars for Block Volumes</a><br>
       <a href="../terraform/storage#fss">🔗 Sample auto.tfvars for File Storage</a><br>
@@ -200,9 +207,9 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#dbsystems-vm-bm-tab">DBSystems - VM/BM</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#exacs">Exadata CS</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#adb-tab">Autonomous DB</a></li>
+        <li><a href="../tabs#dbsystems-vm-bm-tab">DBSystems - VM/BM</a></li>
+        <li><a href="../tabs#exacs">Exadata CS</a></li>
+        <li><a href="../tabs#adb-tab">Autonomous DB</a></li>
       </ul>
     </div>
 
@@ -212,7 +219,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#mysql-tabs">MySQL</a></li>
+        <li><a href="../tabs#mysql-tabs">MySQL</a></li>
       </ul>
     </div>
 
@@ -223,11 +230,11 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#vcn-flow-logs">VCN Flow Logs</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#lbaas-logs">LBaas Logs</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#oss-logs">OSS Logs</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#fss-logs">FSS Logs</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#firewall-logs">Firewall Logs</a></li>
+        <li><a href="../tabs#vcn-flow-logs">VCN Flow Logs</a></li>
+        <li><a href="../tabs#lbaas-logs">LBaas Logs</a></li>
+        <li><a href="../tabs#oss-logs">OSS Logs</a></li>
+        <li><a href="../tabs#fss-logs">FSS Logs</a></li>
+        <li><a href="../tabs#firewall-logs">Firewall Logs</a></li>
       </ul>
       <a href="../terraform/logging#vcn-flow-logs">🔗 Sample auto.tfvars for VCN Flow Logs</a><br>
       <a href="../terraform/logging#load-balancer-logs">🔗 Sample auto.tfvars for Load balancer Logs</a><br>
@@ -243,8 +250,8 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </h3>
     <div style="padding-left: 20px;">
       <ul>
-        <li><a href="/cd3-automation-toolkit/tabs/#kms-tab">KMS</a></li>
-        <li><a href="/cd3-automation-toolkit/tabs/#cloud-guard">Cloud Guard</a></li>
+        <li><a href="../tabs#kms-tab">KMS</a></li>
+        <li><a href="../tabs#cloud-guard">Cloud Guard</a></li>
       </ul>
       <a href="../terraform/security/#1vaults">🔗 Sample auto.tfvars for KMS Vaults</a><br>
        <a href="../terraform/security/#2keys">🔗 Sample auto.tfvars for KMS Keys</a><br>
