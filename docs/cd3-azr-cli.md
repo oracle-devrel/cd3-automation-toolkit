@@ -1,17 +1,14 @@
 # **Set Up Azure using Automation Toolkit with CLI**
 ---
-!!! Important "Must Read!"
-    Check out the <a href="../must-read-prerequisites"><u>Must Read</u></a> section for managing network, compute and oci firewall resources.
-
 ## High Level Steps to use toolkit with CLI
 
 1. Login to the CD3 Container.
 
-2. Check out <a href="../cd3workflows"><u>CD3 Workflows document</u></a> for workflows supported by the toolkit and choose the workflow.
+2. Check out <a href="../cd3workflows"><u>CD3 Workflows document</u></a> for workflows supported by the toolkit and choose the required workflow.
 
-3. Use one of the templates from <a href="../excel-templates"><u>Excel Templates</u></a> based on the workflow chosen.
+3. Use one of the templates from <a href="../excel-templates"><u>Excel Templates</u></a> based on your requirement.
 
-4. Review setUpAzure.properties file _/cd3user/azure/<prefix\>/<prefix\>_setUpAzure.properties_.
+4. Review `setUpAzure.properties` file:  `/cd3user/azure/<prefix>/<prefix>_setUpAzure.properties`.
 
 <span style="color: teal;"><b>setUpAzure.properties</b></span>
 ```ini
