@@ -118,38 +118,37 @@ Upon re-running the same option, the previously existing files will be backed up
 
 2. <a href="../additional-attributes"><u>Add any additional attributes</u></a> (not part of excel sheet already) which needs to be exported . <br>
 
-3. Make sure to export the VCNs and Subnets in which the Instances are present prior to exporting the Instance. <br>
 
-4. Execute the _setupOCI_ with _Workflow Type_ as _Export Resources_ <br>
+3. Execute the _setupOCI_ with _Workflow Type_ as _Export Resources_ <br>
    ```
    python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 ``` 
-5. Provide the region from where the Instances have to be exported. Specify comma separated values for multiple regions. <br>
+4. Provide the region from where the Instances have to be exported. Specify comma separated values for multiple regions. <br>
 
-6. From the output menu, select **Export Compute >> Export Instances**. <br>
+5. From the output menu, select **Export Compute >> Export Instances**. <br>
 
-7. Enter the compartment to which the Instances belong to. When exporting instances from multiple compartments, specify the compartment values as comma-separated values. <br>
+6. Enter the compartment to which the Instances belong to. When exporting instances from multiple compartments, specify the compartment values as comma-separated values. <br>
 Specify the compartment name along with hierarchy in the below format:
 
         Parent Compartment1::Parent Compartment2::MyCompartment 
  
 
-8. To export only specific instances, specify the required filter values
+7. To export only specific instances, specify the required filter values
      - Enter comma separated list of display name patterns of the instances: 
      - Enter comma separated list of ADs of the instances eg AD1,AD2,AD3: <br>
 
 
-9. Upon executing, the "Instances" sheet in input CD3 Excel is populated with the VMs details. <br>
+8. Upon executing, the "Instances" sheet in input CD3 Excel is populated with the VMs details. <br>
 
-10. The *import_commands_instances.sh* script, tfvars file are generated for the Instances under folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```. <br>
+9. The *import_commands_instances.sh* script, tfvars file are generated for the Instances under folder ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>```. <br>
 
-11. The associated ssh public keys are placed under variables_<region\>.tf under the "instance_ssh_keys" variable.  <br>
+10. The associated ssh public keys are placed under variables_<region\>.tf under the "instance_ssh_keys" variable.  <br>
 
-12. While export of instances, it will fetch details for only the primary VNIC attached to the instance. <br>
+11. While export of instances, it will fetch details for only the primary VNIC attached to the instance. <br>
 
-13. Execute the .sh file (*sh import_commands_instances.sh*) to generate terraform state file. <br>  **This will be automatically executed while using the toolkit with Jenkins.**
+12. Execute the .sh file (*sh import_commands_instances.sh*) to generate terraform state file. <br>  **This will be automatically executed while using the toolkit with Jenkins.**
 
-14. Check out the <a href="../knownbehaviour"><u>known behaviour of toolkit</u></a> for export of instances having multiple plugins.
+13. Check out the <a href="../knownbehaviour"><u>known behaviour of toolkit</u></a> for export of instances having multiple plugins.
 
 
 
