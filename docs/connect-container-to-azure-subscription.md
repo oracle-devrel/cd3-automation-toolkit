@@ -134,7 +134,7 @@ python connectCloud.py azure connectAzure.properties
         </tr>
         <tr>
             <td>out file</td>
-            <td>/cd3user/azure/&lt;prefix&gt;/.config_files/connectAzure.out</td>
+            <td>/cd3user/azure/&lt;prefix&gt;/connectAzure.out</td>
             <td>This file contains a copy of information displayed as the console output of the script</td>
         </tr>
         <tr>
