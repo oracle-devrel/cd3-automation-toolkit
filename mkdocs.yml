@@ -10,7 +10,10 @@ nav:
     - CD3 workflows: cd3workflows.md
     - Architecture: architecture.md   
     - Services Supported: supportedservices.md
-    - Excel Templates: excel-templates.md
+    - Excel Templates: 
+      - excel-templates.md
+      - For OCI: oci-excel-templates.md
+      - For Azure: azr-excel-templates.md
       
   - Install CD3 :
     - install-cd3.md
@@ -54,6 +57,10 @@ nav:
     - setUpAzure.md
     - Set Up Azure with CLI:
       - cd3-azr-cli.md
+      - Create in Azure  : 
+        - greenfield-azr-cli.md
+      - Export from Azure : 
+        - nongreenfield-azr-cli.md
   - Read More for OCI :
     - must-read-prerequisites.md
     - Manage Network : manage-network.md
