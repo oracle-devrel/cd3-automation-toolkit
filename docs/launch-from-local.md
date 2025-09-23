@@ -55,24 +55,43 @@ sudo chmod 700 /home/cd3user/.ssh
       ```
       D:/mount_path
       ```
-
+<br>
 
 <span style="color: teal; font-weight: bold;">2. Clone the repo</span>
 
 
-* Open the terminal and navigate to the above created directory. Git repo will be downloaded here.
-* Run the git clone command as shown below: 
+* Open the terminal and navigate to the above created directory. 
+=== "Example for Mac"
+      ```
+      cd /Users/<user_name>/mount_path
+      ```
+
+=== "Example for Windows "
+      ```
+      cd D:/mount_path
+      ```
+* Create a dir called oci_tools. Navigate inside oci_tools dir. Git repo will be downloaded here.
+
+* Run the git clone command as shown below. Note the period (.) at the end of command:
 &nbsp; &nbsp; &nbsp; &nbsp; 
 ```
-git clone https://github.com/oracle-devrel/cd3-automation-toolkit
+git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git .
 ```
-* Once the cloning command is executed successfully, the repo will replicate to the local directory. 
+* Once the cloning command is executed successfully, the repo will replicate to the local directory at:
 
+=== "Example for Mac"
+      ```
+      /Users/<user_name>/mount_path/oci_tools
+      ```
+
+=== "Example for Windows "
+      ```
+      cd D:/mount_path/oci_tools
+      ```
 <br>
 
 <span style="color: teal; font-weight: bold;">3. Build an image</span>
 
-* Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).
 * If you are using mac, Edit **Dockerfile** to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues. This step is needed if you plan to use toolkit with Jenkins or OCI DevOps GIT repo.
 ``` 
 vi Dockerfile
