@@ -7,7 +7,7 @@ mount_dir="/$username/mount_path"
 sudo mkdir -p /$mount_dir/tenancies
 sudo mkdir -p /$mount_dir/oci_tools
 
-tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
+tenancyconfig_properties="/$mount_dir/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
 start=$(date +%s.%N)
 sudo sh -c "echo '########################################################################' >> /etc/motd"
 sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"

@@ -13,8 +13,7 @@ import shutil
 import datetime
 import configparser
 from azure.identity import ClientSecretCredential
-from azure.mgmt.compute import ComputeManagementClient
-
+from azure.core.exceptions import ClientAuthenticationError
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -96,7 +95,7 @@ try:
     client_secret = config.get('Default', 'client_secret').strip()
 
     if (subscription_id == '' or tenant_id == '' or  client_id == '' or client_secret == ''):
-        print("Creating "+prefix_dir + " without setting up authentication")
+        print("Creating "+prefix_dir + " without setting up authentication\n")
         connected=0
 except Exception as e:
     print(e)
@@ -114,14 +113,18 @@ if not os.path.exists(config_files):
 shutil.copy(args.propsfile,config_files+"/"+prefix+"_connectAzure.properties")
 
 if connected == 1:
-    credential = ClientSecretCredential(
+    try:
+        credential = ClientSecretCredential(
             tenant_id=tenant_id,
             client_id=client_id,
-            client_secret=client_secret
-        )
-
-    # Use the credential to create a client for an Azure service (e.g., Compute)
-    compute_client = ComputeManagementClient(credential, subscription_id)
+            client_secret=client_secret)
+        token = credential.get_token("https://management.azure.com/.default")
+        print("Azure credentials are valid. Proceeding")
+    except ClientAuthenticationError as e:
+        print(f"\nAzure credentials are invalid. Exiting!!!")
+        exit(1)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 
 # 3. Generate setUpCloud.properties file
