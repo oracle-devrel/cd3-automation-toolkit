@@ -16,7 +16,7 @@ ARG USER_GID=$USER_UID
 # Whether to download Provider as part of image creation
 ARG DOWNLOAD_PROVIDER=NO
 # TF Provider version
-ARG TF_OCI_PROVIDER=7.18.0
+ARG TF_OCI_PROVIDER=7.19.0
 ARG TF_NULL_PROVIDER=3.2.3
 
 RUN microdnf install -y sudo && \
