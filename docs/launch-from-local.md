@@ -40,12 +40,28 @@ sudo chmod 700 /home/cd3user/.ssh
 
 **🛠️ Steps:**
 
+<span style="color: teal; font-weight: bold;">1. Create local directory </span> 
 
-<span style="color: teal; font-weight: bold;">1. Clone the repo</span>
+
+* Create a directory on the system where container will be launched.
+* This directory will be shared with the container while running it (in Step 6).
+
+=== "Example for Mac"
+      ```
+      /Users/<user_name>/mount_path
+      ```
+
+=== "Example for Windows "
+      ```
+      D:/mount_path
+      ```
 
 
-* Open the terminal and navigate to the directory where the Git repo will be downloaded.
-* Run the git clone command as shown below:
+<span style="color: teal; font-weight: bold;">2. Clone the repo</span>
+
+
+* Open the terminal and navigate to the above created directory. Git repo will be downloaded here.
+* Run the git clone command as shown below: 
 &nbsp; &nbsp; &nbsp; &nbsp; 
 ```
 git clone https://github.com/oracle-devrel/cd3-automation-toolkit
@@ -54,7 +70,7 @@ git clone https://github.com/oracle-devrel/cd3-automation-toolkit
 
 <br>
 
-<span style="color: teal; font-weight: bold;">2. Build an image</span>
+<span style="color: teal; font-weight: bold;">3. Build an image</span>
 
 * Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).
 * If you are using mac, Edit **Dockerfile** to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues. This step is needed if you plan to use toolkit with Jenkins or OCI DevOps GIT repo.
@@ -80,7 +96,7 @@ docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --p
 	The period (.) at the end of the docker build command is required.
 
 <br>
-<span style="color: teal; font-weight: bold;">3. Save the image (Optional)</span>
+<span style="color: teal; font-weight: bold;">4. Save the image (Optional)</span>
 
 * Run  
 ```
@@ -88,7 +104,7 @@ docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
 ```
 <br>
 
-<span style="color: teal; font-weight: bold;">4. Run the container alongwith VPN (Applicable for VPN users only)</span>
+<span style="color: teal; font-weight: bold;">5. Run the container alongwith VPN (Applicable for VPN users only)</span>
 
 * Connect to the VPN.
 * Make sure to use version **1.9** for **Rancher deskop**, if not, install the latest.
@@ -99,21 +115,21 @@ docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
 * Login to the CD3 docker container using next section and set the proxies(if any) which helps to connect internet from the container.
 
 <br>
-<span style="color: teal; font-weight: bold;">5. Run the container</span>
+<span style="color: teal; font-weight: bold;">6. Run the container</span>
 
 * Run  
 ```
-docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_local_system>:8443 -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>
+docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_local_system>:8443 -d -v <directory_created_in_step1>:/cd3user/tenancies <image_name>:<image_tag>
 ```
   
 === "Example for Mac"
       ```
-      docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v /Users/<user_name>/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
+      docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v /Users/<user_name>/mount_path:/cd3user cd3toolkit:v2025.2.0
       ```
 
 === "Example for Windows "
       ```
-      docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
+      docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2025.2.0
       ```
   
 !!! Danger "Ensure Secure Access!"
