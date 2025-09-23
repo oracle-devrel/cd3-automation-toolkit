@@ -95,7 +95,7 @@ try:
     client_secret = config.get('Default', 'client_secret').strip()
 
     if (subscription_id == '' or tenant_id == '' or  client_id == '' or client_secret == ''):
-        print("Creating "+prefix_dir + " without setting up authentication\n")
+        print("\n\nCreating "+prefix_dir + " without setting up authentication\n")
         connected=0
 except Exception as e:
     print(e)
@@ -119,7 +119,7 @@ if connected == 1:
             client_id=client_id,
             client_secret=client_secret)
         token = credential.get_token("https://management.azure.com/.default")
-        print("Azure credentials are valid. Proceeding")
+        print("\nAzure credentials are valid. Proceeding...")
     except ClientAuthenticationError as e:
         print(f"\nAzure credentials are invalid. Exiting!!!")
         exit(1)
@@ -185,7 +185,7 @@ logging.info("\n######################################")
 logging.info("Next Steps for using toolkit via CLI")
 logging.info("######################################")
 logging.info("Modify "+prefix_dir + "/" +prefix+"_setUpAzure.properties with input values for cd3file and workflow_type")
-logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit")
+logging.info("cd /cd3user/oci_tools/cd3_automation_toolkit")
 logging.info("python setUpCloud.py azure "+prefix_dir + "/" +prefix+"_setUpAzure.properties")
 
 with open(outfile, 'r') as log_file:

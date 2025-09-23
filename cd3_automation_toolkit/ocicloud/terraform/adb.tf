@@ -51,7 +51,7 @@ data "oci_secrets_secretbundle" "vault_secrets" {
 
 
 module "adb" {
-  source   = "../../modules/database/adb"
+  source   = "./modules/database/adb"
   for_each = var.adb != null ? var.adb : {}
   # depends_on = [module.nsgs]
   #admin_password                                             = each.value.admin_password
