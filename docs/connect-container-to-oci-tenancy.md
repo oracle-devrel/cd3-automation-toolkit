@@ -17,7 +17,7 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
         sudo podman exec -it cd3_toolkit bash
         ```
 
-    === "Manual Launch(Docker) "
+    === "Manual Launch(Docker)"
         ```
         sudo docker exec -it cd3_toolkit bash
         ```
@@ -26,13 +26,12 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 <span style="color: teal; font-weight: bold;">2 - Choose Authentication Mechanism for OCI SDK</span>
 
-* <a href ="../authmechanisms"><u>Click here</u></a> to configure any one of the available authentication mechanisms.
+* <a href="../authmechanisms"><u>Click here</u></a> to configure any one of the available authentication mechanisms.
 
-!!! Warning "Access Requirements"
-  
-    Make sure to assign required OCI Tenancy Access to user/instance as defined in <a href ="../prerequisites"><u>Prerequisites.</u></a>
+    !!! warning "Access Requirements"
+        Make sure to assign required OCI Tenancy Access to user/instance as defined in <a href="../prerequisites"><u>Prerequisites.</u></a>
 
-  
+
 
 <span style="color: teal; font-weight: bold;">3 - Edit tenancyconfig.properties</span>
 
@@ -166,6 +165,7 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 </details>
 
 <br>
+
 
 !!! tip " Important Configuration Tips"
     - Have the details ready for Authentication mechanism you are planning to use.<br>

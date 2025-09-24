@@ -93,7 +93,8 @@ nav:
 theme:
   name: material
   font:
-    text: Oracle Sans
+    text: Open Sans
+    size: 16px
   features:
     - navigation.indexes
     - navigation.top
@@ -102,6 +103,7 @@ theme:
     - content.code.copy
     - toc.integrate
     - navigation.tracking
+    - toc.sticky
 
   icon:
     admonition:
@@ -118,25 +120,25 @@ theme:
       example: fontawesome/solid/flask
       quote: fontawesome/solid/quote-left  
   language: en
-  palette:
-    - media: "(prefers-color-scheme)"
-      toggle:
-        icon: material/link
-        name: Switch to light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: oracle
-      primary: teal
-      accent: teal
-      toggle:
-        icon: material/toggle-switch
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: teal
-      accent: teal
-      toggle:
-        icon: material/toggle-switch-off
-        name: Switch to system preference
+  # palette:
+  #   - media: "(prefers-color-scheme)"
+  #     toggle:
+  #       icon: material/link
+  #       name: Switch to light mode
+  #   - media: "(prefers-color-scheme: light)"
+  #     scheme: oracle
+  #     primary: teal
+  #     accent: teal
+  #     toggle:
+  #       icon: material/toggle-switch
+  #       name: Switch to dark mode
+  #   - media: "(prefers-color-scheme: dark)"
+  #     scheme: slate
+  #     primary: teal
+  #     accent: teal
+  #     toggle:
+  #       icon: material/toggle-switch-off
+  #       name: Switch to system preference
   icon:
     repo: fontawesome/brands/github
     previous: fontawesome/solid/angle-left
@@ -215,4 +217,4 @@ plugins:
 
 
 copyright: |
-  &copy; 2025 <a href=""  target="_blank" rel="noopener">Copyright (c) 2025 Oracle and/or its affiliates.</a>
+  Copyright © 2025 Oracle and/or its affiliates.
