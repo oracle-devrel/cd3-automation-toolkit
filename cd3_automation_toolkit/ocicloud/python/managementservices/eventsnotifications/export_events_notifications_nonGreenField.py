@@ -57,7 +57,7 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
             if (sbpn == None):
                 values_for_column_notifications[col_header].append("")
             else:
-                values_for_column_notifications = commonTools.export_tags(sbpn, col_header, values_for_column_notifications)
+                values_for_column_notifications = ociCommonTools.export_tags(sbpn, col_header, values_for_column_notifications)
         elif col_header.lower() in ociCommonTools.tagColumns:
             values_for_column_notifications = ociCommonTools.export_tags(nftn_info, col_header, values_for_column_notifications)
         else:
@@ -165,11 +165,11 @@ def events_rows(values_for_column_events, region, ntk_compartment_name, event_na
             values_for_column_events[col_header].append(event_is_enabled)
         elif (col_header == "Topic"):
             values_for_column_events[col_header].append(action_name)
-        elif col_header.lower() in commonTools.tagColumns:
-            values_for_column_events = commonTools.export_tags(event, col_header, values_for_column_events)
+        elif col_header.lower() in ociCommonTools.tagColumns:
+            values_for_column_events = ociCommonTools.export_tags(event, col_header, values_for_column_events)
         else:
             oci_objs = [event,event_info]
-            values_for_column_events = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_events,values_for_column_events)
+            values_for_column_events = ociCommonTools.export_extra_columns(oci_objs, col_header, sheet_dict_events,values_for_column_events)
 
 # Execution for Events export starts here
 def export_events(inputfile, outdir, service_dir, config, signer, ct,export_compartments=[], export_regions=[],export_tags=[]):
