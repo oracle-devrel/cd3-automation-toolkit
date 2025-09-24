@@ -112,7 +112,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
       <b>Monitoring Services</b>
     </h3>
     <div style="padding-left: 20px;">
-      <ul>f
+      <ul>
         <li><a href="../tabs#notifications-tab">Notifications</a></li>
         <li><a href="../tabs#events-tab">Events</a></li>
         <li><a href="../tabs#alarms-tab">Alarms</a></li>

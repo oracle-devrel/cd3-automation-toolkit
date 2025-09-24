@@ -4,7 +4,7 @@
     --md-primary-fg-color:        #2D4954;
     --md-primary-fg-color--light: #2D4954;
     --md-primary-fg-color--dark:  #90030C;
-    --md-accent-fg-color:  teal;
+    --md-accent-fg-color:  #2D4954;
 
 
   }
@@ -12,13 +12,13 @@
     --md-primary-fg-color:        #2D4954;
     --md-primary-fg-color--light: #2D4954;
     --md-primary-fg-color--dark:  #90030C;
-    --md-accent-fg-color:  teal;
+    --md-accent-fg-color:  #2D4954;
   }
 
 .md-grid {
     max-width: 75%;
     margin-left: 10%;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Open Sans, Arial, Helvetica, sans-serif;
     width: auto; 
     display: flex;
     flex-direction: row; 
@@ -34,27 +34,25 @@
 }
    
 .md-nav__item--active > .md-nav__link {
-  color: rgb(3, 165, 165) !important;      
+  color: #2D4954 !important;      
   font-weight: bold;          
 }
 .md-nav__link:hover {
-  color: rgb(3, 165, 165) !important;  
+  color: #2D4954 !important;  
 }
 
 .md-typeset a {
-  color: rgb(3, 165, 165)  !important; 
-  text-decoration: underline;
+    color: #2D4954 !important;  /* normal text */
+    text-decoration: underline;
+    text-decoration-thickness: 0.5px;;
+    font-weight: 600 !important;
+    transition: color 0.25s ease-in-out; /* smooth color transition */
 }
-
 
 .md-typeset a:hover {
-  text-decoration: underline;
-  text-decoration-style: solid;
-  text-decoration-thickness: 2px;
-  text-decoration-color:  rgb(3, 165, 165)  !important;  
-  font-weight: bold; 
+    color: teal !important;  /* slightly darker on hover */
+    text-decoration-thickness: 2px;
 }
-
 
 .md-tabs__item--active {
   border: 0px solid #2D4954;
@@ -67,44 +65,50 @@
 
 /* Light mode buttons */
 [data-md-color-scheme="oracle"] .md-button {
-  border: 2px solid #027d6c;
-  color: #027d6c;
+  border: 2px solid #5995ac;
+  background-color: #2D4954 ;
+  color:  #FFFFFF !important ;
+  text-decoration: underline ;
+}
+
+.md-typeset .md-button {
+  /* width: 42%; */   /* remove this */
+  padding: 16px 16px;  /* adjust padding as needed */
+  display: inline-block;  /* allows width to adapt to text */
+  text-align: center;     /* centers the text */
+  white-space: nowrap;    /* prevents wrapping if you want one line */
 }
 
 [data-md-color-scheme="oracle"] .md-button:hover {
-  background-color: #027d6c;
-  color: #ffffff !important;
-}
-
-/* Dark mode buttons */
-[data-md-color-scheme="slate"] .md-button {
-  border: 2px solid #027d6c;
-  color: #027d6c;
-}
-
-[data-md-color-scheme="slate"] .md-button:hover {
-  background-color:#027d6c;
-  color: #ffffff !important;
+  background-color: #2D4954;    /* change background on hover */
+  color: #FFFFFF !important;   /* keep text white */
+  transition: background-color 0.3s, border-color 0.3s; /* smooth transition */
+  text-decoration: underline;
+  text-decoration-color: #FFFFFF !important;
+  transform: scale(1.05);       /* slightly bigger */
+  transition: transform 0.2s;   /* smooth animation */
+  border: 4px solid #5995ac;
 }
 
 details > summary {
-    background-color: #2a9d8f !important;
+    background-color: #2D4954 !important;
     color: white;
     padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    list-style: none; /* remove default arrow */
+    list-style: none; 
 }
 
 details {
-    border: 1px solid #2a9d8f !important;  /* custom border color */
+    border: 1px solid #2D4954 !important;  /* custom border color */
     border-radius: 5px !important;
 }
 
 /* Optional: hover effect for summary */
 details > summary:hover {
-    background-color: #21867a  !important;
+    background-color: #2D4954  !important;
+    border: 2px solid #5995ac ;
 }
 
 details > summary::before {
@@ -112,7 +116,7 @@ details > summary::before {
 }
 
 .md-nav__item {
-  margin-bottom: 15px; /* Adjust this value as needed */
+  margin-bottom: 15px  !important; /* Adjust this value as needed */
 }
 
 .md-nav__link--active {
@@ -126,4 +130,14 @@ details > summary::before {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* GitHub icon colour */
+[data-md-color-scheme="oracle"] .md-footer a[href*="github.com"] {
+    color: #f9f0f0 !important;  
+}
+
+/* YouTube icon colour */
+[data-md-color-scheme="oracle"] .md-footer a[href*="youtube.com"] {
+    color: #CC0000 !important;  
 }

@@ -11,9 +11,10 @@
 
 3. Use one of the templates from <a href="../excel-templates"><u>Excel Templates</u></a> based on the workflow chosen.
 
-4. Review setUpOCI.properties file _/cd3user/tenancies/<prefix\>/<prefix\>_setUpOCI.properties_.
+4. Review setUpOCI.properties file `/cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties`.
 
 <span style="color: teal;"><b>setUpOCI.properties</b></span>
+
 ```ini
 [Default]
 
