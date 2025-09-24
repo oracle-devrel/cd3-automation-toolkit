@@ -13,6 +13,7 @@ import shutil
 import time
 import csv
 import base64
+import oci
 sys.path.append(os.getcwd() + "../")
 from common.python.commonTools import *
 from oci.config import DEFAULT_LOCATION
