@@ -44,16 +44,25 @@ workflow_type=create_resources
 
 <span style="color: teal; font-weight: bold;">Step 3:</span>
 
-Execute the setUpOCI.py script to start creating the terraform/tofu configuration files.
+Execute below script to start creating the terraform/tofu configuration files.
     
 Command to Execute:
 ```
 cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```
+<b>Note for old users of the toolkit, below command will be deprecated in next major release v2025.3.0. </b>
 ```
 python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 ```
-         
+
+<b>Instead use below command:</b>
+
+
+```
+python setUpCloud.py oci /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
+``` 
+
+       
 !!! example "Example Execution"
 
     Updated OCI_Regions file !!!
