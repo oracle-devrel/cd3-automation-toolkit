@@ -44,8 +44,8 @@ def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies, fw
                 elif col_header == 'Policy Name':
                     values_for_column_fwpolicy[col_header].append(fwpolicy_display_name)
 
-                elif col_header.lower() in ociociCommonTools.tagColumns:
-                    values_for_column_fwpolicy = ociociCommonTools.export_tags(eachfwpolicy, col_header, values_for_column_fwpolicy)
+                elif col_header.lower() in ociCommonTools.tagColumns:
+                    values_for_column_fwpolicy = ociCommonTools.export_tags(eachfwpolicy, col_header, values_for_column_fwpolicy)
 
     return values_for_column_fwpolicy
 
@@ -86,8 +86,8 @@ def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, 
                         values_for_column_fwaddress[col_header].append(add.type)
                     elif col_header == 'Address List':
                         values_for_column_fwaddress[col_header].append(address_detail)
-                    elif col_header.lower() in ociociCommonTools.tagColumns:
-                        values_for_column_fwaddress = ociociCommonTools.export_tags(policy, col_header, values_for_column_fwaddress)
+                    elif col_header.lower() in ociCommonTools.tagColumns:
+                        values_for_column_fwaddress = ociCommonTools.export_tags(policy, col_header, values_for_column_fwaddress)
 
     return values_for_column_fwaddress
 
@@ -123,8 +123,8 @@ def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, 
                         values_for_column_fwurllist[col_header].append(url_display_name)
                     elif col_header == 'URL List':
                         values_for_column_fwurllist[col_header].append(url_detail)
-                    elif col_header.lower() in ociociCommonTools.tagColumns:
-                        values_for_column_fwurllist = ociociCommonTools.export_tags(urlpolicy, col_header,values_for_column_fwurllist)
+                    elif col_header.lower() in ociCommonTools.tagColumns:
+                        values_for_column_fwurllist = ociCommonTools.export_tags(urlpolicy, col_header,values_for_column_fwurllist)
 
     return values_for_column_fwurllist
 
@@ -174,8 +174,8 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
                         values_for_column_fwservicelist[col_header].append(service_display_name)
                     elif col_header == 'Services':
                         values_for_column_fwservicelist[col_header].append(service_detail)
-                    elif col_header.lower() in ociociCommonTools.tagColumns:
-                        values_for_column_fwservicelist = ociociCommonTools.export_tags(servicelistpolicy, col_header,values_for_column_fwservicelist)
+                    elif col_header.lower() in ociCommonTools.tagColumns:
+                        values_for_column_fwservicelist = ociCommonTools.export_tags(servicelistpolicy, col_header,values_for_column_fwservicelist)
 
     return values_for_column_fwservicelist
 
@@ -221,8 +221,8 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, 
                         values_for_column_fwapplist[col_header].append(application_display_name)
                     elif col_header == 'Applications':
                         values_for_column_fwapplist[col_header].append(application_detail)
-                    elif col_header.lower() in ociociCommonTools.tagColumns:
-                        values_for_column_fwapplist = ociociCommonTools.export_tags(applistpolicy, col_header,values_for_column_fwapplist)
+                    elif col_header.lower() in ociCommonTools.tagColumns:
+                        values_for_column_fwapplist = ociCommonTools.export_tags(applistpolicy, col_header,values_for_column_fwapplist)
 
     return values_for_column_fwapplist
 
@@ -351,8 +351,8 @@ def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies, fw
                         values_for_column_fwsecret[col_header].append(vault_secret_name)
                     elif col_header == 'Version Number':
                         values_for_column_fwsecret[col_header].append(key_info.version_number)
-                    elif col_header.lower() in ociociCommonTools.tagColumns:
-                        values_for_column_fwsecret = ociociCommonTools.export_tags(secretpolicy, col_header,values_for_column_fwsecret)
+                    elif col_header.lower() in ociCommonTools.tagColumns:
+                        values_for_column_fwsecret = ociCommonTools.export_tags(secretpolicy, col_header,values_for_column_fwsecret)
 
     return values_for_column_fwsecret
 
@@ -414,8 +414,8 @@ def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile
                     elif col_header == 'is untrusted issuer blocked':
                         values_for_column_fwdecryptprofile[col_header].append(key_info1_is_untrusted_issuer_blocked)
 
-                    elif col_header.lower() in ociociCommonTools.tagColumns:
-                        values_for_column_fwdecryptprofile = ociociCommonTools.export_tags(decryptionprofile, col_header,values_for_column_fwdecryptprofile)
+                    elif col_header.lower() in ociCommonTools.tagColumns:
+                        values_for_column_fwdecryptprofile = ociCommonTools.export_tags(decryptionprofile, col_header,values_for_column_fwdecryptprofile)
 
     return values_for_column_fwdecryptprofile
 def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpolicies, fwpolicy, policy_detail):
@@ -474,8 +474,8 @@ def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpo
                         values_for_column_fwdecryptrule[col_header].append(drule_info.action)
                     elif col_header == 'Position':
                         values_for_column_fwdecryptrule[col_header].append(dposition)
-                    elif col_header.lower() in ociociCommonTools.tagColumns:
-                        values_for_column_fwdecryptrule = ociociCommonTools.export_tags(applistpolicy, col_header,values_for_column_fwdecryptrule)
+                    elif col_header.lower() in ociCommonTools.tagColumns:
+                        values_for_column_fwdecryptrule = ociCommonTools.export_tags(applistpolicy, col_header,values_for_column_fwdecryptrule)
     return values_for_column_fwdecryptrule
 # Execution of the code begins here
 def cloneexport_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, export_compartments, export_regions, policy_detail):

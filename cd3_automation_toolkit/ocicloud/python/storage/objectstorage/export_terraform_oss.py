@@ -112,7 +112,7 @@ def print_buckets(region, outdir, service_dir,state, bucket_data, values_for_col
 
             else:
                 oci_objs = [bucket_data]
-                values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
+                values_for_column = ociCommonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
      else:
          for col_header in values_for_column:
              if col_header == 'Region':

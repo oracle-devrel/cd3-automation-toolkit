@@ -68,11 +68,11 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
             elif col_header == 'DB Admin Password':
                 values_for_column[col_header].append('nullval')
 
-            elif col_header.lower() in commonTools.tagColumns:
-                values_for_column = commonTools.export_tags(db_system_vm_bm, col_header, values_for_column)
+            elif col_header.lower() in ociCommonTools.tagColumns:
+                values_for_column = ociCommonTools.export_tags(db_system_vm_bm, col_header, values_for_column)
             else:
                 oci_objs = [db_home,database,db_backup_config,connection_strings,database_management_config]
-                values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
+                values_for_column = ociCommonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
     #count = 1
     else:

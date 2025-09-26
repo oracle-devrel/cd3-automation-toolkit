@@ -64,7 +64,7 @@ def append_user_info(values_for_column_users,sheet_dict_users, ct, user_info, us
             values_for_column_users[col_header].append(value)
         else:
             oci_objs = [user_info]
-            values_for_column_users = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_users, values_for_column_users)
+            values_for_column_users = ociCommonTools.export_extra_columns(oci_objs, col_header, sheet_dict_users, values_for_column_users)
 # Execution start here
 def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domains={}):
     global sheet_dict_users

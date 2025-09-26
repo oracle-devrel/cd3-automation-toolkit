@@ -95,7 +95,7 @@ def fwpolicy_create_secret(inputfile, outdir, service_dir, prefix, ct):
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             # Process Defined and Freeform Tags
-            if columnname.lower() in commonTools.tagColumns:
+            if columnname.lower() in ociCommonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == "Vault Compartment Name":

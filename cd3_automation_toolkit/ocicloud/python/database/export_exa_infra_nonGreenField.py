@@ -41,11 +41,11 @@ def print_exa_infra(region, exa_infra, values_for_column, ntk_compartment_name,s
             elif ("AD-3" in value or "ad-3" in value):
                 ad = "AD3"
             values_for_column[col_header].append(ad)
-        elif col_header.lower() in commonTools.tagColumns:
-            values_for_column = commonTools.export_tags(exa_infra, col_header, values_for_column)
+        elif col_header.lower() in ociCommonTools.tagColumns:
+            values_for_column = ociCommonTools.export_tags(exa_infra, col_header, values_for_column)
         else:
             oci_objs = [exa_infra,maintenance_window]
-            values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
+            values_for_column = ociCommonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 # Execution of the code begins here
 

@@ -95,7 +95,7 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
             values_for_column = ociCommonTools.export_tags(exa_vmcluster, col_header, values_for_column)
         else:
             oci_objs = [exa_vmcluster,exa_infra]
-            values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
+            values_for_column = ociCommonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 # Execution of the code begins here
 
