@@ -280,7 +280,7 @@ def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_
             elif col_header == 'Source Kind':
                 values_for_column[col_header].append(source_kind)
             elif col_header == "Source Log Group Names" and source_kind == "logging":
-                log_source_list = [*set(log_source_list)]
+                #log_source_list = [*set(log_source_list)]
                 values_for_column[col_header].append(",".join(log_source_list))
             elif col_header == 'Target Kind':
                 values_for_column[col_header].append(target_kind)
