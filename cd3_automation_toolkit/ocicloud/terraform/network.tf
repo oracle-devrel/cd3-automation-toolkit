@@ -42,6 +42,71 @@ data "oci_core_drg_route_distributions" "drg_route_distributions" {
 # Module Block - Network
 # Create VCNs
 ############################
+locals {
+  all_byo_details = flatten([
+    for vcn_name, vcn in var.vcns : [
+      for detail in vcn.byoipv6cidr_details : {
+        original_value      = detail.byoipv6range_data
+        ipv6cidr_block      = detail.ipv6cidr_block
+        comp_fallback       = vcn.comp_name
+      }
+    ] if vcn.byoipv6cidr_details != null
+  ])
+
+  normalized_byo_details = [
+    for item in local.all_byo_details : (
+      contains(item.original_value, "@") ?
+        {
+          # Parse comp and range_name
+          comp_raw = try(split(item.original_value, "@")[0], "")
+          range_name = try(split(item.original_value, "@")[1], "")
+          compartment_name = (try(split(item.original_value, "@")[0], "") != "") ? try(split(item.original_value, "@")[0], "") : item.comp_fallback
+          cidr = item.ipv6cidr_block
+          # Use comp@range as unique key
+          key = split(item.original_value, "@")[1]
+        } :
+        {
+          # No '@' means it is a range_id directly (assume no comp, range_name unknown)
+          compartment_name = ""  # unknown
+          range_name = item.original_value   # treat entire string as range_id
+          cidr = item.ipv6cidr_block
+          key = item.original_value          # use range_id as key
+        }
+    )
+  ]
+
+  # Deduplicate by key
+  unique_list_map = {
+    for item in local.normalized_byo_details : item.key => {
+      compartment_name = item.compartment_name
+      range_name       = item.range_name
+      cidr             = item.cidr
+    }
+  }
+
+  unique_list = values(local.unique_list_map)
+  vcn_byoip = {
+ for k,v in var.vcns : k => {
+byoipv6cidr_details = [
+for item in v.byoipv6cidr_details : {
+byoipv6range_id = length(regexall("ocid1.byoiprange.oc*",item.range_name)) > 0?item.range_name:data.oci_core_byoip_ranges.byoip[item.range_name].byoip_range_collection.*.id[0]
+ipv6cidr_block = item.cidr
+}
+]
+} if v.byoipv6cidr_details != null
+}
+}
+
+data "oci_core_byoip_ranges" "byoip" {
+  for_each = {
+    for item in local.unique_list :
+    item.range_name => item if !contains(item.range_name, "ocid1.byoiprange.oc")
+  }
+
+  compartment_id = length(regexall("ocid1.compartment.oc*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]
+  display_name   = each.value.range_name
+}
+
 
 module "vcns" {
   source   = "./modules/network/vcn"
@@ -54,12 +119,12 @@ module "vcns" {
   #Optional
   cidr_blocks                      = each.value.cidr_blocks
   display_name                     = each.value.display_name
-  byoipv6cidr_details              = each.value.byoipv6cidr_details != null ? each.value.byoipv6cidr_details : []
+  byoipv6cidr_details              = each.value.byoipv6cidr_details != null ? local.vcn_byoip.byoipv6cidr_details : []
   dns_label                        = (each.value.dns_label == "n") ? null : each.value.dns_label
   is_ipv6enabled                   = each.value.is_ipv6enabled # Defaults to false by terraform hashicorp
   defined_tags                     = each.value.defined_tags
   freeform_tags                    = each.value.freeform_tags
-  ipv6private_cidr_blocks          = each.value.ipv6private_cidr_blocks
+  ipv6private_cidr_blocks          = each.value.ipv6private_cidr_blocks != null ? each.value.ipv6private_cidr_blocks : []
   is_oracle_gua_allocation_enabled = each.value.is_oracle_gua_allocation_enabled
 
 }

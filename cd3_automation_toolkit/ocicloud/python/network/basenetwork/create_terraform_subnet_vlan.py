@@ -219,7 +219,10 @@ def create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, ct, non
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
             # Check for multivalued columns
-            tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
+            if columnname == 'IPv6CIDR Block':
+                tempdict = {'ipv6cidr_block' : columnvalue}
+            else:
+                tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
             # Process the Freefrorm and Defined Tags
             if columnname.lower() in ociCommonTools.tagColumns:

@@ -26,7 +26,12 @@ resource "oci_core_vcn" "vcn" {
   display_name                     = var.display_name
   dns_label                        = var.dns_label
   freeform_tags                    = var.freeform_tags
-  is_ipv6enabled                   = var.is_ipv6enabled
+  is_ipv6enabled                   = (
+    length(var.byoipv6cidr_details) > 0 ||
+    length(var.ipv6private_cidr_blocks) > 0
+  )
+  #is_ipv6enabled = false
+  #is_ipv6enabled                   = var.is_ipv6enabled
   ipv6private_cidr_blocks          = var.ipv6private_cidr_blocks
   is_oracle_gua_allocation_enabled = var.is_oracle_gua_allocation_enabled
   lifecycle {

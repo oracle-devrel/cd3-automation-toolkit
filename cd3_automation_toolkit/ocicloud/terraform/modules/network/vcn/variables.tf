@@ -49,7 +49,7 @@ variable "is_ipv6enabled" {
 }
 
 variable "ipv6private_cidr_blocks" {
-  type    = list(any)
+  type    = list(string)
   default = []
 }
 
@@ -59,6 +59,6 @@ variable "is_oracle_gua_allocation_enabled" {
 }
 
 variable "byoipv6cidr_details" {
-  type    = list(any)
-  default = [{}]
+  type    = list(map(string))
+  default = []
 }

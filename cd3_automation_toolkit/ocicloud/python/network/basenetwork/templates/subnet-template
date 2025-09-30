@@ -54,6 +54,8 @@ subnets = {
 
         {% if seclist_ids != '' %}
         security_list_ids = [{{ seclist_ids }}]
+        {% else %}
+        security_list_ids = []
         {% endif %}
 
         {% if ipv6cidr_block and ipv6cidr_block != '' %}

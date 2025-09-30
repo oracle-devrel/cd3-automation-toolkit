@@ -622,7 +622,8 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tena
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
             # Check for multivalued columns
-            tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
+            if columnname not in ["ULA IPv6 CIDR","BYOIP IPv6 Details"]:
+                tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             # Process Defined Tags and Freeform Tags
             if columnname.lower() in ociCommonTools.tagColumns:
@@ -640,6 +641,27 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tena
                     cidr_blocks.reverse()
                 cidr_blocks = json.dumps(cidr_blocks)
                 tempdict = {'cidr_blocks': cidr_blocks}
+
+            if columnname == 'Oracle GUA IPv6 Enabled' and columnvalue != '':
+                is_oracle_gua_allocation_enabled = columnvalue.strip()
+                is_oracle_gua_allocation_enabled = commonTools.check_tf_variable(is_oracle_gua_allocation_enabled)
+                tempdict = {'is_oracle_gua_allocation_enabled': is_oracle_gua_allocation_enabled.lower()}
+
+            if columnname == "ULA IPv6 CIDR" and columnvalue != '':
+                ipv6private_cidr_blocks = [x.strip() for x in columnvalue.split(',')]
+                # reverses the order while exporting into excel so use reverse to avoid terraform change
+                if (non_gf_tenancy):
+                    ipv6private_cidr_blocks.reverse()
+                ipv6private_cidr_blocks = json.dumps(ipv6private_cidr_blocks)
+                tempdict = {'ipv6private_cidr_blocks': ipv6private_cidr_blocks}
+
+            if columnname == "BYOIP IPv6 Details" and columnvalue != '':
+                byoipv6cidr_details = [x.strip() for x in columnvalue.split(',')]
+                # reverses the order while exporting into excel so use reverse to avoid terraform change
+                if (non_gf_tenancy):
+                    byoipv6cidr_details.reverse()
+                byoipv6cidr_details = json.dumps(byoipv6cidr_details)
+                tempdict = {'byoipv6cidr_details': byoipv6cidr_details}
 
             if columnname == "DNS Label":
                 # check if vcn_dns_label is not given by user in input use vcn name
