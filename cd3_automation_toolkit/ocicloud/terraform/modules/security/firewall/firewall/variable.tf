@@ -73,7 +73,7 @@ variable "name" {
 
 variable "must_enable_private_nat" {
   type    = string
-  default = null
+  default = "false"
 }
 
 variable "defined_tags" {
