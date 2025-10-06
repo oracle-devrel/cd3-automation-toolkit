@@ -45,7 +45,7 @@ variable "freeform_tags" {
 
 variable "is_ipv6enabled" {
   type    = bool
-  default = false
+  default = null
 }
 
 variable "ipv6private_cidr_blocks" {

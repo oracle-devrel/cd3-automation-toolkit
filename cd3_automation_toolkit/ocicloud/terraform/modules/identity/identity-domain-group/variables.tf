@@ -18,6 +18,11 @@ variable "user_id" {
   default     = null
 }
 
+variable "domain_users" {
+description = "all users in the domain"
+default = {}
+}
+
 variable "members" {
   description = "List of email ids of the users"
   type        = list(string)

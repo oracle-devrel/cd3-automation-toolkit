@@ -13,6 +13,7 @@ import sys
 import oci
 from oci.identity import IdentityClient
 import os
+import time
 import subprocess as sp
 sys.path.append(os.getcwd() + "../")
 from common.python.commonTools import *
@@ -366,8 +367,12 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                     response = domain_client.list_groups(
                         attributes=['members'],
                         attribute_sets=['all'],
-                        page=next_page
+                        page=next_page,
+                        sort_by="displayName",
+                        sort_order="ASCENDING"
                     )
+                    # added sleep time and sorting to handle inconsistency in export data
+                    time.sleep(5)
                     groups.extend(response.data.resources)
                     if not response.next_page or len(groups) == response.data.total_results:
                         break
@@ -386,8 +391,12 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                     response = domain_client.list_dynamic_resource_groups(
                         attributes=['matching_rule'],
                         attribute_sets=['all'],
-                        page=next_page
+                        page=next_page,
+                        sort_by="displayName",
+                        sort_order="ASCENDING"
                     )
+                    # added sleep time and sorting to handle inconsistency in export data
+                    time.sleep(5)
                     dyngroups.extend(response.data.resources)
                     if not response.next_page or len(dyngroups) == response.data.total_results:
                         break

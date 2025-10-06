@@ -282,14 +282,61 @@ module "iam-network-sources" {
 # Module Block - Identity
 # Create Identity Domain Groups
 ############################
+locals {
+  # get all the domains used for users
+  users_unique_idcs_endpoints = {
+    for k, v in var.identity_domain_users :
+    v.idcs_endpoint => {
+      idcs_endpoint         = v.idcs_endpoint
+      domain_compartment_id = v.domain_compartment_id
+    }...
+  }
+  # get all the domains used for groups
+  groups_unique_idcs_endpoints = {
+    for k, v in var.identity_domain_groups :
+    v.idcs_endpoint => {
+      idcs_endpoint         = v.idcs_endpoint
+      domain_compartment_id = v.domain_compartment_id
+    }...
+  }
+  # get unique domains used across users and groups
+  domains_distinct = { for k, v in merge(local.groups_unique_idcs_endpoints,local.users_unique_idcs_endpoints) : k => distinct(v)[0]... }
+
+  # users in each domain used in groups
+  domain_users_map = {
+      for k,v in local.domains_distinct:
+      k => {
+  for user in data.oci_identity_domains_users.users[k].users:
+        user.user_name => user.id
+      } if contains(keys(local.groups_unique_idcs_endpoints), k)
+    }
+
+}
+# output "domain_distinct" {
+#   value = local.domains_distinct
+# }
+# output "groups_unique_idcs_endpoints" {
+#   value = local.groups_unique_idcs_endpoints
+# }
+
+# domain data for unique domin used across users and groups
 data "oci_identity_domains" "iam_domains" {
-  for_each = merge(var.identity_domain_groups,var.identity_domain_users)
+  for_each = local.domains_distinct
   # Required
-  compartment_id = var.compartment_ocids[each.value.domain_compartment_id]
+  compartment_id = var.compartment_ocids[each.value[0].domain_compartment_id]
   # Optional
-  display_name = each.value.idcs_endpoint
+  display_name = each.key
 }
 
+# user data for each used domain
+data "oci_identity_domains_users" "users" {
+  for_each = { for k, v in local.domains_distinct : k => v if contains(keys(local.groups_unique_idcs_endpoints),k) }
+  idcs_endpoint =   data.oci_identity_domains.iam_domains[each.value[0].idcs_endpoint].domains[0].url
+}
+
+ # output "user_map" {
+ #   value = local.domain_users_map
+ # }
 module "groups" {
 
   depends_on = [module.users]
@@ -301,10 +348,10 @@ module "groups" {
   group_description        = each.value.group_description != null ? each.value.group_description : null
   matching_rule            = each.value.matching_rule
   compartment_id           = each.value.domain_compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.domain_compartment_id)) > 0 ? each.value.domain_compartment_id : var.compartment_ocids[each.value.domain_compartment_id]) : var.tenancy_ocid
-  identity_domain          = data.oci_identity_domains.iam_domains[each.key].domains[0]
+  identity_domain          = data.oci_identity_domains.iam_domains[each.value.idcs_endpoint].domains[0]
   tenancy_ocid             = var.tenancy_ocid
   members                  = each.value.members != null ? each.value.members : []
-
+  domain_users = local.domain_users_map[each.value.idcs_endpoint]
   #Optional
   user_can_request_access  = each.value.user_can_request_access
   defined_tags             = each.value.defined_tags
@@ -328,7 +375,7 @@ module "users" {
   middle_name      = each.value.name.middle_name
   honorific_prefix = each.value.name.honorific_prefix
   display_name     = each.value.display_name
-  identity_domain  = data.oci_identity_domains.iam_domains[each.key].domains[0]
+  identity_domain  = data.oci_identity_domains.iam_domains[each.value.idcs_endpoint].domains[0]
   compartment_id   = each.value.domain_compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.domain_compartment_id)) > 0 ? each.value.domain_compartment_id : var.compartment_ocids[each.value.domain_compartment_id]) : var.tenancy_ocid
   description      = each.value.description
   email            = each.value.email

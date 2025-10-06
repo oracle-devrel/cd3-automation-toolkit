@@ -35,7 +35,7 @@
     {
         "VCN Name" : "display_name",
         "CIDR Blocks" : "cidr_blocks",
-        "ULA IPv6 CIDR" : "ipv6private_cidr_blocks"
+        "ULA IPv6 CIDR" : "ipv6_private_cidr_blocks"
 
     },
     "DRGs" :

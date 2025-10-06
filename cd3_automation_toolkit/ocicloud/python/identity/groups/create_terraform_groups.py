@@ -112,7 +112,8 @@ def create_terraform_groups(inputfile, outdir, service_dir, prefix, ct):
             # Column value
             if 'description' in columnname.lower():
                 columnvalue = str(df[columnname][i])
-                tempdict = {'description': columnvalue}
+                if columnvalue.lower() != 'nan' and columnvalue != '':
+                    tempdict = {'description': columnvalue}
             else:
                 columnvalue = str(df[columnname][i]).strip()
 

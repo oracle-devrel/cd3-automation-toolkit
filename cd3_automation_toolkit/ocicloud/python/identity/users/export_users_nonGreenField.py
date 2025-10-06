@@ -12,6 +12,7 @@ import sys
 import oci
 from oci.identity import IdentityClient
 import os
+import time
 import subprocess as sp
 sys.path.append(os.getcwd() + "../")
 from common.python.commonTools import *
@@ -116,7 +117,9 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
             users = []
             next_page = None
             while True:
-                response = domain_client.list_users(page=next_page)
+                response = domain_client.list_users(page=next_page,sort_by="displayName",sort_order="ASCENDING")
+                # added sleep time and sorting to handle inconsistency in export data
+                time.sleep(5)
                 users.extend(response.data.resources)
                 if not response.next_page or len(users) == response.data.total_results:
                     break

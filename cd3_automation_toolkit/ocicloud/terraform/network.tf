@@ -125,7 +125,7 @@ module "vcns" {
   defined_tags                     = each.value.defined_tags
   freeform_tags                    = each.value.freeform_tags
   ipv6private_cidr_blocks          = each.value.ipv6private_cidr_blocks != null ? each.value.ipv6private_cidr_blocks : []
-  is_oracle_gua_allocation_enabled = each.value.is_oracle_gua_allocation_enabled
+  is_oracle_gua_allocation_enabled = each.value.is_oracle_gua_allocation_enabled != null ? each.value.is_oracle_gua_allocation_enabled : false
 
 }
 

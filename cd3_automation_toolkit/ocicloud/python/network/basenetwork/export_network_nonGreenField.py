@@ -111,6 +111,12 @@ def print_vcns(values_for_column_vcns, region, comp_name, vnc, vcn_info, drg_att
             values_for_column_vcns[col_header].append(region)
         elif (col_header == "Compartment Name"):
             values_for_column_vcns[col_header].append(comp_name)
+        elif (col_header == "Is Oracle GUA Allocation Enabled"):
+            print(vcn_info.ipv6_cidr_blocks)
+            if vcn_info.ipv6_cidr_blocks and len(vcn_info.ipv6_cidr_blocks) > 0:
+                values_for_column_vcns[col_header].append("True")
+            else:
+                values_for_column_vcns[col_header].append("")
         elif (col_header == "DRG Required"):
             if drg_attachment_info != None:
                 if (drg_info == None):

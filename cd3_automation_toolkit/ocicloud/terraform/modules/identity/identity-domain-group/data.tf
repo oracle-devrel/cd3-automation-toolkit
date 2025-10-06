@@ -20,9 +20,9 @@ data "oci_identity_domains" "iam_domains" {
 ############################
 
 
-data "oci_identity_domains_users" "users" {
-  idcs_endpoint = var.identity_domain.url
-}
+# data "oci_identity_domains_users" "users" {
+#   idcs_endpoint = var.identity_domain.url
+# }
 
 
 

@@ -5,12 +5,12 @@
 # Resource Block - Identity
 # Create Groups
 ############################
-locals {
-  user_ids = {
-    for user in data.oci_identity_domains_users.users.users :
-      user.user_name => user.id...
-  }
-}
+# locals {
+#   user_ids = {
+#     for user in data.oci_identity_domains_users.users.users :
+#       user.user_name => user.id...
+#   }
+# }
 
 resource "oci_identity_domains_group" "group" {
   count = (var.matching_rule == "" || var.matching_rule == null) ? 1 : 0
@@ -25,15 +25,18 @@ resource "oci_identity_domains_group" "group" {
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:group:Group",
   ]
   timeouts {}
-  urnietfparamsscimschemasoracleidcsextensiongroup_group {
-    description = var.group_description
+  dynamic "urnietfparamsscimschemasoracleidcsextensiongroup_group" {
+    for_each = var.group_description != null ? [1]:[]
+    content {
+      description = var.group_description
+    }
   }
 
   dynamic "members" {
     for_each = {for k in var.members: k=>k}
     content {
       type  = "User"
-      value = local.user_ids[members.value][0]
+      value = var.domain_users[members.value]
     }
   }
   dynamic "urnietfparamsscimschemasoracleidcsextensionrequestable_group" {
@@ -69,6 +72,7 @@ resource "oci_identity_domains_group" "group" {
       schemas,
       urnietfparamsscimschemasoracleidcsextension_oci_tags["defined_tags.CreatedOn"],
       urnietfparamsscimschemasoracleidcsextension_oci_tags["defined_tags.CreatedBy"],
+#      attribute_sets,attributes,members
     ]
   }
 }
@@ -120,6 +124,7 @@ resource "oci_identity_domains_dynamic_resource_group" "dynamic_group" {
       schemas,
       urnietfparamsscimschemasoracleidcsextension_oci_tags["defined_tags.CreatedOn"],
       urnietfparamsscimschemasoracleidcsextension_oci_tags["defined_tags.CreatedBy"],
+      #attribute_sets,attributes,matching_rule
     ]
   }
 }
