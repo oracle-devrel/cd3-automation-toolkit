@@ -20,7 +20,7 @@ resource "oci_core_subnet" "subnet" {
   display_name               = var.display_name
   dns_label                  = var.dns_label
   freeform_tags              = var.freeform_tags
-  ipv6cidr_block             = var.ipv6cidr_block
+  ipv6cidr_blocks            = var.ipv6cidr_block != null ? [var.ipv6cidr_block] : null
   prohibit_internet_ingress  = var.prohibit_internet_ingress
   prohibit_public_ip_on_vnic = var.prohibit_public_ip_on_vnic
   route_table_id             = var.route_table_id
