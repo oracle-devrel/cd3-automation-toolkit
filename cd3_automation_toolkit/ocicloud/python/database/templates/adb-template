@@ -66,7 +66,7 @@ adb = {
         {% endif %}
 
         {% if autonomous_maintenance_schedule_type and autonomous_maintenance_schedule_type.strip().lower() not in ["", "nan"] %}
-        autonomous_maintenance_schedule_type = "{{ autonomous_maintenance_schedule_type.strip() }}"
+        autonomous_maintenance_schedule_type = "{{ autonomous_maintenance_schedule_type.strip() | upper }}"
         {% endif %}
 
         {% if character_set != "" and character_set != "nan" %}
