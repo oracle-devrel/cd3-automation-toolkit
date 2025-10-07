@@ -1,6 +1,6 @@
 # Support for Additional Attributes
 
-**Follow the below steps to add an attribute that is not present already in your Excel sheet -**
+**Follow the below steps to add an attribute that is not already present in your Excel sheet -**
 
 1. Add the attribute name to the CD3 Excel sheet (based on the resource the attribute belongs to) as given in Terraform Official Documentation.
 2. Uncomment the attribute in .tf files (terraform modules in outdirectory, if they are commented). 

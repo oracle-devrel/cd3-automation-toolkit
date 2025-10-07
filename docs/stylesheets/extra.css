@@ -42,15 +42,15 @@
 }
 
 .md-typeset a {
-    color: #2D4954 !important;  /* normal text */
+    color: #2D4954 !important;  
     text-decoration: underline;
     text-decoration-thickness: 0.5px;;
     font-weight: 600 !important;
-    transition: color 0.25s ease-in-out; /* smooth color transition */
+    transition: color 0.25s ease-in-out; 
 }
 
 .md-typeset a:hover {
-    color: teal !important;  /* slightly darker on hover */
+    color: teal !important;  
     text-decoration-thickness: 2px;
 }
 
@@ -63,7 +63,7 @@
   height: 100%;
 }
 
-/* Light mode buttons */
+
 [data-md-color-scheme="oracle"] .md-button {
   border: 2px solid #5995ac;
   background-color: #2D4954 ;
@@ -72,21 +72,22 @@
 }
 
 .md-typeset .md-button {
-  /* width: 42%; */   /* remove this */
-  padding: 16px 16px;  /* adjust padding as needed */
-  display: inline-block;  /* allows width to adapt to text */
-  text-align: center;     /* centers the text */
-  white-space: nowrap;    /* prevents wrapping if you want one line */
+  
+  padding: 16px 16px;  
+  display: inline-block;  
+  text-align: center;     
+  white-space: nowrap;    
 }
 
 [data-md-color-scheme="oracle"] .md-button:hover {
-  background-color: #2D4954;    /* change background on hover */
-  color: #FFFFFF !important;   /* keep text white */
-  transition: background-color 0.3s, border-color 0.3s; /* smooth transition */
+  background-color: #2D4954;    
+  color: #FFFFFF !important;   
+  transition: background-color 0.3s, border-color 0.3s; 
   text-decoration: underline;
   text-decoration-color: #FFFFFF !important;
-  transform: scale(1.05);       /* slightly bigger */
-  transition: transform 0.2s;   /* smooth animation */
+  text-decoration-color: teal !important;
+  transform: scale(1.05);       
+  transition: transform 0.2s;   
   border: 4px solid #5995ac;
 }
 
@@ -101,18 +102,17 @@ details > summary {
 }
 
 details {
-    border: 1px solid #2D4954 !important;  /* custom border color */
+    border: 1px solid #2D4954 !important;  
     border-radius: 5px !important;
 }
 
-/* Optional: hover effect for summary */
 details > summary:hover {
     background-color: #2D4954  !important;
     border: 2px solid #5995ac ;
 }
 
 details > summary::before {
-    background-color: #ffffff !important;  /* change the blue square to white */
+    background-color: #ffffff !important;  
 }
 
 .md-nav__item {

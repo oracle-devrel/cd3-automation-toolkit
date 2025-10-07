@@ -1,7 +1,7 @@
 # OCI Resource Manager Upload
 
 
-On choosing **"Developer Services"** in the SetUpOCI menu, choose **"Upload current terraform files/state to Resource Manager"** sub-option to upload the terraform outdir into OCI Resource Manager.
+To upload the terraform out directory into OCI Resource Manager, select **"Developer Services"** in the SetUpOCI menu, and choose **"Upload current terraform files/state to Resource Manager"** sub-option.
 
 This option will upload the created Terraform files & the tfstate (if present) to the OCI Resource Manager.
 

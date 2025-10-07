@@ -25,7 +25,7 @@ nav:
       - URL Whitelisting(optional): url-whitelisting.md
     - Upgrade CD3: upgrade-toolkit.md
 
-  - Connect MultiCloud :
+  - Connect to Cloud :
     - connect-container-to-cloud.md
     - Connect to OCI: 
       - connect-container-to-oci-tenancy.md
@@ -33,7 +33,7 @@ nav:
       - Delete Prefix(optional): delete-prefix.md
     - Connect to Azure: connect-container-to-azure-subscription.md
 
-  - SetUp OCI :
+  - OCI :
     - setUpOCI.md
     - Set Up OCI with CLI:
       - cd3-cli.md
@@ -55,7 +55,7 @@ nav:
     - Must Read:
       - must-read.md
   
-  - SetUp Azure :
+  - Azure :
     - setUpAzure.md
     - Set Up Azure with CLI:
       - cd3-azr-cli.md
@@ -68,14 +68,16 @@ nav:
     - Manage Network : manage-network.md
     - Manage Compute : manage-compute.md
     - Manage OCI Network Firewall : manage-firewall.md
-    - Additional Features:
-      - group-tf-files.md
-      - Grouping of Terraform Files: group-tf-files.md
-      - Remote Management of Terraform State: remotestate.md
-      - OCI Resource Manager Upload: resource-manager-upload.md
-      - Support for Additional Attrs: additional-attributes.md
-      - CD3 Validator: cd3validator.md
-      - Migrate CD3 Jenkins: jobs-migration.md
+
+
+  - Additional Features:
+    - group-tf-files.md
+    - Grouping of Terraform Files: group-tf-files.md
+    - Remote Management of Terraform State: remotestate.md
+    - OCI Resource Manager Upload: resource-manager-upload.md
+    - Support for Additional Attrs: additional-attributes.md
+    - CD3 Validator: cd3validator.md
+    - Migrate CD3 Jenkins: jobs-migration.md
 
   - Troubleshooting:
     - knownbehaviour.md

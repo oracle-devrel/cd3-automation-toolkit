@@ -50,17 +50,29 @@ Command to Execute:
 ```
 cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```
-<b>Note for old users of the toolkit, below command will be deprecated in next major release v2025.3.0. </b>
+<details>
+<summary>Notice for Current Toolkit Users: Important Update ⚠️</summary>
+
+<br>
+
+<b> Below command will be deprecated starting from the next major release v2025.3.0 </b>
+
 ```
 python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 ```
 
-<b>Instead use below command:</b>
+<b>Instead use this new command:</b>
+```
+python setUpCloud.py oci /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
+``` 
+
+</details>
 
 
 ```
 python setUpCloud.py oci /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 ``` 
+
 
        
 !!! example "Example Execution"

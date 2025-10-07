@@ -42,7 +42,7 @@ When using Jenkins, the following additional components are created:
       ```<prefix>-automation-toolkit-bucket```
 
   * Customer Secret Key
-    Used as S3 credential for the bucket storing remote state, tied to the user in ```tenancyconfig.properties```.
+    Used as S3 credential for the bucket storing remote state, tied to the user in ```connectOCI.properties```.
 
 
 

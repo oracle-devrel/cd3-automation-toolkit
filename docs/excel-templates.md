@@ -3,6 +3,10 @@
  CD3 Excel templates serve as the main input to the Automation Toolkit. 
 
 
+
+[OCI Excel Templates](../oci-excel-templates){ .md-button }
+[Azure Excel Templates](../azr-excel-templates){ .md-button }
+
 <b>Filling the Templates</b>
 
 - Instructions for filling in data are provided in the blue section of each sheet (within the Excel file).<br>
@@ -21,6 +25,6 @@
 
     The Excel Templates can also be found under "_/cd3user/oci_tools/cd3_automation_toolkit/example/_" folder  inside the container.
 
-<b> Proceed to check available CD3 excel templates for <a href="../oci-excel-templates"><u>OCI</u></a> and <a href="../azr-excel-templates"><u>Azure</u></a> based on your requirement. </b>
+
 
 

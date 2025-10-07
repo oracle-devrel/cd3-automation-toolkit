@@ -65,7 +65,7 @@ CD3 Automation Toolkit Tag v10.2
 CD3 Automation Toolkit Tag v10.1
 ----------------------------------
 1. Support for separating the out directory for terraform files generated for each resource. Single outdir can also
-   be used if required. A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties to
+   be used if required. A new parameter 'outdir_structure_file' has been introduced in connectOCI.properties to
    achieve this config.
    Please note that this can be configured only at the time of setting up the tenancy. If for any reason, you need to change the
    directory structure, you will need to re run createTenancy.py again.
