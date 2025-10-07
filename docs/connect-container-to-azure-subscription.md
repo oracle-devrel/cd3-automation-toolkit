@@ -148,7 +148,7 @@ python connectCloud.py azure connectAzure.properties
 <details>
     <summary> Example execution of the script </summary>
 
-    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy.png">
+    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttoazure.png">
 
 </details>
 

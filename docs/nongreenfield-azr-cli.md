@@ -61,11 +61,17 @@ python setUpCloud.py azure /cd3user/azure/<prefix>/<prefix>_setUpAure.properties
 
 !!! example  "Example Execution"
 
-    Updated OCI_Regions file !!!
+    [cd3user@dc6dac212f79 cd3_automation_toolkit]$ python setUpCloud.py azure /cd3user/azure/az_demo/az_demo_setUpAzure.properties 
 
-    Script to fetch the compartment OCIDs into variables file has not been executed.<br>
-    Do you want to run it now? (y|n):
+    workflow_type set to export_resources. Export existing Azure objects and Synch with TF state
+    We recommend to not have any existing tfvars/tfstate files for export out directory
 
+    Choose appropriate option from below :
+
+    1. Export DB @Azure
+    <br>q. Press q to quit
+    
+    Enter your choice (specify comma separated to choose multiple choices):
 
 <span style="color: teal; font-weight: bold;"><b>Expected Outputs:</b></span>
 
