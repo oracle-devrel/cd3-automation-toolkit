@@ -52,6 +52,8 @@ nav:
       - Export from OCI : 
         - nongreenfield-jenkins.md
       - Commit Local changes to GIT: sync-cli-jenkins.md
+    - Must Read:
+      - must-read.md
   
   - SetUp Azure :
     - setUpAzure.md
