@@ -1,7 +1,5 @@
 # **Set Up OCI using Automation Toolkit with CLI**
 ---
-!!! Important "Must Read!"
-    Check out the <a href="../must-read-prerequisites"><u>Must Read</u></a> section for managing network, compute and oci firewall resources.
 
 ## High Level Steps to use toolkit with CLI
 
@@ -102,7 +100,7 @@ workflow_type=create_resources
 
 ## Copy CD3 Excel File
 
-* While using the container launched using <a href="../launch-from-rmstack"><u>RM Stack</u></a>, local path `/cd3user/mount_path` on the VM is mapped to `/cd3user` inside the container. So the Excel template can be copied at `/cd3user/mount_path/tenancies/<prefix/>` on the VM. Below is the sample command to copy the Excel template from local system to container:
+* While using the container launched using <a href="../launch-from-rmstack"><u>RM Stack</u></a>, local path `/cd3user/mount_path` on the VM is mapped to `/cd3user` inside the container. So the Excel template can be copied at `/cd3user/mount_path/tenancies/<prefix>/` on the VM. Below is the sample command to copy the Excel template from local system to container:
 ```
 scp -i <private key pushed to VM while creating stack> <path to excel file on local> cd3user@<Public/Private IP of the VM>:/cd3user/mount_path/tenancies/<prefix>
 ``` 
