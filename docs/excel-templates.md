@@ -16,7 +16,11 @@
     - If a row is deleted from the Excel file and the toolkit is re-run, the corresponding resource will be removed from the .tfvars file.
 
 
-<br>
+
 !!! info "Templates inside the container"
 
     The Excel Templates can also be found under "_/cd3user/oci_tools/cd3_automation_toolkit/example/_" folder  inside the container.
+
+<b> Proceed to check available CD3 excel templates for <a href="../oci-excel-templates"><u>OCI</u></a> and <a href="../azr-excel-templates"><u>Azure</u></a> based on your requirement. </b>
+
+
