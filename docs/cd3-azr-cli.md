@@ -6,7 +6,7 @@
 
 2. Check out <a href="../cd3workflows"><u>CD3 Workflows document</u></a> for workflows supported by the toolkit and choose the required workflow.
 
-3. Use one of the templates from <a href="../excel-templates"><u>Excel Templates</u></a> based on your requirement.
+3. Use Azure excel template from <a href="../azr-excel-templates"><u>Excel Templates</u></a> based on your requirement.
 
 4. Review `setUpAzure.properties` file:  `/cd3user/azure/<prefix>/<prefix>_setUpAzure.properties`.
 
@@ -95,7 +95,7 @@ workflow_type=create_resources
 
 ## Copy CD3 Excel File
 
-* While using the container launched using <a href="../launch-from-rmstack"><u>RM Stack</u></a>, local path `/cd3user/mount_path` on the VM is mapped to `/cd3user/` inside the container. So the Excel template can be copied at `/cd3user/mount_path/azure/<prefix/>` on the VM. Below is the sample command to copy the Excel template from local system to container:
+* While using the container launched using <a href="../launch-from-rmstack"><u>RM Stack</u></a>, local path `/cd3user/mount_path` on the VM is mapped to `/cd3user/` inside the container. So the Excel template can be copied at `/cd3user/mount_path/azure/<prefix>/` on the VM. Below is the sample command to copy the Excel template from local system to container:
 ```
 scp -i <private key pushed to VM while creating stack> <path to excel file on local> cd3user@<Public/Private IP of the VM>:/cd3user/mount_path/azure/<prefix>
 ``` 
