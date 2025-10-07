@@ -32,19 +32,42 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
         Make sure to assign required OCI Tenancy Access to user/instance as defined in <a href="../prerequisites"><u>Prerequisites.</u></a>
 
 
+<details>
+<summary>Notice for Current Toolkit Users: Important Update ⚠️</summary>
 
-<span style="color: teal; font-weight: bold;">3 - Edit tenancyconfig.properties</span>
+<br>
+
+<b>The current file:</b>
+
+    ```bash
+    cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
+    connectOCI.properties
+    ```
+<b>will be deprecated in the next release v2025.3.0</b>
+  
+<br>
+    <b>The new file name and path will be:</b>
+
+    ```bash
+    cd /cd3user/oci_tools/cd3_automation_toolkit/
+    connectOCI.properties
+    ```
+
+</details>
+
+
+<span style="color: teal; font-weight: bold;">3 - Edit connectOCI.properties</span>
 
 * Run 
   ```
-  cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
+  cd /cd3user/oci_tools/cd3_automation_toolkit/
   ```
 
-* Fill the input parameters in ```tenancyconfig.properties``` file. Expand below tables for parameter description and sample data. 
+* Fill the input parameters in ```connectOCI.properties``` file. Expand below tables for parameter description and sample data. 
   Description for each parameter is also provided within the file.
 
 
-📋 <b><i>tenancyconfig.properties</i></b>
+📋 <b><i>connectOCI.properties</i></b>
 
 <details>
     <summary> Parameter Description </summary>
@@ -179,7 +202,7 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 * Initialise your environment to use the Automation Toolkit.
 ```
-python createTenancyConfig.py tenancyconfig.properties
+python createTenancyConfig.py connectOCI.properties
 ```
 
     !!! warning "Heads-Up!"
@@ -208,7 +231,7 @@ python createTenancyConfig.py tenancyconfig.properties
             <td>outdir_structure_file.properties</td>
             <td>/cd3user/tenancies/&lt;prefix&gt;/&lt;prefix&gt;_outdir_structure_file</td>
             <td>Customer Specific properties file for outdir structure.
-            This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir)in tenancyconfig.properties while running createTenancyConfig.py</td>
+            This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir)in connectOCI.properties while running createTenancyConfig.py</td>
         </tr>
         <tr>
             <td>Region based directories</td>
@@ -252,8 +275,8 @@ python createTenancyConfig.py tenancyconfig.properties
             <td>This folder contains jenkins specific data. Single Jenkins instance can be setup for a single container.</td>
         </tr>
         <tr>
-            <td>tenancyconfig.properties</td>
-            <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_tenancyconfig.properties</td>
+            <td>connectOCI.properties</td>
+            <td>/cd3user/tenancies/&lt;prefix&gt;/.config_files/&lt;prefix&gt;_connectOCI.properties</td>
             <td>The input properties file used to execute the script is copied to customer folder to retain for future reference. This can be used when the script needs to be re-run with same parameters at later stage.</td>
         </tr>
        <tr>
@@ -265,7 +288,7 @@ python createTenancyConfig.py tenancyconfig.properties
         <tr>
             <td>OCI DevOps Project and Repository</td>
             <td>&lt;prefix&gt;-automation-toolkit-project and &lt;prefix&gt;-automation-toolkit-repo</td>
-            <td>Devops Project and repo are created under compartment specified under compartment_ocid property in tenancyconfig.properties. This will host the terraform/tofu code. This is created only if use_oci_devops_git is set to yes.</td>
+            <td>Devops Project and repo are created under compartment specified under compartment_ocid property in connectOCI.properties. This will host the terraform/tofu code. This is created only if use_oci_devops_git is set to yes.</td>
         </tr>
         <tr>
             <td>OCI Topic</td>
@@ -280,7 +303,7 @@ python createTenancyConfig.py tenancyconfig.properties
         <tr>
             <td>Customer Secret Key</td>
             <td>&lt;prefix&gt;-automation-toolkit-csk </td>
-            <td>A Customer Secret Key is created for the user specified in tenancyconfig.properties file. This is used as S3 credentials for the bucket storing remote state.</td>
+            <td>A Customer Secret Key is created for the user specified in connectOCI.properties file. This is used as S3 credentials for the bucket storing remote state.</td>
         </tr>
         
     </table>
@@ -298,7 +321,7 @@ python createTenancyConfig.py tenancyconfig.properties
 
 !!! abstract "Subscribing to a new OCI Region?"
 
-    When a new region is subscribed to the tenancy, rerun `createTenancyConfig.py` by using the same `tenancyconfig.properties` file that was originally used.<br>
+    When a new region is subscribed to the tenancy, rerun `createTenancyConfig.py` by using the same `connectOCI.properties` file that was originally used.<br>
     ✅ It will create new directory for the new region under `/cd3user/tenancies/<prefix>/terraform_files` without modifying the existing ones <br>
     ✅ It will also commit the latest terraform_files folder to OCI DevOps GIT repo.
 

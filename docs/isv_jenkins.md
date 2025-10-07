@@ -56,17 +56,17 @@ sudo podman exec -it cd3_toolkit bash
 
      - Click [here](authmechanisms.md) to configure any one of the available authentication mechanisms.
   
-3. Edit **tenancyconfig.properties**
+3. Edit **connectOCI.properties**
 
 4. Change the Directory to below 
   ```
   cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
   ```
 
-5. Fill/Update the input parameters in ```tenancyconfig.properties``` file.
+5. Fill/Update the input parameters in ```connectOCI.properties``` file.
 
 
- **_tenancyconfig.properties_**
+ **_connectOCI.properties_**
 
 <details>
     <summary> Parameter Description </summary>
@@ -182,7 +182,7 @@ sudo podman exec -it cd3_toolkit bash
     
 - Initialise the environment to use the Automation Toolkit.
 ```
-python createTenancyConfig.py tenancyconfig.properties
+python createTenancyConfig.py connectOCI.properties
 ```
 
     !!! note 
