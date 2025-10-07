@@ -6,7 +6,7 @@
 
 2. Check out <a href="../cd3workflows"><u>CD3 Workflows document</u></a> for workflows supported by the toolkit and choose the required workflow.
 
-3. Use Azure excel template from <a href="../azr-excel-templates"><u>Excel Templates</u></a> based on your requirement.
+3. Use Azure excel template from <a href="../excel-templates"><u>Excel Templates</u></a> based on your requirement.
 
 4. Review `setUpAzure.properties` file:  `/cd3user/azure/<prefix>/<prefix>_setUpAzure.properties`.
 
