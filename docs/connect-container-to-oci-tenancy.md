@@ -37,13 +37,13 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 <br>
 
-<b>The current file:</b>
+<b>The file:</b>
 
     ```bash
     cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
-    connectOCI.properties
+    tenancyconfig.properties
     ```
-<b>will be deprecated in the next release v2025.3.0</b>
+<b>will be deprecated from the next release v2025.3.0</b>
   
 <br>
     <b>The new file name and path will be:</b>
@@ -202,7 +202,7 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 * Initialise your environment to use the Automation Toolkit.
 ```
-python createTenancyConfig.py connectOCI.properties
+python createTenancyConfig.py  /cd3user/oci_tools/cd3_automation_toolkit/connectOCI.properties
 ```
 
     !!! warning "Heads-Up!"
