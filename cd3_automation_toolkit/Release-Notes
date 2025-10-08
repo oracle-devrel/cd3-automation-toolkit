@@ -1,14 +1,13 @@
 -------------------------------------
 CD3 Automation Toolkit Tag v2025.2.0
-Oct 9th, 2025
+Oct 10th, 2025
 -------------------------------------
 1. MultiCloud Support - Create and Export ADB @Azure using CD3. Documentation Link -
 2. Support full functionality of OCI Network Firewall using CD3.
-3. Upgrade ADB Excel and Terraform to support all features.
-4. Notifications terraform performance tuning.
-4. Support for IPv6 under networking.
-4. Bug fixes wrt terraform for identity
-
+3. Upgrade ADB Excel and Terraform to support all features. Password can be fetched from OCI vault too.
+4. Performance tuning of Terraform for notifications and identity modules.
+5. Support for IPv6 under networking.
+6. Bug fix wrt SCH log re-ordering during terraform plan.
 
 -------------------------------------
 CD3 Automation Toolkit Tag v2025.1.4
