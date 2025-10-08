@@ -40,15 +40,14 @@ Additionally, the toolkit also supports seamless resource management using OCI D
     <td>Load Balancers</td>
   </tr>
   <tr>
-    <td>OCI Network Firewall</td>
-    <td>KMS</td>
-    <td>Policy Enforcement using OPA</td>
-    
-  </tr>
-  <tr>
     <td>Compute</td>
     <td>Storage</td>
-    <td>Database</td>    
+    <td>OCI, MySQL Database</td>    
+  </tr>
+    <tr>
+    <td>OCI Network Firewall</td>
+    <td>KMS</td>
+    <td>Policy Enforcement using OPA</td>  
   </tr>
   <tr>
     <td>OKE</td>
@@ -63,8 +62,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   <tr>    
     <td>Cloud Guard</td>
     <td>SHOWOCI report</td>    
-    <td>CIS Landing Zone<br>Compliance</td>
-    
+    <td>CIS Compliance Report</td> 
   </tr>
 </table>
 </tr>
@@ -73,6 +71,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 </body>
 
 <br>
+
 
 ## Why CD3?
 
