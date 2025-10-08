@@ -66,12 +66,11 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   </tr>
 </table>
 </tr>
-
-
 </body>
 
+📌 The Toolkit also extends its support to <b>ADB@Azure</b>
+
 <br>
-<b>The Toolkit also extends its support to ADB@Azure.</b>
 
 ## Why CD3?
 
