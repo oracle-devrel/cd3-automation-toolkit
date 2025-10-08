@@ -42,7 +42,7 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   <tr>
     <td>Compute</td>
     <td>Storage</td>
-    <td>OCI, MySQL Database</td>    
+    <td>Oracle, MySQL Databases</td>    
   </tr>
     <tr>
     <td>OCI Network Firewall</td>
