@@ -60,17 +60,28 @@ sudo chmod 700 /home/cd3user/.ssh
 <span style="color: teal; font-weight: bold;">2. Clone the repo</span>
 
 
-* Open the terminal and navigate to the above created directory. 
+* Open the terminal, navigate to the above created directory and create a new directory called oci_tools
 === "Example for Mac"
       ```
       cd /Users/<user_name>/mount_path
+      mkdir oci_tools
       ```
 
 === "Example for Windows "
       ```
       cd D:/mount_path
+      mkdir oci_tools
       ```
-* Create a dir called oci_tools. Navigate inside oci_tools dir. Git repo will be downloaded here.
+* Navigate inside oci_tools dir. Git repo will be downloaded here.
+=== "Example for Mac"
+      ```
+      cd /Users/<user_name>/mount_path/oci_tools
+      ```
+
+=== "Example for Windows "
+      ```
+      cd D:/mount_path/oci_tools
+      ```
 
 * Run the git clone command as shown below. Note the period (.) at the end of command:
 &nbsp; &nbsp; &nbsp; &nbsp; 
