@@ -51,7 +51,7 @@ Command to Execute:
 cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```
 <details>
-<summary>Notice for Current Toolkit Users: Important Update ⚠️</summary>
+<summary>Note for Current Toolkit Users: Important Update ⚠️</summary>
 
 <br>
 

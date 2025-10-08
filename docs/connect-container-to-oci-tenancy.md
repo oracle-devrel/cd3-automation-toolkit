@@ -32,16 +32,17 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
         Make sure to assign required OCI Tenancy Access to user/instance as defined in <a href="../prerequisites"><u>Prerequisites.</u></a>
 
 
+<span style="color: teal; font-weight: bold;">3 - Edit properties file</span>
+
 <details>
-<summary>Notice for Current Toolkit Users: Important Update ⚠️</summary>
+<summary>Note for Current Toolkit Users: Important Update ⚠️</summary>
 
 <br>
 
-<b>The file:</b>
+<b>The properties file and path:</b>
 
     ```bash
-    cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
-    tenancyconfig.properties
+    /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties
     ```
 <b>will be deprecated from the next release v2025.3.0</b>
   
@@ -49,14 +50,13 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
     <b>The new file name and path will be:</b>
 
     ```bash
-    cd /cd3user/oci_tools/cd3_automation_toolkit/
-    connectOCI.properties
+    /cd3user/oci_tools/cd3_automation_toolkit/connectOCI.properties
     ```
 
 </details>
 
 
-<span style="color: teal; font-weight: bold;">3 - Edit connectOCI.properties</span>
+
 
 * Run 
   ```
@@ -201,11 +201,32 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 <span style="color: teal; font-weight: bold;">4 - Initialise the environment</span>
 
 * Initialise your environment to use the Automation Toolkit.
+
+<details>
+<summary>Note for Current Toolkit Users: Important Update ⚠️</summary>
+
+<br>
+
+<b>Below command will be deprecated starting from the next major release v2025.3.0</b>
+
+    ```bash
+    python createTenancyConfig.py tenancyconfig.properties
+    ```
+<b>Instead use this command:</b>
+  
+    ```bash
+    python connectCloud.py oci  connectOCI.properties
+    ```
+
+</details>
+
+
 ```
-python createTenancyConfig.py  /cd3user/oci_tools/cd3_automation_toolkit/connectOCI.properties
+python connectCloud.py oci  connectOCI.properties
 ```
 
-    !!! warning "Heads-Up!"
+
+     !!! warning "Heads-Up!"
         * When running the CD3 container on a Linux VM host (without using the Resource Manager stack option), refer to <a href="../faq"><u>point no. 7</u></a> under FAQ to avoid any permission issues.
         * Running the above command immediately after adding API key to the user profile in OCI might result in  Authentication Errors. In such cases, retry after a minute.
 
