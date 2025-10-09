@@ -23,12 +23,12 @@ As part of CD3, we have meticulously developed an initial set of policies. These
 
  **3.** Run the terraform plan against all the available OPA rules. It should return an empty array which means the plan has no non-compliant action against CIS benchmarks.
 
-        opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA -i tfplan.json data.terraform.deny --fail-defined
+        opa eval -f pretty -b cd3user/oci_tools/cd3_automation_toolkit/common/opa -i tfplan.json data.terraform.deny --fail-defined
 
     
 Alternatively, users can run the following command to evaluate a specific OPA rule, such as `deny_ingress_for_sl.rego`, and display the results in a readable (pretty) format.
 
-        opa eval -f pretty -d /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA/Networking/oci_deny_ingress_for_sl.rego -i tfplan.json data.terraform.deny
+        opa eval -f pretty -d cd3user/oci_tools/cd3_automation_toolkit/common/opa/Networking/oci_deny_ingress_for_sl.rego -i tfplan.json data.terraform.deny
 
 This command will analyze the `tfplan.json` input file against the policy and display the evaluation results with a user-friendly format.
 

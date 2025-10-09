@@ -33,7 +33,7 @@ nav:
       - Delete Prefix(optional): delete-prefix.md
     - Connect to Azure: connect-container-to-azure-subscription.md
 
-  - OCI :
+  - Setup OCI :
     - setUpOCI.md
     - Set Up OCI with CLI:
       - cd3-cli.md
@@ -55,7 +55,7 @@ nav:
     - Must Read:
       - must-read.md
   
-  - Azure :
+  - Setup Azure :
     - setUpAzure.md
     - Set Up Azure with CLI:
       - cd3-azr-cli.md
