@@ -5,7 +5,7 @@ Oct 10th, 2025
 1. MultiCloud Support - Create and Export ADB @Azure using CD3. Documentation Link - https://oracle-devrel.github.io/cd3-automation-toolkit/latest/connect-container-to-azure-subscription/
 2. Support full functionality of OCI Network Firewall using CD3.
 3. Upgrade ADB Excel and Terraform to support all features. Password can be fetched from OCI vault too.
-4. Performance tuning of Terraform for notifications and identity modules.
+4. Performance tuning of Terraform for notifications and identity domain modules.
 5. Support for IPv6 under networking.
 6. Bug fix wrt SCH log re-ordering during terraform plan.
 
