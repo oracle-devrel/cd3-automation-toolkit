@@ -51,7 +51,7 @@ workflow_type=export_resources
 
 Execute the setUpOCI.py script to start exporting the resources to CD3 and creating the terraform/tofu configuration files.
 
-Command to Execute:
+<b>Commands to Execute:</b>
 ```
 cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```

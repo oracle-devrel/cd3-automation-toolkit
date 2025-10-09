@@ -46,7 +46,8 @@ workflow_type=create_resources
 
 Execute below script to start creating the terraform/tofu configuration files.
     
-Command to Execute:
+<b>Commands to Execute:</b>
+
 ```
 cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```

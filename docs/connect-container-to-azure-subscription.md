@@ -85,7 +85,7 @@ Connecting the CD3 container to an Azure Subscription authenticates the toolkit,
 
 <br>
 
-!!! tip " Important Configuration Tips"
+!!! tip " Important Configuration Tips- Offline tfvars Generation"
     - Auth Details Parameters are optional.<br>
     - If left empty, the toolkit will not be able to run any APIs against the Azure subscription. <br>
     - This will mean that - <br>
