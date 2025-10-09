@@ -211,6 +211,8 @@ Click on the links below to know about the specifics of each tab in the Excel te
         <li><a href="../tabs#exacs">Exadata CS</a></li>
         <li><a href="../tabs#adb-tab">Autonomous DB</a></li>
       </ul>
+      <a href="../terraform/adb">🔗 Sample auto.tfvars for ADB</a><br>
+      
     </div>
 
     <h3 id="mysql-database" style="display: flex; align-items: center; gap: 8px;">

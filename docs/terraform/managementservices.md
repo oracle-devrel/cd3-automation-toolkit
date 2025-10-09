@@ -93,17 +93,18 @@ Comments preceed with <b>##</b>.
     }
 ```
   
-**2. Notification Topics**
+**2. Notifications**
+
 
 - <b>Syntax</b>
 ```
-   notifications_topics = {
+   notifications = {
       ## key - Is a unique value to reference the resources respectively
       key = {
           # Required
           compartment_id             = string 
           topic_name                 = string
-             
+          subscriptions              = list(map)  
           # Optional
           description                = string
           defined_tags               = map
@@ -114,24 +115,36 @@ Comments preceed with <b>##</b>.
 
 - <b>Example</b>
 ```
-    // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+    # Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+    #
     ############################
     # ManagementServices
-    # Notifications_Topics - tfvars
+    # Notifications - tfvars
     # Allowed Values:
     # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Security--Prod" where "Security" is the parent of "Prod" compartment
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epzfic6ah6jy3xf3c" or compartment_id = "Security--Prod" where "Security" is the parent of "Prod" compartment
     ############################
-    notifications_topics = {
+    notifications = {
        NetworkTopic = {
          compartment_id = "Security"
          description = "Topic for network related notifications."
          topic_name = "NetworkTopic"
+         subscriptions = [
+          {
+            endpoint = "abc@xyz.com"
+            protocol = "EMAIL"
+          },          
+          {
+            endpoint = "abc2@xyz.com"
+            protocol = "EMAIL"
+          }        
+          ]
        },
        SecurityTopic = {
          compartment_id = "Security"
          description = "Topic for security related notifications."
          topic_name = "SecurityTopic" 
+         subscriptions = []
          defined_tags = {
           "Operations.os"= "Linux" ,
           "Organization.department"= "Administrators" ,
@@ -140,60 +153,8 @@ Comments preceed with <b>##</b>.
     }
 ```
 
-**3. Notification Subscriptions**
 
-- <b>Syntax</b>
-```
-   notifications_subscriptions = {
-      ## key - Is a unique value to reference the resources respectively
-     key = {
-          # Required
-          compartment_id           = string
-          endpoint                 = string
-          protocol                 = string
-          topic_id                 = string
-         
-          # Optional
-          defined_tags             = map
-          freeform_tags            = map
-      }
-   }
-```
-
-- <b>Example</b>
-```
-  // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-  ############################
-  # ManagementServices
-  # Notifications_Subscriptions - tfvars
-  # Allowed Values:
-  # topic_id can be ocid or the key of notifications_topics (map)
-  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Security--Prod" where "Security" is the parent of "Prod" compartment
-  ############################
-  notifications_subscriptions = {
-   NetworkTopic_sub1 = {
-     subscription_name = "NetworkTopic_sub1"
-     compartment_id = "Security"
-     endpoint = "abc@xyz.com"
-     protocol = "EMAIL"
-     topic_id = "NetworkTopic"
-     defined_tags = {
-         "Operations.os"= "Linux" ,
-         "Organization.department"= "Administrators" ,
-     }
-   },
-   SecurityTopic_sub1 = {
-       subscription_name = "SecurityTopic_sub1"
-       compartment_id = "Security"
-       endpoint = "abc@xyz.com"
-       protocol = "EMAIL"
-       topic_id = "SecurityTopic"
-   },
-  }
-```
-
-**4. Events**
+**3. Events**
 
 - <b>Syntax</b>
 ```
