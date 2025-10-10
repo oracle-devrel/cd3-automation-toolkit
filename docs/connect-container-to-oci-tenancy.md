@@ -63,7 +63,7 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 <br>
 
-<b>The properties file and path:</b>
+<b>The old properties file and path:</b>
 
     ```bash
     /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties
@@ -255,7 +255,7 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 <br>
 
-<b>Below command will be deprecated starting from the next major release v2025.3.0</b>
+<b>Below old command will be deprecated starting from the next major release v2025.3.0</b>
 
     ```bash
     python createTenancyConfig.py tenancyconfig.properties
@@ -382,7 +382,9 @@ python connectCloud.py oci  connectOCI.properties
 <details>
     <summary> Example execution of the script with Advanced Parameters for CI/CD </summary>
 
-    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy.png">
+    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy-1.png">
+    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy-2.png">
+
 
 </details>
 

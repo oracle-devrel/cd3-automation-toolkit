@@ -1,11 +1,10 @@
 # CD3 Validator Features
 
-With version v9.0 we have introduced validator for Multiple VCN CIDRs in Networking Tab.
 CD3 Validator helps you validate the Compartments, Groups, Policies, Network component entries, Instances, Block Volumes, FSS in your CD3 to ensure error free, smooth creation of the resources when Terraform is applied.
 
 - CD3 Validator runs by default when executing the Create Workflow.
 
-- Users can also manually run the`Validate CD3` option from the menu that appears when executing the `setUpOCI.py` script.
+- Users can also manually run the`Validate CD3` option from the menu that appears when executing the `setUpCloud.py` script.
 
 - Log file containing CD3 validator checks is generated at: ```/cd3user/tenancies/<prefix>/<prefix>_cd3validator.log```. <br><br>
 

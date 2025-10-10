@@ -13,7 +13,7 @@ Provisioning of compute instances using Automation Toolkit involves the below st
 
 - Optional columns can also be left blank - like Fault Domain, IP Address. They will take default values when left empty. <br>
 
-- Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu. <br>
+- Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpCloud menu. <br>
 
 - Enter subnet name column value as: ```<network-compartment-name>@<vcn-name>::<subnet-name>``` <br>
 
@@ -101,9 +101,9 @@ Ensure there is an entry in the variables_<region\>.tf file for the value entere
     !!! Important
         Execute GIT commands to sync these variables_<region\>.tf file changes  with DevOps GIT Repo in case **toolkit is being used with Jenkins,** <a href="../sync-cli-jenkins"><u>Here are the Steps</u></a>.
 
-**3.  Execute setUpOCI and terraform/tofu apply**
+**3.  Execute setUpCloud and terraform/tofu apply**
 
-On choosing _"Compute"_ in the SetUpOCI menu and _"Add/Modify/Delete Instances/Boot Backup Policy"_ submenu will allow to launch the VM on OCI tenancy.
+On choosing _"Compute"_ in the setUpCloud menu and _"Add/Modify/Delete Instances/Boot Backup Policy"_ submenu will allow to launch the VM on OCI tenancy.
 
 Output tfvars file generated: ```<outdir>/<region_dir>/<service_dir><prefix>_instances.auto.tfvars``` and ```<outdir>/<region_dir>/<service_dir>/<prefix>_boot-backup-policy.auto.tfvars```  
 
@@ -119,9 +119,9 @@ Upon re-running the same option, the previously existing files will be backed up
 2. <a href="../additional-attributes"><u>Add any additional attributes</u></a> (not part of excel sheet already) which needs to be exported . <br>
 
 
-3. Execute the _setupOCI_ with _Workflow Type_ as _Export Resources_ <br>
+3. Execute the _setupCloud_ with _Workflow Type_ as _Export Resources_ <br>
    ```
-   python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
+   python setUpCloud.py oci /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
 ``` 
 4. Provide the region from where the Instances have to be exported. Specify comma separated values for multiple regions. <br>
 

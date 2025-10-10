@@ -54,6 +54,9 @@
         }
     </style>
 </head>
+
+<h2>OCI</h2>
+
 <body>
     <div class="grid-container">
         <div class="service-card">
@@ -218,4 +221,20 @@
         </div>
     </div>
 </body>
+
+
+<h2>Azure</h2>
+        <div class="service-card">
+            <div class="card-title">
+                <h3>OracleDB@Azure</h3>
+                <img src="../images/database.png" alt="ADB@Azure Icon"> 
+            </div>
+            <p><a href="../cd3exceltabs#oracledb@azure"><b>ADB @Azure</b></a></p>
+            </div>
+        </div>         
+
 </html>
+
+
+
+

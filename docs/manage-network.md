@@ -11,7 +11,7 @@
 
 
 !!! note
-    Make sure to execute "Fetch Compartments OCIDs to variables file" from CD3 Services in setUpOCI menu before starting with Network Creation.
+    Make sure to execute "Fetch Compartments OCIDs to variables file" from CD3 Services in setUpCloud menu before starting with Network Creation.
 
 ### Create Network
 
@@ -228,7 +228,7 @@ Remote VCN peering is the process of connecting two VCNs in different regions (b
 
 
 !!! note
-    Make sure to execute "Fetch Compartments OCIDs to variables file" from CD3 Services in setUpOCI menu before starting with Network Creation.
+    Make sure to execute "Fetch Compartments OCIDs to variables file" from CD3 Services in setUpCloud menu before starting with Network Creation.
 
 ### Export Network
 

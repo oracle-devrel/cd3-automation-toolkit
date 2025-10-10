@@ -3,6 +3,11 @@
 This method automatically provisions a Linux compute VM in your OCI tenancy and configures the CD3 container using Podman on the instance.
 <br><br>
 
+>Note:
+    <b>Follow this method to use the toolkit for OCI deployments. For Azure, it is recommended to use the  [Manual Container Launch](launch-from-local.md) method.</b>
+
+<br> 
+
 **⚙️ Prerequisites**
 
 * The user deploying the stack should have access to provision OCI Resource Manager stack, compute instance and network resources.

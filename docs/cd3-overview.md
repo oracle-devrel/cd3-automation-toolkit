@@ -6,8 +6,11 @@ CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolk
 
  ✅ Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.
 
+📌 The Toolkit also extends its support to <b>ADB@Azure</b>
+<br>
 
-**CD3 in a nutshell!⚡️⚡️** 
+**CD3 in a nutshell!** 
+
 
 <div style="max-width: 800px">
   <iframe 

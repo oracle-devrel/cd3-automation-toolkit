@@ -40,7 +40,7 @@ By default, the toolkit is configured to use different out directories for diffe
      Change to the below directory
      <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
    
-     Run the script<br>```python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties```
+     Run the script<br>```python setUpCloud.py oci /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties```
      
      Select required options. *(Here,"Network", "nsg" options have been selected to verify the files under the "demo_network", "demo_nsg" folders)*
    

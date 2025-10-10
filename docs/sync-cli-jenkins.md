@@ -8,7 +8,7 @@
 
 There can be scenarios when updating the terraform_files folder manually via CLI is necessary. Below are some examples:
 
-- The setUpOCI script is executed to generate tfvars for some resources via CLI.
+- The setUpCloud script is executed to generate tfvars for some resources via CLI.
 - The `variables_<region>.tf` file is modified to update image OCID or SSH Key for Compute or Database etc.
 
  Follow below steps to sync local `terraform_files` folder to OCI DevOps GIT Repo:

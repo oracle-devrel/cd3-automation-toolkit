@@ -13,7 +13,7 @@ Modify ```/cd3user/tenancies /<prefix>/<prefix>_setUpOCI.properties```.
 <br>Update parameters: **cd3file** parameter to the location of CD3 excel file and  **workflow_type**  to **create_resources** as shown below.
 <br> The other parameters are already updated with correct values.
 ```ini
-#Input variables required to run setUpOCI script
+#Input variables required to run setUpCloud script
 
 #path to output directory where terraform file will be generated. eg /cd3user/tenancies/<prefix>/terraform_files
 outdir=/cd3user/tenancies/demo/terraform_files/
@@ -80,7 +80,7 @@ cd /cd3user/oci_tools/cd3_automation_toolkit/
 
 <br>
 
-<b> Below command will be deprecated starting from the next major release v2025.3.0 </b>
+<b> Below old command will be deprecated starting from the next major release v2025.3.0 </b>
 
 ```
 python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
@@ -111,7 +111,7 @@ python setUpCloud.py oci /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.propertie
 
 !!! Note
 
-    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
+    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpCloud menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
 
 <br> After fetching the compartment details, the toolkit will display the menu options as shown below:
 

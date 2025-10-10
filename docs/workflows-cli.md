@@ -9,7 +9,7 @@ Make sure to use/modify the properties file at _/cd3user/tenancies/<customer\_na
 ```
 [Default]
 
-#Input variables required to run setUpOCI script
+#Input variables required to run setUpCloud script
 
 #path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
 outdir=
@@ -66,12 +66,12 @@ Choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file a
 
 **Step 3**
 <br>
-Execute the setUpOCI Script:                                                                                                                                           <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+Execute the setUpCloud  Script:                                                                                                 <br>```python setUpCloud.py oci /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
 
 <br> → Example execution of the script:
 
 ```
-[cd3user@25260a87b137 cd3_automation_toolkit]$ python setUpOCI.py /cd3user/tenancies/demotenancy/demotenancy_setUpOCI.properties
+[cd3user@25260a87b137 cd3_automation_toolkit]$ python setUpCloud.py oci /cd3user/tenancies/demotenancy/demotenancy_setUpOCI.properties
 Updated OCI_Regions file !!!
 Script to fetch the compartment OCIDs into variables file has not been executed.
 Do you want to run it now? (y|n):

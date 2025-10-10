@@ -16,7 +16,7 @@
 ```ini
 [Default]
 
-#Input variables required to run setUpOCI script
+#Input variables required to run setUpCloud script
 
 #path to output directory where terraform file will be generated. eg /cd3user/tenancies/<prefix>/terraform_files
 outdir=

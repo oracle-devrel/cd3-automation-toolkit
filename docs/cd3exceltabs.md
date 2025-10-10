@@ -260,6 +260,17 @@ Click on the links below to know about the specifics of each tab in the Excel te
     </div>
 
 
+
+    <h3 id="oracledb@azure" style="display: flex; align-items: center; gap: 8px;">
+      <img src="../images/database.png" alt="oradb@azure Icon" style="height: 30px; width: 30px;">  
+      <b>OracleDB @Azure</b>
+    </h3>
+    <div style="padding-left: 20px;">
+      <ul>
+        <li><a href="../tabs#adb-azure">ADB @Azure</a></li>
+      </ul>
+    </div>
+
   </div>
 
 </div>

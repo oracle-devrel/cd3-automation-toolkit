@@ -64,17 +64,17 @@ After the containers are successfully connected to the source and target tenanci
  
        <img alt="setUpOCI.properties" src="../images/isv_setupociproperties.png">
 
-3.  Navigate to *cd3_automation_toolkit* folder and execute the setUpOCI.py script:
+3.  Navigate to *cd3_automation_toolkit* folder and execute the setUpCloud.py script:
    ```
    cd /cd3user/oci_tools/cd3_automation_toolkit/
-   python setUpOCI.py /cd3user/tenancies/source/source_setUpOCI.properties
+   python setUpCloud.py oci /cd3user/tenancies/source/source_setUpOCI.properties
    ```
      
      <img alt="export setupocimenu" src="../images/isv_export_setupocimenu.png">
 
  
 4. For the prompt asking to specify region, provide the region in the source tenancy from where the resources have to exported. To export from multiple regions, provide comma separated region values. Eg: ```ashburn,phoenix``` . Leave empty to export from all regions.
-5. Select required resource options and sub-options from the **setUpOCI** menu. Select the compartment from which these resources have to be exported. Provide comma separated compartment names to export from multiple compartments. Leave empty to export from all compartments.
+5. Select required resource options and sub-options from the **setUpCloud** menu. Select the compartment from which these resources have to be exported. Provide comma separated compartment names to export from multiple compartments. Leave empty to export from all compartments.
 6. The **source_template.xlsx** is now populated with the exported resources data.
    > ℹ️ **Note:** The generated shell scripts with terraform import commands need not be executed.
 
@@ -112,10 +112,10 @@ After the containers are successfully connected to the source and target tenanci
       <img alt="source_obj_names" width = 700 src="../images/obj_names_target.png">
 
 
- 4. Execute the setUpOCI.py script:
+ 4. Execute the setUpCloud.py script:
    ```
    cd /cd3user/oci_tools/cd3_automation_toolkit/
-   python setUpOCI.py /cd3user/tenancies/target/target_setUpOCI.properties
+   python setUpCloud.py oci /cd3user/tenancies/target/target_setUpOCI.properties
    ```
 5. From the output menu, select the required resource options and sub-options to generate the respective tfvars.
 
@@ -146,13 +146,13 @@ After the containers are successfully connected to the source and target tenanci
 
        <img alt="setUpOCI.properties" src="../images/isv_setupociproperties.png">
 
-3. Execute the setUpOCI.py script:
+3. Execute the setUpCloud.py script:
    ```
    cd /cd3user/oci_tools/cd3_automation_toolkit/
-   python setUpOCI.py /cd3user/tenancies/source/source_setUpOCI.properties
+   python setUpCloud.py oci /cd3user/tenancies/source/source_setUpOCI.properties
    ```
 4. For the prompt asking to specify region, provide the region in the source tenancy from where the resources have to exported. To export from multiple regions, provide  comma separated region values. Eg: ```ashburn,phoenix```. Leave empty to export from all regions.
-5. Select required options from the setUpOCI menu. Select the compartments from which these resources have to be exported. Provide comma separated compartment names to export from multiple compartments. Leave empty to export from all compartments.
+5. Select required options from the setUpCloud menu. Select the compartments from which these resources have to be exported. Provide comma separated compartment names to export from multiple compartments. Leave empty to export from all compartments.
    > ℹ️ **Note:** The generated shell scripts with terraform import commands need not be executed.
 6. Navigate to each of the required service folders under the region directory:
 

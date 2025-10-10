@@ -17,7 +17,7 @@
 <br> The other parameters are already updated with correct values.
 
 ```ini
-#Input variables required to run setUpOCI script
+#Input variables required to run setUpCloud script
 
 #path to output directory where terraform files will be generated. eg /cd3user/tenancies/<prefix>/terraform_files
 outdir=/cd3user/tenancies/demotenancy/terraform_files/
@@ -49,7 +49,7 @@ workflow_type=export_resources
 
 <span style="color: teal; font-weight: bold;">Step 3:</span>
 
-Execute the setUpOCI.py script to start exporting the resources to CD3 and creating the terraform/tofu configuration files.
+Execute the setUpCloud.py script to start exporting the resources to CD3 and creating the terraform/tofu configuration files.
 
 <b>Commands to Execute:</b>
 ```
@@ -84,7 +84,7 @@ cd /cd3user/oci_tools/cd3_automation_toolkit/
 
 <br>
 
-<b> Below command will be deprecated starting from the next major release v2025.3.0 </b>
+<b> Below old command will be deprecated starting from the next major release v2025.3.0 </b>
 
 ```
 python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
@@ -113,7 +113,7 @@ python setUpCloud.py oci /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.propertie
 
 !!! Note
 
-    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
+    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpCloud menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
 
 <br>⬇️ After fetching the compartment details, users have options to export their resources only from specific regions, compartments, and resources with specific Tags if required. The toolkit will display the menu options as shown below:
 

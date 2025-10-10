@@ -1,7 +1,7 @@
 ## Compartments Tab
 
 
-Use this tab to create and manage compartments in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu.
+Use this tab to create and manage compartments in the OCI tenancy. This can be triggered by selecting ```Identity``` from the setUpCloud   menu.
 
 <span style="color: teal; font-weight: bold;">Output File:</span> 
 ```<outdir>/<region>/<service_dir>/<prefix>_compartments.auto.tfvars``` (here *<region\>* is the home region directory).
@@ -32,7 +32,7 @@ Use this tab to create and manage compartments in the OCI tenancy. This can be t
 
 ## Groups Tab
 
-Use this tab to create and manage Groups in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu and next the `Add/Modify/Delete Groups` sub-option.
+Use this tab to create and manage Groups in the OCI tenancy. This can be triggered by selecting ```Identity``` from the setUpCloud   menu and next the `Add/Modify/Delete Groups` sub-option.
 
 The toolkit supports groups in IDCS, default and custom IAM domains now. 
 
@@ -69,7 +69,7 @@ The toolkit supports groups in IDCS, default and custom IAM domains now.
 
 ## Policies Tab
 
-Use this tab to create and manage policies in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu and next the `Add/Modify/Delete Policies` sub-option.
+Use this tab to create and manage policies in the OCI tenancy. This can be triggered by selecting ```Identity``` from the setUpCloud  menu and next the `Add/Modify/Delete Policies` sub-option.
 
 <span style="color: teal; font-weight: bold;">Output File:</span> 
 ```<outdir>/<region>/<service_dir>/<prefix>_policies.auto.tfvars``` (here *<region\>* is the home region directory).
@@ -87,7 +87,7 @@ Use this tab to create and manage policies in the OCI tenancy. This can be trigg
 
 ## Users Tab
 
-Use this tab to create and manage users in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu and next the `Add/Modify/Delete Users` sub-option.
+Use this tab to create and manage users in the OCI tenancy. This can be triggered by selecting ```Identity``` from the setUpCloud  menu and next the `Add/Modify/Delete Users` sub-option.
 
 
 
@@ -122,7 +122,7 @@ The toolkit supports users in IDCS, default and custom IAM domains now.
 
 ## Network Sources Tab
   
-Use this tab to create and manage Network Sources in the OCI tenancy. This can be triggered by selecting ```Identity``` from the SetUpOCI menu and next the `Add/Modify/Delete Network Sources` sub-option.
+Use this tab to create and manage Network Sources in the OCI tenancy. This can be triggered by selecting ```Identity``` from the setUpCloud  menu and next the `Add/Modify/Delete Network Sources` sub-option.
 
 
 <span style="color: teal; font-weight: bold;">Output File:</span> 
@@ -144,7 +144,7 @@ Use this tab to create and manage Network Sources in the OCI tenancy. This can b
 
 ## Tags Tab
 
-Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Tracking Tags. This can be triggered by selecting `Governance` from the SetUpOCI menu and next `Tags` sub-option.
+Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Tracking Tags. This can be triggered by selecting `Governance` from the setUpCloud  menu and next `Tags` sub-option.
 
 <span style="color: teal; font-weight: bold;">Output Files:</span> 
 
@@ -273,7 +273,7 @@ Below are the details about specific columns to fill the sheet for DNS-Views-Zon
 8. Rows are duplicated in case of multiple child resources
 
 
-Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Tracking Tags. This can be triggered by selecting `Governance` from the SetUpOCI menu and next `Tags` sub-option.
+Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Tracking Tags. This can be triggered by selecting `Governance` from the setUpCloud  menu and next `Tags` sub-option.
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>```<outdir>/<region>/<service_dir>/<prefix>_dns*.auto.tfvars```
 
@@ -293,7 +293,7 @@ Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Trac
 ## Firewall Tabs
 
 OCI Network Firewall can be created using [CD3-Firewall-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Firewall-template.xlsx).
-After the required details are filled in, choose `OCI Firewall` under the SetUpOCI menu to create the Firewall and its policy. 
+After the required details are filled in, choose `OCI Firewall` under the setUpCloud  menu to create the Firewall and its policy. 
 
 It is recommended to execute the validator script for Firewall, to validate the input values before proceeding to create.
 
@@ -343,7 +343,7 @@ Below are the details about specific columns to fill the sheet for DNS-Resolvers
 
 Fill up the details in **'DedicatedVMHosts'** sheet and follow the options below.
 
-On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Dedicated VM Hosts"** submenu will allow to launch your VM on a dedicated host.
+On choosing **"Compute"** in the setUpCloud  menu and **"Add/Modify/Delete Dedicated VM Hosts"** submenu will allow to launch your VM on a dedicated host.
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>```<outdir>/<region>/<service_dir>/<prefix>_dedicatedvmhosts.auto.tfvars```
 
@@ -367,7 +367,7 @@ On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Dedicate
 
 2. Optional columns can also be left blank - like Fault Domain, IP Address. They will take default values when left empty.
 
-3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
+3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in the setUpCloud menu.
 
     >Note:
     The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in *variables_<region\>.tf* file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
@@ -424,7 +424,7 @@ Format -
 11. While export of instances, it will fetch details for only the primary VNIC attached to the instance
 
 
-On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
+On choosing **"Compute"** in the setUpCloud  menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
 
 <span style="color: teal; font-weight: bold;">Output Files:</span> ```<outdir>/<region>/<service_dir>/<prefix>_instances.auto.tfvars```
 
@@ -446,7 +446,7 @@ This tab in CD3 excel sheet is used when you need to create block volumes and at
 
 Automation Tool Kit does not support sharing of volumes at the moment. While export of block volumes, if the block volume is attached to multiple instances, it will just fetch details about one attachment.
 
-Selecting `Storage` from the SetUpOCI menu and then choosing `Add/Modify/Delete Block Volumes/Block Backup Policy` allows you to create block volumes in your OCI tenancy.
+Selecting `Storage` from the setUpCloud  menu and then choosing `Add/Modify/Delete Block Volumes/Block Backup Policy` allows you to create block volumes in your OCI tenancy.
 
 <span style="color: teal; font-weight: bold;">Output Files:</span> 
 
@@ -469,7 +469,7 @@ Selecting `Storage` from the SetUpOCI menu and then choosing `Add/Modify/Delete 
 ## FSS Tab
 
 
-Use this Tab to create File systems in OCI. This can be triggered by selecting `Storage` from the SetUpOCI menu and next `Add/Modify/Delete File Systems` sub-option.
+Use this Tab to create File systems in OCI. This can be triggered by selecting `Storage` from the setUpCloud  menu and next `Add/Modify/Delete File Systems` sub-option.
 
 
 !!! Note 
@@ -508,7 +508,7 @@ Automation Tool Kit allows you to create Load Balancers. Components that you can
 !!! Note
     While exporting and syncing the tfstate file for Load Balancer objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and Jinja2 Templates (as a non-default attribute) and re-run the export.
 
-Selecting `Load Balancers` in the SetUpOCI menu will allow to create load balancers in OCI tenancy.
+Selecting `Load Balancers` in the setUpCloud  menu will allow to create load balancers in OCI tenancy.
 
 **Load Balancers, Hostnames , Certificates and Cipher Suites:**
 
@@ -648,7 +648,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
        }
     }
   
-Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete Virtual Machine or Bare Metal DB Systems` sub-option will allow to create DB Systems hosted on Virtual Machine and Bare Metal.
+Selecting `Database` in the setUpCloud  menu and `Add/Modify/Delete Virtual Machine or Bare Metal DB Systems` sub-option will allow to create DB Systems hosted on Virtual Machine and Bare Metal.
 
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_dbsystem-vm-bm.auto.tfvars```
@@ -685,7 +685,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
         }
       }
 
-On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete EXA Infra and EXA VM Clusters"** submenu will allow to create ExaCS in OCI tenancy.
+On choosing **"Database"** in the setUpCloud  menu and **"Add/Modify/Delete EXA Infra and EXA VM Clusters"** submenu will allow to create ExaCS in OCI tenancy.
 
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>  
@@ -710,7 +710,7 @@ On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete EXA Inf
 
 Use this Tab to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
-Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete ADBs` submenu will enable creation of Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
+Selecting `Database` in the setUpCloud  menu and `Add/Modify/Delete ADBs` submenu will enable creation of Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_adb.auto.tfvars```
 
@@ -735,7 +735,7 @@ Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete ADBs` submenu w
 `Use this to create MySQL Database Systems and Configurations in the OCI tenancy.`
 
 
-Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete MySQL DBs` submenu will enable the creation of MySQL Database Systems and Configurations in the OCI tenancy.
+Selecting `Database` in the setUpCloud  menu and `Add/Modify/Delete MySQL DBs` submenu will enable the creation of MySQL Database Systems and Configurations in the OCI tenancy.
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_mysql-dbsystems.auto.tfvars```
 
@@ -798,7 +798,7 @@ Selecting `Database` in the SetUpOCI menu and `Add/Modify/Delete MySQL DBs` subm
 
 Use [CD3-CIS-ManagementServices-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) to create/export/manage Notifications.
 
-Selecting `Management Services` in the SetUpOCI menu and `Add/Modify/Delete Notification` and `Add/Modify/Delete Events` submenu will enable creation of notifications in OCI tenancy.
+Selecting `Management Services` in the setUpCloud  menu and `Add/Modify/Delete Notification` and `Add/Modify/Delete Events` submenu will enable creation of notifications in OCI tenancy.
 
 
 <span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_notifications.auto.tfvars```
@@ -823,7 +823,7 @@ Selecting `Management Services` in the SetUpOCI menu and `Add/Modify/Delete Noti
 
 Use [CD3-CIS-ManagementServices-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) to create/export/manage Events.
 
-Selecting `Management Services` in the SetUpOCI menu and `Add/Modify/Delete Events` sub-option will enable creation of Events Rules in OCI tenancy.
+Selecting `Management Services` in the setUpCloud  menu and `Add/Modify/Delete Events` sub-option will enable creation of Events Rules in OCI tenancy.
 
 
 <span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_events.auto.tfvars```
@@ -845,7 +845,7 @@ Selecting `Management Services` in the SetUpOCI menu and `Add/Modify/Delete Even
 
 Use [CD3-CIS-ManagementServices-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) to create/export/manage Alarms.
 
-On choosing `Management Services` in the SetUpOCI menu and `Add/Modify/Delete Alarms` sub-option will allow to manage Alarms in OCI tenancy.
+On choosing `Management Services` in the setUpCloud  menu and `Add/Modify/Delete Alarms` sub-option will allow to manage Alarms in OCI tenancy.
 
 <span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_alarms.auto.tfvars```
 
@@ -935,7 +935,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
               }
             }
             
-Selecting `Developer Services` in the SetUpOCI menu and `Add/Modify/Delete OKE Cluster and Nodepools` sub-option will allow to manage OKE components in OCI tenancy.
+Selecting `Developer Services` in the setUpCloud  menu and `Add/Modify/Delete OKE Cluster and Nodepools` sub-option will allow to manage OKE components in OCI tenancy.
 
 <br>
 
@@ -1045,7 +1045,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 Management and Workload Datastore volumes must be existing or created separately as part of **BlockVolumes** Tab.
 All the Network related information for SDDCs will be provided in **SDDCs-Network** , where the vlan should be created in **SubnetsVLANs**
 
-Selecting `Software-Defined Data Centers - OCVS` in setUpOCI menu, will read SDDCs tab and SDDCs-Network tab and create the corresponding resources
+Selecting `Software-Defined Data Centers - OCVS` in setUpCloud menu, will read SDDCs tab and SDDCs-Network tab and create the corresponding resources
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_sddcs.auto.tfvars```
 
@@ -1065,7 +1065,7 @@ Selecting `Software-Defined Data Centers - OCVS` in setUpOCI menu, will read SDD
   
 This tab in cd3 excel sheet is used when you need to create Object storage buckets in the OCI tenancy.
 
-Selecting `Storage` in the SetUpOCI menu and `Add/Modify/Delete Buckets` sub-option will enable the creation buckets in OCI Tenancy.
+Selecting `Storage` in the setUpCloud  menu and `Add/Modify/Delete Buckets` sub-option will enable the creation buckets in OCI Tenancy.
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_buckets.auto.tfvars```
 
@@ -1127,7 +1127,7 @@ Selecting `Storage` in the SetUpOCI menu and `Add/Modify/Delete Buckets` sub-opt
 
 The Budgets tab in CD3 Excel sheet can be used to create OCI Budgets and Budget Alert rules.
 
-Upon executing setUpOCI.py, choose `Cost Management` from the main menu and `Budgets` from its sub-options to create Budgets/Budget Alert Rules in OCI Tenancy.
+Upon executing setUpCloud.py, choose `Cost Management` from the main menu and `Budgets` from its sub-options to create Budgets/Budget Alert Rules in OCI Tenancy.
 
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>   ```<outdir>/<region>/<service_dir>/<prefix>_budgets.auto.tfvars```
@@ -1148,7 +1148,7 @@ Upon executing setUpOCI.py, choose `Cost Management` from the main menu and `Bud
 
 The Quotas tab in CD3 Excel sheet can be used to create OCI Quota policies.
 
-Upon executing setUpOCI.py, choose `Governance` from the main menu and `Quotas` from its sub-options to create Quota policies in OCI Tenancy.
+Upon executing setUpCloud.py, choose `Governance` from the main menu and `Quotas` from its sub-options to create Quota policies in OCI Tenancy.
 
 
 <span style="color: teal; font-weight: bold;">Output Files:</span>   ```<outdir>/<region>/<service_dir>/<prefix>_quotas.auto.tfvars``` 
@@ -1168,7 +1168,7 @@ Upon executing setUpOCI.py, choose `Governance` from the main menu and `Quotas` 
 
 The KMS tab in CD3 Excel sheet can be used to create OCI Vaults and Keys in the OCI tenancy.
 
-Upon executing setUpOCI.py, choose `Security` from the main menu and `Add/Modify/Delete KMS (Keys/Vaults)` from its sub-options to create Keys/Vaults in OCI Tenancy.
+Upon executing setUpCloud.py, choose `Security` from the main menu and `Add/Modify/Delete KMS (Keys/Vaults)` from its sub-options to create Keys/Vaults in OCI Tenancy.
 
 <span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<region>/<service_dir>/<prefix>_kms.auto.tfvars``` 
 
@@ -1213,7 +1213,7 @@ Upon executing setUpOCI.py, choose `Security` from the main menu and `Add/Modify
 
 There is currently no tab for cloud guard in the CD3 excel sheet.
 
-Upon executing setUpOCI.py, choose `Security` from the main menu and `Enable Cloud Guard` from its sub-options will enable Cloud Guard for the tenancy from specified reporting region, clones the Oracle Managed detector and responder recipes. Creates a target for root compartment with the cloned recipes.
+Upon executing setUpCloud.py, choose `Security` from the main menu and `Enable Cloud Guard` from its sub-options will enable Cloud Guard for the tenancy from specified reporting region, clones the Oracle Managed detector and responder recipes. Creates a target for root compartment with the cloned recipes.
 
 <span style="color: teal; font-weight: bold;">Output File:</span>
 
@@ -1223,11 +1223,30 @@ Upon executing setUpOCI.py, choose `Security` from the main menu and `Enable Clo
 
 <a href="../terraform/security">Click here to view sample auto.tfvars for Security components </a> 
 
-
-
+<br>
 
 <h3 id="backup-info">About Backup Path</h3>
 
-When you re-run a menu option in the SetUpOCI toolkit, any previously generated `.auto.tfvars` files will be automatically backed up to: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_&lt;service&gt;/</code>.
+When you re-run a menu option in the setUpCloud .py, any previously generated `.auto.tfvars` files will be automatically backed up to: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_&lt;service&gt;/</code>.
 
 These backups help you recover previous configurations in case of mistakes, rollbacks, or comparisons during repeated runs of the same operation.
+
+<br>
+
+## ADB-Azure
+
+The ADB-Azure tab in CD3-Azure-template.xlsx can be used to create ADB@Azure in the Azure subscription.
+This will automatically provision ADB in the linked OCI tenancy.
+
+Upon executing setUpCloud.py, choose `Create DB @Azure` from the main menu and `Add/Modify/Delete ADB @Azure` from its sub-options to create ADB@Azure.
+
+<span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<prefix>_adb-azure.auto.tfvars``` 
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<code>&lt;outdir&gt;/backup_adb-azure/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
+
