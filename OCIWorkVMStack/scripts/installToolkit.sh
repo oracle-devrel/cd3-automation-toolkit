@@ -1,10 +1,13 @@
 #!/bin/bash
 
 username=cd3user
-sudo mkdir -p /$username/mount_path
 logfile="/$username/mount_path/installToolkit.log"
 toolkit_dir="/tmp/githubCode"
-tenancyconfig_properties="$toolkit_dir/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
+mount_dir="/$username/mount_path"
+sudo mkdir -p /$mount_dir/tenancies
+sudo mkdir -p /$mount_dir/oci_tools
+
+tenancyconfig_properties="/$mount_dir/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
 start=$(date +%s.%N)
 sudo sh -c "echo '########################################################################' >> /etc/motd"
 sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"
@@ -66,7 +69,10 @@ fi
 sudo podman --version >> $logfile 2>&1 || true
 
 echo "***Download Toolkit***" >> $logfile 2>&1
-sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git $toolkit_dir >> $logfile 2>&1
+sudo git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git -b develop $toolkit_dir >> $logfile 2>&1
+cp -r $toolkit_dir/cd3_automation_toolkit /$mount_dir/oci_tools/
+cp -r $toolkit_dir/othertools /$mount_dir/oci_tools/
+sudo chown -R $username:$username /$mount_dir/oci_tools/
 stop_exec
 
 curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ -o /tmp/metadata.json
@@ -88,7 +94,7 @@ stop_exec
 sudo podman images >> $logfile 2>&1
 
 echo "***Setting Up podman Container***" >> $logfile 2>&1
-sudo podman run --name cd3_toolkit -it -p 8443:8443 -d -v /cd3user/mount_path:/cd3user/tenancies  cd3_toolkit bash >> $logfile 2>&1
+sudo podman run --name cd3_toolkit -it -p 8443:8443 -d -v /cd3user/mount_path:/cd3user  cd3_toolkit bash >> $logfile 2>&1
 stop_exec
 sudo podman ps -a >> $logfile 2>&1
 echo "Connect to Container using command - sudo podman exec -it cd3_toolkit bash " >> $logfile 2>&1

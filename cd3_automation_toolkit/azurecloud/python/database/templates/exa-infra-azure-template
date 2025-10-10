@@ -1,0 +1,59 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+############################
+# Exa Infra @Azure
+# Exa Infra @Azure - tfvars
+############################
+
+az_oci_exa_infra = {
+       ##Add New Exa-Infra @Azure here##
+}
+{% else %}
+
+     {{ display_tf_name }} =  {
+            az_region                = "{{ region }}"
+            az_zone                  = "{{ availability_zone}}"
+            resource_group_name      = "{{ container_id }}"
+
+            display_name             = "{{ display_name }}"
+            compute_count            = "{{ database_servers }}"
+            storage_count            = "{{ storage_servers }}"
+            shape                    = "{{ shape }}"
+
+            #database_server_type     = "{{ database_server_type }}"
+            #storage_server_type      = "{{ storage_server_type }}"
+
+            maintenance_window = {
+                patching_mode="{{ maintenance_method }}"
+                preference="NoPreference"
+            }
+
+            {% if customer_contacts and customer_contacts != "" and customer_contacts != "nan" %}
+            customer_contacts        =  {{ customer_contacts.split(",") | map('trim') | list | tojson }}
+            {% endif %}
+
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Common Tags###  #}
+        {% if common_tags and common_tags != 'nan' and common_tags != '' and common_tags != [['nan']] %}
+          {% if common_tags[0] %}
+            common_tags = {
+            {% for tags in common_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+
+        {#  ###Section for adding Common Tags ends here###  #}
+        },
+
+{% endif %}
+

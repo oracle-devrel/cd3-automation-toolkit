@@ -104,7 +104,7 @@ pipeline {
                         def toolCmd = env.tf_or_tofu == 'terraform' ? 'terraform' : 'tofu'
                         // Run Terraform/Tofu show and capture the output
                         // Run OPA eval
-                        opaOutput = labelledShell( label: 'Evaluating plan against OPA', script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} show -json tfplan.out > tfplan.json && opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA/ -i \"${WORKSPACE}/${env.Region}/${env.Service}/tfplan.json\" data.terraform.deny", returnStdout: true).trim()
+                        opaOutput = labelledShell( label: 'Evaluating plan against OPA', script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} show -json tfplan.out > tfplan.json && opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/common/opa -i \"${WORKSPACE}/${env.Region}/${env.Service}/tfplan.json\" data.terraform.deny", returnStdout: true).trim()
                         if (opaOutput == '[]') {
                             echo "No OPA rules are violated. Proceeding with the next stage."
                         } else {

@@ -20,8 +20,8 @@ fi
 #cp -r ${JENKINS_INSTALL}/scriptler $JENKINS_HOME
 
 cp ${JENKINS_INSTALL}/jcasc.yaml "$JENKINS_HOME/"
-if [ ! -e "/cd3user/.ssh/config" ]; then
-	ln -s /cd3user/tenancies/jenkins_home/git_config /cd3user/.ssh/config
+if [ ! -e "/home/cd3user/.ssh/config" ]; then
+	ln -s /cd3user/tenancies/jenkins_home/git_config /home/cd3user/.ssh/config
 fi
 
 # Copy scriptler directory

@@ -7,7 +7,7 @@
 
 <br>
 
-  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2025.1.4) &nbsp;•&nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/excel-templates/) &nbsp;•&nbsp;[CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp;•&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;•&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/tutorials/) &nbsp;•&nbsp;[Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724) &nbsp;•&nbsp;[Slack Channel](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/queries) 
+  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2025.2.0) &nbsp;•&nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/excel-templates/) &nbsp;•&nbsp;[CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp;•&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;•&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/tutorials/) &nbsp;•&nbsp;[Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724) &nbsp;•&nbsp;[Slack Channel](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/queries) 
   
 <br>
 
@@ -40,15 +40,14 @@ Additionally, the toolkit also supports seamless resource management using OCI D
     <td>Load Balancers</td>
   </tr>
   <tr>
-    <td>OCI Network Firewall</td>
-    <td>KMS</td>
-    <td>Policy Enforcement using OPA</td>
-    
-  </tr>
-  <tr>
     <td>Compute</td>
     <td>Storage</td>
-    <td>Database</td>    
+    <td>Oracle, MySQL Databases</td>    
+  </tr>
+    <tr>
+    <td>OCI Network Firewall</td>
+    <td>KMS</td>
+    <td>Policy Enforcement using OPA</td>  
   </tr>
   <tr>
     <td>OKE</td>
@@ -63,14 +62,13 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   <tr>    
     <td>Cloud Guard</td>
     <td>SHOWOCI report</td>    
-    <td>CIS Landing Zone<br>Compliance</td>
-    
+    <td>CIS Compliance Report</td> 
   </tr>
 </table>
 </tr>
-
-
 </body>
+
+📌 The Toolkit also extends its support to <b>ADB@Azure</b>
 
 <br>
 

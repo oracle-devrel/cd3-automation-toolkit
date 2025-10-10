@@ -16,12 +16,12 @@ ARG USER_GID=$USER_UID
 # Whether to download Provider as part of image creation
 ARG DOWNLOAD_PROVIDER=NO
 # TF Provider version
-ARG TF_OCI_PROVIDER=7.8.0
+ARG TF_OCI_PROVIDER=7.19.0
 ARG TF_NULL_PROVIDER=3.2.3
 
 RUN microdnf install -y sudo && \
     groupadd --gid $USER_GID $USERNAME && \
-    useradd --uid $USER_UID --gid $USER_GID -d /$USERNAME -m $USERNAME && \
+    useradd --uid $USER_UID --gid $USER_GID  $USERNAME && \
     echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME && \
     mkdir -p /cd3user/tenancies && \
