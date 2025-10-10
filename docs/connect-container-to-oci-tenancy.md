@@ -34,8 +34,32 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 <span style="color: teal; font-weight: bold;">3 - Edit properties file</span>
 
-<details>
-<summary>Note for Current Toolkit Users: Important Update ⚠️</summary>
+
+<details class="highlight-note">
+<style>
+  details.highlight-note > summary {
+      background-color: #c72e0bff !important;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      list-style: none; 
+  }
+  details.highlight-note {
+      border: 1px solid #ebe70dff !important;  
+      border-radius: 5px !important;
+  }
+  details.highlight-note > summary:hover {
+      background-color: #db3826ff !important;
+      border: 2px solid #d8d65eff;
+  }
+  details.highlight-note > summary::before {
+      background-color: #ffffff !important;  
+  }
+</style>
+
+<summary> ⚠️ Important Deprecation Notice ⚠️</summary>
 
 <br>
 
