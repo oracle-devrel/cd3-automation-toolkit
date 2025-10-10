@@ -8,6 +8,7 @@ sudo mkdir -p /$mount_dir/tenancies
 sudo mkdir -p /$mount_dir/oci_tools
 
 tenancyconfig_properties="/$mount_dir/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
+connectOCI_properties="/$mount_dir/oci_tools/cd3_automation_toolkit/connectOCI.properties"
 start=$(date +%s.%N)
 sudo sh -c "echo '########################################################################' >> /etc/motd"
 sudo sh -c "echo '                 Welcome to CD3 Automation Toolkit WorkVM' >> /etc/motd"
@@ -85,6 +86,11 @@ sudo sed -c -i "s/prefix=.*/prefix=$cust_name/" $tenancyconfig_properties
 sudo sed -c -i "s/tenancy_ocid=.*/tenancy_ocid=$tenancy_id/" $tenancyconfig_properties
 sudo sed -c -i "s/region=.*/region=$config_region/" $tenancyconfig_properties
 sudo sed -c -i "s/user_ocid=.*/user_ocid=$user_id/" $tenancyconfig_properties
+
+sudo sed -c -i "s/prefix=.*/prefix=$cust_name/" $connectOCI_properties
+sudo sed -c -i "s/tenancy_ocid=.*/tenancy_ocid=$tenancy_id/" $connectOCI_properties
+sudo sed -c -i "s/region=.*/region=$config_region/" $connectOCI_properties
+sudo sed -c -i "s/user_ocid=.*/user_ocid=$user_id/" $connectOCI_properties
 
 echo "***Building container image***" >> $logfile 2>&1
 cd /tmp
