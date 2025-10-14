@@ -41,7 +41,7 @@
   color: #2D4954 !important;  
 }
 
-.md-typeset a {
+/* .md-typeset a {
     color: #2D4954 !important;  
     text-decoration: underline;
     text-decoration-thickness: 0.5px;;
@@ -52,6 +52,19 @@
 .md-typeset a:hover {
     color: teal !important;  
     text-decoration-thickness: 2px;
+} */
+
+.md-typeset a:not(.md-button) {
+  color: #2D4954 !important;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  font-weight: 600 !important;
+  transition: color 0.25s ease-in-out;
+}
+
+.md-typeset a:not(.md-button):hover {
+  color: teal !important;
+  text-decoration-thickness: 2px;
 }
 
 .md-tabs__item--active {
@@ -64,12 +77,11 @@
 }
 
 
-[data-md-color-scheme="oracle"] .md-typeset .md-button,
-[data-md-color-scheme="slate"] .md-typeset .md-button {
+[data-md-color-scheme="oracle"] .md-typeset .md-button
+{
   border: 2px solid #5995ac !important;
   background-color: #2D4954 !important;
   color: #ffffff !important;
-  text-decoration: underline !important;
   font-weight: 600;
   padding: 14px 20px;
   display: inline-block;
@@ -80,12 +92,13 @@
 }
 
 
-[data-md-color-scheme="oracle"] .md-typeset .md-button:hover,
-[data-md-color-scheme="slate"] .md-typeset .md-button:hover {
+[data-md-color-scheme="oracle"] .md-typeset .md-button:hover
+{
   background-color: #2D4954 !important;
   color: #ffffff !important;
   border: 4px solid #5995ac !important;
   transform: scale(1.05);
+  text-decoration: underline !important;
   text-decoration-color: teal !important;
 } 
 
