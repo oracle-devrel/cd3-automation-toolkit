@@ -7,7 +7,7 @@ Jenkins integration with the toolkit is provided to jump start your journey with
 
 The required configurations for Jenkins setup are done when executing connectCloud.py in <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI Tenancy</u></a>. Here are the validation steps:
 
-  - jenkins.properties file is created under ```/cd3user/tenancies/jenkins_home```  as per input parameters in tenancyconfig.  properties<br>
+  - jenkins.properties file is created under ```/cd3user/tenancies/jenkins_home```  as per input parameters in connectOCI.properties<br>
   - An Object Storage bucket is created in OCI in the specified compartment to manage tfstate remotely. <br>
   -  Customer Secret Key is configured for the user for S3 credentials of the bucket. <br>
   -  A DevOps Project, Repo and Topic are created in OCI in the specified compartment to store terraform_files. GIT is configured on the container with config file at ```/cd3user/.ssh/config``` <br>
