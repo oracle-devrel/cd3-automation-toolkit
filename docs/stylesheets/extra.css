@@ -64,32 +64,33 @@
 }
 
 
-[data-md-color-scheme="oracle"] .md-button {
-  border: 2px solid #5995ac;
-  background-color: #2D4954 ;
-  color:  #FFFFFF !important ;
-  text-decoration: underline ;
+[data-md-color-scheme="oracle"] .md-typeset .md-button,
+[data-md-color-scheme="slate"] .md-typeset .md-button {
+  border: 2px solid #5995ac !important;
+  background-color: #2D4954 !important;
+  color: #ffffff !important;
+  text-decoration: underline !important;
+  font-weight: 600;
+  padding: 14px 20px;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  border-radius: 6px;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
 }
 
-.md-typeset .md-button {
-  
-  padding: 16px 16px;  
-  display: inline-block;  
-  text-align: center;     
-  white-space: nowrap;    
-}
 
-[data-md-color-scheme="oracle"] .md-button:hover {
-  background-color: #2D4954;    
-  color: #FFFFFF !important;   
-  transition: background-color 0.3s, border-color 0.3s; 
-  text-decoration: underline;
-  text-decoration-color: #FFFFFF !important;
+[data-md-color-scheme="oracle"] .md-typeset .md-button:hover,
+[data-md-color-scheme="slate"] .md-typeset .md-button:hover {
+  background-color: #2D4954 !important;
+  color: #ffffff !important;
+  border: 4px solid #5995ac !important;
+  transform: scale(1.05);
   text-decoration-color: teal !important;
-  transform: scale(1.05);       
-  transition: transform 0.2s;   
-  border: 4px solid #5995ac;
-}
+} 
+
+
+
 
 details > summary {
     background-color: #2D4954 !important;

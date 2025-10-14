@@ -3,7 +3,7 @@
 Jenkins integraton with the toolkit is provided to jump start your journey with CI/CD for IaC in OCI. A beginner level of understanding of Jenkins is required.
 
 ## **Pre-reqs for Jenkins Configuration**
-* The configurations are done when executing createTenancyConfig.py in [Connect container to OCI Tenancy](connect-container-to-oci-tenancy.md). Here are the validation steps:
+* The configurations are done when executing connectCloud.py in [Connect container to OCI Tenancy](connect-container-to-oci-tenancy.md). Here are the validation steps:
 
   - jenkins.properties file is created under _/cd3user/tenancies/jenkins\_home_  as per input parameters in tenancyConfig.properties<br>
   - An Object Storage bucket is created in OCI in the specified compartment to manage tfstate remotely. <br>

@@ -23,7 +23,7 @@ By default, the toolkit is configured to use different out directories for diffe
 !!! note
        * Do not modify the OCI service Names specified on the left hand side.Modify the directory name specified on Right Hand Side only.
        * Directory will be created for that service under <region\> directory. Do not provide absolute path.
-       * To make any changes to the directory structure later, it is necessary to rerun the `createTenancyConfig.py` script from scratch.
+       * To make any changes to the directory structure later, it is necessary to rerun the `connectCloud.py` script from scratch.
        * It is mandatory to specify the directory name for each service.
   
   
@@ -33,7 +33,7 @@ By default, the toolkit is configured to use different out directories for diffe
    Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in <a href="../greenfield-cli"><u>Greenfield workflow</u></a>
 
   
- 3. Run ```python createTenancyConfig.py connectOCI.properties ``` from `cd3_automation_toolkit` folder. This will create prefix folder as ```/cd3user/tenancies/<prefix>/``` and configure a seperate directory for each service inside region folder subscribed to the tenancy.
+ 3. Run ```python connectCloud.py oci connectOCI.properties ``` from `cd3_automation_toolkit` folder. This will create prefix folder as ```/cd3user/tenancies/<prefix>/``` and configure a seperate directory for each service inside region folder subscribed to the tenancy.
   
  4.	Go to ```/cd3user/tenancies/<prefix>/<prefix>_setUpOCI.propertiesfile ``` and add the CD3 Excel path. 
       
@@ -67,7 +67,7 @@ By default, the toolkit is configured to use different out directories for diffe
     Make sure that *outdir_structure_file* is set to empty value. Refer to the screenshot below:
    ![image](../images/grouptf-5.png)
 
-2. Run ```python createTenancyConfig.py connectOCI.properties ``` from  `cd3_automation_toolkit` folder. This will create prefix folder as ```/cd3user/tenancies/<prefix>/``` and tfvars/state file for each service inside the region folder subscribed for the region.
+2. Run ```python connectCloud.py oci connectOCI.properties ``` from  `cd3_automation_toolkit` folder. This will create prefix folder as ```/cd3user/tenancies/<prefix>/``` and tfvars/state file for each service inside the region folder subscribed for the region.
 
 3. Rest of the steps to run the toolkit remain the same.
   

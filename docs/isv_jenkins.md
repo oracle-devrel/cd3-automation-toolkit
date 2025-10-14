@@ -182,7 +182,7 @@ sudo podman exec -it cd3_toolkit bash
     
 - Initialise the environment to use the Automation Toolkit.
 ```
-python createTenancyConfig.py connectOCI.properties
+python connectCloud.py oci connectOCI.properties
 ```
 
     !!! note 

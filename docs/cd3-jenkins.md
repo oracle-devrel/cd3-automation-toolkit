@@ -5,7 +5,7 @@ Jenkins integration with the toolkit is provided to jump start your journey with
 
 ## **Pre-reqs for Jenkins Configuration**
 
-The required configurations for Jenkins setup are done when executing createTenancyConfig.py in <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI Tenancy</u></a>. Here are the validation steps:
+The required configurations for Jenkins setup are done when executing connectCloud.py in <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI Tenancy</u></a>. Here are the validation steps:
 
   - jenkins.properties file is created under ```/cd3user/tenancies/jenkins_home```  as per input parameters in tenancyconfig.  properties<br>
   - An Object Storage bucket is created in OCI in the specified compartment to manage tfstate remotely. <br>
@@ -19,7 +19,7 @@ The required configurations for Jenkins setup are done when executing createTena
 ```/usr/share/jenkins/jenkins.sh &```
 
 !!! info "Jenkins configuration for new prefix"
-      - If createTenancyConfig.py has been run again for a new prefix, then first kill the existing jenkins process and start new after that.
+      - If connectCloud.py has been run again for a new prefix, then first kill the existing jenkins process and start new after that.
       - Command to get Jenkins process id -  ```ps -ef | grep jenkins```
       - Command to kill - ```kill -9 <process_id>```
       - Start Jenkins using - ```/usr/share/jenkins/jenkins.sh &```

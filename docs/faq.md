@@ -11,7 +11,7 @@
 
 **3. If I am already using the toolkit and my OCI tenancy has been subscribed to a new region, how do i use the new region with toolkit?**
 <br>  
-Re-run createTenancyConfig.py with same details in tenancyConfig.properties file. It will keep existing region directories as is and create new directory for newly subscribed region.
+Re-run connectCloud.py with same details in connectOCI.properties file. It will keep existing region directories as is and create new directory for newly subscribed region.
 
 **4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
 <br>  

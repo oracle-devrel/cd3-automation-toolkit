@@ -2,14 +2,14 @@
 ---
 
  Users can delete an existing prefix if they are not using it anymore to ensure no prefix-specific residual resources or components remain and also to avoid naming conflicts in future executions.<br>
-🔁  This is also beneficial for users who want to re-run ```createTenancyConfig.py``` with the same prefix after an unsuccessful execution.
+🔁  This is also beneficial for users who want to re-run ```connectCloud.py``` with the same prefix after an unsuccessful execution.
 
 <br>
 
 
-<span style="color: teal;"><b>Resources created with createTenancyConfig.py execution:</b></span>
+<span style="color: teal;"><b>Resources created with connectCloud.py execution:</b></span>
 
-When executing createTenancyConfig.py during <a href="../connect-container-to-oci-tenancy"><u>Connect Container to OCI</u></a>, the following components are created:
+When executing connectCloud.py during <a href="../connect-container-to-oci-tenancy"><u>Connect Container to OCI</u></a>, the following components are created:
 
 * Config files under ```/cd3user/tenancies/<prefix>``` folder
 

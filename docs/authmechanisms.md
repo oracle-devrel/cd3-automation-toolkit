@@ -66,7 +66,7 @@ CD3 supports the below OCI authentication mechanisms for the toolkit execution. 
 
 !!! note
 
-    * createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only.
+    * connectCloud.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only.
     * Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if new session token is required after expiry. The User should have administrator access to the tenancy to use complete functionality of the toolkit.
 
 ## Instance principal
