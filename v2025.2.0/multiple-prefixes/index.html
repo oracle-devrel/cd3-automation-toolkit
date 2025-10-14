@@ -2367,7 +2367,7 @@
 <div class="admonition note">
 <p class="admonition-title">Multi-prefix with Jenkins</p>
 <ul>
-<li>With the toolkit release v2024.4.1, the toolkit supports executing createTenancyConfig.py with different values for <strong>prefix</strong> per container when using Jenkins.</li>
+<li>With the toolkit release v2024.4.1, the toolkit supports executing connectCloud.py with different values for <strong>prefix</strong> per container when using Jenkins.</li>
 </ul>
 </div>
 <p><br></p>
@@ -2381,13 +2381,13 @@
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>You can copy connectOCI.properties file as tenancyconfig_&lt;prefix&gt;.properties and edit this file instead of directly editing connectOCI.properties.<br>
-This will help retain the input properties files used for different executions of the createTenancyConfig.py</p>
+<p>You can copy connectOCI.properties file as connectOCI_&lt;prefix&gt;.properties and edit this file instead of directly editing connectOCI.properties.<br>
+This will help retain the input properties files used for different executions of the connectCloud.py</p>
 </div>
 <ul>
 <li>Different values can be specified for other parameters as well. For instance, one prefix can be configured to have <strong>multiple outdir structure</strong> for the generated terraform files, while another prefix can be set with a <strong>single outdir structure</strong>.</li>
-<li>Execute <strong>createTenancyConfig.py</strong> with modified <strong>connectOCI.properties</strong> or <strong>tenancyconfig_&lt;prefix&gt;.properties</strong>.</li>
-<li>After executing <strong>createTenancyConfig.py</strong>, the following screenshots show how the environment specific out directories look like when using the toolkit with CLI and with Jenkins.</li>
+<li>Execute <strong>connectCloud.py</strong> with modified <strong>connectOCI.properties</strong> or <strong>connectOCI_&lt;prefix&gt;.properties</strong>.</li>
+<li>After executing <strong>connectCloud.py</strong>, the following screenshots show how the environment specific out directories look like when using the toolkit with CLI and with Jenkins.</li>
 </ul>
 <p><br></p>
 <p><span style="color: teal; font-weight: bold;"> Multi Prefix with CLI</span></p>

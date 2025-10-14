@@ -2375,12 +2375,12 @@
 <p><br></p>
 <ul>
 <li>Toolkit provides the option to store terraform state file(tfstate) into Object Storage bucket.</li>
-<li>This can be achieved by setting <code>use_remote_state=yes</code> under Advanced Parameters in <code>connectOCI.properties</code> file while executing <code>createTenancyConfig.py</code>.</li>
+<li>This can be achieved by setting <code>use_remote_state=yes</code> under Advanced Parameters in <code>connectOCI.properties</code> file while executing <code>connectCloud.py</code>.</li>
 <li>
 <p>Upon setting above parameter the script will -</p>
 <ul>
 <li>create a versioning enabled bucket in OCI tenancy in the specified region(if you don't specify anything in <code>remote_state_bucket_name</code> parameter to use an existing bucket)</li>
-<li>create a new customer secret key for the user, and configure it as S3 credentials to access the bucket. Before executing the createTenancyConfig.py script, ensure that the specified user in the DevOps User Details or identified by the user OCID does not already have the maximum limit of two customer secret keys assigned. </li>
+<li>create a new customer secret key for the user, and configure it as S3 credentials to access the bucket. Before executing the connectCloud.py script, ensure that the specified user in the DevOps User Details or identified by the user OCID does not already have the maximum limit of two customer secret keys assigned. </li>
 </ul>
 </li>
 <li>

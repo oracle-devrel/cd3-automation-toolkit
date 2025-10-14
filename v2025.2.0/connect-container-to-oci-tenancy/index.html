@@ -2636,7 +2636,7 @@
             <td>outdir_structure_file.properties</td>
             <td>/cd3user/tenancies/&lt;prefix&gt;/&lt;prefix&gt;_outdir_structure_file</td>
             <td>Customer Specific properties file for outdir structure.
-            This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir)in connectOCI.properties while running createTenancyConfig.py</td>
+            This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir)in connectOCI.properties while running connectCloud.py</td>
         </tr>
         <tr>
             <td>Region based directories</td>
@@ -2727,7 +2727,7 @@
 <p><br></p>
 <div class="admonition abstract">
 <p class="admonition-title">Subscribing to a new OCI Region?</p>
-<p>When a new region is subscribed to the tenancy, rerun <code>createTenancyConfig.py</code> by using the same <code>connectOCI.properties</code> file that was originally used.<br>
+<p>When a new region is subscribed to the tenancy, rerun <code>connectCloud.py</code> by using the same <code>connectOCI.properties</code> file that was originally used.<br>
 ✅ It will create new directory for the new region under <code>/cd3user/tenancies/&lt;prefix&gt;/terraform_files</code> without modifying the existing ones <br>
 ✅ It will also commit the latest terraform_files folder to OCI DevOps GIT repo.</p>
 </div>
