@@ -1,6 +1,12 @@
 #cloud-config
 runcmd:
   - |
+    echo "Waiting for network..."
+    until ping -c1 8.8.8.8 >/dev/null 2>&1; do 
+      echo "Network not ready, retrying in 10 seconds..."
+      sleep 10
+    done
+    echo "Network ready, starting..."
     username=cd3user
     logfile="/$username/mount_path/installToolkit.log"
     toolkit_dir="/tmp/githubCode"
