@@ -46,14 +46,16 @@ resource "oci_core_instance" "instance" {
     is_management_disabled   = var.is_management_disabled
     is_monitoring_disabled   = var.is_monitoring_disabled
 
-    dynamic "plugins_config" {
-      #Required
-      for_each =  local.plugins_config
-      content {
-        desired_state = plugins_config.value
-        name          = plugins_config.key
-      }
-    }
+
+  dynamic "plugins_config" {
+  for_each = local.indexed_map
+
+  content {
+    name          = keys(plugins_config.value)[0]
+    desired_state = values(plugins_config.value)[0]
+  }
+}
+
   }
   availability_config {
     #Optional

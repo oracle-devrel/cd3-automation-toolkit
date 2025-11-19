@@ -886,7 +886,7 @@ variable "instances" {
     is_management_disabled              = optional(bool)
     is_monitoring_disabled              = optional(bool)
     assign_private_dns_record           = optional(string)
-    plugins_details                     = optional(map(any))
+    plugins_details                     = optional(list(map(any)))
     is_live_migration_preferred         = optional(bool)
     recovery_action                     = optional(string)
     are_legacy_imds_endpoints_disabled  = optional(bool)

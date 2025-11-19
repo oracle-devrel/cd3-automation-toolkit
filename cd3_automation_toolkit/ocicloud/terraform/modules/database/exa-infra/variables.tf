@@ -25,6 +25,12 @@ variable "shape" {
 variable "compute_count" {
   type = number
 }
+variable "database_server_type" {
+  default = null
+}
+variable "storage_server_type" {
+  default = null
+}
 variable "customer_contacts_email" {
   type    = string
   default = ""

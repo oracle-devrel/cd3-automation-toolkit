@@ -26,7 +26,7 @@ locals {
     } if shape.name == var.shape
   }
 
-  plugins_config        = var.plugins_details != null ? var.plugins_details : {}
+  #plugins_config        = var.plugins_details != null ? var.plugins_details : {}
   remote_execute_script = var.remote_execute == null ? "SCRIPT-NOT-SET" : var.remote_execute
   cloud_init_script     = var.cloud_init_script == null ? "SCRIPT-NOT-SET" : var.cloud_init_script
 }
@@ -158,3 +158,40 @@ data "oci_core_app_catalog_listing_resource_version" "catalog_listing" {
   resource_version = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_resource_version
 }
 
+
+locals {
+  # Keep only enabled OR disabled — skip "null"
+  filtered_plugins = [
+    for item in var.plugins_details :
+    item
+    if values(item)[0] != "null"
+  ]
+
+  n = length(local.filtered_plugins)
+
+  # Number of groups of 10 (0–9, 90–99, 990–999…)
+  groups_count = ceil(local.n / 10)
+
+  # Prefixes: "", "9", "99", "999", ...
+  prefixes = [
+    for i in range(local.groups_count) :
+    join("", [for _ in range(i) : "9"])
+  ]
+
+  # Generate sequential special keys
+  sequential_keys = slice(
+    flatten([
+      for prefix in local.prefixes : [
+        for digit in range(10) : "${prefix}${digit}"
+      ]
+    ]),
+    0,
+    local.n
+  )
+
+  # Build final indexed map (preserves original list order)
+  indexed_map = {
+    for idx in range(local.n) :
+    local.sequential_keys[idx] => local.filtered_plugins[idx]
+  }
+}

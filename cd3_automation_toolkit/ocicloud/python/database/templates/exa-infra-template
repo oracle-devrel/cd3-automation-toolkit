@@ -30,6 +30,17 @@ exa_infra = {
         {% else %}
         storage_count = null
         {% endif %}
+        {% if database_server_type %}
+        database_server_type = {{ database_server_type }}
+        {% else %}
+            database_server_type = null
+        {% endif %}
+
+        {% if storage_server_type %}
+            storage_server_type = {{ storage_server_type }}
+        {% else %}
+            storage_server_type = null
+        {% endif %}
         {% if customer_contacts_email %}
         customer_contacts_email = "{{ customer_contacts_email }}"
         {% else %}

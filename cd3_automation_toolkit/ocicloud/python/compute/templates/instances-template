@@ -89,51 +89,127 @@ instances = {
             {% endif %}
 
             {% if plugin_match %}
-            plugins_details = {
-                    {% if plugin_bastion %}
-                        Bastion = "{{ plugin_bastion.upper() }}"
+            plugins_details = [
+                    {
+                    {% if plugin_weblogic_management_service %}
+                        "WebLogic Management Service" = "{{ plugin_weblogic_management_service.upper() }}"
+                    {% else %}
+                        "WebLogic Management Service" = "null"
                     {% endif %}
-                    {% if plugin_management_agent %}
-                        "Management Agent" =  "{{ plugin_management_agent.upper() }}"
-                    {% endif %}
+                    },
+                    {
                     {% if plugin_vulnerability_scanning %}
                         "Vulnerability Scanning" = "{{ plugin_vulnerability_scanning.upper() }}"
+                    {% else %}
+                        "Vulnerability Scanning" = "null"
                     {% endif %}
+                    },
+
+                    {
                     {% if plugin_oracle_java_management_service %}
                         "Oracle Java Management Service" = "{{ plugin_oracle_java_management_service.upper() }}"
+                    {% else %}
+                        "Oracle Java Management Service" = "null"
                     {% endif %}
-                    {% if plugin_os_management_service_agent %}
-                        "OS Management Service Agent"  = "{{ plugin_os_management_service_agent.upper() }}"
-                    {% endif %}
-                    {% if plugin_custom_logs_monitoring %}
-                        "Custom Logs Monitoring" = "{{ plugin_custom_logs_monitoring.upper() }}"
-                    {% endif %}
-                    {% if plugin_compute_rdma_gpu_monitoring %}
-                        "Compute RDMA GPU Monitoring" = "{{ plugin_compute_rdma_gpu_monitoring.upper() }}"
-                    {% endif %}
-                    {% if plugin_compute_instance_run_command %}
-                        "Compute Instance Run Command" = "{{ plugin_compute_instance_run_command.upper() }}"
-                    {% endif %}
-                    {% if plugin_compute_instance_monitoring %}
-                        "Compute Instance Monitoring" = "{{ plugin_compute_instance_monitoring.upper() }}"
-                    {% endif %}
-                    {% if plugin_compute_hpc_rdma_authentication %}
-                        "Compute HPC RDMA Authentication" = "{{ plugin_compute_hpc_rdma_authentication.upper() }}"
-                    {% endif %}
-                    {% if plugin_block_volume_management %}
-                        "Block Volume Management" = "{{ plugin_block_volume_management.upper() }}"
-                    {% endif %}
-                    {% if plugin_compute_hpc_rdma_auto_configuration %}
-                        "Compute HPC RDMA Auto-Configuration" = "{{ plugin_compute_hpc_rdma_auto_configuration.upper() }}"
-                    {% endif %}
+                    },
+
+                    {
                     {% if plugin_os_management_hub_agent %}
                         "OS Management Hub Agent" = "{{ plugin_os_management_hub_agent.upper() }}"
+                    {% else %}
+                        "OS Management Hub Agent" = "null"
                     {% endif %}
+                    },
+
+                    {
+                    {% if plugin_management_agent %}
+                        "Management Agent" = "{{ plugin_management_agent.upper() }}"
+                    {% else %}
+                        "Management Agent" = "null"
+                    {% endif %}
+                    },
+
+                    {
+                    {% if plugin_fleet_application_management_service %}
+                        "Fleet Application Management Service" = "{{ plugin_fleet_application_management_service.upper() }}"
+                    {% else %}
+                        "Fleet Application Management Service" = "null"
+                    {% endif %}
+                    },
+
+                    {
+                    {% if plugin_custom_logs_monitoring %}
+                        "Custom Logs Monitoring" = "{{ plugin_custom_logs_monitoring.upper() }}"
+                    {% else %}
+                        "Custom Logs Monitoring" = "null"
+                    {% endif %}
+                    },
+
+                    {
+                    {% if plugin_compute_rdma_gpu_monitoring %}
+                        "Compute RDMA GPU Monitoring" = "{{ plugin_compute_rdma_gpu_monitoring.upper() }}"
+                    {% else %}
+                        "Compute RDMA GPU Monitoring" = "null"
+                    {% endif %}
+                    },
+
+                    {
+                    {% if plugin_compute_instance_run_command %}
+                        "Compute Instance Run Command" = "{{ plugin_compute_instance_run_command.upper() }}"
+                    {% else %}
+                        "Compute Instance Run Command" = "null"
+                    {% endif %}
+                    },
+
+                    {
+                    {% if plugin_compute_instance_monitoring %}
+                        "Compute Instance Monitoring" = "{{ plugin_compute_instance_monitoring.upper() }}"
+                    {% else %}
+                        "Compute Instance Monitoring" = "null"
+                    {% endif %}
+                    },
+
+                    {
+                    {% if plugin_compute_hpc_rdma_auto_configuration %}
+                        "Compute HPC RDMA Auto-Configuration" = "{{ plugin_compute_hpc_rdma_auto_configuration.upper() }}"
+                    {% else %}
+                        "Compute HPC RDMA Auto-Configuration" = "null"
+                    {% endif %}
+                    },
+
+                    {
+                    {% if plugin_compute_hpc_rdma_authentication %}
+                        "Compute HPC RDMA Authentication" = "{{ plugin_compute_hpc_rdma_authentication.upper() }}"
+                    {% else %}
+                        "Compute HPC RDMA Authentication" = "null"
+                    {% endif %}
+                    },
+
+                    {
                     {% if plugin_cloud_guard_workload_protection %}
                         "Cloud Guard Workload Protection" = "{{ plugin_cloud_guard_workload_protection.upper() }}"
+                    {% else %}
+                        "Cloud Guard Workload Protection" = "null"
                     {% endif %}
+                    },
 
-            }
+                    {
+                    {% if plugin_block_volume_management %}
+                        "Block Volume Management" = "{{ plugin_block_volume_management.upper() }}"
+                    {% else %}
+                        "Block Volume Management" = "null"
+                    {% endif %}
+                    },
+
+                    {
+                    {% if plugin_bastion %}
+                        "Bastion" = "{{ plugin_bastion.upper() }}"
+                    {% else %}
+                        "Bastion" = "null"
+                    {% endif %}
+                    }
+
+            ]
             {% endif %}
 
             {% if network_type or update_is_pv_encryption_in_transit_enabled %}

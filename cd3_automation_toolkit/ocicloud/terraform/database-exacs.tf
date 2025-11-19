@@ -37,6 +37,8 @@ module "exa-infra" {
   display_name        = each.value.display_name
   shape               = each.value.shape
   compute_count       = each.value.compute_count
+  database_server_type = each.value.database_server_type
+  storage_server_type  = each.value.storage_server_type
   #   customer_contacts_email = each.value.customer_contacts_email
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags

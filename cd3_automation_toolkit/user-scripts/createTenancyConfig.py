@@ -8,7 +8,7 @@
 
 import argparse
 import logging
-import os
+import os, time
 import shutil
 import sys
 import datetime
@@ -205,9 +205,10 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
     # create symlink for Git Config file for SSH operations.
     src = git_config_file
-    if not os.path.exists("/home/cd3user/.ssh"):
-        os.makedirs("/home/cd3user/.ssh")
-    dst = "/home/cd3user/.ssh/config"
+    path = "/home/cd3user/.ssh"
+    if not os.path.exists(path):
+        os.makedirs(path)
+    dst = path+"/config"
     try:
         os.symlink(src,dst)
     except FileExistsError as e:
@@ -526,6 +527,8 @@ except Exception as e:
     print('Check if input properties exist and try again..exiting...')
     exit(1)
 
+# For ISVs, use same user/csk to store different customer configurations
+isv_customer = False
 
 if not os.path.exists(customer_tenancy_dir):
     os.makedirs(customer_tenancy_dir)
@@ -659,13 +662,13 @@ global_backend_file_data = ""
 
 if remote_state == "yes":
     #fetch compartment ocid from compartment name
+    print("Fetching existing Compartments from Tenancy...")
+    ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
     if "ocid1.compartment.oc" not in compartment_ocid and "ocid1.tenancy.oc" not in compartment_ocid:
-        print("Fetching existing Compartments from Tenancy...")
-        ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
+        compartment_ocid.replace("::","--")
         compartment_ocid = ct.ntk_compartment_ids[compartment_ocid]
 
     print("\nCreating Tenancy specific remote tfstate Items - bucket, S3 credentials.................")
-    s3_credential_file_path = config_files + "/" + prefix + "_s3_credentials"
     buckets_client = ObjectStorageClient(config=config,
                                          retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                          signer=signer)
@@ -675,26 +678,125 @@ if remote_state == "yes":
         # Generate customer_secret_keys for remote state credentials
         new_config = deepcopy(config)
         new_config.__setitem__("region", ct.region_dict[home_region])
-
         identity_client = oci.identity.IdentityClient(config=new_config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-        cred_name = prefix+"-automation-toolkit-csk"
+        tenancy_data = identity_client.get_tenancy(tenancy_id=tenancy).data
+
+        if isv_customer:
+            cred_name = "cd3-automation-toolkit-csk"
+            if not os.path.exists(user_dir+"/tenancies/"+tenancy_data.name.lower()):
+                os.makedirs((user_dir+"/tenancies/"+tenancy_data.name.lower()))
+            s3_credential_file_path = user_dir+"/tenancies/"+tenancy_data.name.lower()+"/.config_files/cd3_s3_credentials"
+        else:
+            cred_name = prefix + "-automation-toolkit-csk"
+            s3_credential_file_path = config_files + "/" + prefix + "_s3_credentials"
+
+
+        ct.identity_domain_check(new_config, signer)
+
+        # Get Domain Name/Client from user ocid
+        if "ocid1.user.oc" in remote_state_user:
+
+            if ct.identity_domain_enabled:
+                print("Searching for user ocid in all domains...")
+                user_found=0
+                domain_user=[]
+                endpoint=''
+                for domain in ct.identity_domains:
+                    endpoint = domain.url
+                    temp_client=oci.identity_domains.IdentityDomainsClient(config=new_config,service_endpoint=endpoint,
+                                                                  retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                                  signer=signer)
+                    try:
+                        domain_user = temp_client.list_users(filter=f'ocid eq \"{remote_state_user}\"').data.resources
+                        if domain_user!=[]:
+                            user_found=1
+                            break
+                    except Exception as e:
+                        print("Skipping Domain: "+str(domain.display_name)+" because: "+str(e))
+
+                if(user_found==1):
+                    try:
+
+                        identity_domain_client = oci.identity_domains.IdentityDomainsClient(config=new_config,
+                                                                                        service_endpoint=endpoint,
+                                                                                        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                                                        signer=signer)
+
+                        devops_user = domain_user[0].user_name + "@" + tenancy_data.name
+
+                    except Exception as e:
+                        print(str(e))
+                        print("Unable to create Identity Domain Client. Exiting!!!")
+                        exit()
+                else:
+                    print("Unable to find the user details for creating customer secret key. Exiting...")
+                    exit(1)
+            else:
+                user_data = identity_client.get_user(user_id=user).data
+                devops_user = user_data.name + "@" + tenancy_data.name
+
 
         # Get user ocid for DevOps User Name
-        if "ocid1.user.oc" not in remote_state_user:
-            if '@' in remote_state_user:
-                remote_state_user = remote_state_user.rsplit("@",1)[0]
+        else:
 
-            identity_client = oci.identity.IdentityClient(config=new_config,
+            found = 0
+            if ct.identity_domain_enabled:
+                domain_name = 'Default'
+            else:
+                domain_name='oracleidentitycloudservice/'
+            if '@' in remote_state_user:
+                if ("/" in remote_state_user):
+                    domain_name = remote_state_user.split("/")[0]
+                    remote_state_user = remote_state_user.split("/")[1].rsplit("@",1)[0]
+                else:
+                    remote_state_user = remote_state_user.rsplit("@", 1)[0]
+
+
+            if ct.identity_domain_enabled:
+                # Domain names are unique in Tenancy across compartments
+                endpoint=''
+                for domain in ct.identity_domains:
+                    if domain.display_name==domain_name:
+                        endpoint=domain.url
+                        break
+
+                if endpoint=='':
+                    print("Verify Domain Name in Parameter 'oci_devops_git_user'. Exiting!!!")
+                    exit(1)
+
+                identity_domain_client=oci.identity_domains.IdentityDomainsClient(config=new_config,service_endpoint=endpoint,
                                                           retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                           signer=signer)
-            user_data = identity_client.list_users(compartment_id=tenancy).data
+                users = []
+                next_page = None
+                while True:
+                    response = identity_domain_client.list_users(page=next_page, sort_by="displayName", sort_order="ASCENDING")
+                    #domain_user=identity_domain_client.list_users(filter=f'ocid eq \"{remote_state_user}\"').data.resources
+                    # added sleep time and sorting to handle inconsistency in export data
+                    time.sleep(5)
+                    users.extend(response.data.resources)
+                    if not response.next_page or len(users) == response.data.total_results:
+                        break
+                    next_page = response.next_page
 
-            found=0
-            for user_d in user_data:
-                if user_d.name==remote_state_user and user_d.lifecycle_state=="ACTIVE":
-                    remote_state_user = user_d.id
-                    found =1
-                    break
+                for user_d in users:
+                    if user_d.user_name == remote_state_user:
+                        remote_state_user=user_d.ocid
+                        found=1
+                        break
+
+                #remote_state_user=domain_user.ocid
+
+            else:
+                users = identity_client.list_users(compartment_id=tenancy).data
+                remote_state_user = domain_name+remote_state_user
+                for user_d in users:
+                    if user_d.name == remote_state_user and user_d.lifecycle_state == "ACTIVE":
+                        remote_state_user = user_d.id
+                        found = 1
+                        break
+
+
             if found == 0:
                 print("Unable to find the user ocid for creating customer secret key. Exiting...")
                 exit(1)
@@ -703,20 +805,42 @@ if remote_state == "yes":
         # check if S3 credential exists
         customer_secret_key_id=''
         credential_file_data=''
-        list_customer_secret_key_response = identity_client.list_customer_secret_keys(user_id=remote_state_user).data
-        for keys in list_customer_secret_key_response:
-            if keys.display_name == cred_name:
-                customer_secret_key_id=keys.id
+
+        if ct.identity_domain_enabled:
+            keys=[]
+            list_customer_secret_key_response = identity_domain_client.list_customer_secret_keys(filter=f'user.ocid eq \"{remote_state_user}\"')
+            keys.extend(list_customer_secret_key_response.data.resources)
+        else:
+            keys = identity_client.list_customer_secret_keys(user_id=remote_state_user).data
+
+        for key in keys:
+            if key.display_name == cred_name:
+                customer_secret_key_id=key.id
                 break
+
 
         if customer_secret_key_id!='':
             # Delete existing key with same name from user profile if S3 credential file is missing and create new one
             if not os.path.exists(s3_credential_file_path):
-                identity_client.delete_customer_secret_key(user_id=remote_state_user,
-                                                   customer_secret_key_id=customer_secret_key_id)
+                if ct.identity_domain_enabled:
+                    identity_domain_client.delete_customer_secret_key(customer_secret_key_id=customer_secret_key_id,force_delete=True)
+                    create_customer_secret_key_response = identity_domain_client.create_customer_secret_key(
+                        customer_secret_key=oci.identity_domains.models.CustomerSecretKey(
+                            schemas=['urn:ietf:params:scim:schemas:oracle:idcs:customerSecretKey'],
+                            display_name=cred_name,
+                            user=oci.identity_domains.models.CustomerSecretKeyUser(ocid=remote_state_user),
+                            urn_ietf_params_scim_schemas_oracle_idcs_extension_self_change_user=oci.identity_domains.models.ExtensionSelfChangeUser(
+                                allow_self_change=True))).data
+                    key_id = str(create_customer_secret_key_response.id)
+                    key = str(create_customer_secret_key_response.access_key)
+                else:
+                    identity_client.delete_customer_secret_key(user_id=remote_state_user,
+                                                               customer_secret_key_id=customer_secret_key_id)
+                    create_customer_secret_key_response = identity_client.create_customer_secret_key(create_customer_secret_key_details=oci.identity.models.CreateCustomerSecretKeyDetails(display_name=cred_name),user_id=remote_state_user).data
+                    key_id = str(create_customer_secret_key_response.id)
+                    key = str(create_customer_secret_key_response.key)
 
-                create_customer_secret_key_response = identity_client.create_customer_secret_key(create_customer_secret_key_details=oci.identity.models.CreateCustomerSecretKeyDetails(display_name=cred_name),user_id=remote_state_user).data
-                credential_file_data="[default]\naws_access_key_id="+str(create_customer_secret_key_response.id)+"\naws_secret_access_key="+create_customer_secret_key_response.key+"\n"
+                credential_file_data="[default]\naws_access_key_id="+key_id+"\naws_secret_access_key="+key+"\n"
             # If S3 Crednetials file exists, check if it's the same key
             elif os.path.exists(s3_credential_file_path):
                 text = "aws_access_key_id="+customer_secret_key_id+""
@@ -730,26 +854,52 @@ if remote_state == "yes":
 
                 #If Access Key id is different then delete the existing key and create new one
                 if same_key == 0 :
-                    identity_client.delete_customer_secret_key(user_id=remote_state_user,
-                                                           customer_secret_key_id=customer_secret_key_id)
+                    if ct.identity_domain_enabled:
+                        identity_domain_client.delete_customer_secret_key(customer_secret_key_id=customer_secret_key_id,force_delete=True)
 
-                    create_customer_secret_key_response = identity_client.create_customer_secret_key(
-                    create_customer_secret_key_details=oci.identity.models.CreateCustomerSecretKeyDetails(
-                        display_name=cred_name), user_id=remote_state_user).data
-                    credential_file_data = "[default]\naws_access_key_id=" + str(
-                    create_customer_secret_key_response.id) + "\naws_secret_access_key=" + create_customer_secret_key_response.key + "\n"
+                        create_customer_secret_key_response = identity_domain_client.create_customer_secret_key(
+                            customer_secret_key=oci.identity_domains.models.CustomerSecretKey(
+                                schemas=['urn:ietf:params:scim:schemas:oracle:idcs:customerSecretKey'],
+                                display_name=cred_name,
+                                user=oci.identity_domains.models.CustomerSecretKeyUser(ocid=remote_state_user),
+                                urn_ietf_params_scim_schemas_oracle_idcs_extension_self_change_user=oci.identity_domains.models.ExtensionSelfChangeUser(
+                                    allow_self_change=True))).data
+                        key_id = str(create_customer_secret_key_response.id)
+                        key = str(create_customer_secret_key_response.access_key)
+
+                    else:
+                        identity_client.delete_customer_secret_key(user_id=remote_state_user,
+                                                                   customer_secret_key_id=customer_secret_key_id)
+                        create_customer_secret_key_response = identity_client.create_customer_secret_key(
+                            create_customer_secret_key_details=oci.identity.models.CreateCustomerSecretKeyDetails(
+                                display_name=cred_name), user_id=remote_state_user).data
+                        key_id = str(create_customer_secret_key_response.id)
+                        key = str(create_customer_secret_key_response.key)
+
+                    credential_file_data = "[default]\naws_access_key_id=" + key_id + "\naws_secret_access_key=" + key + "\n"
                 else:
                     print("Continuing to use existing customer secret key\n")
 
+
         #Create New Key
         if customer_secret_key_id == '':
-            if (len(list_customer_secret_key_response) > 1):
+            if (len(keys) > 1):
                 print("\nUser (" + remote_state_user + ") already has max customer secret keys created. Cannot create a new one to be used with toolkit for tfstate remote management.  Please clear the existing keys or use different user. Exiting...")
                 exit(1)
-            create_customer_secret_key_response = identity_client.create_customer_secret_key(
-                create_customer_secret_key_details=oci.identity.models.CreateCustomerSecretKeyDetails(
-                    display_name=cred_name), user_id=remote_state_user).data
-            credential_file_data = "[default]\naws_access_key_id=" + str(create_customer_secret_key_response.id) + "\naws_secret_access_key=" + create_customer_secret_key_response.key + "\n"
+            if ct.identity_domain_enabled:
+                create_customer_secret_key_response = identity_domain_client.create_customer_secret_key(customer_secret_key=oci.identity_domains.models.CustomerSecretKey(schemas= ['urn:ietf:params:scim:schemas:oracle:idcs:customerSecretKey'],display_name=cred_name, user=oci.identity_domains.models.CustomerSecretKeyUser(ocid=remote_state_user),urn_ietf_params_scim_schemas_oracle_idcs_extension_self_change_user=oci.identity_domains.models.ExtensionSelfChangeUser(
+            allow_self_change=True))).data
+                key_id = str(create_customer_secret_key_response.id)
+                key = str(create_customer_secret_key_response.access_key)
+            else:
+                create_customer_secret_key_response = identity_client.create_customer_secret_key(
+                    create_customer_secret_key_details=oci.identity.models.CreateCustomerSecretKeyDetails(
+                        display_name=cred_name), user_id=remote_state_user).data
+                key_id = str(create_customer_secret_key_response.id)
+                key = str(create_customer_secret_key_response.key)
+
+            credential_file_data = "[default]\naws_access_key_id=" + key_id + "\naws_secret_access_key=" + key + "\n"
+
 
     except Exception as e:
         print(str(e))
@@ -832,7 +982,6 @@ print("Creating Tenancy specific region directories, terraform provider , variab
 regions_file_data = ""
 
 # 6. Read variables.tf from examples folder and copy the variables as string
-
 for region in ct.all_regions:
     regions_file_data = regions_file_data + region.title() + "\n"
 
@@ -909,7 +1058,7 @@ for region in ct.all_regions:
         for image in paginate(cc.list_images, compartment_id=tenancy_id, operating_system='Oracle Linux',
                               sort_by='TIMECREATED'):
 
-            if ("Gen2-GPU" not in image.display_name and "aarch" not in image.display_name and "Minimal" not in image.display_name):
+            if ("Gen2-AMD-GPU" not in image.display_name and "Gen2-GPU" not in image.display_name and "aarch" not in image.display_name and "Minimal" not in image.display_name):
                 linux_image_id = image.id
                 break
 
@@ -1093,6 +1242,7 @@ if use_devops == 'yes':
     #git_config_file = config_files + "/" + prefix + "_git_config"
 
     #Get Username from $user_ocid if $oci_devops_git_user is left empty
+    '''
     if "ocid1.user.oc" in devops_user:
         identity_client = oci.identity.IdentityClient(config=new_config,
                                                       retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
@@ -1100,7 +1250,7 @@ if use_devops == 'yes':
         user_data=identity_client.get_user(user_id=user).data
         tenancy_data=identity_client.get_tenancy(tenancy_id=tenancy).data
         devops_user=user_data.name+"@"+tenancy_data.name
-
+    '''
     commit_id = update_devops_config(prefix, repo_ssh_url,files_in_repo, dir_values, devops_user, devops_user_key, devops_dir, ct)
 
 del ct, config, signer
@@ -1141,7 +1291,7 @@ logging.info("Next Steps for using toolkit via CLI")
 logging.info("######################################")
 logging.info("Modify "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties with input values for cd3file and workflow_type")
 logging.info("cd "+toolkit_dir)
-logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
+logging.info("python setUpCloud.py oci "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
 
 with open(outfile, 'r') as log_file:
     data = log_file.read().rstrip()
