@@ -813,9 +813,14 @@ if remote_state == "yes":
         else:
             keys = identity_client.list_customer_secret_keys(user_id=remote_state_user).data
 
+        text1=''
         for key in keys:
             if key.display_name == cred_name:
                 customer_secret_key_id=key.id
+                try:
+                    text1=key.access_key
+                except Exception as e:
+                    pass
                 break
 
 
@@ -831,8 +836,8 @@ if remote_state == "yes":
                             user=oci.identity_domains.models.CustomerSecretKeyUser(ocid=remote_state_user),
                             urn_ietf_params_scim_schemas_oracle_idcs_extension_self_change_user=oci.identity_domains.models.ExtensionSelfChangeUser(
                                 allow_self_change=True))).data
-                    key_id = str(create_customer_secret_key_response.id)
-                    key = str(create_customer_secret_key_response.access_key)
+                    key_id = str(create_customer_secret_key_response.access_key)
+                    key = str(create_customer_secret_key_response.secret_key)
                 else:
                     identity_client.delete_customer_secret_key(user_id=remote_state_user,
                                                                customer_secret_key_id=customer_secret_key_id)
@@ -843,7 +848,10 @@ if remote_state == "yes":
                 credential_file_data="[default]\naws_access_key_id="+key_id+"\naws_secret_access_key="+key+"\n"
             # If S3 Crednetials file exists, check if it's the same key
             elif os.path.exists(s3_credential_file_path):
-                text = "aws_access_key_id="+customer_secret_key_id+""
+                if text1=='':
+                    text = "aws_access_key_id="+customer_secret_key_id+""
+                else:
+                    text = "aws_access_key_id=" + text1 + ""
                 f = open(f"{s3_credential_file_path}", "r")
                 same_key=0
                 existing_credential_file_lines = f.readlines()
@@ -864,8 +872,8 @@ if remote_state == "yes":
                                 user=oci.identity_domains.models.CustomerSecretKeyUser(ocid=remote_state_user),
                                 urn_ietf_params_scim_schemas_oracle_idcs_extension_self_change_user=oci.identity_domains.models.ExtensionSelfChangeUser(
                                     allow_self_change=True))).data
-                        key_id = str(create_customer_secret_key_response.id)
-                        key = str(create_customer_secret_key_response.access_key)
+                        key_id = str(create_customer_secret_key_response.access_key)
+                        key = str(create_customer_secret_key_response.secret_key)
 
                     else:
                         identity_client.delete_customer_secret_key(user_id=remote_state_user,
@@ -889,8 +897,8 @@ if remote_state == "yes":
             if ct.identity_domain_enabled:
                 create_customer_secret_key_response = identity_domain_client.create_customer_secret_key(customer_secret_key=oci.identity_domains.models.CustomerSecretKey(schemas= ['urn:ietf:params:scim:schemas:oracle:idcs:customerSecretKey'],display_name=cred_name, user=oci.identity_domains.models.CustomerSecretKeyUser(ocid=remote_state_user),urn_ietf_params_scim_schemas_oracle_idcs_extension_self_change_user=oci.identity_domains.models.ExtensionSelfChangeUser(
             allow_self_change=True))).data
-                key_id = str(create_customer_secret_key_response.id)
-                key = str(create_customer_secret_key_response.access_key)
+                key_id = str(create_customer_secret_key_response.access_key)
+                key = str(create_customer_secret_key_response.secret_key)
             else:
                 create_customer_secret_key_response = identity_client.create_customer_secret_key(
                     create_customer_secret_key_details=oci.identity.models.CreateCustomerSecretKeyDetails(
