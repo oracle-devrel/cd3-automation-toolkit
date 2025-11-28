@@ -2,9 +2,10 @@
 CD3 Automation Toolkit Tag v2025.2.1
 Dec 5th, 2025
 -------------------------------------
-1. Support custom domain user for connecting the container to cloud while running connectCloud.py
-2. Added support for X11 ExaInfra
+1. Support custom domain user for connecting the container to cloud while running connectCloud.py for OCI.
+2. Added support for X11 ExaInfra.
 3. Fixed ordering issue for agent plugins during instance export. Please use latest excel sheet corresponding to this release.
+4. Minor bug fixes wrt SDDCs and other scripts.
 
 -------------------------------------
 CD3 Automation Toolkit Tag v2025.2.0

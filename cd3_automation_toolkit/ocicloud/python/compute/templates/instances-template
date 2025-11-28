@@ -114,6 +114,14 @@ instances = {
                     },
 
                     {
+                    {% if plugin_os_management_service_agent %}
+                        "OS Management Service Agent" = "{{ plugin_os_management_service_agent.upper() }}"
+                    {% else %}
+                        "OS Management Service Agent" = "null"
+                    {% endif %}
+                    },
+
+                    {
                     {% if plugin_os_management_hub_agent %}
                         "OS Management Hub Agent" = "{{ plugin_os_management_hub_agent.upper() }}"
                     {% else %}
