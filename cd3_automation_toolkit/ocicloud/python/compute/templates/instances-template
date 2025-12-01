@@ -112,7 +112,13 @@ instances = {
                         "Oracle Java Management Service" = "null"
                     {% endif %}
                     },
-
+                    {
+                    {% if plugin_oracle_autonomous_linux %}
+                        "Oracle Autonomous Linux" = "{{ plugin_oracle_autonomous_linux.upper() }}"
+                    {% else %}
+                        "Oracle Autonomous Linux" = "null"
+                    {% endif %}
+                    },
                     {
                     {% if plugin_os_management_service_agent %}
                         "OS Management Service Agent" = "{{ plugin_os_management_service_agent.upper() }}"
