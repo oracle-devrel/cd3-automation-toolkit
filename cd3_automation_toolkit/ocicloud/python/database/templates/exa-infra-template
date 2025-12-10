@@ -31,13 +31,12 @@ exa_infra = {
         storage_count = null
         {% endif %}
         {% if database_server_type %}
-        database_server_type = {{ database_server_type }}
+        database_server_type = "{{ database_server_type }}"
         {% else %}
             database_server_type = null
         {% endif %}
-
         {% if storage_server_type %}
-            storage_server_type = {{ storage_server_type }}
+            storage_server_type = "{{ storage_server_type }}"
         {% else %}
             storage_server_type = null
         {% endif %}
