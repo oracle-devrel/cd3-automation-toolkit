@@ -701,6 +701,7 @@ if remote_state == "yes":
                 user_found=0
                 domain_user=[]
                 endpoint=''
+                domain=''
                 for domain in ct.identity_domains:
                     endpoint = domain.url
                     temp_client=oci.identity_domains.IdentityDomainsClient(config=new_config,service_endpoint=endpoint,
@@ -722,7 +723,7 @@ if remote_state == "yes":
                                                                                         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                                                         signer=signer)
 
-                        devops_user = domain_user[0].user_name + "@" + tenancy_data.name
+                        devops_user = str(domain.display_name)+"/"+domain_user[0].user_name + "@" + tenancy_data.name
 
                     except Exception as e:
                         print(str(e))

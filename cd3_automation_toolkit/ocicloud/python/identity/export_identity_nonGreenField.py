@@ -340,7 +340,7 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                     grp_defined_tags = []
                     if defined_tags_info is not None:
                         defined_tags = defined_tags_info.defined_tags
-                        for tag in defined_tags:
+                        for tag in defined_tags or []:
                             namespace = tag.namespace
                             key = tag.key
                             value = tag.value

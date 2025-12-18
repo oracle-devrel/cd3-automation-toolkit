@@ -10,3 +10,7 @@ output "id" {
   description = "The OCID of the load balancer routing policy."
   value       = oci_load_balancer_load_balancer_routing_policy.load_balancer_routing_policy.id
 }
+output "routing_policy_tf_name" {
+  description = "Load Balancer Routing Policy Name"
+  value       = oci_load_balancer_load_balancer_routing_policy.load_balancer_routing_policy.name
+}

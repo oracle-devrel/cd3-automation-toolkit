@@ -47,8 +47,8 @@ listeners = {
 
         rule_set_names = [{{ rule_set_names }}]
 
-        {% if routing_policy_name and routing_policy_name != '' %}
-        routing_policy_name = {{ routing_policy_name }}
+        {% if routing_policy_tf_name and routing_policy_tf_name != '' %}
+        routing_policy_name = "{{ routing_policy_tf_name }}"
         {% endif %}
 
         {% if certificate_tf_name and certificate_tf_name != "" and certificate_tf_name != 'nan' %}
