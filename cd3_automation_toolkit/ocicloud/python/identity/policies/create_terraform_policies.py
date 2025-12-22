@@ -132,6 +132,15 @@ def create_terraform_policies(inputfile, outdir, service_dir, prefix, ct):
             # assign groups in policy statements
             if ('$' in policy_statement):
                 policy_statement_grps = str(df.loc[i, "Policy Statement Groups"])
+                if policy_statement_grps != "nan" or policy_statement_grps!='':
+                    last_char = policy_statement_grps[-1]
+                    first_char=policy_statement_grps[0]
+                    if last_char == "'" and first_char!="'":
+                        policy_statement_grps="'"+policy_statement_grps
+
+                    if last_char == '"' and first_char != '"':
+                        policy_statement_grps = '"' + policy_statement_grps
+
                 actual_policy_statement = policy_statement.replace('$', policy_statement_grps)
 
             # assign compartment in policy statements
