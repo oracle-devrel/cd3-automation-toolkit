@@ -6,7 +6,7 @@ Dec 26th, 2025
 2. Added support for X11 ExaInfra.
 3. Fixed ordering issue for agent plugins during instance export. Please use latest excel sheet corresponding to this release.
 4. Fixed attachment of routing policy to the load balancer listener.
-5. Minor bug fixes wrt SDDCs, Policies and other scripts.
+5. Minor bug fixes wrt SDDCs, Policies, jenkins warnings and other scripts.
 
 -------------------------------------
 CD3 Automation Toolkit Tag v2025.2.0

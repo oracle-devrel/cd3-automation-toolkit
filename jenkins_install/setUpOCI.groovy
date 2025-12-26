@@ -43,6 +43,9 @@ def exportNetworkRules(stage_name) {
 def generateStage(job) {
     return {
         stage("Stage: ${job}") {
+            def job_name
+            def service
+            def region
             def values = job.split('/')
             if (values.size() > 1) {
                 region = values[0]
@@ -142,6 +145,13 @@ properties([
        ]
     ])
 ])
+def file_check
+def ParametersValidation
+def file_path
+def parallelStagesMap
+def region
+def service
+def job_name
 pipeline {
     agent any
         options {
@@ -166,6 +176,7 @@ pipeline {
                 withFileParameter('Excel_Template') {
                     unstash 'Excel_Template'
                     script {
+                            def exlfile_check
                             exlfile_check = labelledShell( label: 'Validating excel sheet', script: '''
                                 set +x
                                 if [[ -n "$Excel_Template_FILENAME" ]];then
@@ -185,6 +196,7 @@ pipeline {
                     }
                 }
         		script {
+        		    def ParametersList
         		    def ParametersValidationScript = load "$JENKINS_HOME/scriptler/scripts/ValidateParams.groovy"
                     (ParametersValidation, ParametersList) = ParametersValidationScript.validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFilters)
                     if (ParametersValidation == "Passed" && file_check == "Passed") {
@@ -347,6 +359,9 @@ pipeline {
             steps {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                 script {
+                    def script_full_path
+                    def script_name
+                    def script_path
                     def data = readFile(file: "${prefix_dir}/terraform_files/.safe/import_scripts.safe")
                     def lines = data.readLines()
                     for (line in lines) {

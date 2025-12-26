@@ -1,5 +1,5 @@
 def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFilters){
-    valid_params = "Passed"
+    def valid_params = "Passed"
     def gf_options_map = [
     "Validate CD3":["Validate Compartments","Validate Groups","Validate Policies","Validate Tags","Validate Budgets","Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)","Validate DNS","Validate Instances","Validate Block Volumes","Validate FSS","Validate Buckets","Validate KMS"],
     "Identity":["Add/Modify/Delete Compartments", "Add/Modify/Delete Groups","Add/Modify/Delete Policies", "Add/Modify/Delete Users", "Add/Modify/Delete Network Sources"],
@@ -35,9 +35,9 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
 	"Export Security":["Export KMS (Keys/Vaults)"],
     "CD3 Services":["Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"]
     ]
-    mainoptions_list = MainOptions.split(",")
-    suboptions_list = SubOptions.split(",")
-    validation_map = [:]
+    def mainoptions_list = MainOptions.split(",")
+    def suboptions_list = SubOptions.split(",")
+    def validation_map = [:]
     if (mainoptions_list.size() > 0) {
         for (mitem in MainOptions.split(",")) {
 			validation_map[mitem] = "Failed"
@@ -74,7 +74,7 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
     } else {
     valid_params = "Failed"
     }
-	result_list = []
+	def result_list = []
 	validation_map.each { result_list.add(it.value) }
     if ("Failed" in result_list || valid_params == "Failed") {
 		valid_params = "Failed"
