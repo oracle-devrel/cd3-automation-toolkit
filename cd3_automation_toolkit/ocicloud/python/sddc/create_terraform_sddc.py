@@ -49,7 +49,7 @@ def create_terraform_sddc_cluster(inputfile, outdir, service_dir, prefix, ct, sd
     # Take backup of files
     for eachregion in ct.all_regions:
         tfStr[eachregion] = ''
-    subnets = parseSubnets(filename)
+    #subnets = parseSubnets(filename)
     #Process SDDC Sheet
     for i in df.index:
         region = str(df.loc[i, 'Region'])

@@ -15,6 +15,8 @@ resource "oci_database_cloud_exadata_infrastructure" "exa_infra" {
   #Optional
   compute_count = var.compute_count
   storage_count = var.storage_count
+  database_server_type = var.database_server_type
+  storage_server_type = var.storage_server_type
 
   #  customer_contacts {
   #    #Optional

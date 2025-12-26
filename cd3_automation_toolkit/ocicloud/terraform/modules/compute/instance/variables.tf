@@ -193,7 +193,7 @@ variable "is_monitoring_disabled" {
 }
 
 variable "plugins_details" {
-  type        = map(any)
+  type        = list(map(any))
   default     = null
   description = "The configuration of plugins associated with this instance"
 }

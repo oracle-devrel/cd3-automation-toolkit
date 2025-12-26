@@ -32,7 +32,7 @@ class cd3Services():
         for reg in regions_list:
             cd3key = str(reg.name.split('-',1)[1]).lower()
 
-            if 'dcc' in cd3key:
+            if 'dcc' in cd3key or 'gov' in cd3key:
                 cd3key = str(cd3key.split('-',1)[1]).lower()
 
             name = str(reg.name).lower()

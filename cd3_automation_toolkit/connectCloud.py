@@ -5,7 +5,7 @@ import subprocess
 def main():
     if len(sys.argv) != 3:
         print("Usage: python connectCloud.py <cloud_provider> <properties_file_path>")
-        print("Example: python connectCloud.py oci tenancyconfig.properties")
+        print("Example: python connectCloud.py oci connectOCI.properties")
         print("Example: python connectCloud.py azure connectAzure.properties")
         return
 

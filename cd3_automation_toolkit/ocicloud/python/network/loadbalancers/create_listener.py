@@ -142,6 +142,13 @@ def create_listener(inputfile, outdir, service_dir, prefix, ct):
                     path_route_set_tf_name = lbr_tf_name +"_"+ columnvalue
                     tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
 
+            if columnname == 'Routing Policy Name':
+                if columnvalue != '':
+                    columnvalue = commonTools.check_tf_variable(str(columnvalue).strip())
+                    routing_policy_tf_name = lbr_tf_name +"_"+ columnvalue
+                    tempdict = {'routing_policy_tf_name' : routing_policy_tf_name}
+
+
             if columnname == "LBR Hostnames (Name)":
                 columnname = 'lbr_hostnames'
                 if columnvalue != '':

@@ -45,6 +45,7 @@ class ociCommonTools():
         self.sheet_dict={}
         self.domain_filter = None
         self.identity_domain_enabled = False
+        self.identity_domains = None
         self.reg_filter = None
         #Should be None but changed to "null" to do a quick fix for ct.get_compartment_map
         self.comp_filter = None
@@ -443,9 +444,20 @@ class ociCommonTools():
         config.__setitem__("region", self.region_dict[self.home_region])
         idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         try:
-            domain = idc.list_domains(config["tenancy"]).data
+            if self.ntk_compartment_ids == {}:
+                self.ntk_compartment_ids['root']=config['tenancy']
+
+            ocids_done = []
+            domains=[]
+            for name,ocid in self.ntk_compartment_ids.items():
+                if ocid not in ocids_done:
+                    ocids_done.append(ocid)
+                    d =  oci.pagination.list_call_get_all_results(idc.list_domains, compartment_id=ocid).data
+                    domains.extend(d)
             self.identity_domain_enabled = True
+            self.identity_domains=domains
         except Exception as e:
+            print(e)
             print("Tenancy is not Identity Domain Enabled")
             self.identity_domain_enabled = False
 
