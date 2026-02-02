@@ -197,14 +197,14 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
         Mandatory when using $(auth_mechanism) as instance_principal or session_token. 
         Format: <b>&lt;domainName&gt;/&lt;userName&gt;@&lt;tenancyName&gt;</b>
         When left empty, it will be fetched from $(user_ocid) for $(auth_mechanism) as api_key. 
-        Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is instance_principal or session_token
+        Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is instance_principal or session_token.
 
-	<b>Users in Custom Domain are not supported as of now.</td>
+	    </td>
             <td>oracleidentitycloudservice/devopsuser@oracle.com@ocitenant</td>
         </tr>
         <tr>
             <td>oci_devops_git_key</td>
-            <td>When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to <b>/cd3user/tenancies/&lt;prefix&gt;/</b> and used for GIT Operations. Make sure the api key file permissions are rw(600) for cd3user</td>
+            <td>When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to <b>/cd3user/tenancies/&lt;prefix&gt;/</b> and used for GIT Operations. Make sure the api key file permissions are rw(600) for cd3user.</td>
             <td>/cd3user/tenancies/keys/oci_api_private.pem</td>
         </tr>
     </table>

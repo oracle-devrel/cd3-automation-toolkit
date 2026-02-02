@@ -55,9 +55,9 @@ nav:
     - Must Read:
       - must-read.md
   
-  - Setup Azure :
+  - Setup DB@Azure :
     - setUpAzure.md
-    - Set Up Azure with CLI:
+    - Set Up DB@Azure with CLI:
       - cd3-azr-cli.md
       - Create in Azure  : 
         - greenfield-azr-cli.md
@@ -151,6 +151,10 @@ theme:
   favicon: images/oci.png  
 extra_css:
 - stylesheets/extra.css
+- stylesheets/assistant.css
+
+
+
   
 extra:
   social:
@@ -165,6 +169,7 @@ extra:
 extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js #?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - assistant/assistant.js
 
 markdown_extensions:
   - abbr
