@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.0/setUpAzure/">
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/setUpAzure/">
       
       
         <link rel="prev" href="../must-read/">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Setup Azure - CD3 Documentation</title>
+        <title>Setup DB@Azure - CD3 Documentation</title>
       
     
     
@@ -47,6 +47,8 @@
     
       <link rel="stylesheet" href="../stylesheets/extra.css">
     
+      <link rel="stylesheet" href="../stylesheets/assistant.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -66,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#set-up-azure-using-automation-toolkit" class="md-skip">
+        <a href="#set-up-dbazure-using-cd3-automation-toolkit" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +105,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Setup Azure
+              Setup DB@Azure
             
           </span>
         </div>
@@ -259,7 +261,7 @@
   
     
   
-  Setup Azure
+  Setup DB@Azure
 
       </a>
     </li>
@@ -1590,7 +1592,7 @@
               
   
   <span class="md-ellipsis">
-    Setup Azure
+    Setup DB@Azure
   </span>
   
 
@@ -1606,7 +1608,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Setup Azure
+            Setup DB@Azure
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1642,7 +1644,7 @@
               
   
   <span class="md-ellipsis">
-    Set Up Azure with CLI
+    Set Up DB@Azure with CLI
   </span>
   
 
@@ -1658,7 +1660,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5_1">
             <span class="md-nav__icon md-icon"></span>
-            Set Up Azure with CLI
+            Set Up DB@Azure with CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2349,11 +2351,15 @@
   
 
 
-<h1 id="set-up-azure-using-automation-toolkit"><strong>Set Up Azure using Automation Toolkit</strong></h1>
+<h1 id="set-up-dbazure-using-cd3-automation-toolkit"><strong>Set Up DB@Azure using CD3 Automation Toolkit</strong></h1>
 <hr />
-<p>Once CD3 container has been connected to Azure subscription, Automation Toolkit can be used to execute create / export workflows against it. The toolkit can be used with CLI.</p>
+<p><strong>CD3</strong> now extends its support to <strong>Oracle DB@Azure</strong>, making it easier to manage Oracle Databases on Azure.</p>
+<p>With CD3, users can currently create and manage <strong>ADB@Azure</strong>. Support will be extended to <strong>Exadata@Azure</strong> in future releases. </p>
+<p>To set up ADB@Azure, users should first complete the steps to <a href="../install-cd3"><u>Install the CD3 toolkit</u></a> and then <a href="../connect-container-to-azure-subscription"><u>Connect the CD3 container to Azure subscription</u></a> </p>
+<p>Once the CD3 container is successfully connected to Azure subscription, the Toolkit can be used to execute Create/Export workflows for ADB@Azure.</p>
+<p>At present, CD3 for DB@Azure supports only CLI-based operations. Follow the instructions below to get started. </p>
 <ol>
-<li><a href = "../cd3-azr-cli"><u>SetUp Azure with CLI</u></a> </li>
+<li><a href = "../cd3-azr-cli"><u>SetUp DB@Azure with CLI</u></a> </li>
 </ol>
 
 
@@ -2440,6 +2446,8 @@
         <script src="https://polyfill.io/v3/polyfill.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../assistant/assistant.js"></script>
       
     
   </body>

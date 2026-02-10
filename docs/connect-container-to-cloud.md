@@ -2,9 +2,11 @@
 ---
 
 CD3 Container can be connected and used to generate terraform / export resources for multi cloud - OCI and Azure.
-<br>See below sections for detailed steps to connect the container to specific cloud. Users can chose to connect to any or both the clouds based on requirement.
+<br>Follow the links below for detailed instructions on how to connect the container to your preferred cloud. Users can chose to connect to any or both the clouds based on requirement.
 
-1.  <a href = "../connect-container-to-oci-tenancy"><u>Connect Container to OCI Tenancy</u></a> 
-2.  <a href="../connect-container-to-azure-subscription"><u>Connect Container to Azure Subscription</u></a> 
+ <a href = "../connect-container-to-oci-tenancy"><u>1. Connect Container to OCI Tenancy</u></a> 
+    <img src="../images/connectCloud_OCI.jpg" alt="connectcloudoci" width=800 height=700>
 
+<a href="../connect-container-to-azure-subscription"><u>2. Connect Container to Azure Subscription</u></a> 
+    <img src="../images/connectCloud_Azure.jpg" alt="connectcloudazure" width=800 height=700>
 
