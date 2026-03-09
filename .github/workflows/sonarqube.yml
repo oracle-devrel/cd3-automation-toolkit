@@ -35,4 +35,4 @@ jobs:
           $PWD/sonar-scanner-8.0.1.6346/bin/sonar-scanner \
             -Dsonar.projectKey=cd3-automation-toolkit \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
