@@ -1,9 +1,9 @@
 name: SonarQube Scan
 on:
   push:
-    branches: [ "main", "develop-old" ]
+    branches: [ "develop-old" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "develop-old" ]
   workflow_dispatch:
 
 permissions:
