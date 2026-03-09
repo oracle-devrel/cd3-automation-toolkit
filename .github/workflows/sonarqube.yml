@@ -28,11 +28,12 @@ jobs:
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
           unzip sonar-scanner-cli-*.zip
+          echo "HERE"
           echo "$PWD/sonar-scanner-*/bin" >> $GITHUB_PATH
 
       - name: Run SonarQube Scan
         run: |
-          sonar-scanner \
+          $PWD/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner \
             -Dsonar.projectKey=cd3-automation-toolkit \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
