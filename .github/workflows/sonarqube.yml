@@ -1,6 +1,14 @@
-name: SonarCloud Scan
+name: SonarQube Scan
 on:
-  pull_request_target:
+  push:
+    branches: [ "main", "develop-old" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: read # allows SonarQube to decorate PRs with analysis results
+
 jobs:
   sonarcloud:
     name: SonarCloud
