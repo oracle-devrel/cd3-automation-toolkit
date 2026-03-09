@@ -27,6 +27,7 @@ jobs:
       - name: Install Sonar Scanner
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.0.1.6346.zip
+          unzip sonar-scanner-cli-*.zip
           echo "$PWD/sonar-scanner-*/bin" >> $GITHUB_PATH
 
       - name: Run SonarQube Scan
