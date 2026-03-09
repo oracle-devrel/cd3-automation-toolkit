@@ -31,7 +31,7 @@ jobs:
 
       - name: Run SonarQube Scan
         run: |
-          $PWD/ssonar-scanner-8.0.1.6346/bin/sonar-scanner \
+          $PWD/sonar-scanner-8.0.1.6346/bin/sonar-scanner \
             -Dsonar.projectKey=cd3-automation-toolkit \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
