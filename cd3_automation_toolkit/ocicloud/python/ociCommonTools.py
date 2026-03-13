@@ -91,15 +91,12 @@ class ociCommonTools():
 
         # When called from wthin OCSWorkVM or user-scripts
         dir=os.getcwd()
-        if ("OCSWorkVM" in os.getcwd() or 'user-scripts' in os.getcwd()):
-            os.chdir("../")
-            dir = os.getcwd()
-        if("ocicloud/python" not in dir):
-            os.chdir("ocicloud/python")
-        regionFileName="OCI_Regions"
-        protocolFileName="OCI_Protocols"
-        excelColumnName="Excel_Columns"
-        with open (regionFileName) as f:
+
+        os.chdir("/cd3user/oci_tools/cd3_automation_toolkit/ocicloud/python")
+        regionFileName = "OCI_Regions"
+        protocolFileName = "OCI_Protocols"
+        excelColumnName = "Excel_Columns"
+        with open(regionFileName) as f:
             for line in f:
                 if "#" not in line and ":" in line:
                     key = line.split(":")[0].strip().lower()
@@ -122,11 +119,10 @@ class ociCommonTools():
             self.sheet_dict = dict(obj)
             break
 
-        #Change back to Initial
-        if ("OCSWorkVM" in dir):
-            os.chdir(dir)
-        #os.chdir(dir)
-    # Get Export filters
+        os.chdir(dir)
+
+
+        # Get Export filters
     def get_export_filters(self, export_filters):
         self.comp_filter = "null"
         for i in export_filters:

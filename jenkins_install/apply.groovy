@@ -97,7 +97,7 @@ pipeline {
             }
         }
 
-        stage('AI-Terraform Plan Analysis') {
+        stage('AI Terraform Plan Analysis') {
             when {
                 expression {
                     // Manual parsing like Set Environment Variables stage
