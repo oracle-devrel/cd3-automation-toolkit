@@ -122,7 +122,7 @@ variable "autonomous_container_database_id" {
   default = null
 }
 variable "adb_source" {
-    default = null
+  default = null
 }
 variable "source_id" {
   default = null

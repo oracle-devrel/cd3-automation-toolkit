@@ -12,6 +12,11 @@ variable "compartment_id" {
   default     = null
 }
 
+variable "placement_configs" {
+  type    = map(any)
+  default = {}
+}
+
 variable "network_compartment_id" {
   type        = string
   description = "The OCID of the compartment that has Network components"
@@ -139,9 +144,9 @@ variable "source_type" {
 }
 
 variable "init_script_path" {
-  type = string
+  type    = string
   default = null
-  }
+}
 
 variable "boot_volume_size_in_gbs" {
   type        = number

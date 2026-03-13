@@ -234,7 +234,7 @@ variable "network_compartment_id" {
 
 
 variable "workload_datastore" {
- type = list(string)
- default = []
+  type    = list(string)
+  default = []
 }
 

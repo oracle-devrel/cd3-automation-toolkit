@@ -22,7 +22,7 @@ data "oci_core_instances" "instances" {
   #state    = "RUNNING"
   filter {
     name   = "state"
-    values = ["RUNNING","STOPPED"]
+    values = ["RUNNING", "STOPPED"]
   }
   #Required
   compartment_id = each.value.instance_compartment != null && each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid

@@ -12,7 +12,7 @@ data "oci_core_services" "oci_services" {
 
 resource "oci_core_route_table" "route_table" {
 
-count = var.default_route_table ==true ? 0 : 1
+  count = var.default_route_table == true ? 0 : 1
 
   #Required
   compartment_id = var.compartment_id
@@ -40,7 +40,7 @@ count = var.default_route_table ==true ? 0 : 1
 
   # Create LPG Routes
   dynamic "route_rules" {
-    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_lpg != [] ? var.rt_details[var.key_name].route_rules_lpg : [] ) : []
+    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_lpg != [] ? var.rt_details[var.key_name].route_rules_lpg : []) : []
 
     content {
       #Required
@@ -88,7 +88,7 @@ count = var.default_route_table ==true ? 0 : 1
 
   # Create NAT Routes
   dynamic "route_rules" {
-    for_each = var.gateway_route_table == false ?  (var.rt_details[var.key_name].route_rules_ngw != [] ? var.rt_details[var.key_name].route_rules_ngw : []) : []
+    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_ngw != [] ? var.rt_details[var.key_name].route_rules_ngw : []) : []
 
     content {
       #Required
@@ -106,7 +106,7 @@ count = var.default_route_table ==true ? 0 : 1
 
   # Create SGW Routes
   dynamic "route_rules" {
-    for_each = var.gateway_route_table == false ?  (var.rt_details[var.key_name].route_rules_sgw != [] ? var.rt_details[var.key_name].route_rules_sgw : [] ) : []
+    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_sgw != [] ? var.rt_details[var.key_name].route_rules_sgw : []) : []
 
     content {
       #Required
@@ -132,7 +132,7 @@ count = var.default_route_table ==true ? 0 : 1
 
 resource "oci_core_default_route_table" "default_route_table" {
 
- count = var.default_route_table ==true ? 1 : 0
+  count = var.default_route_table == true ? 1 : 0
   #Required
   manage_default_resource_id = var.manage_default_resource_id
 
@@ -158,7 +158,7 @@ resource "oci_core_default_route_table" "default_route_table" {
 
   # Create LPG Routes
   dynamic "route_rules" {
-    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_lpg != [] ? var.rt_details[var.key_name].route_rules_lpg : []): []
+    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_lpg != [] ? var.rt_details[var.key_name].route_rules_lpg : []) : []
 
     content {
       #Required
@@ -206,7 +206,7 @@ resource "oci_core_default_route_table" "default_route_table" {
 
   # Create NAT Routes
   dynamic "route_rules" {
-    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_ngw != [] ? var.rt_details[var.key_name].route_rules_ngw : []) :[]
+    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_ngw != [] ? var.rt_details[var.key_name].route_rules_ngw : []) : []
 
     content {
       #Required
@@ -224,7 +224,7 @@ resource "oci_core_default_route_table" "default_route_table" {
 
   # Create SGW Routes
   dynamic "route_rules" {
-    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_sgw != [] ? var.rt_details[var.key_name].route_rules_sgw : []) :[]
+    for_each = var.gateway_route_table == false ? (var.rt_details[var.key_name].route_rules_sgw != [] ? var.rt_details[var.key_name].route_rules_sgw : []) : []
 
     content {
       #Required

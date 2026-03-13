@@ -52,6 +52,11 @@ variable "node_shape" {
   default     = null
 }
 
+variable "placement_configs" {
+  type    = map(any)
+  default = {}
+}
+
 variable "initial_virtual_node_labels" {
   type        = map(any)
   description = "The labels for nodepool"

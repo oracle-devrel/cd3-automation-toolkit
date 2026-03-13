@@ -160,10 +160,10 @@ data "oci_dns_zones" "rrset_zones_data" {
 }
 
 module "dns-rrsets" {
-  source     = "./modules/network/dns/rrset"
-  for_each   = var.rrsets != null ? var.rrsets : {}
+  source   = "./modules/network/dns/rrset"
+  for_each = var.rrsets != null ? var.rrsets : {}
   #depends_on = [module.dns-views, module.dns-zones]
-  rrset_zone = length(regexall("ocid1.dnszone.oc*", each.value.zone_id)) > 0 ? each.value.zone_id : try(data.oci_dns_zones.rrset_zones_data["${each.value.view_id}_${each.value.zone_id}"].zones.*.id[0],module.dns-zones[join("_", [each.value.view_id, replace(each.value.zone_id, ".", "_")])].zones.*.id[0])
+  rrset_zone    = length(regexall("ocid1.dnszone.oc*", each.value.zone_id)) > 0 ? each.value.zone_id : try(data.oci_dns_zones.rrset_zones_data["${each.value.view_id}_${each.value.zone_id}"].zones.*.id[0], module.dns-zones[join("_", [each.value.view_id, replace(each.value.zone_id, ".", "_")])].zones.*.id[0])
   rrset_view_id = length(regexall("ocid1.dnsview.oc*", each.value.view_id)) > 0 ? each.value.view_id : try(data.oci_dns_views.all_views_data[each.value.view_id].views.*.id[0], module.dns-views[each.value.view_id].views.*.id[0])
   rrset_domain  = each.value.domain
   rrset_rtype   = each.value.rtype
@@ -178,7 +178,7 @@ module "dns-rrsets" {
 #################
 
 module "dns-zones" {
-  source              = "./modules/network/dns/zone"
+  source = "./modules/network/dns/zone"
   #depends_on          = [module.dns-views]
   for_each            = { for k, v in var.zones : k => v if var.zones != null }
   zone_compartment_id = length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]
@@ -187,7 +187,7 @@ module "dns-zones" {
   zone_defined_tags   = try(each.value.defined_tags, null)
   zone_freeform_tags  = try(each.value.freeform_tags, null)
   zone_scope          = "PRIVATE"
-  view_id    = length(regexall("ocid1.dnsview.oc*", each.value.view_id)) > 0 ? each.value.view_id : try(data.oci_dns_views.all_views_data[each.value.view_id].views.*.id[0], module.dns-views[each.value.view_id]["views"].*.id[0])
+  view_id             = length(regexall("ocid1.dnsview.oc*", each.value.view_id)) > 0 ? each.value.view_id : try(data.oci_dns_views.all_views_data[each.value.view_id].views.*.id[0], module.dns-views[each.value.view_id]["views"].*.id[0])
 }
 
 #################

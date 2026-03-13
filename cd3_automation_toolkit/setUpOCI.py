@@ -804,6 +804,9 @@ def export_kms(inputfile, outdir, config, signer, ct, export_regions,export_tags
 def export_databases(prim_options=[]):
     options = [Option("Export Virtual Machine or Bare Metal DB Systems",export_dbsystems_vm_bm,'Exporting VM and BM DB Systems'),
                Option("Export EXA Infra and EXA VMClusters", export_exa_infra_vmclusters, 'Exporting EXA Infra and EXA VMClusters'),
+               Option("Export EXA Infra DB Homes", export_exa_infra_dbhomes,'Exporting EXA DB Homes'),
+               Option("Export EXA Infra Databases(CDBs)", export_exa_infra_cdbs,'Exporting EXA CDBs'),
+               Option("Export EXA Infra PDBs", export_exa_infra_pdbs,'Exporting EXA PDBs'),
                Option('Export ADBs', export_adbs, 'Exporting Autonomous Databases'),
                Option('Export MySQL DBs', export_mysql, 'Exporting MySQL Databases and Configurations')]
     if prim_options:
@@ -832,6 +835,32 @@ def export_exa_infra_vmclusters(inputfile, outdir,config, signer, ct, export_reg
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_database_exacs])
 
+def export_exa_infra_dbhomes(inputfile, outdir,config, signer, ct, export_regions, export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'EXA Infra and EXA VMClusters')
+    export_exa_dbhome(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions,export_tags = export_tags_list)
+    options = [Option(None, create_exa_dbhome, 'Processing EXA-DBHomes Tab')]
+    execute_options(options)
+    print("\n\nExecute import_commands_exa-dbhomes.sh created under each region directory to synch TF with Exa-DBhome\n")
+    # Update modified path list
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_database_exacs])
+
+def export_exa_infra_cdbs(inputfile, outdir,config, signer, ct, export_regions, export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'EXA Infra and EXA VMClusters')
+    export_exa_cdb(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions,export_tags = export_tags_list)
+    options = [Option(None, create_exa_cdb, 'Processing EXA-CDBs Tab')]
+    execute_options(options)
+    print("\n\nExecute import_commands_exa-cdbs.sh created under each region directory to synch TF with Exa-CDB\n")
+    # Update modified path list
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_database_exacs])
+
+def export_exa_infra_pdbs(inputfile, outdir,config, signer, ct, export_regions, export_tags_list):
+    #compartments = ct.get_compartment_map(var_file,'EXA Infra and EXA VMClusters')
+    export_exa_pdb(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions,export_tags = export_tags_list)
+    options = [Option(None, create_exa_pdb, 'Processing EXA-PDBs Tab')]
+    execute_options(options)
+    print("\n\nExecute import_commands_exa-pdbs.sh created under each region directory to synch TF with Exa-PDB\n")
+    # Update modified path list
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_database_exacs])
 
 def export_adbs(inputfile, outdir,config, signer, ct, export_regions,export_tags_list):
     #compartments = ct.get_compartment_map(var_file,'ADBs')
@@ -1395,6 +1424,9 @@ def create_databases(execute_all=False,prim_options=[]):
     options = [
         Option('Add/Modify/Delete Virtual Machine or Bare Metal DB Systems', create_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab'),
         Option('Add/Modify/Delete EXA Infra and EXA VM Clusters', create_exa_infra_vmclusters, ''),
+        Option('Add/Modify/Delete Exa DB Homes', create_exa_dbhome, 'Processing EXA-DBHomes Tab'),
+        Option('Add/Modify/Delete Exa Databases(CDBs)', create_exa_cdb, 'Processing EXA-CDBs Tab'),
+        Option('Add/Modify/Delete Exa PDBs', create_exa_pdb, 'Processing EXA-PDBs Tab'),
         Option('Add/Modify/Delete ADBs', create_adb, 'Processing ADB Tab'),
         Option('Add/Modify/Delete MySQL DBs', create_mysql,''),
     ]
@@ -1418,7 +1450,20 @@ def create_exa_infra_vmclusters():
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_database_exacs])
 
+def create_exa_dbhome():
+    create_terraform_exa_dbhome(inputfile, outdir, service_dir_database_exacs, prefix, ct)
+    # Update modified path list
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_database_exacs])
 
+def create_exa_cdb():
+    create_terraform_exa_cdb(inputfile, outdir, service_dir_database_exacs, prefix, ct)
+    # Update modified path list
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_database_exacs])
+
+def create_exa_pdb():
+    create_terraform_exa_pdb(inputfile, outdir, service_dir_database_exacs, prefix, ct)
+    # Update modified path list
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_database_exacs])
 def create_adb():
     create_terraform_adb(inputfile, outdir, service_dir_adb, prefix, ct)
     # Update modified path list
@@ -2101,7 +2146,8 @@ try:
 
     inputfile = setUpOCI_props.get('Default','cd3file').strip()
     outdir = setUpOCI_props.get('Default', 'outdir').strip()
-    tf_or_tofu = setUpOCI_props.get('Default', 'tf_or_tofu').strip().lower()
+    #tf_or_tofu = setUpOCI_props.get('Default', 'tf_or_tofu').strip().lower()
+    tf_or_tofu = "terraform"
     prefix = setUpOCI_props.get('Default', 'prefix').strip()
     auth_mechanism = setUpOCI_props.get('Default', 'auth_mechanism').strip().lower()
     config_file_path = setUpOCI_props.get('Default', 'config_file').strip() or DEFAULT_LOCATION

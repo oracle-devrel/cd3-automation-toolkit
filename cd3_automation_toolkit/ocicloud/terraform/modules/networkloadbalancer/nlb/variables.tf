@@ -39,7 +39,7 @@ variable "is_private" {
 }
 
 variable "is_symmetric_hash_enabled" {
-  type    = bool
+  type = bool
 
 }
 

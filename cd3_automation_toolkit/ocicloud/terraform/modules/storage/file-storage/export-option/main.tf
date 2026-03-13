@@ -30,5 +30,5 @@ resource "oci_file_storage_export" "export" {
       require_privileged_source_port = export_options.value.require_privileged_source_port
     }
   }
-  is_idmap_groups_for_sys_auth  = var.is_idmap_groups_for_sys_auth
+  is_idmap_groups_for_sys_auth = var.is_idmap_groups_for_sys_auth
 }

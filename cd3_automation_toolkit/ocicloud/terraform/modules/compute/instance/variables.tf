@@ -253,9 +253,9 @@ variable "platform_config" {
 }
 
 variable "launch_options" {
-  type = list(map(any))
+  type        = list(map(any))
   description = "Launch config list of map"
-  default = []
+  default     = []
 }
 
 variable "config_type" {

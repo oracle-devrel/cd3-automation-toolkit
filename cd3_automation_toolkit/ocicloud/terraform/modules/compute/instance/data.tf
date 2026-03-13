@@ -22,7 +22,7 @@ locals {
 
   platform_configs = {
     for shape in data.oci_core_shapes.present_ad.shapes : shape.name => {
-      config_type = length(shape.platform_config_options) > 0 ? element(flatten(shape.platform_config_options[*].type),0) : ""
+      config_type = length(shape.platform_config_options) > 0 ? element(flatten(shape.platform_config_options[*].type), 0) : ""
     } if shape.name == var.shape
   }
 
@@ -135,10 +135,10 @@ data "oci_marketplace_listing_packages" "listing_packages" {
 }
 
 data "oci_marketplace_listings" "listings" {
-  count             = length(regexall("ocid1.image.oc*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
-  name              = [var.source_image_id]
+  count = length(regexall("ocid1.image.oc*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  name  = [var.source_image_id]
   #is_featured      = true  # Comment this line for GovCloud
-  compartment_id    = var.compartment_id
+  compartment_id = var.compartment_id
 }
 
 data "oci_marketplace_listing" "listing" {

@@ -21,9 +21,9 @@ resource "oci_kms_key" "key" {
   management_endpoint = var.management_endpoint
 
   #Optional
-  defined_tags    = var.defined_tags
-  freeform_tags   = var.freeform_tags
-  protection_mode = var.protection_mode != "" ? var.protection_mode : null
+  defined_tags             = var.defined_tags
+  freeform_tags            = var.freeform_tags
+  protection_mode          = var.protection_mode != "" ? var.protection_mode : null
   is_auto_rotation_enabled = var.is_auto_rotation_enabled
   dynamic "auto_key_rotation_details" {
     for_each = coalesce(var.is_auto_rotation_enabled, false) ? [1] : []

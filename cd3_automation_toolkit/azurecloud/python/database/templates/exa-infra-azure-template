@@ -14,20 +14,37 @@ az_oci_exa_infra = {
 
      {{ display_tf_name }} =  {
             az_region                = "{{ region }}"
-            az_zone                  = "{{ availability_zone}}"
+            az_zones                  = {{ availability_zones.split(",") | map('trim') | list | tojson }}
             resource_group_name      = "{{ container_id }}"
 
             display_name             = "{{ display_name }}"
-            compute_count            = "{{ database_servers }}"
-            storage_count            = "{{ storage_servers }}"
+            compute_count            = {{ database_servers }}
+            storage_count            = {{ storage_servers }}
             shape                    = "{{ shape }}"
 
-            #database_server_type     = "{{ database_server_type }}"
-            #storage_server_type      = "{{ storage_server_type }}"
+            database_server_type     = "{{ database_server_type }}"
+            storage_server_type      = "{{ storage_server_type }}"
 
             maintenance_window = {
                 patching_mode="{{ maintenance_method }}"
-                preference="NoPreference"
+                {% if preference  %}
+                preference= "{{ preference }}"
+                {% endif %}
+                {% if hours_of_day  %}
+                hours_of_day = {{ hours_of_day.split(",") | map('int') | list | tojson }}
+                {% endif %}
+                {% if  days_of_week  %}
+                days_of_week = {{ days_of_week.split(",") | map('trim') | list | tojson }}
+                {% endif %}
+                {% if  weeks_of_month  %}
+                weeks_of_month = {{ weeks_of_month.split(",") | map('int') | list | tojson }}
+                {% endif %}
+                {% if  lead_time_in_weeks  %}
+                lead_time_in_weeks = {{ lead_time_in_weeks }}
+                {% endif %}
+                {% if  months  %}
+                months   = {{ months.split(",") | map('trim') | list | tojson }}
+                {% endif %}
             }
 
             {% if customer_contacts and customer_contacts != "" and customer_contacts != "nan" %}

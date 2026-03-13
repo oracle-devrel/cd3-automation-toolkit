@@ -12,13 +12,13 @@ resource "oci_load_balancer_load_balancer_routing_policy" "load_balancer_routing
   load_balancer_id           = var.load_balancer_id
   name                       = var.name
 
-  dynamic rules {
+  dynamic "rules" {
     for_each = var.rules != null ? var.rules : []
     content {
       condition = rules.value.condition
       name      = rules.value.name
       actions {
-        name =  "FORWARD_TO_BACKENDSET"
+        name             = "FORWARD_TO_BACKENDSET"
         backend_set_name = rules.value.backend_set_name
       }
     }

@@ -168,11 +168,11 @@ variable "compartment_ocids" {
 }
 
 variable "defined_tags" {
-  type = map(any)
+  type    = map(any)
   default = null
 }
 
 variable "freeform_tags" {
-  type = map(any)
+  type    = map(any)
   default = null
 }

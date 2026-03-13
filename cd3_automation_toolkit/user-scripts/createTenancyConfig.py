@@ -150,7 +150,7 @@ def create_devops_resources(config,signer):
     return repo_url,files_in_repo
 
 
-def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_user,devops_user_key,devops_dir,ct):
+def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_user,devops_user_key,devops_dir,ct, enable_terraform_plan_analysis, auth_mechanism):
 
     repo_ssh_url = repo_ssh_url.replace("ssh://","")
     repo_ssh_url_parts = repo_ssh_url.split("/",1)
@@ -204,6 +204,7 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
 
 
     # create symlink for Git Config file for SSH operations.
+
     src = git_config_file
     path = "/home/cd3user/.ssh"
     if not os.path.exists(path):
@@ -230,6 +231,8 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
         if (prefix in jenkins_config.sections()):
             jenkins_config.set(prefix, 'regions', str(ct.all_regions))
             jenkins_config.set(prefix, 'services', str(dir_values))
+            jenkins_config.set(prefix, 'enable_terraform_plan_analysis', enable_terraform_plan_analysis)
+            jenkins_config.set(prefix, 'auth_mechanism', auth_mechanism)
         else:
             jenkins_config.add_section(prefix)
             jenkins_config.set(prefix, 'git_url', "\"" + prefix+":/"+repo_ssh_url_parts[1] + "\"")
@@ -237,6 +240,8 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
             jenkins_config.set(prefix, 'services', str(dir_values))
             jenkins_config.set(prefix, 'outdir_structure', "\"" + dir_structure + "\"")
             jenkins_config.set(prefix, 'tf_or_tofu', "\"" + tf_or_tofu + "\"")
+            jenkins_config.set(prefix, 'enable_terraform_plan_analysis', enable_terraform_plan_analysis)
+            jenkins_config.set(prefix, 'auth_mechanism', auth_mechanism)
 
         file = open(jenkins_properties_file_path, "w")
         jenkins_config.write(file)
@@ -245,9 +250,11 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     except Exception as e:
         print(e)
 
-    if os.path.exists(devops_dir+"../.terraform_files"):
-        shutil.rmtree(devops_dir+"../.terraform_files", ignore_errors=True)
-    os.rename(devops_dir,devops_dir+"../.terraform_files")
+    parent_dir = os.path.dirname(devops_dir)
+    dot_terraform_files = os.path.join(parent_dir, ".terraform_files")
+    if os.path.exists(dot_terraform_files):
+        shutil.rmtree(dot_terraform_files, ignore_errors=True)
+    os.rename(devops_dir, dot_terraform_files)
 
     if not os.path.exists(devops_dir):
         os.makedirs(devops_dir)
@@ -283,22 +290,22 @@ def update_devops_config(prefix, repo_ssh_url,files_in_repo,dir_values,devops_us
     f.write(git_ignore_file_data)
     f.close()
 
-    all_items = glob.glob(devops_dir + "../.terraform_files/*")+ [devops_dir+ "/../.terraform_files/.safe"]
+    all_items = glob.glob(os.path.join(dot_terraform_files, "*")) + [os.path.join(dot_terraform_files, ".safe")]
     for f in all_items:
-        actual_file = f.split("/")[-1]
-        path = devops_dir+actual_file
+        actual_file = os.path.basename(f)
+        path = os.path.join(devops_dir, actual_file)
         if os.path.exists(path) and os.path.isfile(path):
-            os.remove(devops_dir+actual_file)
+            os.remove(path)
         if os.path.exists(path) and os.path.isdir(path):
             shutil.rmtree(path, ignore_errors=True)
         if actual_file.endswith(".tf_backup") or actual_file.endswith(".tfstate"):
             continue
         shutil.move(f,devops_dir)
-    for f in glob.glob(jenkins_install + "/*.groovy"):
-        actual_file = f.split("/")[-1]
-        path = devops_dir+actual_file
+    for f in glob.glob(os.path.join(jenkins_install, "*.groovy")):
+        actual_file = os.path.basename(f)
+        path = os.path.join(devops_dir, actual_file)
         if os.path.exists(path) and os.path.isfile(path):
-            os.remove(devops_dir+actual_file)
+            os.remove(path)
         shutil.copy(f,devops_dir)
 
     last_commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
@@ -401,13 +408,13 @@ if prefixes !=[]:
             exit(1)
 
 # Initialize Tenancy Variables
-customer_tenancy_dir = user_dir + "/tenancies/" + prefix
-config_files= user_dir + "/tenancies/" + prefix +"/.config_files"
-config_file_path = config_files + "/" + prefix + "_oci_config"
+customer_tenancy_dir = os.path.join(user_dir, "tenancies", prefix)
+config_files= os.path.join(customer_tenancy_dir, ".config_files")
+config_file_path = os.path.join(config_files, f"{prefix}_oci_config")
 
-terraform_files = customer_tenancy_dir + "/terraform_files/"
-outdir_safe=terraform_files+"/.safe"
-setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
+terraform_files = os.path.join(customer_tenancy_dir, "terraform_files")
+outdir_safe=os.path.join(terraform_files,".safe")
+setupoci_props_file_path = os.path.join(customer_tenancy_dir, f"{prefix}_setUpOCI.properties")
 
 # Read Config file Variables
 try:
@@ -449,7 +456,7 @@ try:
 
         key_path = config.get('Default', 'key_path').strip()
         if key_path == "" or key_path == "\n":
-            key_path = auto_keys_dir +"/oci_api_private.pem"
+            key_path = os.path.join(auto_keys_dir, "oci_api_private.pem")
         if not os.path.isfile(key_path):
             print("Invalid PEM Key File at "+key_path+". Please try again......Exiting !!")
             exit(1)
@@ -462,7 +469,8 @@ try:
     outdir_structure_file = config.get('Default', 'outdir_structure_file').strip()
     ssh_public_key = config.get('Default', 'ssh_public_key').strip()
 
-    tf_or_tofu = config.get('Default', 'tf_or_tofu').strip().lower()
+    #tf_or_tofu = config.get('Default', 'tf_or_tofu').strip().lower()
+    tf_or_tofu ="terraform"
     if tf_or_tofu == "" or tf_or_tofu == "\n":
         tf_or_tofu = "terraform"
 
@@ -470,6 +478,7 @@ try:
     remote_state = config.get('Default', 'use_remote_state').strip().lower()
     remote_state_bucket = config.get('Default', 'remote_state_bucket_name').strip()
 
+    enable_terraform_plan_analysis = config.get('Default', 'enable_terraform_plan_analysis').strip().lower()
     use_devops = config.get('Default', 'use_oci_devops_git').strip().lower()
     devops_repo = config.get('Default', 'oci_devops_git_repo_name').strip()
     devops_user = config.get('Default', 'oci_devops_git_user').strip()
@@ -505,7 +514,7 @@ try:
             if devops_user == '' or devops_user=="\n":
                 devops_user = user
             if devops_user_key == '' or devops_user_key=="\n":
-                devops_user_key = config_files+"/"+os.path.basename(key_path)
+                devops_user_key = os.path.join(config_files, os.path.basename(key_path))
 
     if remote_state == 'yes':
         # Use same oci_devops_git_user for managing terraform remote state backend
@@ -536,13 +545,13 @@ if not os.path.exists(config_files):
     os.makedirs(config_files)
 if not os.path.exists(outdir_safe):
     os.makedirs(outdir_safe)
-if not os.path.exists(customer_tenancy_dir+'/othertools_files'):
-    os.makedirs(customer_tenancy_dir+'/othertools_files')
+if not os.path.exists(os.path.join(customer_tenancy_dir, 'othertools_files')):
+    os.makedirs(os.path.join(customer_tenancy_dir, 'othertools_files'))
 
 dir_values = []
 
 # Copy input properties file to customer_tenancy_dir
-shutil.copy(args.propsfile,config_files+"/"+prefix+"_tenancyconfig.properties")
+shutil.copy(args.propsfile, os.path.join(config_files, f"{prefix}_tenancyconfig.properties"))
 
 # 1. Copy outdir_structure_file
 
@@ -565,7 +574,7 @@ if (outdir_structure_file != '' and outdir_structure_file != "\n"):
             if value not in dir_values:
                 dir_values.append(str(value))
 
-        _outdir_structure_file = customer_tenancy_dir + "/" + prefix + "_outdir_structure_file.properties"
+        _outdir_structure_file = os.path.join(customer_tenancy_dir, f"{prefix}_outdir_structure_file.properties")
         #if not os.path.exists(_outdir_structure_file):
         shutil.copyfile(outdir_structure_file, _outdir_structure_file)
     print("\nUsing different directories for OCI services as per the input outdir_structure_file..........")
@@ -580,8 +589,8 @@ if auth_mechanism=='api_key': # or auth_mechanism=='session_token':
     # Move Private PEM Key File
     filename = os.path.basename(key_path)
     #shutil.copy(key_path, key_path + "_backup_"+ datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-'))
-    shutil.copy(key_path, config_files + "/" + filename)
-    _key_path = config_files + "/" + filename
+    shutil.copy(key_path, os.path.join(config_files, filename))
+    _key_path = os.path.join(config_files, filename)
     os.chmod(_key_path,0o600)
 
 # 3. Create config file
@@ -607,7 +616,7 @@ elif auth_mechanism=='session_token':
                                                                                                                                                   "region = "+region+"\n")
     '''
     # copy config file to prefix specific directory and create symlink for TF execution
-    config_file_path_user_home = user_dir + "/.oci/config"
+    config_file_path_user_home = os.path.join(os.path.expanduser("~"), ".oci", "config")
     # To take care of multiple executions of createTenancyConfig,py
     if not os.path.islink(config_file_path_user_home):
         #shutil.copy(config_file_path_user_home,config_file_path_user_home + "_backup_" + datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-'))
@@ -684,11 +693,11 @@ if remote_state == "yes":
         if isv_customer:
             cred_name = "cd3-automation-toolkit-csk"
             if not os.path.exists(user_dir+"/tenancies/"+tenancy_data.name.lower()):
-                os.makedirs((user_dir+"/tenancies/"+tenancy_data.name.lower()))
-            s3_credential_file_path = user_dir+"/tenancies/"+tenancy_data.name.lower()+"/.config_files/cd3_s3_credentials"
+                os.makedirs(os.path.join(user_dir, "tenancies", tenancy_data.name.lower()))
+            s3_credential_file_path = os.path.join(user_dir, "tenancies", tenancy_data.name.lower(), ".config_files", "cd3_s3_credentials")
         else:
             cred_name = prefix + "-automation-toolkit-csk"
-            s3_credential_file_path = config_files + "/" + prefix + "_s3_credentials"
+            s3_credential_file_path = os.path.join(config_files, f"{prefix}_s3_credentials")
 
 
         ct.identity_domain_check(new_config, signer)
@@ -744,7 +753,7 @@ if remote_state == "yes":
             if ct.identity_domain_enabled:
                 domain_name = 'Default'
             else:
-                domain_name='oracleidentitycloudservice/'
+                domain_name='oracleidentitycloudservice'
             if '@' in remote_state_user:
                 if ("/" in remote_state_user):
                     domain_name = remote_state_user.split("/")[0]
@@ -790,7 +799,7 @@ if remote_state == "yes":
 
             else:
                 users = identity_client.list_users(compartment_id=tenancy).data
-                remote_state_user = domain_name+remote_state_user
+                remote_state_user = domain_name+"/"+remote_state_user
                 for user_d in users:
                     if user_d.name == remote_state_user and user_d.lifecycle_state == "ACTIVE":
                         remote_state_user = user_d.id
@@ -958,7 +967,7 @@ conf_file.close()
 
 # 4. Generate setUpOCI.properties file
 # copying blank template to tenancy prefix for export ready
-shutil.copy(f'{toolkit_dir}/example/CD3-Blank-template.xlsx',f'{customer_tenancy_dir}/CD3-Blank-template.xlsx')
+shutil.copy(os.path.join(toolkit_dir, 'example', 'CD3-Blank-template.xlsx'), os.path.join(customer_tenancy_dir, 'CD3-Blank-template.xlsx'))
 
 #if not os.path.isfile(setupoci_props_file_path):
 print("Creating Tenancy specific setUpOCI.properties.................")
@@ -971,7 +980,8 @@ setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("aut
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("config_file=", "config_file="+config_file_path)
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("outdir_structure_file=", "outdir_structure_file="+_outdir_structure_file)
 setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("tf_or_tofu=", "tf_or_tofu="+tf_or_tofu)
-setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("cd3file=", "cd3file="+customer_tenancy_dir+"/CD3-Blank-template.xlsx")
+setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("enable_terraform_plan_analysis=no", "enable_terraform_plan_analysis="+enable_terraform_plan_analysis)
+setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("cd3file=", "cd3file="+os.path.join(customer_tenancy_dir, "CD3-Blank-template.xlsx"))
 
 f = open(setupoci_props_file_path, "w+")
 f.write(setupoci_props_toolkit_file_data)
@@ -983,7 +993,7 @@ if not os.path.exists(terraform_files):
 
 # Copy modules dir to terraform_files folder
 try:
-    shutil.copytree(terraform_dir + "/modules", terraform_files + "/modules")
+    shutil.copytree(os.path.join(terraform_dir, "modules"), os.path.join(terraform_files, "modules"))
 except FileExistsError as fe:
     pass
 
@@ -1008,12 +1018,13 @@ for region in ct.all_regions:
     # Global dir for RPC related
     if region == ct.home_region:
 
-        if not os.path.exists(f"{terraform_files}/global/rpc"):
-            os.makedirs(f"{terraform_files}/global/rpc")
+        global_rpc_dir = os.path.join(terraform_files, "global", "rpc")
+        if not os.path.exists(global_rpc_dir):
+            os.makedirs(global_rpc_dir)
 
-            shutil.copyfile(terraform_dir + "/provider.tf", f"{terraform_files}/global/rpc/provider.tf")
+            shutil.copyfile(os.path.join(terraform_dir, "provider.tf"), os.path.join(global_rpc_dir, "provider.tf"))
 
-            with open(f"{terraform_files}/global/rpc/provider.tf", 'r+') as provider_file:
+            with open(os.path.join(global_rpc_dir, "provider.tf"), 'r+') as provider_file:
                 provider_file_data = provider_file.read().rstrip()
             if auth_mechanism == 'instance_principal':
                 provider_file_data = provider_file_data.replace("provider \"oci\" {",
@@ -1022,21 +1033,21 @@ for region in ct.all_regions:
                 provider_file_data = provider_file_data.replace("provider \"oci\" {",
                                                                 "provider \"oci\" {\nauth = \"SecurityToken\"\nconfig_file_profile = \"DEFAULT\"")
 
-            f = open(f"{terraform_files}/global/rpc/provider.tf", "w+")
+            f = open(os.path.join(global_rpc_dir, "provider.tf"), "w+")
             f.write(provider_file_data)
             f.close()
 
-            f = open(f"{terraform_files}/global/rpc/variables_global.tf", "w+")
+            f = open(os.path.join(global_rpc_dir, "variables_global.tf"), "w+")
             f.write(variables_example_file_data)
             f.close()
 
-            f = open(f"{terraform_files}/global/rpc/backend.tf", "w+")
+            f = open(os.path.join(global_rpc_dir, "backend.tf"), "w+")
             f.write(global_backend_file_data)
             f.close()
 
 
     # Rerunning createTenancy for any new region subscription. Process only new region directories else continue
-    if os.path.exists(terraform_files+region):
+    if os.path.exists(os.path.join(terraform_files, region)):
         continue
 
     #os.mkdir(terraform_files+region)
@@ -1051,8 +1062,8 @@ for region in ct.all_regions:
 
     shutil.copytree(terraform_dir, terraform_files + "/" + region + "/", ignore=shutil.ignore_patterns("modules"))
     '''
-    #shutil.copytree(terraform_dir, terraform_files + "/" + region + "/")
-    shutil.copytree(terraform_dir, terraform_files + "/" + region + "/", ignore=shutil.ignore_patterns("modules"))
+    #shutil.copytree(terraform_dir, os.path.join(terraform_files, region))
+    shutil.copytree(terraform_dir, os.path.join(terraform_files, region), ignore=shutil.ignore_patterns("modules"))
 
     #Prepare variables file
     linux_image_id = ''
@@ -1089,12 +1100,12 @@ for region in ct.all_regions:
     if (linux_image_id != ''):
         variables_example_file_data = variables_example_file_data.replace("<LATEST LINUX OCID HERE>", linux_image_id)
 
-    f = open(terraform_files+"/"+region+"/variables_" + region + ".tf", "w+")
+    f = open(os.path.join(terraform_files, region, f"variables_{region}.tf"), "w+")
     f.write(variables_example_file_data)
     f.close()
 
 
-    with open(terraform_files +"/" + region + "/provider.tf", 'r+') as provider_file:
+    with open(os.path.join(terraform_files, region, "provider.tf"), 'r+') as provider_file:
         provider_file_data = provider_file.read().rstrip()
     if auth_mechanism == 'instance_principal':
         provider_file_data = provider_file_data.replace("provider \"oci\" {",
@@ -1102,14 +1113,14 @@ for region in ct.all_regions:
     if auth_mechanism == 'session_token':
         provider_file_data = provider_file_data.replace("provider \"oci\" {",
                                                         "provider \"oci\" {\nauth = \"SecurityToken\"\nconfig_file_profile = \"DEFAULT\"")
-    f = open(terraform_files +"/" + region + "/provider.tf", "w+")
+    f = open(os.path.join(terraform_files, region, "provider.tf"), "w+")
     f.write(provider_file_data)
     f.close()
 
-    reg_backend = open(terraform_files +"/" + region + "/backend.tf",'w+')
+    reg_backend = open(os.path.join(terraform_files, region, "backend.tf"),'w+')
     reg_backend.write(global_backend_file_data)
     reg_backend.close()
-    reg_backend = open(terraform_files + "/" + region + "/backend.tf", 'r+')
+    reg_backend = open(os.path.join(terraform_files, region, "backend.tf"), 'r+')
     new_backend_data = ""
 
     for line in reg_backend.readlines():
@@ -1118,14 +1129,14 @@ for region in ct.all_regions:
         else:
             new_backend_data += line
     reg_backend.close()
-    rewrite_backend = open(terraform_files + "/" + region + "/backend.tf", 'w')
+    rewrite_backend = open(os.path.join(terraform_files, region, "backend.tf"), 'w')
     rewrite_backend.write(new_backend_data)
     rewrite_backend.close()
 
     # Manage single and multiple outdir
     if (outdir_structure_file == '' or outdir_structure_file == "\n"):
         #remove depends_on for single outdir
-        region_dir = terraform_files + "/" + region + "/"
+        region_dir = os.path.join(terraform_files, region)
         single_outdir_config = configparser.RawConfigParser()
         outdir_config_file = os.path.dirname(os.path.abspath(__file__)) + "/.outdir_structure_file.properties"
 
@@ -1137,7 +1148,7 @@ for region in ct.all_regions:
             #name=file.removesuffix(".tf")
             name = file[:-len(".tf")]
             if name in keys:
-                file=region_dir+"/"+file
+                file=os.path.join(region_dir, file)
                 with open(file, 'r+') as tf_file:
                     module_data = tf_file.read().rstrip()
                     module_data = module_data.replace("# depends_on", "depends_on")
@@ -1148,7 +1159,7 @@ for region in ct.all_regions:
                 f.write(module_data)
                 f.close()
     else:
-        region_dir = terraform_files + "/" + region + "/"
+        region_dir = os.path.join(terraform_files, region)
         for service, service_dir in outdir_config.items("Default"):
             service = service.strip().lower()
             service_dir = service_dir.strip()
@@ -1159,59 +1170,59 @@ for region in ct.all_regions:
             #if (service != 'identity' and service != 'tagging') or ((service == 'identity' or service == 'tagging') and region == home_region):
             home_region_services = ['identity', 'tagging', 'budget','quota']
             if (region != home_region) and (service in home_region_services):
-                os.remove(region_dir + service + ".tf")
+                os.remove(os.path.join(region_dir, f"{service}.tf"))
 
             if (service not in home_region_services) or ((service in home_region_services) and region == home_region):
-                region_service_dir = region_dir + service_dir
+                region_service_dir = os.path.join(region_dir, service_dir)
                 if not os.path.exists(region_service_dir):
                     os.mkdir(region_service_dir)
                 if (service == 'instance'):
-                    if(os.path.isdir(region_service_dir+'/scripts')):
-                        shutil.rmtree(region_service_dir+'/scripts')
-                    shutil.move(region_dir + 'scripts',region_service_dir+'/')
-                with open(region_dir + service + ".tf", 'r+') as tf_file:
+                    if(os.path.isdir(os.path.join(region_service_dir, 'scripts'))):
+                        shutil.rmtree(os.path.join(region_service_dir, 'scripts'))
+                    shutil.move(os.path.join(region_dir, 'scripts'), os.path.join(region_service_dir, ''))
+                with open(os.path.join(region_dir, f"{service}.tf"), 'r+') as tf_file:
                     module_data = tf_file.read().rstrip()
                     module_data = module_data.replace("\"./modules", "\"../../modules")
 
-                f = open(region_service_dir + "/" + service + ".tf", "w+")
+                f = open(os.path.join(region_service_dir, f"{service}.tf"), "w+")
                 f.write(module_data)
                 f.close()
-                os.remove(region_dir + service + ".tf")
+                os.remove(os.path.join(region_dir, f"{service}.tf"))
 
-                shutil.copyfile(region_dir + "variables_" + region + ".tf", region_service_dir + "/" + "variables_" + region + ".tf")
-                shutil.copyfile(region_dir + "provider.tf", region_service_dir + "/" + "provider.tf")
-                shutil.copyfile(region_dir + "oci-data.tf", region_service_dir + "/" + "oci-data.tf")
+                shutil.copyfile(os.path.join(region_dir, f"variables_{region}.tf"), os.path.join(region_service_dir, f"variables_{region}.tf"))
+                shutil.copyfile(os.path.join(region_dir, "provider.tf"), os.path.join(region_service_dir, "provider.tf"))
+                shutil.copyfile(os.path.join(region_dir, "oci-data.tf"), os.path.join(region_service_dir, "oci-data.tf"))
 
                 # write backend.tf to respective directories
-                reg_service_backend = open(region_service_dir + "/backend.tf", 'w+')
+                reg_service_backend = open(os.path.join(region_service_dir, "backend.tf"), 'w+')
                 reg_service_backend.write(global_backend_file_data)
                 reg_service_backend.close()
-                reg_service_backend = open(region_service_dir + "/backend.tf", 'r+')
+                reg_service_backend = open(os.path.join(region_service_dir, "backend.tf"), 'r+')
                 new_backend_data = ""
 
                 for line in reg_service_backend.readlines():
                     if line.__contains__("key      = "):
-                        new_backend_data += "    key      = \"" + region+"/"+service_dir + "/terraform.tfstate\"\n"
+                        new_backend_data += f"    key      = \"{region}/{service_dir}/terraform.tfstate\"\n"
                     else:
                         new_backend_data += line
                 reg_service_backend.close()
-                rewrite_backend = open(terraform_files + "/" + region+"/"+service_dir + "/backend.tf", 'w')
+                rewrite_backend = open(os.path.join(terraform_files, region, service_dir, "backend.tf"), 'w')
                 rewrite_backend.write(new_backend_data)
                 rewrite_backend.close()
 
 
-        os.remove(terraform_files + "/" + region + "/" + "variables_" + region + ".tf")
-        os.remove(terraform_files + "/" + region + "/" + "provider.tf")
-        os.remove(terraform_files + "/" + region + "/" + "oci-data.tf")
-        os.remove(terraform_files + "/" + region + "/" + "backend.tf")
+        os.remove(os.path.join(terraform_files, region, f"variables_{region}.tf"))
+        os.remove(os.path.join(terraform_files, region, "provider.tf"))
+        os.remove(os.path.join(terraform_files, region, "oci-data.tf"))
+        os.remove(os.path.join(terraform_files, region, "backend.tf"))
 
     # 8. Remove terraform example variable file from outdir
-    os.remove(terraform_files + "/" + region + "/variables_example.tf")
+    os.remove(os.path.join(terraform_files, region, "variables_example.tf"))
 # 9. Update DevOps files and configurations
 if use_devops == 'yes':
     print("\nCreating Tenancy specific DevOps Items - Topic, Project and Repository.................")
     # create subscribed regions file
-    f = open(customer_tenancy_dir + "/.config_files/regions_file", "w+")
+    f = open(os.path.join(customer_tenancy_dir, ".config_files", "regions_file"), "w+")
     f.write(regions_file_data[:-1])
     f.close()
     # create all compartments_file
@@ -1225,7 +1236,7 @@ if use_devops == 'yes':
             compartments_file_data += k + "\n"
             comp_done.append(v)
 
-    f = open(customer_tenancy_dir + "/.config_files/compartments_file", "w+")
+    f = open(os.path.join(customer_tenancy_dir, ".config_files", "compartments_file"), "w+")
     f.write(compartments_file_data[:-1])
     f.close()
 
@@ -1243,7 +1254,7 @@ if use_devops == 'yes':
     repo_ssh_url,files_in_repo = create_devops_resources(config, signer)
     devops_dir = terraform_files
 
-    jenkins_home = user_dir+"/tenancies/jenkins_home"
+    jenkins_home = os.path.join(user_dir, "tenancies", "jenkins_home")
     #if hasattr(os.environ, 'JENKINS_HOME'):
     if environ.get('JENKINS_HOME') is not None:
         jenkins_home = os.environ['JENKINS_HOME']
@@ -1260,11 +1271,11 @@ if use_devops == 'yes':
         tenancy_data=identity_client.get_tenancy(tenancy_id=tenancy).data
         devops_user=user_data.name+"@"+tenancy_data.name
     '''
-    commit_id = update_devops_config(prefix, repo_ssh_url,files_in_repo, dir_values, devops_user, devops_user_key, devops_dir, ct)
+    commit_id = update_devops_config(prefix, repo_ssh_url,files_in_repo, dir_values, devops_user, devops_user_key, devops_dir, ct, enable_terraform_plan_analysis, auth_mechanism)
 
 del ct, config, signer
 # Logging information
-outfile = customer_tenancy_dir+'/createTenancyConfig.out'
+outfile = os.path.join(customer_tenancy_dir, 'createTenancyConfig.out')
 logging.basicConfig(filename=outfile, format='%(message)s', filemode='w', level=logging.INFO)
 
 print("==================================================================================================================================")
@@ -1298,13 +1309,12 @@ if use_devops == "yes":
 logging.info("\n######################################")
 logging.info("Next Steps for using toolkit via CLI")
 logging.info("######################################")
-logging.info("Modify "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties with input values for cd3file and workflow_type")
+logging.info("Modify "+os.path.join(customer_tenancy_dir, f"{prefix}_setUpOCI.properties")+" with input values for cd3file and workflow_type")
 logging.info("cd "+toolkit_dir)
-logging.info("python setUpCloud.py oci "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
+logging.info("python setUpCloud.py oci "+os.path.join(customer_tenancy_dir, f"{prefix}_setUpOCI.properties"))
 
 with open(outfile, 'r') as log_file:
     data = log_file.read().rstrip()
 print(data)
 
 print("==================================================================================================================================")
-

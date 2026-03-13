@@ -22,6 +22,6 @@ variable "name" {
 }
 
 variable "rules" {
-  type = list(any)
+  type    = list(any)
   default = null
 }

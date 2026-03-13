@@ -11,8 +11,8 @@ resource "oci_core_instance" "instances" {
     #baseline_ocpu_utilization = var.baseline_ocpu_utilization
   }
   source_details {
-    source_id   = var.instance_image_ocid
-    source_type = "image"
+    source_id               = var.instance_image_ocid
+    source_type             = "image"
     boot_volume_size_in_gbs = var.boot_volume_size
   }
   create_vnic_details {
@@ -33,7 +33,7 @@ resource "oci_core_instance" "instances" {
     are_legacy_imds_endpoints_disabled = "true"
   }
 
-  is_pv_encryption_in_transit_enabled   = "true"
+  is_pv_encryption_in_transit_enabled = "true"
   agent_config {
     are_all_plugins_disabled = "false"
     is_management_disabled   = "false"
@@ -50,6 +50,6 @@ resource "oci_core_instance" "instances" {
 }
 
 data "oci_core_instance" "instance" {
-    #Required
-    instance_id = oci_core_instance.instances.id
+  #Required
+  instance_id = oci_core_instance.instances.id
 }

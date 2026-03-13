@@ -47,14 +47,14 @@ resource "oci_core_instance" "instance" {
     is_monitoring_disabled   = var.is_monitoring_disabled
 
 
-  dynamic "plugins_config" {
-  for_each = local.indexed_map
+    dynamic "plugins_config" {
+      for_each = local.indexed_map
 
-  content {
-    name          = keys(plugins_config.value)[0]
-    desired_state = values(plugins_config.value)[0]
-  }
-}
+      content {
+        name          = keys(plugins_config.value)[0]
+        desired_state = values(plugins_config.value)[0]
+      }
+    }
 
   }
   availability_config {
@@ -83,31 +83,31 @@ resource "oci_core_instance" "instance" {
     are_legacy_imds_endpoints_disabled = var.are_legacy_imds_endpoints_disabled
   }
 
-  dynamic launch_options {
-     #Check network_type exist
-     for_each = var.launch_options != null ? (lookup(element(var.launch_options,0), "network_type", null) != null ? var.launch_options : []) : []
+  dynamic "launch_options" {
+    #Check network_type exist
+    for_each = var.launch_options != null ? (lookup(element(var.launch_options, 0), "network_type", null) != null ? var.launch_options : []) : []
 
-     content {
-       #Optional
-       #boot_volume_type                   = launch_options.value.boot_volume_type
-       firmware                            = lookup(element(var.launch_options,0), "firmware", null)  != null ? launch_options.value.firmware : null
-       is_consistent_volume_naming_enabled = lookup(element(var.launch_options,0), "is_consistent_volume_naming_enabled", null)  != null ? launch_options.value.is_consistent_volume_naming_enabled : null
-       is_pv_encryption_in_transit_enabled = lookup(element(var.launch_options,0), "is_pv_encryption_in_transit_enabled", null)  != null ? launch_options.value.is_pv_encryption_in_transit_enabled : null
-       network_type                        = launch_options.value.network_type
-       #remote_data_volume_type            = launch_options.value.remote_data_volume_type
-     }
-   }
+    content {
+      #Optional
+      #boot_volume_type                   = launch_options.value.boot_volume_type
+      firmware                            = lookup(element(var.launch_options, 0), "firmware", null) != null ? launch_options.value.firmware : null
+      is_consistent_volume_naming_enabled = lookup(element(var.launch_options, 0), "is_consistent_volume_naming_enabled", null) != null ? launch_options.value.is_consistent_volume_naming_enabled : null
+      is_pv_encryption_in_transit_enabled = lookup(element(var.launch_options, 0), "is_pv_encryption_in_transit_enabled", null) != null ? launch_options.value.is_pv_encryption_in_transit_enabled : null
+      network_type                        = launch_options.value.network_type
+      #remote_data_volume_type            = launch_options.value.remote_data_volume_type
+    }
+  }
 
   dynamic "platform_config" {
     for_each = var.platform_config != null ? var.platform_config : []
     content {
       #Required
-      type = lookup(element(var.platform_config,0),"config_type",null ) != "" ? platform_config.value.config_type : local.platform_configs[var.shape]["config_type"]
+      type = lookup(element(var.platform_config, 0), "config_type", null) != "" ? platform_config.value.config_type : local.platform_configs[var.shape]["config_type"]
       #Optional
-      is_measured_boot_enabled           = lookup(element(var.platform_config,0), "is_measured_boot_enabled", null)  != null ?  platform_config.value.is_measured_boot_enabled : null
-      is_secure_boot_enabled             = lookup(element(var.platform_config,0), "is_secure_boot_enabled", null)  != null ? platform_config.value.is_secure_boot_enabled : null
-      is_trusted_platform_module_enabled = lookup(element(var.platform_config,0), "is_trusted_platform_module_enabled", null)  != null ? platform_config.value.is_trusted_platform_module_enabled : null
-      numa_nodes_per_socket              = lookup(element(var.platform_config,0), "numa_nodes_per_socket", null)  != null ? platform_config.value.numa_nodes_per_socket : null
+      is_measured_boot_enabled           = lookup(element(var.platform_config, 0), "is_measured_boot_enabled", null) != null ? platform_config.value.is_measured_boot_enabled : null
+      is_secure_boot_enabled             = lookup(element(var.platform_config, 0), "is_secure_boot_enabled", null) != null ? platform_config.value.is_secure_boot_enabled : null
+      is_trusted_platform_module_enabled = lookup(element(var.platform_config, 0), "is_trusted_platform_module_enabled", null) != null ? platform_config.value.is_trusted_platform_module_enabled : null
+      numa_nodes_per_socket              = lookup(element(var.platform_config, 0), "numa_nodes_per_socket", null) != null ? platform_config.value.numa_nodes_per_socket : null
     }
   }
 
@@ -128,7 +128,7 @@ resource "oci_core_instance" "instance" {
   }
 
   lifecycle {
-    ignore_changes = [create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"],metadata,extended_metadata]
+    ignore_changes = [create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"], metadata, extended_metadata]
   }
 }
 

@@ -8,7 +8,7 @@
 locals {
   user_ids = {
     for user in coalesce(data.oci_identity_users.users.users, []) :
-      user.name => user.id
+    user.name => user.id
   }
 }
 resource "oci_identity_group" "group" {

@@ -153,7 +153,7 @@ except Exception as e:
 
 #Removes OCI Objects
 exception= False
-if use_devops == 'yes':
+if remote_state == 'yes':
     print("Removing OCI Objects...")
 
     if devops_repo == '' or devops_repo == "\n":
@@ -238,7 +238,7 @@ if use_devops == 'yes':
                 found =1
                 break
         if found == 0:
-            print("Unable to find the user ocid for creating customer secret key. Exiting...")
+            print("Unable to find the user ocid for deleting customer secret key. Exiting...")
             exit(1)
 
     customer_secret_cred_name = prefix+"-automation-toolkit-csk"

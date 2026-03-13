@@ -21,17 +21,20 @@ resource "oci_ons_notification_topic" "topic" {
 
 resource "oci_ons_subscription" "subscription" {
 
-  count = length(var.subscriptions)
+  #  count = length(var.subscriptions)
+  for_each = { for item in var.subscriptions : "${item.endpoint}_${item.protocol}" => item }
   #Required
   compartment_id = var.compartment_id
-  endpoint       = var.subscriptions[count.index].endpoint
-  protocol       = var.subscriptions[count.index].protocol
-  topic_id       = oci_ons_notification_topic.topic.id
+  endpoint       = each.value.endpoint
+  protocol       = each.value.protocol
+  #endpoint       = var.subscriptions[count.index].endpoint
+  #protocol       = var.subscriptions[count.index].protocol
+  topic_id = oci_ons_notification_topic.topic.id
 
   #Optional
   defined_tags  = var.defined_tags
   freeform_tags = var.freeform_tags
- lifecycle {
-   ignore_changes = [defined_tags,freeform_tags]
- }
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
 }

@@ -78,7 +78,7 @@ module "notifications" {
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   description    = each.value.description
   topic_name     = each.value.topic_name
-  subscriptions = each.value.subscriptions != null ? each.value.subscriptions : []
+  subscriptions  = each.value.subscriptions != null ? each.value.subscriptions : []
   #Optional
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
@@ -96,15 +96,15 @@ output "notifications-topics" {
 ####################################
 locals {
   source_log_group_detail = {
-    for k,v in var.service_connectors : k =>
-  [
-    for name in v.source_details.source_log_group_names : {
-  compartment_id = length(regexall("ocid1.compartment.oc*", split("@", name)[0])) > 0 ? split("@", name)[0] : var.compartment_ocids[split("@", name)[0]]
-  log_group_id   = split("@", name)[1]
-  log_id         = split("@", name)[2]
-}
-]
-}
+    for k, v in var.service_connectors : k =>
+    [
+      for name in v.source_details.source_log_group_names : {
+        compartment_id = length(regexall("ocid1.compartment.oc*", split("@", name)[0])) > 0 ? split("@", name)[0] : var.compartment_ocids[split("@", name)[0]]
+        log_group_id   = split("@", name)[1]
+        log_id         = split("@", name)[2]
+      }
+    ]
+  }
 }
 module "service-connectors" {
   source = "./modules/managementservices/service-connector"

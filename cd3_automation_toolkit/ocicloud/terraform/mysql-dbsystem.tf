@@ -6,7 +6,7 @@
 # Create MySQL DB Systems
 ############################################
 data "oci_mysql_mysql_configurations" "mysql_configurations" {
-  depends_on = [module.mysql_configuration]
+  depends_on     = [module.mysql_configuration]
   for_each       = var.mysql_db_system != null ? var.mysql_db_system : {}
   compartment_id = each.value.configuration_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.configuration_compartment_id)) > 0 ? each.value.configuration_compartment_id : var.compartment_ocids[each.value.configuration_compartment_id]) : var.compartment_ocids[each.value.configurations_compartment_id]
   display_name   = each.value.configuration_id
@@ -29,13 +29,13 @@ module "mysql_db_system" {
   source   = "./modules/database/mysql-dbsystem"
   for_each = var.mysql_db_system != null ? var.mysql_db_system : {}
   # Add explicit depends_on for mysql_configuration
-  depends_on = [module.mysql_configuration]
-  compartment_id                             = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  network_compartment_id                     = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
-  configuration_compartment_id               = each.value.configuration_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.configuration_compartment_id)) > 0 ? each.value.configuration_compartment_id : var.compartment_ocids[each.value.configuration_compartment_id]) : var.compartment_ocids[each.value.compartment_id]
+  depends_on                   = [module.mysql_configuration]
+  compartment_id               = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  network_compartment_id       = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
+  configuration_compartment_id = each.value.configuration_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.configuration_compartment_id)) > 0 ? each.value.configuration_compartment_id : var.compartment_ocids[each.value.configuration_compartment_id]) : var.compartment_ocids[each.value.compartment_id]
 
   # Modified configuration_id handling to avoid data source lookup failures
-  configuration_id                           = length(regexall("ocid1.mysqlconfiguration.*", each.value.configuration_id)) > 0 ? each.value.configuration_id : (
+  configuration_id = length(regexall("ocid1.mysqlconfiguration.*", each.value.configuration_id)) > 0 ? each.value.configuration_id : (
     contains(keys(var.mysql_configuration), each.value.configuration_id) ?
     module.mysql_configuration[each.value.configuration_id].db_system_configuration_id :
     try(data.oci_mysql_mysql_configurations.mysql_configurations[each.key].configurations[0].id, null)
@@ -69,26 +69,26 @@ module "mysql_db_system" {
   port_x                                     = each.value.mysql_db_system_port_x
   source_type                                = each.value.mysql_db_system_source_source_type != null ? each.value.mysql_db_system_source_source_type : null
   defined_tags                               = each.value.defined_tags != null ? each.value.defined_tags : null
-  freeform_tags = each.value.freeform_tags != null ? each.value.freeform_tags : null
+  freeform_tags                              = each.value.freeform_tags != null ? each.value.freeform_tags : null
 }
 ############################################
 # Module Block - MySQL Database
 # Create MySQL Configurations
 ############################################
 data "oci_mysql_shapes" "mysql_shapes" {
-    for_each       = var.mysql_configuration != null ? var.mysql_configuration : {}
-    compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
-    name = each.value.mysql_configuration_shape_name
+  for_each       = var.mysql_configuration != null ? var.mysql_configuration : {}
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
+  name           = each.value.mysql_configuration_shape_name
 }
 module "mysql_configuration" {
-  source   = "./modules/database/mysql-configuration"
-  for_each = var.mysql_configuration != null ? var.mysql_configuration : {}
-  compartment_id                              = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  mysql_configuration_shape_name = each.value.mysql_configuration_shape_name != null ? (length(regexall("(VM\\.Standard\\.(E[234]\\.[12468]|E[34]\\.(16|24|32|48|64))|MySQL\\.(VM\\.Standard\\.(E[34]\\.[12468]|E[34]\\.(16|24|32|48|64)\\.(8|16|32|64|128|256|384|512|768|1024)GB)|HeatWave\\.(BM\\.Standard(\\.E3)?|VM\\.Standard(\\.E3)?)|VM\\.Optimized3\\.[12468]\\.((8|16|32|64|128|256|384|512|768|1024)GB)|[12468]|16|32|48|64|256))", each.value.mysql_configuration_shape_name)) > 0 ? each.value.mysql_configuration_shape_name : data.oci_mysql_shapes.mysql_shapes[each.key].shapes.*.name[0]) : null
-  defined_tags                                = each.value.defined_tags
-  mysql_configuration_description             = each.value.mysql_configuration_description
-  mysql_configuration_display_name            = each.value.mysql_configuration_display_name
-  freeform_tags                               = each.value.freeform_tags
+  source                                                                    = "./modules/database/mysql-configuration"
+  for_each                                                                  = var.mysql_configuration != null ? var.mysql_configuration : {}
+  compartment_id                                                            = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  mysql_configuration_shape_name                                            = each.value.mysql_configuration_shape_name != null ? (length(regexall("(VM\\.Standard\\.(E[234]\\.[12468]|E[34]\\.(16|24|32|48|64))|MySQL\\.(VM\\.Standard\\.(E[34]\\.[12468]|E[34]\\.(16|24|32|48|64)\\.(8|16|32|64|128|256|384|512|768|1024)GB)|HeatWave\\.(BM\\.Standard(\\.E3)?|VM\\.Standard(\\.E3)?)|VM\\.Optimized3\\.[12468]\\.((8|16|32|64|128|256|384|512|768|1024)GB)|[12468]|16|32|48|64|256))", each.value.mysql_configuration_shape_name)) > 0 ? each.value.mysql_configuration_shape_name : data.oci_mysql_shapes.mysql_shapes[each.key].shapes.*.name[0]) : null
+  defined_tags                                                              = each.value.defined_tags
+  mysql_configuration_description                                           = each.value.mysql_configuration_description
+  mysql_configuration_display_name                                          = each.value.mysql_configuration_display_name
+  freeform_tags                                                             = each.value.freeform_tags
   mysql_configuration_init_variables_lower_case_table_names                 = each.value.mysql_configuration_init_variables_lower_case_table_names
   mysql_configuration_variables_autocommit                                  = each.value.mysql_configuration_variables_autocommit
   mysql_configuration_variables_big_tables                                  = each.value.mysql_configuration_variables_big_tables

@@ -1,4 +1,14 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2026.1.0
+Mar 27th, 2026
+-------------------------------------
+1. Introduced an optional capability to generate an AI-based summary of the Terraform plan, providing a concise overview of planned infrastructure changes in Jenkins pipelines.
+2. Added support for additional services - Exadata DB Homes, CDBs, and PDBs; enabling infrastructure management of database resources through the CD3 Automation Toolkit.
+3. Enhanced the OKE service to support multi-Availability Domain (AD) deployment for node pools.
+4. Deprecated support for OpenTofu.
+5. Implemented minor fixes and enhancements related to Python, Azure Terraform, OCI Topics, RM Stack.
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2025.2.1
 Dec 26th, 2025
 -------------------------------------

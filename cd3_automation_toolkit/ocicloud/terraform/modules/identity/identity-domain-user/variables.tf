@@ -71,7 +71,7 @@ variable "display_name" {
 }
 
 variable "identity_domain" {
-default = {}
+  default = {}
 }
 
 variable "email" {
@@ -106,12 +106,12 @@ variable "enabled_capabilities" {
 
 variable "defined_tags" {
   description = "Defined tags for the group"
-  type        = list(object({
+  type = list(object({
     key       = string
     namespace = string
     value     = string
   }))
-  default     = []
+  default = []
 }
 
 variable "freeform_tags_key" {

@@ -230,12 +230,12 @@ variable "network_compartment_id" {
 }
 
 variable "management_datastore" {
- type = list(string)
- default = []
+  type    = list(string)
+  default = []
 }
 
 variable "workload_datastore" {
- type = list(string)
- default = []
+  type    = list(string)
+  default = []
 }
 

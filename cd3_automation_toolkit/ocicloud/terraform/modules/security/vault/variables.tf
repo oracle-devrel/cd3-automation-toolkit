@@ -37,5 +37,5 @@ variable "display_name" {
 
 variable "replica_region" {
   description = "The region to be created replica to. When updated, replica will be deleted from old region, and created to updated region."
-  type = string
+  type        = string
 }

@@ -45,6 +45,25 @@ nodepools = {
         {% if init_script_path %}
         init_script_path = "{{ init_script_path }}"
         {% endif %}
+
+
+        placement_configs = {
+        {% for key,value in placement_configs.items() %}
+         {{ key }} = {
+            availability_domain = {{ value[3] }}
+            network_compartment_id = "{{ value[0] }}"
+            vcn_name = "{{ value[1] }}"
+            subnet_id = "{{ value[2] }}"
+            {% if value[4]  %}
+            fault_domains = [{{ value[4] }}]
+            {% endif %}
+            {% if value[5]  %}
+            capacity_reservation_id = {{ value[5] }}
+            {% endif %}
+            }
+        {% endfor %}
+        }
+
         {% if oke_labels and oke_labels != 'nan' and defined_tags != '' and oke_labels != [['nan']] %}
         {% if oke_labels[0] %}
         initial_node_labels = {
@@ -59,19 +78,14 @@ nodepools = {
         {% endif %}
        {% endif %}
 
-        availability_domain = {{ availability_domain }}
-        {% if fault_domains %}
-        fault_domains       = [{{ fault_domains }}]
-        {% endif %}
-        network_compartment_id = "{{ network_compartment_tf_name }}"
-        vcn_name = "{{ vcn_name }}"
-        subnet_id = "{{ worker_node_subnet }}"
         size = {{ number_of_nodes }}
         cni_type = "{{ network_type }}"
         {% if network_type == "OCI_VCN_IP_NATIVE" %}
         {% if max_pods_per_node %}
         max_pods_per_node = {{ max_pods_per_node }}
         {% endif %}
+        network_compartment_id = "{{ network_compartment_tf_name }}"
+        vcn_name = "{{ vcn_name }}"
         {% if pod_nsgs %}
         pod_nsg_ids = [{{ pod_nsgs }}]
         {% endif %}

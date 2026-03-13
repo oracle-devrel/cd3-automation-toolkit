@@ -2,57 +2,57 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 variable "compartment_id" {
-  type = string
+  type    = string
   default = null
-  }
+}
 
 variable "network_compartment_id" {
-  type = string
+  type    = string
   default = null
-  }
+}
 
 
 variable "subnet_id" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "vcn_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "network_firewall_policy_id" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "display_name" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "ipv4address" {
-  type = string
+  type    = string
   default = null
 }
 variable "ipv6address" {
-  type = string
+  type    = string
   default = null
 }
 variable "availability_domain" {
-  type = string
+  type    = string
   default = null
 }
 variable "network_security_group_ids" {
-  type = list
+  type    = list(any)
   default = []
 }
 variable "nsg_id" {
-  type = list
+  type    = list(any)
   default = []
 }
 variable "policy_id" {
-  type = string
+  type    = string
   default = null
 }
 

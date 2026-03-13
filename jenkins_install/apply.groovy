@@ -41,6 +41,16 @@ pipeline {
                     }
                     def tfortofuValue = result["${env.Prefix}"]["tf_or_tofu"]
                     env.tf_or_tofu = Eval.me(tfortofuValue)
+                    if (result["${env.Prefix}"].containsKey("enable_terraform_plan_analysis")) {
+                        env.enable_terraform_plan_analysis = result["${env.Prefix}"]["enable_terraform_plan_analysis"]
+                    } else {
+                        env.enable_terraform_plan_analysis = "no"
+                    }
+                    if (result["${env.Prefix}"].containsKey("auth_mechanism")) {
+                        env.auth_mechanism = result["${env.Prefix}"]["auth_mechanism"]
+                    } else {
+                        env.auth_mechanism = "api_key"
+                    }
                     def out_str = result["${env.Prefix}"]["outdir_structure"]
                     env.out_str = Eval.me(out_str)
                     if (env.out_str == 'Multiple_Outdir') {
@@ -82,6 +92,53 @@ pipeline {
                             // If there are changes, proceed with applying the plan
                             echo "Changes detected in Plan. Proceeding with apply. \n${planOutput}"
                         }
+                    }
+                }
+            }
+        }
+
+        stage('AI-Terraform Plan Analysis') {
+            when {
+                expression {
+                    // Manual parsing like Set Environment Variables stage
+                    def propertiesFileContent = readFile "$JENKINS_HOME/jenkins.properties"
+                    def result = [:]
+                    def currentSection = null
+
+                    propertiesFileContent.readLines().each { line ->
+                        line = line.trim()
+                        if (line.startsWith("#") || line.isEmpty()) {
+                            return
+                        }
+                        def sectionMatch = line =~ /^\[(.+)\]$/
+                        if (sectionMatch) {
+                            currentSection = sectionMatch[0][1]
+                            result[currentSection] = [:]
+                        } else if (currentSection) {
+                            def kvMatch = line =~ /^([^=]+)=\s*(.+)$/
+                            if (kvMatch) {
+                                def key = kvMatch[0][1].trim()
+                                def value = kvMatch[0][2].trim()
+                                result[currentSection][key] = value
+                            }
+                        }
+                    }
+                    def enableAnalysis = result[env.Prefix] ? result[env.Prefix]["enable_terraform_plan_analysis"] : "no"
+                    return enableAnalysis == 'yes' && env.GIT_BRANCH == 'origin/develop' && tf_plan == "Changes" && currentBuild.result != "FAILURE"
+                }
+            }
+            steps {
+                script {
+                    try {
+                        echo "Starting Terraform Plan Analysis..."
+                        def toolCmd = env.tf_or_tofu == 'terraform' ? 'terraform' : 'tofu'
+                        sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && ${toolCmd} show -json tfplan.out > tfplan.json"
+                        withEnv(["OCI_CONFIG_FILE=/cd3user/tenancies/${env.Prefix}/.config_files/${env.Prefix}_oci_config", "OCI_AUTH_MECHANISM=${env.auth_mechanism}"]) {
+                            sh "python /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/analyzer.py \"${WORKSPACE}/${env.Region}/${env.Service}/tfplan.json\""
+                        }
+                    } catch (Exception e) {
+                        echo "Error during Terraform Plan Analysis: ${e}"
+                        currentBuild.result = 'UNSTABLE'
                     }
                 }
             }

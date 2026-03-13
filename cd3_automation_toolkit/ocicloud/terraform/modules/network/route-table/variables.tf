@@ -22,40 +22,40 @@ variable "key_name" {
 }
 
 variable "igw_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 variable "ngw_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 variable "sgw_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 variable "drg_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 variable "hub_lpg_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 variable "spoke_lpg_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 variable "peer_lpg_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 variable "exported_lpg_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 variable "none_lpg_id" {
-    type    = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 
 variable "rt_details" {

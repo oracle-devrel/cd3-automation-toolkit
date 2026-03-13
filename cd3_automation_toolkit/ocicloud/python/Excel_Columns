@@ -201,13 +201,14 @@
 	    "Storage Servers"  : "storage_count"
 
 	},
-	"EXA-VMClusters" :
+	"EXA-DBHomes" :
 	{
-        "VM Cluster Display Name" : "display_name",
-        "Oracle Grid Infrastructure Version" : "gi_version",
-        "Allocate storage for Exadata sparse snapshots" : "is_sparse_diskgroup_enabled",
-        "Allocate storage for local backups" : "is_local_backup_enabled",
-        "Hostname Prefix" : "hostname"
+    },
+    	"EXA-CDBs" :
+	{
+    },
+    	"EXA-PDBs" :
+	{
     },
     "Events" :
     {

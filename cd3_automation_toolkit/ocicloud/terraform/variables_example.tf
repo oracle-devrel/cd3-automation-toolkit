@@ -251,7 +251,7 @@ variable "groups" {
   type = map(object({
     group_name        = string
     group_description = string
-	members           = optional(list(string), [])
+    members           = optional(list(string), [])
     matching_rule     = optional(string)
     defined_tags      = optional(map(any))
     freeform_tags     = optional(map(any))
@@ -261,14 +261,14 @@ variable "groups" {
 
 variable "identity_domain_groups" {
   type = map(object({
-    group_name        = string
-    group_description = optional(string)
-    idcs_endpoint     = string
-    domain_compartment_id    = string
-    matching_rule     = optional(string)
-    defined_tags      = optional(list(map(any)))
-    freeform_tags     = optional(list(map(any)))
-    members           = optional(list(string))
+    group_name              = string
+    group_description       = optional(string)
+    idcs_endpoint           = string
+    domain_compartment_id   = string
+    matching_rule           = optional(string)
+    defined_tags            = optional(list(map(any)))
+    freeform_tags           = optional(list(map(any)))
+    members                 = optional(list(string))
     user_can_request_access = optional(bool)
   }))
   default = {}
@@ -291,24 +291,24 @@ variable "users" {
 variable "identity_domain_users" {
   type = map(object({
     name = object({
-      family_name = string
-      given_name  = optional(string)
-      middle_name = optional(string)
-      honorific_prefix      = optional(string)
+      family_name      = string
+      given_name       = optional(string)
+      middle_name      = optional(string)
+      honorific_prefix = optional(string)
     })
-    display_name         = optional(string)
-    idcs_endpoint        = string
-    user_name            = string
-    domain_compartment_id    = string
-    description          = optional(string)
-    groups               = optional(list(string))
-    email                = string
-    recovery_email       = optional(string)
-    home_phone_number    = optional(string)
-    mobile_phone_number  = optional(string)
-    enabled_capabilities = list(string)
-    defined_tags      = optional(list(map(any)))
-    freeform_tags     = optional(list(map(any)))
+    display_name          = optional(string)
+    idcs_endpoint         = string
+    user_name             = string
+    domain_compartment_id = string
+    description           = optional(string)
+    groups                = optional(list(string))
+    email                 = string
+    recovery_email        = optional(string)
+    home_phone_number     = optional(string)
+    mobile_phone_number   = optional(string)
+    enabled_capabilities  = list(string)
+    defined_tags          = optional(list(map(any)))
+    freeform_tags         = optional(list(map(any)))
   }))
   default = {}
 }
@@ -376,11 +376,11 @@ variable "tag_defaults" {
 
 variable "quota_policies" {
   type = map(object({
-	quota_name               = string
-	quota_description        = string
-	quota_statements         = list(string)
-    defined_tags               = optional(map(any))
-    freeform_tags              = optional(map(any))
+    quota_name        = string
+    quota_description = string
+    quota_statements  = list(string)
+    defined_tags      = optional(map(any))
+    freeform_tags     = optional(map(any))
   }))
   default = {}
 }
@@ -943,11 +943,26 @@ variable "db_home" {
   default     = {}
 }
 
-variable "databases" {
+variable "cdb_databases" {
   description = "Map of databases to be provisioned in an existing db_home"
   type        = map(any)
   default     = {}
 }
+
+variable "db_homes" {
+  type        = map(any)
+  description = "Map of database db home to be provisioned"
+  default     = {}
+}
+
+
+
+variable "pdb_databases" {
+  description = "Map of pdb databases to be provisioned in an existing exa database"
+  type        = map(any)
+  default     = {}
+}
+
 
 ####################################
 ####### Autonomous Database ########
@@ -960,11 +975,11 @@ variable "adb" {
     are_primary_whitelisted_ips_used  = optional(bool)
     auto_refresh_frequency_in_seconds = optional(number)
     auto_refresh_point_lag_in_seconds = optional(number)
-    adb_source = optional(string)
-    source_id = optional(string)
+    adb_source                        = optional(string)
+    source_id                         = optional(string)
     #source detail used as source_id
     autonomous_database_source_backup_id = optional(string)
-    autonomous_database_id         = optional(string)
+    autonomous_database_id               = optional(string)
     #storage
     is_auto_scaling_for_storage_enabled  = optional(bool)
     data_storage_size_in_gb              = optional(number)
@@ -973,7 +988,7 @@ variable "adb" {
     character_set                        = optional(string)
     compute_count                        = number
     compute_model                        = string
-    ocpu_count                        = optional(number)
+    ocpu_count                           = optional(number)
     customer_contacts                    = optional(list(string))
     data_safe_status                     = optional(string)
     database_edition                     = optional(string)
@@ -1004,7 +1019,7 @@ variable "adb" {
     time_of_auto_refresh_start  = optional(string)
     # Network
     network_compartment_id = optional(string)
-    subnet_compartment_id = optional(string)
+    subnet_compartment_id  = optional(string)
     subnet_id              = optional(string)
     vcn_name               = optional(string)
     nsg_ids                = optional(list(string))
@@ -1015,7 +1030,7 @@ variable "adb" {
     is_replicate_automatic_backups = optional(bool)
     remote_disaster_recovery_type  = optional(string)
     ##source=BACKUP_FROM_TIMESTAMP
-    timestamp           = optional(string)
+    timestamp                              = optional(string)
     use_latest_available_backup_time_stamp = optional(bool)
     whitelisted_ips                        = optional(list(string))
     defined_tags                           = optional(map(any))
@@ -1580,13 +1595,13 @@ variable "nlb_backends" {
     port                     = number
     #vnic_vlan                = optional(string)
     #vnic_ip                  = optional(string)
-    ip_address               = string
-    instance_compartment     = string
-    is_drain                 = optional(bool)
-    is_backup                = optional(bool)
-    is_offline               = optional(bool)
-    weight                   = optional(number)
-    target_id                = optional(string)
+    ip_address           = string
+    instance_compartment = string
+    is_drain             = optional(bool)
+    is_backup            = optional(bool)
+    is_offline           = optional(bool)
+    weight               = optional(number)
+    target_id            = optional(string)
   }))
   default = {}
 }
@@ -1770,7 +1785,7 @@ variable "notifications" {
   type = map(object({
     compartment_id = string
     topic_name     = string
-    subscriptions  = optional (list(map(any)))
+    subscriptions  = optional(list(map(any)))
     description    = optional(string)
     defined_tags   = optional(map(any))
     freeform_tags  = optional(map(any))
@@ -1824,52 +1839,62 @@ variable "clusters" {
 
 variable "nodepools" {
   type = map(object({
-    display_name                        = string
-    cluster_name                        = string
-    compartment_id                      = string
-    network_compartment_id              = string
-    vcn_name                            = string
-    node_shape                          = string
-    initial_node_labels                 = optional(map(any))
+    display_name           = string
+    cluster_name           = string
+    compartment_id         = string
+    network_compartment_id = string
+    vcn_name               = string
+    node_shape             = string
+    initial_node_labels    = optional(map(any))
+    placement_configs = optional(map(object({
+      availability_domain     = number
+      network_compartment_id  = string
+      vcn_name                = string
+      subnet_id               = string
+      fault_domains           = optional(list(string))
+      capacity_reservation_id = optional(string)
+    })))
     kubernetes_version                  = string
     is_pv_encryption_in_transit_enabled = optional(bool)
-    availability_domain                 = number
-    fault_domains                       = optional(list(string))
-    subnet_id                           = string
-    size                                = number
-    cni_type                            = string
-    max_pods_per_node                   = optional(number)
-    pod_nsg_ids                         = optional(list(string))
-    pod_subnet_ids                      = optional(string)
-    worker_nsg_ids                      = optional(list(string))
-    memory_in_gbs                       = optional(number)
-    ocpus                               = optional(number)
-    image_id                            = string
-    source_type                         = string
-    boot_volume_size_in_gbs             = optional(number)
-    ssh_public_key                      = optional(string)
-    init_script_path                    = optional(string)
-    nodepool_kms_key_id                 = optional(string)
-    node_defined_tags                   = optional(map(any))
-    node_freeform_tags                  = optional(map(any))
-    nodepool_defined_tags               = optional(map(any))
-    nodepool_freeform_tags              = optional(map(any))
+
+    size                    = number
+    cni_type                = string
+    max_pods_per_node       = optional(number)
+    pod_nsg_ids             = optional(list(string))
+    pod_subnet_ids          = optional(string)
+    worker_nsg_ids          = optional(list(string))
+    memory_in_gbs           = optional(number)
+    ocpus                   = optional(number)
+    image_id                = string
+    source_type             = string
+    boot_volume_size_in_gbs = optional(number)
+    ssh_public_key          = optional(string)
+    init_script_path        = optional(string)
+    nodepool_kms_key_id     = optional(string)
+    node_defined_tags       = optional(map(any))
+    node_freeform_tags      = optional(map(any))
+    nodepool_defined_tags   = optional(map(any))
+    nodepool_freeform_tags  = optional(map(any))
   }))
   default = {}
 }
 
 variable "virtual-nodepools" {
   type = map(object({
-    display_name                = string
-    cluster_name                = string
-    compartment_id              = string
-    network_compartment_id      = string
-    vcn_name                    = string
-    node_shape                  = string
+    display_name           = string
+    cluster_name           = string
+    compartment_id         = string
+    network_compartment_id = string
+    vcn_name               = string
+    node_shape             = string
+    placement_configs = optional(map(object({
+      availability_domain    = number
+      network_compartment_id = string
+      vcn_name               = string
+      subnet_id              = string
+      fault_domain           = optional(list(string))
+    })))
     initial_virtual_node_labels = optional(map(any))
-    availability_domain         = number
-    fault_domains               = list(string)
-    subnet_id                   = string
     size                        = number
     pod_nsg_ids                 = optional(list(string))
     pod_subnet_id               = string
@@ -2251,8 +2276,8 @@ variable "decryption_rules" {
     rule_name                  = string
     network_firewall_policy_id = string
     condition = optional(list(object({
-    destination_address = optional(list(string))
-    source_address = optional(list(string))
+      destination_address = optional(list(string))
+      source_address      = optional(list(string))
     })))
     decryption_profile = optional(string)
     secret             = optional(string)
@@ -2270,11 +2295,11 @@ variable "tunnelinspect_rules" {
     network_firewall_policy_id = string
     condition = optional(list(object({
       destination_address = optional(list(string))
-      source_address = optional(list(string))
+      source_address      = optional(list(string))
     })))
-    protocol = optional(string)
-    after_rule         = optional(string)
-    before_rule        = optional(string)
+    protocol    = optional(string)
+    after_rule  = optional(string)
+    before_rule = optional(string)
   }))
   default = {}
 }
@@ -2282,17 +2307,17 @@ variable "tunnelinspect_rules" {
 variable "nat_rules" {
   type = map(object({
     action                     = string
-    type		       = string
+    type                       = string
     rule_name                  = string
     network_firewall_policy_id = string
     condition = optional(list(object({
       destination_address = optional(list(string))
-      source_address = optional(list(string))
-      service = string
+      source_address      = optional(list(string))
+      service             = string
     })))
     description = optional(string)
-    after_rule         = optional(string)
-    before_rule        = optional(string)
+    after_rule  = optional(string)
+    before_rule = optional(string)
   }))
   default = {}
 }

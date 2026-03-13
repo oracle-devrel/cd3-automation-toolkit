@@ -14,8 +14,8 @@ variable "topic_name" {
   type = string
 }
 variable "subscriptions" {
-type = list(map(any))
-default = []
+  type    = list(map(any))
+  default = []
 }
 variable "description" {
   type = string

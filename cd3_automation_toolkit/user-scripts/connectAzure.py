@@ -119,9 +119,9 @@ if connected == 1:
             client_id=client_id,
             client_secret=client_secret)
         token = credential.get_token("https://management.azure.com/.default")
-        print("\nAzure credentials are valid. Proceeding...")
+        print("\nAzure credentials are valid. Proceeding...\n")
     except ClientAuthenticationError as e:
-        print(f"\nAzure credentials are invalid. Exiting!!!")
+        print(f"\nAzure credentials are invalid. Exiting!!!\n")
         exit(1)
     except Exception as e:
         print(f"An unexpected error occurred: {e}")

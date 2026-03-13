@@ -57,13 +57,13 @@ variable "display_name" {
 }
 
 variable "budget_start_date" {
-type = string
-description = "The date when the one-time budget begins. For example, 2023-03-23. The date-time format conforms to RFC 3339, and will be truncated to the starting point of the date provided after being converted to UTC time."
+  type        = string
+  description = "The date when the one-time budget begins. For example, 2023-03-23. The date-time format conforms to RFC 3339, and will be truncated to the starting point of the date provided after being converted to UTC time."
 }
 
 variable "budget_end_date" {
-type = string
-description = "The date when the one-time budget concludes. For example, 2023-03-23. The date-time format conforms to RFC 3339, and will be truncated to the starting point of the date provided after being converted to UTC time."
+  type        = string
+  description = "The date when the one-time budget concludes. For example, 2023-03-23. The date-time format conforms to RFC 3339, and will be truncated to the starting point of the date provided after being converted to UTC time."
 }
 
 

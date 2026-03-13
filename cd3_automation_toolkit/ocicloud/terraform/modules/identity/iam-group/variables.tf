@@ -14,8 +14,8 @@ variable "tenancy_ocid" {
 
 variable "members" {
   description = "List of members"
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "group_membership" {
