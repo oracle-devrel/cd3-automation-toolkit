@@ -15,16 +15,42 @@ def createRegionViews() {
     def JENKINS_HOME = System.getenv("JENKINS_HOME")
     File file = new File("$JENKINS_HOME/jenkins.properties")
 
+    if (!file.exists()) {
+        println("Properties file not found at $JENKINS_HOME/jenkins.properties")
+        return
+    }
+
     // Parse the properties file into profiles
     def profiles = [:]
     def currentProfile = ""
     file.eachLine { line ->
-        if (line.startsWith('[')) {
+        line = line.trim()
+        if (line.startsWith('[') && line.endsWith(']')) {
             currentProfile = line.replace('[', '').replace(']', '').trim()
             profiles[currentProfile] = [:]
-        } else if (line.contains('=')) {
-            def parts = line.split('=')
-            profiles[currentProfile][parts[0].trim()] = Eval.me(parts[1].trim())
+        } else if (line.contains('=') && currentProfile != "") {
+            def parts = line.split('=', 2)
+            def key = parts[0].trim()
+            def value = parts[1].trim()
+
+            // Custom parsing logic to safely handle lists without Eval.me
+            if (value.startsWith("[") && value.endsWith("]")) {
+                def content = value.substring(1, value.length() - 1)
+                if (content.trim().isEmpty()) {
+                     profiles[currentProfile][key] = []
+                } else {
+                     // Split by comma, trim whitespace and remove quotes
+                     def list = content.split(',').collect { it.trim().replaceAll(/^['"]|['"]$/, "") }
+                     profiles[currentProfile][key] = list
+                }
+            } else {
+                 // Try Eval.me for other types, fallback to string
+                 try {
+                     profiles[currentProfile][key] = Eval.me(value)
+                 } catch (Exception e) {
+                     profiles[currentProfile][key] = value
+                 }
+            }
         }
     }
 
@@ -32,40 +58,52 @@ def createRegionViews() {
     profiles.each { profileName, profile ->
         def profileFolder = jenkinsInstance.getItem(profileName)
         if (profileFolder != null && profileFolder instanceof ViewGroup) {
-            profile.regions.each { region ->
-                def viewName = region
-                def view = profileFolder.getView(viewName)
 
-                if (view == null) {
-                    // println("Creating view: $viewName in profile: $profileName")
-                    def newView = new ListView(viewName)
-                    profileFolder.addView(newView)
-                    newView.save()
-                    // println("View '$viewName' created successfully in profile '$profileName'.")
-                    view = newView
-                }
+            def regions = profile.regions
 
-                // Clear the view to remove any existing jobs
-                view.items.clear()
+            // SAFETY CHECK: Ensure regions is always a List
+            // This prevents iterating over a String (which causes the 'l', 'o', 'n' views)
+            if (regions == null) {
+                regions = []
+            } else if (regions instanceof String) {
+                regions = [regions]
+            }
 
-                // Navigate through the structure to find jobs
-                def terraformFilesFolder = profileFolder.getItem('terraform_files')
-                if (terraformFilesFolder instanceof ViewGroup) {
-                    def regionFolder = terraformFilesFolder.getItem(region)
-                    if (regionFolder instanceof ViewGroup) {
-                        regionFolder.items.each { serviceFolder ->
-                            if (serviceFolder instanceof ViewGroup) {
-                                addJobsToView(view, serviceFolder)
-                            }
+            // Iterate only if it is a list
+            if (regions instanceof List) {
+                regions.each { region ->
+                    // Cleanup name
+                    region = region.toString().trim()
+                    if (region.isEmpty()) return
+
+                    def viewName = region
+                    def view = profileFolder.getView(viewName)
+
+                    if (view == null) {
+                        def newView = new ListView(viewName)
+                        profileFolder.addView(newView)
+                        newView.save()
+                        view = newView
+                    }
+
+                    // Clear the view to remove any existing jobs
+                    view.items.clear()
+
+                    // Navigate through the structure to find jobs
+                    def terraformFilesFolder = profileFolder.getItem('terraform_files')
+                    if (terraformFilesFolder instanceof ViewGroup) {
+                        def regionFolder = terraformFilesFolder.getItem(region)
+                        if (regionFolder instanceof ViewGroup) {
+                            addJobsToView(view, regionFolder)
                         }
                     }
+
+                    // Set the "Recurse in folders" option
+                    view.setRecurse(true)
+
+                    // Save the view configuration
+                    view.save()
                 }
-
-                // Set the "Recurse in folders" option
-                view.setRecurse(true)
-
-                // Save the view configuration
-                view.save()
             }
         } else {
             println("Profile folder not found: $profileName")
