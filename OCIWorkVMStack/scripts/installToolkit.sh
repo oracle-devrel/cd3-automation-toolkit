@@ -1,7 +1,13 @@
 #cloud-config
 runcmd:
   - |
-    echo "Waiting for network..."
+    echo "Waiting for OCI metadata service (v2)..."
+    until curl -sf -H "Authorization: Bearer Oracle" \
+      http://169.254.169.254/opc/v2/instance/ >/dev/null; do
+      echo "Metadata not ready, retrying in 10 seconds..."
+      sleep 10
+    done
+    echo "Metadata ready, continuing..."
     until ping -c1 8.8.8.8 >/dev/null 2>&1; do 
       echo "Network not ready, retrying in 10 seconds..."
       sleep 10
