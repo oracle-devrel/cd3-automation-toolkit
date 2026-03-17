@@ -5,15 +5,18 @@
 #
 # Author: Shruthi Subramanian
 #
-
+import sys
 import argparse
 import logging
 import os
 import shutil
 import datetime
 import configparser
-from azure.identity import ClientSecretCredential
 from azure.core.exceptions import ClientAuthenticationError
+sys.path.append(os.getcwd())
+sys.path.append(os.getcwd()+"/..")
+from azurecloud.python import *
+
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -113,19 +116,18 @@ if not os.path.exists(config_files):
 shutil.copy(args.propsfile,config_files+"/"+prefix+"_connectAzure.properties")
 
 if connected == 1:
+
+    ct = azrCommonTools()
+    credentials = ct.authenticate(args.propsfile)
     try:
-        credential = ClientSecretCredential(
-            tenant_id=tenant_id,
-            client_id=client_id,
-            client_secret=client_secret)
-        token = credential.get_token("https://management.azure.com/.default")
-        print("\nAzure credentials are valid. Proceeding...\n")
+        token = credentials[0].get_token("https://management.azure.com/.default")
     except ClientAuthenticationError as e:
         print(f"\nAzure credentials are invalid. Exiting!!!\n")
         exit(1)
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-
+        exit(1)
+    print("\nAzure credentials are valid. Proceeding...\n")
 
 # 3. Generate setUpCloud.properties file
 print("Creating Azure specific setUpAzure.properties.................")
