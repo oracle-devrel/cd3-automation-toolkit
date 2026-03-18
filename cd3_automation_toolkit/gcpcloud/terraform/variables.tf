@@ -8,11 +8,6 @@
 #
 ############################
 
-variable "credentials" {
-  description = "path to private key jspn file"
-  type        = string
-}
-
 
 ###############################
 # Oracle ExaInfra @GCP ########

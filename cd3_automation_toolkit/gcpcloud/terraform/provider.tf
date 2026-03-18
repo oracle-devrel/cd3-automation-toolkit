@@ -4,5 +4,5 @@
 # GCP Terraform Provider
 
 provider "google" {
-  credentials = var.credentials
+  credentials = "<PATH TO JSON KEY FILE>"
 }
