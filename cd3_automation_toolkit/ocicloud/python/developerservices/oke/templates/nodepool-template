@@ -79,13 +79,13 @@ nodepools = {
        {% endif %}
 
         size = {{ number_of_nodes }}
+        network_compartment_id = "{{ network_compartment_tf_name }}"
+        vcn_name = "{{ vcn_name }}"
         cni_type = "{{ network_type }}"
         {% if network_type == "OCI_VCN_IP_NATIVE" %}
         {% if max_pods_per_node %}
         max_pods_per_node = {{ max_pods_per_node }}
         {% endif %}
-        network_compartment_id = "{{ network_compartment_tf_name }}"
-        vcn_name = "{{ vcn_name }}"
         {% if pod_nsgs %}
         pod_nsg_ids = [{{ pod_nsgs }}]
         {% endif %}
