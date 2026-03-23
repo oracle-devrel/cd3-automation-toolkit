@@ -43,6 +43,7 @@ variable "gcp_oci_exa_infra" {
     # labels
     labels = optional(map(string), {})
   }))
+  default     = {}
 }
 
 ###############################
@@ -101,4 +102,5 @@ variable "gcp_oci_exa_vmclusters" {
     # TAGS
     labels = map(string)
   }))
+  default     = {}
 }
