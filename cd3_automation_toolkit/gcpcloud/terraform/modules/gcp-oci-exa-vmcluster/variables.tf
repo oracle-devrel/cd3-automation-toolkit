@@ -30,6 +30,7 @@ variable "cluster_config" {
     project                     = string
     exadata_infrastructure_id   = string
     create_odb_network          = bool
+    create_odb_network_subnets  = bool
     vpc_network_name            = optional(string)
     odb_network_gcp_oracle_zone = optional(string)
     client_subnet_cidr          = optional(string)

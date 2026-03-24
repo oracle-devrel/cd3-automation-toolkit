@@ -38,12 +38,14 @@ data "google_oracle_database_cloud_exadata_infrastructure" "exa_infra" {
 
 output "db_servers" {
   description = "DB Servers"
-  value       = data.google_oracle_database_db_servers.this.db_servers[*].properties.0.ocid
+ # value       = data.google_oracle_database_db_servers.this[0].db_servers[*].properties.0.ocid
+ value = ""
 }
 
 output "exa_infra_id" {
   description = "DB Servers"
-  value       = data.google_oracle_database_cloud_exadata_infrastructure.exa_infra.id
+ # value       = data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[0].id
+ value = ""
 }
 
 
@@ -55,7 +57,7 @@ module "exa-vmcluster-gcp" {
 
   cluster_config            = each.value
   db_server_ocids           = data.google_oracle_database_db_servers.this[each.key].db_servers[*].properties.0.ocid
-  exadata_infrastructure_id = data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[eah.key].id
+  exadata_infrastructure_id = data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[each.key].id
   labels                    = each.value.labels
 }
 
