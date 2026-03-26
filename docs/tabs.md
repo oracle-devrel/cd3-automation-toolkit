@@ -958,16 +958,7 @@ Selecting `Developer Services` in the setUpCloud  menu and `Add/Modify/Delete OK
 
 
 !!! Note
-    - Current version of the toolkit support only single availability domain placement for the nodepool. So if a cluster is exported with nodepools having multiple placement configuration, the terraform plan will show changes similar to:
-
-    ![image](../images/tabs-3.png)
-
-    <img src= "../images/tabs-4.png" width=50% height=50%>
-
-
-To avoid this, an ignore statement as shown below is added to ignore any changes to the placement configuration in nodepool.
-
-      ignore_changes = [node_config_details[0].placement_configs,kubernetes_version, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"],node_config_details[0].defined_tags["Oracle-Tags.CreatedOn"],node_config_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
+    - CD3 Automation toolkit now supports multi availability domain placement for nodes in the nodepool.
 
 
 **Known Observed behaviours:**

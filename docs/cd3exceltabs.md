@@ -131,7 +131,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
         <li><a href="../resource-manager-upload">Upload to OCI Resource Manager Stack</a></li>
         <li><a href="../tabs#oke-tab">OKE</a></li>
       </ul>
-      <a href="../terraform/managementservices">🔗 Sample auto.tfvars for OKE components- Clusters, Nodepools</a><br>
+      <a href="../terraform/oke">🔗 Sample auto.tfvars for OKE components- Clusters, Nodepools</a><br>
     </div>
 
     <h3 id="sddcs" style="display: flex; align-items: center; gap: 8px;">
