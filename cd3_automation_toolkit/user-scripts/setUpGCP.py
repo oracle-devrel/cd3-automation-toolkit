@@ -5,7 +5,7 @@ import datetime,os
 import sys
 sys.path.append(os.getcwd())
 sys.path.append(os.getcwd()+"/..")
-from azurecloud.python import *
+from gcpcloud.python import *
 from common.python import *
 
 
@@ -80,19 +80,18 @@ def execute_options(options, *args, **kwargs):
                     option.callback(*args, **kwargs)
 
 
-def create_adb_azure():
-    create_terraform_adb_azure(inputfile, outdir, prefix)
+#def create_adb_azure():
+#    create_terraform_adb_azure(inputfile, outdir, prefix)
 
-def create_exa_azure():
-    create_terraform_exa_infra_azure(inputfile, outdir, prefix)
-    create_terraform_exa_vmclusters_azure(inputfile, outdir, prefix)
+def create_exa_gcp():
+    create_terraform_exa_infra_gcp(inputfile, outdir, prefix)
+    #create_terraform_exa_vmclusters_azure(inputfile, outdir, prefix)
 
 
-def create_db_at_azure(execute_all=False):
+def create_db_at_gcp(execute_all=False):
     options = [
-        Option('Add/Modify/Delete ADB @Azure', create_adb_azure, 'Processing ADB-Azure Tab')
-        #Option('Add/Modify/Delete Exa @Azure', create_exa_azure, 'Processing Exa-Azure Tabs')
-        # Option('Enable LBaaS Logs', enable_lb_logs, 'LBaaS Logs')
+        #Option('Add/Modify/Delete ADB @Azure', create_adb_azure, 'Processing ADB-Azure Tab'),
+        Option('Add/Modify/Delete Exa @GCP', create_exa_gcp, 'Processing Exa-GCP Tabs')
     ]
     options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
@@ -101,7 +100,7 @@ def create_db_at_azure(execute_all=False):
 '''
 def export_az_adb():
     export_az_oci_adb(inputfile, outdir, credentials)
-'''
+
 def export_az_oci_exa():
     export_az_oci_adb(inputfile, outdir, credentials)
 
@@ -115,7 +114,7 @@ def export_db_at_azure(execute_all=False):
         execute_options(options,inputfile, outdir, credentials)
 
     create_terraform_adb_azure(inputfile, outdir, prefix)
-
+'''
 
 #Execution starts here
 global devops
@@ -125,8 +124,8 @@ updated_paths = []
 import_scripts = []
 # Opt-in to IMDS lookup
 exec_start_time = datetime.datetime.now()
-parser = argparse.ArgumentParser(description='Sets Up Azure via TF')
-parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpAzure.properties")
+parser = argparse.ArgumentParser(description='Sets Up GCP via TF')
+parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpGCP.properties")
 #parser.add_argument('--main_options', default="")
 #parser.add_argument('--sub_options', default="")
 #parser.add_argument('--sub_child_options', default="")
@@ -183,24 +182,24 @@ if not os.path.exists(outdir):
 ## Menu Options
 if non_gf_tenancy:
 
-    ct = azrCommonTools()
+    ct = gcpCommonTools()
     credentials = ct.authenticate(args.propsfile)
 
     # verify_outdir_is_empty()
-    print("\nworkflow_type set to export_resources. Export existing Azure objects and Synch with TF state")
+    print("\nworkflow_type set to export_resources. Export existing GCP objects and Synch with TF state")
     print("We recommend to not have any existing tfvars/tfstate files for export out directory")
     #export_regions = get_region_list(rm=False,vizoci=False)
     #compartments = ct.get_compartment_map(var_file, "OCI Resources")
     #export_tags_list = get_tags_list()
 
     inputs = [
-        Option("Export DB @Azure", export_db_at_azure, "Export DB @Azure"),
+        #Option("Export DB @Azure", export_db_at_azure, "Export DB @Azure"),
 
     ]
 
 else:
     inputs = [
-        Option('Create DB @Azure', create_db_at_azure, 'Create DB @Azure'),
+        Option('Create DB @GCP', create_db_at_gcp, 'Create DB @GCP'),
 
     ]
 '''

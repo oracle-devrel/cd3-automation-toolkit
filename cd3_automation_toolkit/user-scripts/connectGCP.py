@@ -43,7 +43,7 @@ if prefix == "" or prefix == "\n":
     exit(1)
 
 prefixes=[]
-f = os.path.basename(__file__).rstrip("py")+".safe"
+f = os.path.basename(__file__).rstrip("py")+"safe"
 safe_file = user_dir + f
 if os.path.exists(safe_file):
     f=open(safe_file,"r")
@@ -167,7 +167,7 @@ logging.info("Next Steps for using toolkit via CLI")
 logging.info("######################################")
 logging.info("Modify "+prefix_dir + "/" +prefix+"_setUp"+cloud+".properties with input values for cd3file and workflow_type")
 logging.info("cd /cd3user/oci_tools/cd3_automation_toolkit")
-logging.info("python setUpCloud.py azure "+prefix_dir + "/" +prefix+"_setUp"+cloud+".properties")
+logging.info("python setUpCloud.py "+cloud.lower()+" "+prefix_dir + "/" +prefix+"_setUp"+cloud+".properties")
 
 with open(outfile, 'r') as log_file:
     data = log_file.read().rstrip()

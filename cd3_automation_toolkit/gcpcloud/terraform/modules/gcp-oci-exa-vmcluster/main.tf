@@ -10,7 +10,7 @@ resource "google_compute_network" "vpc_network" {
 
   count                   = var.cluster_config.create_odb_network ? 1 : 0
   name                    = var.cluster_config.vpc_network_name
-  project                 = var.cluster_config.project
+  project                 = var.cluster_config.odb_network_project
   auto_create_subnetworks = false # Sets the VPC to "Custom" mode
   mtu                     = 1460
 }
@@ -22,7 +22,7 @@ resource "google_oracle_database_odb_network" "odb_network" {
   count           = var.cluster_config.create_odb_network ? 1 : 0
   odb_network_id  = var.cluster_config.odb_network_id
   location        = var.cluster_config.location
-  project         = var.cluster_config.project
+  project         = var.cluster_config.odb_network_project
   network         = google_compute_network.vpc_network[0].id
   gcp_oracle_zone = var.cluster_config.odb_network_gcp_oracle_zone
   labels          = var.labels
@@ -36,7 +36,7 @@ resource "google_oracle_database_odb_subnet" "odb_client_subnet" {
   count         = var.cluster_config.create_odb_network_subnets ? 1 : 0
   odb_subnet_id = var.cluster_config.odb_client_subnet_id
   location      = var.cluster_config.location
-  project       = var.cluster_config.project
+  project       = var.cluster_config.odb_network_project
   odbnetwork    = var.cluster_config.create_odb_network ==true ? google_oracle_database_odb_network.odb_network[0].odb_network_id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
   cidr_range    = var.cluster_config.client_subnet_cidr
   purpose       = "CLIENT_SUBNET"
@@ -48,7 +48,7 @@ resource "google_oracle_database_odb_subnet" "odb_backup_subnet" {
   count         = var.cluster_config.create_odb_network_subnets ? 1 : 0
   odb_subnet_id = var.cluster_config.odb_backup_subnet_id
   location      = var.cluster_config.location
-  project       = var.cluster_config.project
+  project       = var.cluster_config.odb_network_project
   odbnetwork    = var.cluster_config.create_odb_network ==true ? google_oracle_database_odb_network.odb_network[0].odb_network_id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
   cidr_range    = var.cluster_config.backup_subnet_cidr
   purpose       = "BACKUP_SUBNET"
@@ -68,7 +68,6 @@ resource "google_oracle_database_cloud_vm_cluster" "vm_cluster" {
   odb_subnet             = var.cluster_config.create_odb_network_subnets == true ? google_oracle_database_odb_subnet.odb_client_subnet[0].id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}/odbSubnets/${var.cluster_config.odb_client_subnet_id}"
   backup_odb_subnet      = var.cluster_config.create_odb_network_subnets == true ? google_oracle_database_odb_subnet.odb_backup_subnet[0].id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}/odbSubnets/${var.cluster_config.odb_backup_subnet_id}"
   properties {
-    # cluster_name                = "pq-ppat4"
     gi_version               = var.cluster_config.gi_version
     db_server_ocids          = var.db_server_ocids
     cpu_core_count           = var.cluster_config.cpu_core_count
@@ -93,7 +92,6 @@ resource "google_oracle_database_cloud_vm_cluster" "vm_cluster" {
       id = var.cluster_config.time_zone
     }
     scan_listener_port_tcp = var.cluster_config.scan_listener_port_tcp
-    # scan_listener_port_tcp_ssl  = 2484
   }
   labels = var.labels
 

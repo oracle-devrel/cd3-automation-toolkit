@@ -7,6 +7,7 @@ def main():
         print("Usage: python setUpCloud.py <cloud_provider> <properties_file_path>")
         print("Example: python setUpCloud.py azure setUpAzure.properties")
         print("Example: python setUpCloud.py oci setUpOCI.properties")
+        print("Example: python setUpCloud.py gcp setUpGCP.properties")
         return
 
     cloud_provider = sys.argv[1].lower()
@@ -16,6 +17,8 @@ def main():
         script_name = 'setUpOCI.py'
     elif cloud_provider == 'azure':
         script_name = 'user-scripts/setUpAzure.py'
+    elif cloud_provider == 'gcp':
+        script_name = 'user-scripts/setUpGCP.py'
     else:
         print("Invalid cloud provider. Use 'azure' or 'oci'.")
         return

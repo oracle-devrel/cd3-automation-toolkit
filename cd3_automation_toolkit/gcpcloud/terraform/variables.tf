@@ -58,6 +58,7 @@ variable "gcp_oci_exa_vmclusters" {
     project  = string
 
     exadata_infrastructure_id   = string
+    odb_network_project         = string
     create_odb_network          = bool
     create_odb_network_subnets  = bool
     vpc_network_name            = optional(string)
