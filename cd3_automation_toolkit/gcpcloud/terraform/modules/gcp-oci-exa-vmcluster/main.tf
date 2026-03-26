@@ -37,7 +37,7 @@ resource "google_oracle_database_odb_subnet" "odb_client_subnet" {
   odb_subnet_id = var.cluster_config.odb_client_subnet_id
   location      = var.cluster_config.location
   project       = var.cluster_config.odb_network_project
-  odbnetwork    = var.cluster_config.create_odb_network ==true ? google_oracle_database_odb_network.odb_network[0].odb_network_id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
+  odbnetwork    = var.cluster_config.create_odb_network ==true ? google_oracle_database_odb_network.odb_network[0].odb_network_id : "${var.cluster_config.odb_network_id}"
   cidr_range    = var.cluster_config.client_subnet_cidr
   purpose       = "CLIENT_SUBNET"
   labels        = var.labels
@@ -49,7 +49,7 @@ resource "google_oracle_database_odb_subnet" "odb_backup_subnet" {
   odb_subnet_id = var.cluster_config.odb_backup_subnet_id
   location      = var.cluster_config.location
   project       = var.cluster_config.odb_network_project
-  odbnetwork    = var.cluster_config.create_odb_network ==true ? google_oracle_database_odb_network.odb_network[0].odb_network_id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
+  odbnetwork    = var.cluster_config.create_odb_network ==true ? google_oracle_database_odb_network.odb_network[0].odb_network_id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
   cidr_range    = var.cluster_config.backup_subnet_cidr
   purpose       = "BACKUP_SUBNET"
   labels        = var.labels
@@ -64,9 +64,9 @@ resource "google_oracle_database_cloud_vm_cluster" "vm_cluster" {
   exadata_infrastructure = var.exadata_infrastructure_id
   display_name           = var.cluster_config.display_name
   cloud_vm_cluster_id    = var.cluster_config.cloud_vm_cluster_id
-  odb_network            = var.cluster_config.create_odb_network == true ? google_oracle_database_odb_network.odb_network[0].id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
-  odb_subnet             = var.cluster_config.create_odb_network_subnets == true ? google_oracle_database_odb_subnet.odb_client_subnet[0].id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}/odbSubnets/${var.cluster_config.odb_client_subnet_id}"
-  backup_odb_subnet      = var.cluster_config.create_odb_network_subnets == true ? google_oracle_database_odb_subnet.odb_backup_subnet[0].id : "projects/${var.cluster_config.project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}/odbSubnets/${var.cluster_config.odb_backup_subnet_id}"
+  odb_network            = var.cluster_config.create_odb_network == true ? google_oracle_database_odb_network.odb_network[0].id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
+  odb_subnet             = var.cluster_config.create_odb_network_subnets == true ? google_oracle_database_odb_subnet.odb_client_subnet[0].id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}/odbSubnets/${var.cluster_config.odb_client_subnet_id}"
+  backup_odb_subnet      = var.cluster_config.create_odb_network_subnets == true ? google_oracle_database_odb_subnet.odb_backup_subnet[0].id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}/odbSubnets/${var.cluster_config.odb_backup_subnet_id}"
   properties {
     gi_version               = var.cluster_config.gi_version
     db_server_ocids          = var.db_server_ocids
@@ -91,7 +91,7 @@ resource "google_oracle_database_cloud_vm_cluster" "vm_cluster" {
     time_zone {
       id = var.cluster_config.time_zone
     }
-    scan_listener_port_tcp = var.cluster_config.scan_listener_port_tcp
+    #scan_listener_port_tcp = var.cluster_config.scan_listener_port_tcp
   }
   labels = var.labels
 

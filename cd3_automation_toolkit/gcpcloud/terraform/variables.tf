@@ -51,7 +51,7 @@ variable "gcp_oci_exa_infra" {
 ###############################
 
 variable "gcp_oci_exa_vmclusters" {
-  description = "Map of VM Cluster configurations"
+  description = "Map of GCP VM Cluster configurations"
   type = map(object({
     # MANDATORY
     location = string
@@ -71,18 +71,19 @@ variable "gcp_oci_exa_vmclusters" {
 
     display_name            = string
     cloud_vm_cluster_id     = string
-    cluster_name            = string
+    cluster_name            = optional(string)
     gi_version              = string
     hostname_prefix         = string
+
     cpu_core_count          = number
     memory_size_gb          = number
     data_storage_size_tb    = number
     db_node_storage_size_gb = number
+
     node_count              = optional(number)
     ocpu_count              = optional(number)
     disk_redundancy         = optional(string)
     ssh_public_keys         = list(string)
-
 
     # OPTIONAL
     license_type           = string

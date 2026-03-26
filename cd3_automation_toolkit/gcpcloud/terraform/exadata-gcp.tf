@@ -9,7 +9,7 @@
 
 module "exa-infra-gcp" {
   source   = "./modules/gcp-oci-exa-infra"
-  for_each = var.gcp_oci_exa_infra
+  for_each = var.gcp_oci_exa_infra != null ? var.gcp_oci_exa_infra : {}
 
   infra_config = each.value
   labels       = each.value.labels
@@ -53,7 +53,7 @@ output "exa_infra_id" {
 
 module "exa-vmcluster-gcp" {
   source   = "./modules/gcp-oci-exa-vmcluster"
-  for_each = var.gcp_oci_exa_vmclusters
+  for_each = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
 
   cluster_config            = each.value
   db_server_ocids           = data.google_oracle_database_db_servers.this[each.key].db_servers[*].properties.0.ocid

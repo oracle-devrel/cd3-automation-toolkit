@@ -26,7 +26,6 @@ class gcpCommonTools():
                 except IndexError as e:
                     pass"""
             tempdict = {columnname: multivalues}
-            print("if")
         else:
             # If there is only one tag; split them only by "="; each key-value pair is stored as a list
             columnname = commonTools.check_column_headers(columnname)
@@ -38,6 +37,4 @@ class gcpCommonTools():
                 except IndexError as e:
                     pass"""
             tempdict = {columnname: [multivalues]}
-            print("else")
-        print(tempdict)
         return tempdict

@@ -3,8 +3,8 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 ############################
-# Exa Infra @Azure
-# Exa Infra @Azure - tfvars
+# Exa Infra @GCP
+# Exa Infra @GCP - tfvars
 ############################
 
 gcp_oci_exa_infra = {
