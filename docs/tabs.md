@@ -958,7 +958,7 @@ Selecting `Developer Services` in the setUpCloud  menu and `Add/Modify/Delete OK
 
 
 !!! Note
-    - CD3 Automation toolkit now supports multi availability domain placement for nodes in the nodepool.
+    - CD3 Automation toolkit now supports multi availability domain placement for nodes in the nodepool from toolkit version v2026.1.0
 
 
 **Known Observed behaviours:**
