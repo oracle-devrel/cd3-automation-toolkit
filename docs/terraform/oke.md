@@ -86,8 +86,17 @@ These are the syntax and sample format for providing inputs to the modules via <
         initial_node_labels = optional(map(any))
         kubernetes_version = string
         is_pv_encryption_in_transit_enabled = optional(bool)
-        availability_domain = number
-        subnet_id = string
+	    placement_configs = {
+         key = {
+            availability_domain = number
+            network_compartment_id = string
+            vcn_name = string
+            subnet_id = string
+            fault_domains = list
+            capacity_reservation_id = string
+            }
+        }
+
         size = number
         cni_type = string
         max_pods_per_node = optional(number)
@@ -127,8 +136,16 @@ These are the syntax and sample format for providing inputs to the modules via <
                 label = "node1"
         }
         kubernetes_version = "v1.24.1"
-        availability_domain = 2
-        subnet_id = "prod-app"
+        placement_configs = {
+        node_1 = {
+            availability_domain = 1
+            network_compartment_id = "Network"
+            vcn_name = "prod-vcn"
+            subnet_id = "prod-app"
+            fault_domains = [Fault-Domain-1]
+            }
+        }
+        
         size = 1
         cni_type = "OCI_VCN_IP_NATIVE"
         max_pods_per_node = 31
