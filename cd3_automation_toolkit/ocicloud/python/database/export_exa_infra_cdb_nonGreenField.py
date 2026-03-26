@@ -107,6 +107,10 @@ def print_exa_cdb(region,exadata_infrastructure,exa_infra_compartment_name,vm_cl
 
             if col_header == 'Run Immediate Full Backup':
                 run_immediate_full_backup = exa_cdb.db_backup_config.run_immediate_full_backup
+
+                if run_immediate_full_backup == "":
+                    run_immediate_full_backup = "false"
+
                 values_for_column[col_header].append(run_immediate_full_backup)
 
         else:

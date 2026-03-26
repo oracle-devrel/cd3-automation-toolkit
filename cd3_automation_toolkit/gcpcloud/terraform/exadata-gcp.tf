@@ -38,14 +38,14 @@ data "google_oracle_database_cloud_exadata_infrastructure" "exa_infra" {
 
 output "db_servers" {
   description = "DB Servers"
- # value       = data.google_oracle_database_db_servers.this[0].db_servers[*].properties.0.ocid
- value = ""
+  value       = {for k,v in var.gcp_oci_exa_vmclusters : k => data.google_oracle_database_db_servers.this[k].db_servers[*].properties.0.ocid}
+ #value = ""
 }
 
 output "exa_infra_id" {
   description = "DB Servers"
- # value       = data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[0].id
- value = ""
+  value       = {for k,v in var.gcp_oci_exa_vmclusters : k =>data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[k].id}
+ #value = ""
 }
 
 
