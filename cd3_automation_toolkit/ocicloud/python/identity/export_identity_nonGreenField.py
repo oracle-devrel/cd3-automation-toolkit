@@ -389,8 +389,8 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                 next_page = None
                 while True:
                     response = domain_client.list_dynamic_resource_groups(
-                        attributes=['matching_rule'],
-                        attribute_sets=['all'],
+                        #attributes=['matching_rule'],
+                        #attribute_sets=['all'],
                         page=next_page,
                         sort_by="displayName",
                         sort_order="ASCENDING"
@@ -402,8 +402,9 @@ def export_identity(inputfile, outdir, service_dir,resource, config, signer, ct,
                         break
                     next_page = response.next_page
 
-                for dg in dyngroups:
+                for dg1 in dyngroups:
                     total_g += 1
+                    dg = domain_client.get_dynamic_resource_group(dynamic_resource_group_id=dg1.ocid,attributes="matchingRule").data
                     importCommands, values_for_column_groups = process_group(dg, [],[], domain_name, is_dynamic=True, importCommands=importCommands, values_for_column_groups=values_for_column_groups)
         else:
             groups = oci.pagination.list_call_get_all_results(idc.list_groups, compartment_id=config['tenancy'])

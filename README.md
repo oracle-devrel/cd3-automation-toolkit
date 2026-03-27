@@ -7,14 +7,14 @@
 
 <br>
  
-  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2026.1.0) &nbsp;•&nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/excel-templates/) &nbsp;•&nbsp;[CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp;•&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;•&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/tutorials/) &nbsp;•&nbsp;[Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724) &nbsp;•&nbsp;[Slack Channel](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/queries) 
+  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2026.1.0) &nbsp;•&nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/excel-templates/) &nbsp;•&nbsp;[CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/cd3-overview/)&nbsp;•&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;•&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/tutorials/) &nbsp;•&nbsp;[Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724) &nbsp;•&nbsp;[Slack Channel](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/queries) 
   
 <br>
 
 
-CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastructure) resources by converting Excel templates to fully functional Terraform modules within minutes ⚡️⚡️ .
+CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to easily Build, Export and Manage OCI (Oracle Cloud Infrastructure) resources by converting Excel templates to fully functional Terraform modules in minutes ⚡️⚡️ .
 
-Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.
+The toolkit integrates with OCI DevOps Git service and Jenkins pipelines, enabling seamless CI/CD workflows.
 
 <br>
 
@@ -23,6 +23,13 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 
 [![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/main.zip)
 
+<br>
+
+
+
+🤖 [AI Analysis](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/terraform-ai-analysis/) &nbsp;&nbsp; ![New](https://img.shields.io/badge/New!-brightgreen)<br>
+Evaluate Terraform plans to identify potential security risks, misconfigurations and get actionable recommendations with AI-assisted analysis
+         
 <br>
 
 <h2>📌 Toolkit Supported OCI Services</h2>
@@ -103,13 +110,13 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 ## 💡 Benefits of CD3:
 
 
-   ✅ Time saving ⏰ 
+   ✅ Time saving  
   
-   ✅ Faster infrastructure provisioning 🚀
+   ✅ Faster infrastructure provisioning 
   
-   ✅ Scalability 📈
+   ✅ Scalability 
   
-   ✅ Operational efficiency ⚙️
+   ✅ Operational efficiency 
 
 <br>
 
