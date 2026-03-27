@@ -2,15 +2,21 @@
 ---
 
 
-CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly **Build, Export and Manage OCI (Oracle Cloud Infrastructure) resources** by converting Excel templates to fully functional Terraform modules within minutes 🚀 . 
+CD3 stands for **Cloud Deployment Design Deliverable**. <br>
+<br>The CD3 Automation toolkit enables users to easily **Build, Export and Manage** Oracle Cloud Infrastructure resources by converting Excel templates to fully functional Terraform modules in minutes. 
 
- ✅ Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.
+The toolkit integrates with OCI DevOps Git service and Jenkins pipelines, enabling seamless CI/CD workflows.
 
-📌 The Toolkit also extends its support to <a href="../cd3-azr-cli"><u>ADB@Azure</u></a>
+!!! Tip "Highlights"
+     <b>🤖 <a href="../terraform-ai-analysis">AI Analysis </a><span class="new-badge">New!</span></b> 
+         Evaluate Terraform plans to identify potential security risks, misconfigurations and get actionable recommendations with AI-assisted analysis
+
+    <b> &nbsp;&nbsp;&nbsp;<a href="../cd3-azr-cli"></b>ADB@Azure:</a> Extending DB@MultiCloud support to Azure   <br>
+    
 <br>
 
-**CD3 in a nutshell!** 
 
+**CD3 in a nutshell!** 
 
 <div style="max-width: 800px">
   <iframe 
@@ -28,33 +34,34 @@ CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolk
 
 ⏳ For Enterprise infrastructures, manual resource provisioning is tedious and error-prone.
 
-📝 Creating Terraform Code for each module/resource can be cumbersome and requires Terraform expertise.
+📝 Creating Terraform code for each module/resource can be cumbersome and requires Terraform expertise.
 
 🔁 Manually created infrastructure is hard to rebuild for different environments or regions.
 
 
 <br>
 
-**🎬 BTS: Here’s how it’s done!**
-
+**How it works**
 
 The toolkit transforms input data from Excel templates into Terraform files (auto.tfvars), enabling seamless creation of infrastructure in OCI.
 
-**CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and IaC(terraform) and continue to manage your OCI resources using CD3 and IaC.
+**CD3 is not limited to creation!** <br>
+
+🔁 Reverse engineer existing infrastructure back into Excel and IaC(terraform) and continue to manage your OCI resources using CD3 and IaC.
 
 
 <br>
 
-**💡The CD3 payoff!**
+**💡CD3 Highlights**
 
 
-   ✅ Time saving ⏰ 
+   ✅ Reduced manual effort
   
-   ✅ Faster infrastructure provisioning 🚀
+   ✅ Faster infrastructure provisioning 
   
-   ✅ Scalability 📈
+   ✅ Scalability 
   
-   ✅ Operational efficiency ⚙️
+   ✅ Operational efficiency 
 
 <br>
 

@@ -1,4 +1,4 @@
-# **Set Up OCI using Automation Toolkit with CLI**
+# **Manage OCI using Automation Toolkit with CLI**
 ---
 
 ## High Level Steps to use toolkit with CLI
@@ -32,9 +32,6 @@ config_file=
 
 # Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
 outdir_structure_file=
-
-# IaC Tool to be configured - Terraform(specify terraform) or OpenTofu(specify tofu)
-tf_or_tofu=tofu
 
 #path to cd3 excel eg /cd3user/tenancies/<prefix>\CD3-Customer.xlsx
 cd3file=
@@ -77,11 +74,6 @@ workflow_type=create_resources
             <td>outdir_structure_file</td>
             <td>Parameter specifying single outdir or different for different services</td>
             <td>Blank or _outdir_structure_file.properties</td>
-        </tr>
-        <tr>
-            <td>tf_or_tofu</td>
-            <td>IaC Tool to be configured - Terraform or OpenTofu</td>
-            <td>terraform or tofu</td>
         </tr>
         <tr>
             <td>cd3file</td>

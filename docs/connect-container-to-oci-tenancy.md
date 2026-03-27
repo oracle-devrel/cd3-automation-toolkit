@@ -99,7 +99,7 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
         <tr>
             <th>Parameter</th>
             <th>Description</th>
-            <th>Example</th>
+            <th>Example input</th>
         </tr>
         <tr>
             <td>prefix</td>
@@ -141,13 +141,11 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
             <td>The outdir_structure_file defines the grouping of the terraform auto.tf.vars for the various generated resources.To group resources into different directories within each region - specify the absolute path to the file.To have all the files generated in a single directory in the corresponding region, leave this variable blank.</td>
             <td>Defaults to /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties</td>
         </tr>
-
         <tr>
-            <td>tf_or_tofu</td>
-            <td>IaC Tool to be configured - Terraform or OpenTofu</td>
-            <td>terraform</td>
+        <td>enable_terraform_plan_analysis</td>
+        <td>This optional parameter lets users enable OCI Generative AI analysis of terraform plans. If enabled, it will use Model - cohere.command-r-plus-08-2024 of Gen AI service in the tenancy</td>
+        <td>yes</td>
         </tr>
-        <tr>
         <tr>
             <td>ssh_public_key</td>
             <td>SSH Key for launched instances; Use '\n' as the delimiter to add multiple ssh keys.</td>
@@ -216,7 +214,6 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 !!! tip " Important Configuration Tips"
     - Have the details ready for Authentication mechanism you are planning to use.<br>
-    - Choose whether the outdir needs to be configured with OpenTofu or Terraform. Its a one time selection for that prefix and cannot be modified later.<br>
     - Review **outdir_structure_file** parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources. <br>
     - Review Advanced Parameters Section for CI/CD setup. **The toolkit can be used either with CLI or with Jenkins.** If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI. Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
 
@@ -357,7 +354,7 @@ python connectCloud.py oci  connectOCI.properties
         <tr>
             <td>OCI DevOps Project and Repository</td>
             <td>&lt;prefix&gt;-automation-toolkit-project and &lt;prefix&gt;-automation-toolkit-repo</td>
-            <td>Devops Project and repo are created under compartment specified under compartment_ocid property in connectOCI.properties. This will host the terraform/tofu code. This is created only if use_oci_devops_git is set to yes.</td>
+            <td>Devops Project and repo are created under compartment specified under compartment_ocid property in connectOCI.properties. This will host the terraform code. This is created only if use_oci_devops_git is set to yes.</td>
         </tr>
         <tr>
             <td>OCI Topic</td>
@@ -398,10 +395,10 @@ python connectCloud.py oci  connectOCI.properties
 
 
 !!! info "Managing Multiple Prefixes?" 
-    Need to manage multiple environments separately by using distinct prefixes, all within a single CD3 container?<br>
+    Easily manage multiple environments in a single CD3 container using distinct prefixes.<br>
     Check this out: [Multiple Prefixes](multiple-prefixes.md)
 
 
 Proceed to the below instructions:
 
-[Set Up OCI using Automation Toolkit](setUpOCI.md){ .md-button }
+[Manage OCI using Automation Toolkit](setUpOCI.md){ .md-button }

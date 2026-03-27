@@ -1,4 +1,4 @@
-# **Set Up Azure using Automation Toolkit with CLI**
+# **Manage Azure using Automation Toolkit with CLI**
 ---
 ## High Level Steps to use toolkit with CLI
 

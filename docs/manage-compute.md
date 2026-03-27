@@ -5,7 +5,7 @@ Provisioning of compute instances using Automation Toolkit involves the below st
 - Adding the VM details to the "Instances" Excel Sheet.
 - Updating the ```/cd3user/tenancies/<prefix>/terraform_files/<region>/<service_dir>/variables_<region>.tf``` file with information about ssh key, source ocid. 
 - Running the toolkit with 'Create Resources' workflow to generate *.auto.tfvars.
-- Executing Terraform/Tofu to provision the resources in OCI.
+- Executing Terraform to provision the resources in OCI.
 
 **1. Update Excel Sheet**
 
@@ -43,7 +43,7 @@ Remote execution should be used as the _last resort or only during initial provi
  - For block-volume attachment configuration via ansible playbook the device name is must, and it's currently set to _"/dev/oracleoci/oraclevdb"_ in the sample ansible playbook.
  - Common scenarios like security hardening and other common shell scripts can be executed against the OCI instances during provisioning.
  - Running the CD3 automation toolkit will generate auto.tfvars.
- - Execute Terraform/Tofu commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.
+ - Execute Terraform commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.
 
  The users can refer to the ```default.yaml``` file which is inside ```/cd3user/tenancies/<prefix>/terraform_files/<region>/<service_dir>/scripts``` dir for provisioning the custom playbooks.
  
@@ -101,13 +101,13 @@ Ensure there is an entry in the variables_<region\>.tf file for the value entere
     !!! Important
         Execute GIT commands to sync these variables_<region\>.tf file changes  with DevOps GIT Repo in case **toolkit is being used with Jenkins,** <a href="../sync-cli-jenkins"><u>Here are the Steps</u></a>.
 
-**3.  Execute setUpCloud and terraform/tofu apply**
+**3.  Execute setUpCloud and terraform apply**
 
 On choosing _"Compute"_ in the setUpCloud menu and _"Add/Modify/Delete Instances/Boot Backup Policy"_ submenu will allow to launch the VM on OCI tenancy.
 
 Output tfvars file generated: ```<outdir>/<region_dir>/<service_dir><prefix>_instances.auto.tfvars``` and ```<outdir>/<region_dir>/<service_dir>/<prefix>_boot-backup-policy.auto.tfvars```  
 
-Once the terraform/tofu apply is complete, view the resources under Compute -> Instances for the region.
+Once the terraform apply is complete, view the resources under Compute -> Instances for the region.
 
 Upon re-running the same option, the previously existing files will be backed up under the directory →   ```<outdir>/<region_dir>/<service_dir>/backup_instances/<Date>-<Month>-<Time>.```
 

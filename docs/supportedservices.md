@@ -132,7 +132,7 @@
             </div>
             <p><a href="../cd3exceltabs#oracle-database"><b>Oracle Database</b></a></p>
             <div class="description">
-                <p><i>Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW</i></p>
+                <p><i>Exadata-Dedicated: Exa-Infra, Exa-VMClusters, DB Homes, CDBs, PDBs; DB Systems VM & BM, ATP, ADW</i></p>
             </div>
              <p><a href="../cd3exceltabs#mysql-database"><b>MySQL Database</b></a></p>
             <div class="description">

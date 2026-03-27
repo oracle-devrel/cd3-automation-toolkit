@@ -1,4 +1,4 @@
-# **Excel Sheet Templates**
+# **CD3 Excel Templates**
 
  CD3 Excel templates serve as the main input to the Automation Toolkit. 
 
@@ -9,8 +9,8 @@
 
 <b>Filling the Templates</b>
 
-- Instructions for filling in data are provided in the blue section of each sheet (within the Excel file).<br>
-- Make appropriate changes to parameter values such as Region, Compartment, etc., based on your deployment requirements.
+- Instructions for filling in data are provided in the blue section of each sheet within the Excel file<br>
+- Make appropriate changes to parameter values such as Region, Compartment, etc., based on your deployment requirements
 
 
 !!! Important "Heads Up!"

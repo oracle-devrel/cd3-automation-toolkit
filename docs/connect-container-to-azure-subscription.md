@@ -156,10 +156,10 @@ python connectCloud.py azure connectAzure.properties
 
 
 !!! info "Managing Multiple Prefixes?" 
-    Need to manage multiple environments separately by using distinct prefixes, all within a single CD3 container?<br>
+    Easily manage multiple environments in a single CD3 container using distinct prefixes.<br>
     Check this out: [Multiple Prefixes](multiple-prefixes.md)
 
 
 Proceed to the below instructions:
 
-[Set Up Azure using Automation Toolkit](setUpAzure.md){ .md-button }
+[Manage Azure using Automation Toolkit](setUpAzure.md){ .md-button }

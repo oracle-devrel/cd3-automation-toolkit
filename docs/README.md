@@ -32,6 +32,7 @@
     - [Architecture](architecture.md)<br>
     - [Services Supported](supportedservices.md)<br>
     - [Excel Templates](excel-templates.md)<br>
+    - [AI Analysis](terraform-ai-analysis.md)<br>
 
 -   :material-hammer-screwdriver:{ .lg .middle } __Installing CD3__
 
@@ -52,40 +53,44 @@
 
 
 
--   :material-monitor-screenshot:{ .lg .middle } __Setup OCI__
+-   :material-monitor-screenshot:{ .lg .middle } __Manage OCI__
 
     ---
-    - [Setup OCI with CLI](cd3-cli.md)<br>
+    - [Manage OCI with CLI](cd3-cli.md)<br>
         - [Create Resources in OCI using CLI](greenfield-cli.md)<br>
         - [OPA integration](opa-integration.md)<br>
         - [Export Resources from OCI using CLI](nongreenfield-cli.md)<br>
-    - [Setup OCI with Jenkins](cd3-jenkins.md)<br>
+    - [Manage OCI with Jenkins](cd3-jenkins.md)<br>
         - [Jenkins Overview](jenkinsintro.md)<br>
         - [Create Resources in OCI using Jenkins](greenfield-jenkins.md)<br>
         - [Provision multiple Services Together](multiple-services-jenkins.md)<br>
         - [Export Resources from OCI using Jenkins](nongreenfield-jenkins.md)<br>
         - [Commit Local changes to GIT](sync-cli-jenkins.md)<br>  
+    - [Must Read](must-read.md)<br>
+        - [Manage Network](manage-network.md)<br>
+        - [Manage Compute](manage-compute.md)<br>
+        - [Manage OCI Network Firewall](manage-firewall.md)<br>
 
 
 
--   :material-monitor-screenshot:{ .lg .middle } __Setup Azure__
+-   :material-monitor-screenshot:{ .lg .middle } __Manage Azure__
 
     ---
-    - [Setup Azure](setUpAzure.md)<br>
-    - [Setup Azure with CLI](cd3-azr-cli.md)<br>
+    - [Manage Azure](setUpAzure.md)<br>
+    - [Manage Azure with CLI](cd3-azr-cli.md)<br>
         - [Create Resources in Azure](greenfield-azr-cli.md)<br>
         - [Export Resources from Azure](nongreenfield-azr-cli.md)<br>
     
 
     
-
+<!-- 
 -   :material-lightbulb-auto:{ .lg .middle } __Read More for OCI__
 
     ---
     - [Manage Network](manage-network.md)<br>
     - [Manage Compute](manage-compute.md)<br>
     - [Manage OCI Network Firewall](manage-firewall.md)<br>
-    
+     -->
 
 -   :material-feather:{ .lg .middle } __Additional Features__
 

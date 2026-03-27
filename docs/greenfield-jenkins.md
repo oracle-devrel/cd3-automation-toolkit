@@ -54,9 +54,9 @@ This will run the python script to generate the auto.tfvars.  Once created, it w
 
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="../images/jenkinsGF-4.jpg">
 
-## Execute terraform/tofu Pipelines
+## Execute terraform Pipelines
 
-Terraform/tofu pipelines are auto triggered parallely from setupoci pipeline based on the services selected (shown in the last two stages of the above screenshot). <br>
+Terraform pipelines are auto triggered parallely from setupoci pipeline based on the services selected (shown in the last two stages of the above screenshot). <br>
 
 
 
@@ -75,7 +75,7 @@ Click on 'Logs' for Stage: ashburn/identity and click on the pipeline link.
 
 <span style="color: teal; font-weight: bold;">Step 2:</span>
 
-Stages of the terraform/tofu pipeline for apply are shown below:
+Stages of the terraform pipeline for apply are shown below:
 
 <img width="830" height="450" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="../images/jenkinsGF-6.jpg"><br>
 

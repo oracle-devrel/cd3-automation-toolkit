@@ -1,4 +1,4 @@
-# **Set Up OCI using Automation Toolkit with Jenkins**
+# **Manage OCI using Automation Toolkit with Jenkins**
 ---
 
 Jenkins integration with the toolkit is provided to jump start your journey with CI/CD for IaC in OCI. A beginner level of understanding of Jenkins is required.

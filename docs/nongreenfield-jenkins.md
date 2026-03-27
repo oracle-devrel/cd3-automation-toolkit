@@ -64,9 +64,9 @@ setUpOCI pipeline is triggered and stages are executed as shown below:
 
 <span style="color: teal; font-weight: bold;">Expected Output of 'Execute setUpOCI' stage:</span>
 <ol type="a">
-  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Here are the <a href=../download-excel> <b>steps</b></a> to download the exported Excel file. </li>
+  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Here are the <a href=../download-excel> <b>steps to download the exported Excel file</b></a></li>
   
-  <li> Generates Configuration files - *.auto.tfvars.</li>
+  <li> Generates Configuration files - *.auto.tfvars</li>
   <li> Generates shell scripts with import commands - <b>import_commands_&lt;resource&gt;.sh</b> </li>
 </ul>
 </ol>
@@ -83,7 +83,7 @@ setUpOCI pipeline is triggered and stages are executed as shown below:
 </ol>
 
 <br>
-<span style="color: teal; font-weight: bold;">Expected Output of terraform/tofu Pipelines:</span>
+<span style="color: teal; font-weight: bold;">Expected Output of terraform Pipelines:</span>
 <ol type="a">
   <li>Respective pipelines will get triggered automatically from setUpOCI pipeline based on the services chosen for export. You could also trigger manually when required.</li>
   <li> If 'Run Import Commands' stage was successful (ie.. import_commands_&lt;resource&gt;.sh ran successfully for all services chosen for export), respective pipelines triggered should have 'Plan' stage show as 'No Changes'  </li>

@@ -6,7 +6,7 @@ The toolkit allows independent management of multiple environments using the sam
 
 !!! note "Multi-prefix with Jenkins"
 
-    * With the toolkit release v2024.4.1, the toolkit supports executing connectCloud.py with different values for **prefix** per container when using Jenkins.
+    * Starting from v2024.4.1, `connectCloud.py` can be executed with different prefix values per container when using Jenkins.
 
 <br>
 

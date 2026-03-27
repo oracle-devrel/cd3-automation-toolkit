@@ -14,6 +14,7 @@ nav:
       - excel-templates.md
       - For OCI: oci-excel-templates.md
       - For Azure: azr-excel-templates.md
+    - "<span>AI Analysis <span class='new-badge'>New!</span></span>": terraform-ai-analysis.md
       
   - Install CD3 :
     - install-cd3.md
@@ -33,16 +34,16 @@ nav:
       - Delete Prefix(optional): delete-prefix.md
     - Connect to Azure: connect-container-to-azure-subscription.md
 
-  - Setup OCI :
+  - Manage OCI :
     - setUpOCI.md
-    - Set Up OCI with CLI:
+    - Manage OCI with CLI:
       - cd3-cli.md
       - Before You Begin: cd3-cli.md
       - Create in OCI  : 
         - greenfield-cli.md
         - OPA integration: opa-integration.md
       - Export from OCI : nongreenfield-cli.md
-    - Set Up OCI with Jenkins:
+    - Manage OCI with Jenkins:
       - cd3-jenkins.md
       - Before You Begin: cd3-jenkins.md
       - Jenkins Dashboard: jenkinsintro.md
@@ -54,20 +55,24 @@ nav:
       - Commit Local changes to GIT: sync-cli-jenkins.md
     - Must Read:
       - must-read.md
+      #- Prerequisites : must-read-prerequisites.md
+      - Manage Network : manage-network.md
+      - Manage Compute : manage-compute.md
+      - Manage OCI Network Firewall : manage-firewall.md
   
-  - Setup DB@Azure :
+  - Manage DB@Azure :
     - setUpAzure.md
-    - Set Up DB@Azure with CLI:
+    - Manage DB@Azure with CLI:
       - cd3-azr-cli.md
       - Create in Azure  : 
         - greenfield-azr-cli.md
       - Export from Azure : 
         - nongreenfield-azr-cli.md
-  - Read More for OCI :
-    - must-read-prerequisites.md
-    - Manage Network : manage-network.md
-    - Manage Compute : manage-compute.md
-    - Manage OCI Network Firewall : manage-firewall.md
+  # - Read More for OCI :
+  #   - must-read-prerequisites.md
+  #   - Manage Network : manage-network.md
+  #   - Manage Compute : manage-compute.md
+  #   - Manage OCI Network Firewall : manage-firewall.md
 
 
   - Additional Features:

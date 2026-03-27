@@ -34,8 +34,6 @@ config_file=/cd3user/tenancies/demotenancy/.config_files/demotenancy_oci_config
 #Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
 outdir_structure_file=/cd3user/tenancies/demotenancy/demotenancy_outdir_structure_file.properties
 
-#IaC Tool to be configured - Terraform(specify terraform) or OpenTofu(specify tofu)
-tf_or_tofu=terraform
 
 #path to cd3 excel eg /cd3user/tenancies/<prefix>/CD3-Customer.xlsx
 cd3file=/cd3user/tenancies/demo/CD3-demo.xlsx
@@ -49,7 +47,7 @@ workflow_type=export_resources
 
 <span style="color: teal; font-weight: bold;">Step 3:</span>
 
-Execute the setUpCloud.py script to start exporting the resources to CD3 and creating the terraform/tofu configuration files.
+Execute the setUpCloud.py script to start exporting the resources to CD3 and creating the terraform configuration files.
 
 <b>Commands to Execute:</b>
 ```
@@ -138,7 +136,7 @@ c. Shell Script with import commands - <b><i>import_commands_`<resource>`.sh</i>
 <span style="color: teal; font-weight: bold;">Step 4:</span>
 
 Execute the <b>*import_commands_`<resource>`.sh*</b> files that are generated in the outdir.
-<br>The terraform/tofu plan should show that infrastructure is up-to-date with no changes required for all regions.
+<br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   
 
 !!! tip "Modify existing resources"

@@ -208,7 +208,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
     <div style="padding-left: 20px;">
       <ul>
         <li><a href="../tabs#dbsystems-vm-bm-tab">DBSystems - VM/BM</a></li>
-        <li><a href="../tabs#exacs">Exadata CS</a></li>
+        <li><a href="../tabs#exacs">Exadata-Dedicated: Exa-Infra, Exa-VMClusters, DB Homes, CDBs, PDBs</a></li>
         <li><a href="../tabs#adb-tab">Autonomous DB</a></li>
       </ul>
       <a href="../terraform/adb">🔗 Sample auto.tfvars for ADB</a><br>

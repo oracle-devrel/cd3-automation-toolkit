@@ -214,3 +214,78 @@ As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove
 **12.**
   - When exporting events, post executing the *import_commands_events.sh* script, the plan shows changes as below. Ignore this and proceed with *apply* as it will not change anything in the OCI console for events.
     ![image](../images/events_tfplan.png)
+
+**13.**
+
+**Terraform Forces Resource Replacement – OCI CDB with Database Management Enabled** <br>
+<br>
+**Issue Description**
+While managing OCI Container Databases (CDB) using Terraform (oci_database_database), databases with Database Management enabled are marked for replacement after being imported into Terraform.<br>
+•	The Terraform plan shows changes in the database {} block with multiple attributes marked as “forces replacement”, even though no actual configuration changes were made.<br>
+•	Databases without Database Management enabled do not exhibit this behaviour and remain stable after import.<br>
+•	This occurs when an existing database with Database Management enabled is imported into Terraform and a terraform plan is executed, after which Terraform detects differences and plans a replacement.<br>
+
+**Sample Response** 
+```
+          # module.databases["cd3-dbhome_AKCDB26"].oci_database_database.database_database must be replaced
+          -/+ resource "oci_database_database" "database_database" {
+                ~ character_set                                    = "AL32UTF8" -> (known after apply)
+                ~ compartment_id                                   = "ocid1.compartment. " -> (known after apply)
+                ~ data_guard_group                                 = [] -> (known after apply)
+                ~ database_management_config                       = [
+                    - {
+                        - management_status = "DISABLED"
+                        - management_type   = "ADVANCED"
+                      },] 
+                + database_software_image_id                       = (known after apply)
+                ~ db_name                                          = "CD3CDB26" -> (known after apply)
+                + db_system_id                                     = (known after apply)
+                ~ db_unique_name                                   = "CD3CDB26AI" -> (known after apply)
+                + db_version                                       = (known after apply)
+                ~ id                                               = "ocid1.databa3cxmvsjelt42u3zbta"
+                + database {
+                    + admin_password             = (sensitive value)
+                    + character_set              = "AL32UTF8" # forces replacement
+                    + db_name                    = "CD3CDB26" # forces replacement
+                    + db_unique_name             = "CD3CDB26AI" # forces replacement
+                    + freeform_tags              = (known after apply)
+                    + kms_key_id                 = (known after apply)
+                    + kms_key_version_id         = (known after apply)
+                    + ncharacter_set             = "AL16UTF16" # forces replacement
+                    + pdb_name                   = "CDB26PDB01" # forces replacement
+                    + pluggable_databases        = (known after apply) # forces replacement
+                    + sid_prefix                 = "CD3" # forces replacement
+                    + tde_wallet_password        = (sensitive value)
+                    + vault_id                   = (known after apply)
+                    + vm_cluster_id              = (known after apply)
+
+                    + db_backup_config {
+                        + auto_backup_enabled       = true
+                        + auto_backup_window        = (known after apply)
+                        ……….
+                          }
+              }
+
+          Plan: 1 to add, 0 to change, 1 to destroy.
+```
+<br>
+
+**Root Cause**
+The issue is caused by a mismatch between Terraform configuration and the OCI API response when Database Management is enabled. OCI returns additional metadata, which Terraform interprets as changes in the database {} block. 
+Since key attributes in this block are marked as new, Terraform plans a resource replacement even though no actual change was intended.
+<br>
+
+**Workaround**
+To prevent unintended replacement, add “database” to the ignore_changes block in the lifecycle configuration of the oci_database_database resource in the main.tf file. 
+This prevents Terraform from detecting differences and avoids resource replacement.
+lifecycle {
+  ignore_changes = [database]
+}
+Drawback of this workaround
+•	Terraform will not track or manage changes inside the database {} block
+•	Changes made in OCI will not be detected
+ 
+<br>
+**Reference**
+A bug has been raised with the Terraform provider team:
+https://github.com/oracle/terraform-provider-oci/issues/2254

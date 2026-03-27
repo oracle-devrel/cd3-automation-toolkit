@@ -30,9 +30,6 @@ config_file=/cd3user/tenancies/demo/.config_files/demo_oci_config
 #Leave the field blank if you want a single outdir or specify outdir_structure_file.properties containing the directory structure for OCI services.
 outdir_structure_file=/cd3user/tenancies/demo/demo_outdir_structure_file.properties
 
-#IaC Tool to be configured - Terraform(specify terraform) or OpenTofu(specify tofu)
-tf_or_tofu=terraform
-
 #path to cd3 excel eg /cd3user/tenancies/<prefix>/CD3-Customer.xlsx
 cd3file=/cd3user/tenancies/demo/CD3-demo.xlsx
 
@@ -44,7 +41,7 @@ workflow_type=create_resources
 
 <span style="color: teal; font-weight: bold;">Step 3:</span>
 
-Execute below script to start creating the terraform/tofu configuration files.
+Execute below script to start creating the terraform configuration files.
     
 <b>Commands to Execute:</b>
 
@@ -131,22 +128,13 @@ The tfvars files for the selected services will be generated at the following pa
 
 <span style="color: teal; font-weight: bold;">Step 4:</span>
 
-Change the directory to  ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>``` .
+Change the directory to  ```/cd3user/tenancies/<prefix>/terraform_files/<region_dir>/<service_dir>``` 
 
-  - If **terraform** is selected as the IaC tool initially, execute:
+Execute:
 
+- `terraform init` – *To initialize and prepare the working/out directory so Terraform can run the configuration*
 
-    ```terraform init```  - *To initialize and prepare the working/out directory so Terraform can run the configuration.*<br>
+- `terraform plan` – *To preview changes and validate against <a href="../opa-integration"><u>OPA policies</u></a> for CIS compliance*
 
-    ```terraform plan```  - *To preview any changes before applying them. Run the plan against <a href="../opa-integration"><u>OPA policies</u></a> for compliance against CIS.*
-
-    ```terraform apply``` - *To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.*
-
+- `terraform apply` – *To apply the Terraform configuration to create, update, or destroy OCI resources*
   
-- If **tofu** is selected, execute:
-
-    ```tofu init```  - *To initialize and prepare the working/out directory so tofu can run the configuration.*<br>
-
-    ```tofu plan```  - *To preview any changes before applying them. Run the plan against <a href="../opa-integration"><u>OPA policies</u></a> for compliance against CIS.*
-
-    ```tofu apply``` - *To make the changes defined by tofu configuration to create, update, or destroy resources in OCI.*
