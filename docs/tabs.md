@@ -704,6 +704,7 @@ On choosing **"Database"** in the setUpCloud  menu and **"Add/Modify/Delete EXA 
 <code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_exa-infra/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> and 
 <code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_exa-vmclusters/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
 
+For details on known Terraform behavior when working with OCI CDBs with Database Management enabled, refer to point 13 in <a href ="../knownbehaviour">Known Behaviour</a> page
 
 
 ## ADB Tab
