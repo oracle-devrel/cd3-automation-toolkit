@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/group-tf-files/">
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform-ai-analysis/">
       
       
-        <link rel="prev" href="./">
+        <link rel="prev" href="../azr-excel-templates/">
       
       
-        <link rel="next" href="../remotestate/">
+        <link rel="next" href="../install-cd3/">
       
       
       <link rel="icon" href="../images/oci.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Grouping of Terraform Files - CD3 Documentation</title>
+        <title>AI Analysis New! - CD3 Documentation</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#grouping-set-of-resources-into-a-single-tf-state-file" class="md-skip">
+        <a href="#ai-terraform-plan-analyzer" class="md-skip">
           Skip to content
         </a>
       
@@ -105,7 +105,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Grouping of Terraform Files
+              <span>AI Analysis <span class='new-badge'>New!</span></span>
             
           </span>
         </div>
@@ -184,8 +184,10 @@
         
   
   
+    
   
-    <li class="md-tabs__item">
+  
+    <li class="md-tabs__item md-tabs__item--active">
       <a href="../cd3-overview/" class="md-tabs__link">
         
   
@@ -269,11 +271,9 @@
         
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../group-tf-files/" class="md-tabs__link">
         
   
     
@@ -389,8 +389,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -409,14 +411,17 @@
     
     
       
+        
+        
+      
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
         
           
           
@@ -432,13 +437,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1">
             <span class="md-nav__icon md-icon"></span>
             Overview
@@ -635,10 +640,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../terraform-ai-analysis/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -647,6 +661,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1830,10 +1845,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1852,22 +1865,19 @@
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link ">
+            <a href="../group-tf-files/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1878,13 +1888,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Additional Features
@@ -1895,19 +1905,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../group-tf-files/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1916,7 +1917,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2347,71 +2347,50 @@
   
 
 
-<h1 id="grouping-set-of-resources-into-a-single-tf-state-file">Grouping set of resources into a single TF state file</h1>
-<p>For Large Infrastructures, maintaining terraform files for all services (Network, Instances, LBaaS, Databases etc.,) within a single folder is not a viable option.</p>
-<p>CD3 provides an option to choose between a single output directory for all services or separate directories for each service to store the generated Terraform files.</p>
-<p>This option can be configured while <a href="../connect-container-to-oci-tenancy"><u>connecting CD3 container to the OCI tenancy</u></a>.</p>
-<p>The parameter <code>outdir_structure_file</code> in <code>connectOCI.properties</code>,  can be used to configure single outdirectory or separate outdirectories for each service.</p>
-<p>By default, the toolkit is configured to use different out directories for different services.</p>
-<p><strong>Steps to customize directory names to be created for each OCI service -</strong></p>
+<h1 id="ai-terraform-plan-analyzer">AI Terraform Plan Analyzer</h1>
+<p>Terraform is widely used to manage infrastructure as code (IaC). Terraform plan outputs can be large and complex, often spanning thousands of lines.<br></p>
+<p><span style="font-size:1.3em; font-weight:550;">⚠️ The Challenge</span></p>
+<p>Manually reviewing these plans to identify security risks or misconfigurations is time-consuming and prone to human error. 
+Even a small oversight such as exposing a resource publicly can lead to serious issues in production environments.</p>
+<p><br>
+<span style="font-size:1.3em; font-weight:550;">🎯 The Solution: Automated AI Review</span></p>
+<p>CD3 introduces an AI-assisted analysis step as part of the Jenkins pipeline to help review Terraform plans.<br></p>
+<p>This feature analyzes Terraform plans for potential security risks and best practice violations, helping identify issues early before deployment.</p>
+<p>It leverages Oracle Generative AI from configured regions to perform the following:</p>
 <ol>
 <li>
-<p>Go to <code>/cd3user/oci_tools/cd3_automation_toolkit/connectOCI.properties</code>. Enter required config details. </p>
-<p>Make sure that <em>outdir_structure_file</em> is set to a pre-defined path of <em>outdir_structure_file.properties</em>. Refer to the screenshot below:
-   <img alt="image" src="../images/grouptf-1.png" /></p>
+<p><strong>Parse the plan</strong>  - Understand the infrastructure changes being introduced.</p>
 </li>
 <li>
-<p>Under the same user-scripts folder, open <code>outdir_structure_file.properties</code> and modify the directory names if required. They are in the format: <code>OCI_Service_Name=Directory_Name</code></p>
+<p><strong>Identify issues</strong>  - Detect misconfigurations such as open network access or insecure settings.</p>
+</li>
+<li>
+<p><strong>Summarize findings</strong>  - Generate a clear, human-readable report of risks and recommendations.</p>
 </li>
 </ol>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>Do not modify the OCI service Names specified on the left hand side.Modify the directory name specified on Right Hand Side only.</li>
-<li>Directory will be created for that service under &lt;region&gt; directory. Do not provide absolute path.</li>
-<li>To make any changes to the directory structure later, it is necessary to rerun the <code>connectCloud.py</code> script from scratch.</li>
-<li>It is mandatory to specify the directory name for each service.</li>
-</ul>
-</div>
-<p><img width="953" alt="image" src="../images/grouptf-2.png"></p>
-<p>Here, the network and nsg directories have been renamed to <strong>demo_network</strong> and <strong>demo_nsg</strong> respectively. The next steps to run the toolkit remain the same as specified in <a href="../greenfield-cli"><u>Greenfield workflow</u></a></p>
-<ol>
-<li>
-<p>Run <code>python connectCloud.py oci connectOCI.properties</code> from <code>cd3_automation_toolkit</code> folder. This will create prefix folder as <code>/cd3user/tenancies/&lt;prefix&gt;/</code> and configure a seperate directory for each service inside region folder subscribed to the tenancy.</p>
-</li>
-<li>
-<p>Go to <code>/cd3user/tenancies/&lt;prefix&gt;/&lt;prefix&gt;_setUpOCI.propertiesfile</code> and add the CD3 Excel path. </p>
-<p>Change to the below directory
- <br><code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code></p>
-<p>Run the script<br><code>python setUpCloud.py oci /cd3user/tenancies/&lt;prefix&gt;/&lt;prefix&gt;_setUpOCI.properties</code></p>
-<p>Select required options. <em>(Here,"Network", "nsg" options have been selected to verify the files under the "demo_network", "demo_nsg" folders)</em></p>
-<p><em>auto.tfvars</em> for the respective services are created.</p>
-</li>
-<li>
-<p>Go to the region directory <code>/cd3user/tenancies/&lt;prefix&gt;/terraform_files/&lt;region&gt;/</code> . It is clear that all the service-specific folders have been created successfully.</p>
-<p><img width="953" alt="image" src="../images/grouptf-3.png"></p>
-</li>
-<li>
-<p>Navigate to the <strong>demo-network</strong> folder. All the auto.tfvars and tfstate files related to Network service can be seen within the <strong>demo_network</strong> folder. Terraform operations like        terraform init, terraform plan, terraform apply etc., will be executed from within these folders.</p>
-<p><img width="953" alt="image" src="../images/grouptf-4.png"></p>
-<p>Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using terraform for large-scale infrastructures.</p>
-<p>Likewise, While doing an export from OCI to terraform, update the <code>connectOCI.properties</code> file with path to <code>outdir_structure_file.properties</code> similar to step-1 and then follow the  <a href="../nongreenfield-cli"><u>steps to run the toolkit for Non-green field tenancies</u></a>. With this, all the .sh files with import  commands of a particular OCI service are grouped and can be easily managed.</p>
-</li>
-</ol>
-<p><strong>Steps to use single out directory for all OCI services -</strong></p>
-<ol>
-<li>
-<p>Go to <code>/cd3user/oci_tools/cd3_automation_toolkit/connectOCI.properties</code>. Enter required config details. </p>
-<p>Make sure that <em>outdir_structure_file</em> is set to empty value. Refer to the screenshot below:
-   <img alt="image" src="../images/grouptf-5.png" /></p>
-</li>
-<li>
-<p>Run <code>python connectCloud.py oci connectOCI.properties</code> from  <code>cd3_automation_toolkit</code> folder. This will create prefix folder as <code>/cd3user/tenancies/&lt;prefix&gt;/</code> and tfvars/state file for each service inside the region folder subscribed for the region.</p>
-</li>
-<li>
-<p>Rest of the steps to run the toolkit remain the same.</p>
-</li>
-</ol>
+<p>This feature helps identify common issues early, improving deployment confidence. It acts as a safety check and complements standard review practices.</p>
+<p><br>
+<span style="font-size:1.3em; font-weight:550;">💻 Usage</span></p>
+<p>This is an optional feature in the CD3 Jenkins workflow and can be enabled as part of <a href= "../connect-container-to-oci-tenancy">Connect Container to Tenancy </a>configuration
+<br></p>
+<p><b>1.</b> Open the file: <code>/cd3user/oci_tools/cd3_automation_toolkit/connectOCI.properties</code> <br>
+<b>2.</b> Set the parameter <code>enable_terraform_plan_analysis</code> to <code>yes</code>, along with other required config details <br>
+<b>3.</b> This configuration takes effect when the <code>connectCloud.py</code> script is executed (<a href =" ../connect-container-to-oci-tenancy">see Executing connectCloud.py</a>) <br>
+<b>4.</b> Once enabled, it runs automatically as part of the Jenkins build.<br></p>
+<p><b>To view the results:</b><br>
+&nbsp;&nbsp;&nbsp; - Open the Jenkins build<br>
+&nbsp;&nbsp;&nbsp; - Check the <strong>Console Output</strong><br>
+&nbsp;&nbsp;&nbsp; - Locate the section: <strong>&gt;&gt; Terraform AI Analysis</strong><br></p>
+<p><b>The analysis provides:</b><br>
+&nbsp;&nbsp;&nbsp; - <strong>Risk level</strong> – Indicates whether changes are low or high risk<br />
+&nbsp;&nbsp;&nbsp; - <strong>Findings</strong> – List of identified issues<br />
+&nbsp;&nbsp;&nbsp; - <strong>Recommendations</strong> – Suggested fixes<br />
+&nbsp;&nbsp;&nbsp; - <strong>Cost estimation</strong> – Approximate cost based on planned resources<br />
+<br>
+<b>Disable AI summary</b> <br></p>
+<p><b>1.</b> Update the parameter <code>enable_terraform_plan_analysis</code> from <code>yes</code> to <code>no</code> in the file <code>/cd3user/oci_tools/cd3_automation_toolkit/connectOCI.properties</code><br>
+<b>2.</b> Re-run <code>connectCloud.py</code> script (<a href =" ../connect-container-to-oci-tenancy">see Executing connectCloud.py</a>)<br> 
+<b>3.</b> Restart Jenkins using: <code>/usr/share/jenkins/jenkins.sh &amp;</code><br></p>
 
 
 

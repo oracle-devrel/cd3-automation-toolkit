@@ -1,413 +1,418 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/ReleaseInfo/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/ReleaseInfo/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/additional-attributes/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/additional-attributes/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/architecture/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/architecture/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/authmechanisms/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/authmechanisms/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/azr-excel-templates/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/azr-excel-templates/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/cd3-azr-cli/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/cd3-azr-cli/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/cd3-cli/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/cd3-cli/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/cd3-jenkins/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/cd3-jenkins/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/cd3-overview/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/cd3-overview/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/cd3exceltabs/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/cd3exceltabs/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/cd3validator/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/cd3validator/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/cd3workflows/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/cd3workflows/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/commonissues/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/commonissues/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/connect-container-to-azure-subscription/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/connect-container-to-azure-subscription/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/connect-container-to-cloud/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/connect-container-to-cloud/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/connect-container-to-oci-tenancy/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/connect-container-to-oci-tenancy/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/createnetwork-jenkins/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/createnetwork-jenkins/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/delete-prefix/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/delete-prefix/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/download-excel/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/download-excel/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/excel-templates/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/excel-templates/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/faq/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/faq/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/greenfield-azr-cli/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/greenfield-azr-cli/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/greenfield-cli/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/greenfield-cli/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/greenfield-jenkins/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/greenfield-jenkins/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/group-tf-files/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/group-tf-files/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/install-cd3/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/install-cd3/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/isv/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/isv/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/isv_jenkins/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/isv_jenkins/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/jenkinsintro/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/jenkinsintro/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/jobs-migration/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/jobs-migration/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/knownbehaviour/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/knownbehaviour/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/launch-container/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/launch-container/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/launch-from-local/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/launch-from-local/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/launch-from-rmstack/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/launch-from-rmstack/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/learningvideos/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/learningvideos/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/manage-compute/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/manage-compute/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/manage-firewall/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/manage-firewall/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/manage-network/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/manage-network/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/multiple-prefixes/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/multiple-prefixes/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/multiple-services-jenkins/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/multiple-services-jenkins/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/must-read-prerequisites/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/must-read-prerequisites/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/must-read/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/must-read/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/nongreenfield-azr-cli/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/nongreenfield-azr-cli/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/nongreenfield-cli/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/nongreenfield-cli/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/nongreenfield-jenkins/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/nongreenfield-jenkins/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/oci-excel-templates/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/oci-excel-templates/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/opa-integration/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/opa-integration/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/other-oci-tools/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/other-oci-tools/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/prerequisites/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/prerequisites/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/queries/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/queries/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/remotestate/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/remotestate/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/resource-manager-upload/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/resource-manager-upload/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/setUpAzure/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/setUpAzure/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/setUpOCI/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/setUpOCI/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/supportedservices/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/supportedservices/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/sync-cli-jenkins/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/sync-cli-jenkins/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/tabs/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/tabs/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/tutorials/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform-ai-analysis/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/upgrade-toolkit-old/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/tutorials/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/upgrade-toolkit/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/upgrade-toolkit-old/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/url-whitelisting/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/upgrade-toolkit/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/workflows-cli/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/url-whitelisting/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/workflows-jenkins/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/workflows-cli/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/adb/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/workflows-jenkins/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/compute/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/adb/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/costmanagement/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/compute/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/dns/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/costmanagement/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/firewall/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/dns/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/governance/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/firewall/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/identity/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/governance/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/loadbalancer/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/identity/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/logging/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/loadbalancer/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/managementservices/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/logging/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/network/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/managementservices/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/oke/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/network/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/sch/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/oke/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/sddc/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/sch/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/security/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/sddc/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/storage/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/security/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/tagging/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/storage/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2025.2.1/terraform/tagging_notneeded/</loc>
-         <lastmod>2026-03-12</lastmod>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/tagging/</loc>
+         <lastmod>2026-03-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.1.0/terraform/tagging_notneeded/</loc>
+         <lastmod>2026-03-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

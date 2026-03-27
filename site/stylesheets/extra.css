@@ -164,4 +164,19 @@ html {
     color: #CC0000 !important;  
 }
 
+.new-badge {
+  background-color: #ff9800;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 6px;
+  animation: pulse 1.5s infinite;
+}
 
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.6); }
+  70% { box-shadow: 0 0 0 6px rgba(255, 152, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
+}
