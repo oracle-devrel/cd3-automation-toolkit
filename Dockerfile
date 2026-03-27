@@ -16,7 +16,7 @@ ARG USER_GID=$USER_UID
 # Whether to download Provider as part of image creation
 ARG DOWNLOAD_PROVIDER=NO
 # TF Provider version
-ARG TF_OCI_PROVIDER=7.19.0
+ARG TF_OCI_PROVIDER=7.32.0
 ARG TF_NULL_PROVIDER=3.2.3
 
 RUN microdnf install -y sudo && \
@@ -60,7 +60,7 @@ sudo unzip terraform-provider-oci_${TF_OCI_PROVIDER}_linux_amd64.zip -d /cd3user
 sudo wget https://releases.hashicorp.com/terraform-provider-null/${TF_NULL_PROVIDER}/terraform-provider-null_${TF_NULL_PROVIDER}_linux_amd64.zip && \
 sudo mkdir -p /cd3user/.terraform.d/plugins/registry.terraform.io/hashicorp/null/${TF_NULL_PROVIDER}/linux_amd64 && \
 sudo unzip terraform-provider-null_${TF_NULL_PROVIDER}_linux_amd64.zip -d /cd3user/.terraform.d/plugins/registry.terraform.io/hashicorp/null/${TF_NULL_PROVIDER}/linux_amd64 && \
-sudo cp -r /cd3user/.terraform.d/plugins/registry.terraform.io /cd3user/.terraform.d/plugins/registry.opentofu.org && \
+#sudo cp -r /cd3user/.terraform.d/plugins/registry.terraform.io /cd3user/.terraform.d/plugins/registry.opentofu.org && \
 sudo chown -R cd3user:cd3user /cd3user/ && \
 sudo rm -rf terraform-provider-null_${TF_NULL_PROVIDER}_linux_amd64.zip terraform-provider-oci_${TF_OCI_PROVIDER}_linux_amd64.zip ;\
 

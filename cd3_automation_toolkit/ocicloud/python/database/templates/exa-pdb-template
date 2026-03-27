@@ -1,0 +1,70 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+############################
+# Database
+# ExaInfra PDB - tfvars
+# Allowed Values:
+# compartment_id can be ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Database--Prod" where "Database" is the parent of "Prod" compartment
+# Sample import command for PDB:
+# terraform import "module.pdb-databases[\"<<PDB terraform variable name>>\"].oci_database_pluggable_database.pluggable_database" <<pdb ocid>>
+############################
+############################
+pdb_databases = {
+    ##Add New PDBs for {{ region|lower }} here##
+}
+{% else %}
+ {{ cdb_name_tf_name }}_{{ pdb_name_tf_name }} = {
+    compartment_id = "{{ compartment_name }}"
+    exadata_infrastructure_id = "{{ exadata_infra_display_name }}"
+    exadata_infrastructure_comp_id = "{{ exadata_infra_comp_id }}"
+    vm_cluster_id  = "{{ vm_cluster_display_tf_name }}"
+    db_home_id     = "{{ db_home_display_name }}"
+    database_id     = "{{ cdb_name_tf_name }}"
+    pdb_name       = "{{ pdb_name_tf_name }}"
+    tde_wallet_password = {{ tde_wallet_password | tojson if tde_wallet_password is not none else 'null' }}
+    tde_wallet_secret_id  = {{ tde_wallet_secret_id | tojson if tde_wallet_secret_id is not none else 'null' }}
+    pdb_admin_password = {{ pdb_admin_password | tojson if pdb_admin_password is not none else 'null' }}
+    pdb_admin_secret_id = {{ pdb_admin_password_secret_id | tojson if pdb_admin_password_secret_id is not none else 'null' }}
+
+
+     {# ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+              {% if defined_tags[0] %}
+        defined_tags = {
+                {% for tags in defined_tags  %}
+                    {% if not loop.last %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                    {% else %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}"
+                    {% endif %}
+                {% endfor %}
+                }
+              {% else %}
+        defined_tags = {}
+                {% endif %}
+               {% else %}
+        defined_tags = {}
+               {% endif %}
+                    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                        {% if freeform_tags[0] %}
+        freeform_tags = {
+                            {% for tags in freeform_tags %}
+                                {% if not loop.last  %}
+                        "{{ tags[0] }}"="{{ tags[1] }}",
+                                {% else %}
+                        "{{ tags[0] }}"="{{ tags[1] }}"
+                                {% endif %}
+                            {% endfor %}
+                            }
+                        {% endif %}
+                    {% else %}
+        freeform_tags = {}
+                    {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            },
+{% endif %}

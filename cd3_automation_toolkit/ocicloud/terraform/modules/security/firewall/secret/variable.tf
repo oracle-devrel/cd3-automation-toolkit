@@ -3,41 +3,41 @@
 #
 
 variable "compartment_id" {
-   type = string
+  type    = string
   default = null
 }
 variable "app_group_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "apps" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 variable "subnet_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "vcn_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "network_firewall_policy_id" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "display_name" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "address_list_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "address_type" {
-  type = string
+  type    = string
   default = null
 }
 variable "addresses" {
@@ -48,53 +48,53 @@ variable "addresses" {
 
 
 variable "ipv4address" {
-  type = string
+  type    = string
   default = null
 }
 
 
 variable "icmp_type" {
-  type = number
+  type    = number
   default = null
 
 }
 variable "app_type" {
-  type = string
+  type    = string
   default = null
 
 }
 variable "app_list_name" {
-  type = string
+  type    = string
   default = null
 
 }
 
 variable "icmp_code" {
-  type = number
+  type    = number
   default = null
 }
 variable "minimum_port" {
-  type = number
+  type    = number
   default = null
 }
 
 variable "maximum_port" {
-  type = number
+  type    = number
   default = null
 }
 
 variable "service_name" {
-   type = string
+  type    = string
   default = null
 }
 
 variable "service" {
-   type = string
+  type    = string
   default = null
 }
 
 variable "service_type" {
-   type = string
+  type    = string
   default = null
 }
 variable "region" {
@@ -102,27 +102,27 @@ variable "region" {
   default = null
 }
 variable "secret_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "secret_source" {
-  type = string
+  type    = string
   default = null
 }
 variable "secret_type" {
-  type = string
+  type    = string
   default = null
 }
 variable "vault_secret_id" {
-  type = string
+  type    = string
   default = null
 }
 variable "vault_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "version_number" {
-  type = string
+  type    = string
   default = null
 }
 

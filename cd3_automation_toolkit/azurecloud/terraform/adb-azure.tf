@@ -1,7 +1,6 @@
-#data "azurerm_resource_group" "resource_group" {
-# for_each       = var.azurerm_oci_adb != null ? var.azurerm_oci_adb : {}
-#  name = each.value.resource_group_name
-#}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 
 data "azurerm_virtual_network" "virtual_network" {
   #depends_on = [module.avm_network]
@@ -59,7 +58,11 @@ module "avm_network" {
 }
 */
 
-# Oracle Autonomous Database@Azure
+#############################
+# Module Block - ADB @Azure
+# Create ADB
+#############################
+
 module "adb-azure" {
   for_each = var.az_oci_adb != null ? var.az_oci_adb : {}
 

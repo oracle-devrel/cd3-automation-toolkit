@@ -1,0 +1,85 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+############################
+# Exa Infra @GCP
+# Exa Infra @GCP - tfvars
+############################
+
+gcp_oci_exa_infra = {
+       ##Add New Exa-Infra @GCP here##
+}
+{% else %}
+
+     {{ display_tf_name }} =  {
+            location                 = "{{ location }}"
+            gcp_oracle_zone          = "{{ gcp_oracle_zone }}"
+            project                  = "{{ project }}"
+
+            # Infrastructure Details
+            # Allowed shapes: Exadata.X9M, Exadata.X11M
+            cloud_exadata_infrastructure_id             = "{{ cloud_exadata_infrastructure_id }}"
+            shape                    = "{{ shape }}"
+            compute_count            = {{ database_servers }}  # Valid range: 2-32
+            storage_count            = {{ storage_servers }}   # Valid range: 3-64
+
+
+            maintenance_window = {
+                # Patching Mode: "ROLLING" (one by one) or "NONROLLING" (all at once)
+                patching_mode="{{ maintenance_method }}"
+
+                {% if is_custom_action_timeout_enabled %}
+                is_custom_action_timeout_enabled = {{ is_custom_action_timeout_enabled }} # true of false
+                custom_action_timeout_in_mins    = {{ custom_action_timeout_in_mins }}  # Minimum = 15, Maximum = 30
+                {% endif %}
+
+                {% if preference  %}
+                # Preference: "NO_PREFERENCE" (Oracle chooses) or "CUSTOM_PREFERENCE" (custom schedule)
+                preference= "{{ preference }}"
+                {% endif %}
+                {% if hours_of_day  %}
+                hours_of_day = {{ hours_of_day.split(",") | map('int') | list | tojson }}
+                {% endif %}
+                {% if  days_of_week  %}
+                days_of_week = {{ days_of_week.split(",") | map('trim') | list | tojson }}
+                {% endif %}
+                {% if  weeks_of_month  %}
+                weeks_of_month = {{ weeks_of_month.split(",") | map('int') | list | tojson }}
+                {% endif %}
+                {% if  lead_time_in_weeks  %}
+                lead_time_in_weeks = {{ lead_time_in_weeks }}
+                {% endif %}
+                {% if  months  %}
+                months   = {{ months.split(",") | map('trim') | list | tojson }}
+                {% endif %}
+            }
+
+            {% if email and email != "" and email != "nan" %}
+            # Support Contacts
+            email =   "{{ email }}"
+            {% endif %}
+
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Labels###  #}
+        {% if labels and labels != 'nan' and labels != '' and labels != [['nan']] %}
+          {% if labels[0] %}
+            labels = {
+            {% for label in labels  %}
+                {% if not loop.last %}
+                    "{{ label[0]  }}"= "{{ label[1] }}" ,
+                {% else %}
+                    "{{ label[0]  }}"= "{{ label[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+
+        {#  ###Section for adding Labels ends here###  #}
+        },
+
+{% endif %}
+

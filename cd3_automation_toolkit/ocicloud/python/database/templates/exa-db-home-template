@@ -1,0 +1,66 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+############################
+# Database
+# ExaInfra DB Home - tfvars
+# Allowed Values:
+# compartment_id can be ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Database--Prod" where "Database" is the parent of "Prod" compartment
+# Sample import command for DB Home:
+# terraform import "module.db-homes[\"<<db_home terraform variable name>>\"].oci_database_db_home.database_db_home" <<db_home ocid>>
+############################
+
+db_homes = {
+    ##Add New DB Homes for {{ region|lower }} here##
+}
+{% else %}
+ {{ vm_cluster_display_tf_name }}_{{ db_home_display_tf_name }} = {
+    compartment_id = "{{ compartment_name }}"
+    db_version     = "{{ db_version }}"
+    display_name   = "{{ db_home_display_name }}"
+    db_source      = "VM_CLUSTER_NEW"
+    exadata_infrastructure_id = "{{ exadata_infra_display_name }}"
+    exadata_infrastructure_comp_id = "{{ exadata_infra_comp_id }}"
+    vm_cluster_id  = "{{ vm_cluster_display_tf_name }}"
+
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+      {% if defined_tags[0] %}
+    defined_tags = {
+        {% for tags in defined_tags %}
+          {% if not loop.last %}
+      "{{ tags[0] }}" = "{{ tags[1] }}",
+          {% else %}
+      "{{ tags[0] }}" = "{{ tags[1] }}"
+          {% endif %}
+        {% endfor %}
+    }
+      {% else %}
+    defined_tags = {}
+      {% endif %}
+    {% else %}
+    defined_tags = {}
+    {% endif %}
+
+    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+      {% if freeform_tags[0] %}
+    freeform_tags = {
+        {% for tags in freeform_tags %}
+          {% if not loop.last %}
+      "{{ tags[0] }}" = "{{ tags[1] }}",
+          {% else %}
+      "{{ tags[0] }}" = "{{ tags[1] }}"
+          {% endif %}
+        {% endfor %}
+    }
+      {% else %}
+    freeform_tags = {}
+      {% endif %}
+    {% else %}
+    freeform_tags = {}
+    {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+  },
+{% endif %}

@@ -3,16 +3,16 @@
  */
 
 module "compartment" {
-  source = "./modules/compartment"
-  count = var.instance_compartment_strategy == "Create New Compartment - Stack must be provisioned in home region" ? 1 : 0
-  compartment_id    = var.parent_compartment_ocid
-  compartment_name  = var.new_compartment_name
+  source           = "./modules/compartment"
+  count            = var.instance_compartment_strategy == "Create New Compartment - Stack must be provisioned in home region" ? 1 : 0
+  compartment_id   = var.parent_compartment_ocid
+  compartment_name = var.new_compartment_name
 }
 
 # Create VCN/network resources
 
 module "network" {
-  source = "./modules/network"
+  source               = "./modules/network"
   vcn_compartment_ocid = local.vcn_compartment_ocid
   vcn_strategy         = var.vcn_strategy
   vcn_name             = var.vcn_name
@@ -46,7 +46,7 @@ module "instance" {
   cloud_init_script         = var.cloud_init_script
   tenancy_ocid              = var.tenancy_ocid
   current_user_ocid         = var.current_user_ocid
-  config_region             = var.region 
+  config_region             = var.region
   tenancy_name              = local.tenancy_name
 }
 

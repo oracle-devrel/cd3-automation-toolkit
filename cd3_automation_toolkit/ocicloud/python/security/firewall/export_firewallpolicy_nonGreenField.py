@@ -782,7 +782,12 @@ def  print_firewall_tunnelinspect(region, ct, values_for_column_fwtunnelinspect,
             if clone:
                 tunnelinspectrulepolicy_display_name = target_pol[src_pol.index(tunnelinspectrulepolicy_display_name)]
             tunnelinspectrulepolicy_tf_name = commonTools.check_tf_variable(tunnelinspectrulepolicy_display_name)
-            fwtunnelinspectrules = oci.pagination.list_call_get_all_results(fwclient.list_tunnel_inspection_rules, tunnelinspectrulepolicy_id)
+            try:
+                fwtunnelinspectrules = oci.pagination.list_call_get_all_results(fwclient.list_tunnel_inspection_rules, tunnelinspectrulepolicy_id)
+            except Exception as e:
+                return values_for_column_fwtunnelinspect
+
+
             tunnelinspectrule_info = fwtunnelinspectrules.data
             for tirules in tunnelinspectrule_info:
                 tirule_info = fwclient.get_tunnel_inspection_rule(tirules.parent_resource_id, tirules.name).data

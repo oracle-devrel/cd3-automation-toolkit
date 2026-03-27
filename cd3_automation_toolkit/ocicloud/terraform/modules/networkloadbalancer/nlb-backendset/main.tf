@@ -13,16 +13,16 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
     #Required
     protocol = var.protocol
     dynamic "dns" {
-    for_each = var.domain_name != null ? {1:1} : {}
-    content {
-            #Required
-            domain_name = var.domain_name
-            #Optional
-            query_class = var.query_class
-            query_type = var.query_type
-            rcodes = var.rcodes
-            transport_protocol = var.transport_protocol
-        }
+      for_each = var.domain_name != null ? { 1 : 1 } : {}
+      content {
+        #Required
+        domain_name = var.domain_name
+        #Optional
+        query_class        = var.query_class
+        query_type         = var.query_type
+        rcodes             = var.rcodes
+        transport_protocol = var.transport_protocol
+      }
     }
     #Optional
     interval_in_millis  = var.interval_in_millis
@@ -40,8 +40,8 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
   policy                   = var.policy
 
   #Optional
-  ip_version         = var.ip_version
+  ip_version                  = var.ip_version
   is_instant_failover_enabled = var.is_instant_failover_enabled
-  is_preserve_source = var.is_preserve_source
-  is_fail_open       = var.is_fail_open
+  is_preserve_source          = var.is_preserve_source
+  is_fail_open                = var.is_fail_open
 }

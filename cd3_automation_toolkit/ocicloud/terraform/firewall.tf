@@ -13,8 +13,8 @@ data "oci_core_subnets" "firewall_subnets" {
   vcn_id         = data.oci_core_vcns.firewall_vcns[each.key].virtual_networks.*.id[0]
 }
 data "oci_kms_vaults" "fw_vault" {
-  for_each = var.secrets
- compartment_id = each.value.vault_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.vault_compartment_id)) > 0 ? each.value.vault_compartment_id : var.compartment_ocids[each.value.vault_compartment_id]) : var.compartment_ocids[each.value.vault_compartment_id]
+  for_each       = var.secrets
+  compartment_id = each.value.vault_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.vault_compartment_id)) > 0 ? each.value.vault_compartment_id : var.compartment_ocids[each.value.vault_compartment_id]) : var.compartment_ocids[each.value.vault_compartment_id]
   filter {
     name   = "display_name"
     values = [each.value.vault_name]
@@ -22,10 +22,10 @@ data "oci_kms_vaults" "fw_vault" {
 }
 
 data "oci_vault_secrets" "fw_secret" {
-  for_each = var.secrets
+  for_each       = var.secrets
   compartment_id = each.value.vault_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.vault_compartment_id)) > 0 ? each.value.vault_compartment_id : var.compartment_ocids[each.value.vault_compartment_id]) : var.compartment_ocids[each.value.vault_compartment_id]
-  name = each.value.vault_secret_id
-  vault_id = data.oci_kms_vaults.fw_vault[each.key].vaults.*.id[0]
+  name           = each.value.vault_secret_id
+  vault_id       = data.oci_kms_vaults.fw_vault[each.key].vaults.*.id[0]
 }
 
 module "firewalls" {
@@ -193,7 +193,7 @@ module "tunnelinspect_rules" {
   destination_address        = each.value.condition[0].destination_address != null ? each.value.condition[0].destination_address : []
   after_rule                 = each.value.after_rule
   before_rule                = each.value.before_rule
-  protocol        = each.value.protocol
+  protocol                   = each.value.protocol
 }
 
 module "nat_rules" {

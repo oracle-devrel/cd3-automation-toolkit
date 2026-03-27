@@ -62,21 +62,21 @@ variable "size_in_gbs" {
 
 variable "autotune_policies" {
   description = "List of Autotune Policies for Block volume"
-  type = list(map(any))
-  default = []
+  type        = list(map(any))
+  default     = []
 }
 variable "source_details" {
   description = "OCID for existing Block volume, Block volume backup or Replica"
-  type = list(map(any))
-  default = []
+  type        = list(map(any))
+  default     = []
 }
 variable "block_volume_replicas" {
   description = "Details for Block volume replication"
-  type = list(map(any))
-  default = []
+  type        = list(map(any))
+  default     = []
 }
 variable "block_volume_replicas_deletion" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -139,6 +139,6 @@ variable "is_agent_auto_iscsi_login_enabled" {
   default = null
 }
 variable "blockvolume_source_ocids" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }

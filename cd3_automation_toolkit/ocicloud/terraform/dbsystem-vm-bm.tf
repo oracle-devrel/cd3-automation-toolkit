@@ -23,16 +23,15 @@ data "oci_core_vcns" "oci_dbsystems_vcns" {
 module "dbsystems-vm-bm" {
   source = "./modules/database/dbsystem-vm-bm"
   # depends_on = [module.nsgs] # Uncomment to create NSG and DB Systems together
-  for_each            = var.dbsystems_vm_bm != null ? var.dbsystems_vm_bm : {}
-  availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  hostname            = each.value.hostname
-  display_name        = each.value.display_name
-  db_version          = each.value.db_version
-  cluster_name        = each.value.cluster_name
-  shape               = each.value.shape
-  #ssh_public_key     = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
-  ssh_public_keys        = lookup(var.dbsystem_ssh_keys, each.value.ssh_public_keys, var.dbsystem_ssh_keys["ssh_public_key"])
+  for_each               = var.dbsystems_vm_bm != null ? var.dbsystems_vm_bm : {}
+  availability_domain    = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
+  compartment_id         = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  hostname               = each.value.hostname
+  display_name           = each.value.display_name
+  db_version             = each.value.db_version
+  cluster_name           = each.value.cluster_name
+  shape                  = each.value.shape
+  ssh_public_keys        = each.value.ssh_public_keys != null ? (length(regexall("ssh-rsa*", each.value.ssh_public_keys)) > 0 ? [each.value.ssh_public_keys] : lookup(var.dbsystem_ssh_keys, each.value.ssh_public_keys, var.dbsystem_ssh_keys["ssh_public_key"])) : null
   network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   vcn_names              = [each.value.vcn_name]
   subnet_id              = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_dbsystems_subnets[each.key].subnets.*.id[0]) : null

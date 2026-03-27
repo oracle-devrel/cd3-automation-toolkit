@@ -41,15 +41,15 @@ variable "az_oci_adb" {
 }
 
 
-###########################
-###Oracle ExaInfra @Azure ######
-###########################
+###############################
+# Oracle ExaInfra @Azure ######
+###############################
 
 variable "az_oci_exa_infra" {
   type = map(object({
     display_name        = string
     az_region           = string
-    az_zone = string
+    az_zones            = list(string)
     resource_group_name = string
 
     compute_count        = number
@@ -67,13 +67,16 @@ variable "az_oci_exa_infra" {
       days_of_week       = optional(list(number))
       hours_of_day       = optional(list(number))
     })
-    customer_contacts                = optional(list(string))
-    common_tags = optional(map(string))
+    customer_contacts = optional(list(string))
+    common_tags       = optional(map(string))
 
   }))
   default = {}
 }
 
+###############################
+# Oracle ExaVM Cluster @Azure
+###############################
 
 variable "az_oci_exa_vmclusters" {
   type = map(object({
@@ -89,7 +92,6 @@ variable "az_oci_exa_vmclusters" {
     gi_version                  = string
     license_model               = string
     ssh_public_keys             = list(string)
-    gi_version                  = string
     backup_subnet_cidr          = optional(string)
     cluster_name                = optional(string)
     domain                      = optional(string)
@@ -109,7 +111,7 @@ variable "az_oci_exa_vmclusters" {
     time_zone                   = optional(string)
     mount_point                 = optional(string)
     size_in_gb                  = optional(number)
-    common_tags = optional(map(string))
+    common_tags                 = optional(map(string))
 
 
   }))

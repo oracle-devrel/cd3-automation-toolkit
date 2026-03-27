@@ -6,5 +6,5 @@
 ############################
 
 output "views" {
-  value = [for item in [oci_dns_view.view.id]:{"id" = "${item}"}]
+  value = [for item in [oci_dns_view.view.id] : { "id" = "${item}" }]
 }

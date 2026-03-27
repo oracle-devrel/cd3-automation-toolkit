@@ -210,58 +210,51 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
             else:
                 values_for_column_oke[col_header].append(None)
 
-        elif (col_header == "Worker Node Network Details"):
+        elif (col_header == "Node Placement Configs"):
             if (nodepool_info != None):
-                subnet_id = ""
+                excel_data = ""
                 if (nodepool_type=='managed'):
-                    subnet_id = nodepool_info.node_config_details.placement_configs[0].subnet_id
+                    configs = nodepool_info.node_config_details.placement_configs
                 elif (nodepool_type == 'virtual'):
-                    subnet_id = nodepool_info.placement_configurations[0].subnet_id
-                try:
-                    vcn = network.get_vcn(vcn_id=(network.get_subnet(subnet_id=subnet_id).data.vcn_id)).data.display_name
-                    subnet = network.get_subnet(subnet_id=subnet_id).data.display_name
-                    ntk_compartment_id = network.get_vcn(
-                        vcn_id=(network.get_subnet(subnet_id=subnet_id).data.vcn_id)).data.compartment_id  # compartment-id
-                    network_compartment_name = compartment_name
-                    for comp_name, comp_id in ct.ntk_compartment_ids.items():
-                        if comp_id == ntk_compartment_id:
-                            network_compartment_name = comp_name
+                    configs = nodepool_info.placement_configurations
 
-                    combined = network_compartment_name + "@" + vcn + "::" + subnet
-                except Exception as e:
-                    combined = id
-                values_for_column_oke[col_header].append(combined)
+                for config in configs:
+                    try:
+                        subnet_id = config.subnet_id
+                        vcn = network.get_vcn(vcn_id=(network.get_subnet(subnet_id=subnet_id).data.vcn_id)).data.display_name
+                        subnet = network.get_subnet(subnet_id=subnet_id).data.display_name
+                        ntk_compartment_id = network.get_vcn(
+                            vcn_id=(network.get_subnet(subnet_id=subnet_id).data.vcn_id)).data.compartment_id  # compartment-id
+                        network_compartment_name = compartment_name
+                        for comp_name, comp_id in ct.ntk_compartment_ids.items():
+                            if comp_id == ntk_compartment_id:
+                                network_compartment_name = comp_name
+                        nw = network_compartment_name + "@" + vcn + "::" + subnet
+                    except Exception as e:
+                        nw = subnet_id
+                    okead = config.availability_domain
+                    AD = lambda ad: "AD1" if ("AD-1" in okead or "ad-1" in okead) else (
+                            "AD2" if ("AD-2" in okead or "ad-2" in okead) else (
+                                "AD3" if ("AD-3" in okead or "ad-3" in okead) else "NULL"))  # Get shortend AD
+                    ad = AD(okead)
+                    if (nodepool_type == 'managed'):
+                        fd=config.fault_domains
+                        cr = config.capacity_reservation_id
+                        if cr == None:
+                            cr="None"
+                    elif (nodepool_type == 'virtual'):
+                        fd = config.fault_domain
+                        cr="None"
 
-            else:
-                values_for_column_oke[col_header].append(None)
-        elif (col_header == "Availability Domain(AD1|AD2|AD3)"):
-            if (nodepool_info != None):
-                ad=""
-                if (nodepool_type=='managed'):
-                    okead = nodepool_info.node_config_details.placement_configs[0].availability_domain
-                elif (nodepool_type=='virtual'):
-                    okead = nodepool_info.placement_configurations[0].availability_domain
+                    if fd != None:
+                        fd_s = ','.join(str(x) for x in fd)
+                        okefd = fd_s
+                    else:
+                        okefd = "None"
+                    excel_data=excel_data+nw+":"+str(ad)+":"+okefd+":"+cr+";"
 
-                AD = lambda ad: "AD1" if ("AD-1" in okead or "ad-1" in okead) else (
-                    "AD2" if ("AD-2" in okead or "ad-2" in okead) else (
-                        "AD3" if ("AD-3" in okead or "ad-3" in okead) else "NULL"))  # Get shortend AD
-                values_for_column_oke[col_header].append(AD(ad))
-            else:
-                values_for_column_oke[col_header].append(None)
+                values_for_column_oke[col_header].append(excel_data)
 
-        elif (col_header == "Fault Domains"):
-            if (nodepool_info != None):
-                fd=""
-                if (nodepool_type=='managed'):
-                    fd = nodepool_info.node_config_details.placement_configs[0].fault_domains
-                elif (nodepool_type=='virtual'):
-                    fd = nodepool_info.placement_configurations[0].fault_domain
-
-                if fd !=None:
-                    fd_s = ','.join(str(x) for x in fd)
-                    values_for_column_oke[col_header].append(fd_s)
-                else:
-                    values_for_column_oke[col_header].append(None)
             else:
                 values_for_column_oke[col_header].append(None)
 
@@ -333,7 +326,7 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
 
                         combined = network_compartment_name + "@" + vcn + "::" + subnet
                     except Exception as e:
-                        combined = id
+                        combined = pod_subnet_id
                     values_for_column_oke[col_header].append(combined)
             else:
                 values_for_column_oke[col_header].append(None)

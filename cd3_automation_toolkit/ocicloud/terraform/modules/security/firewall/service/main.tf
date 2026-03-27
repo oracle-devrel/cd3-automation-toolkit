@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 resource "oci_network_firewall_network_firewall_policy_service" "network_firewall_policy_service" {
-  name = var.service_name
+  name                       = var.service_name
   network_firewall_policy_id = var.network_firewall_policy_id
   dynamic "port_ranges" {
     for_each = var.port_ranges != null ? var.port_ranges : []

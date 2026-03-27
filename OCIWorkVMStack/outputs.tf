@@ -3,25 +3,25 @@
  */
 output "CD3_Automation_VM_Name" {
   description = "CD3 Automation Toolkit WorkVM Name"
-  value = module.instance.OCI_automation_VM_name
+  value       = module.instance.OCI_automation_VM_name
 }
 
 output "OCI_compartment_name" {
   description = "Compartment name"
-  value = data.oci_identity_compartment.compartment.name
+  value       = data.oci_identity_compartment.compartment.name
 }
 output "OCI_compartment_id" {
   description = "Compartment ocid"
-  value = data.oci_identity_compartment.compartment.id
+  value       = data.oci_identity_compartment.compartment.id
 }
 output "CD3_Automation_VM_Private_IP" {
   description = "CD3 Automation Toolkit WorkVM's Private IP"
-  value = module.instance.OCI_automation_VM_Private_IP
+  value       = module.instance.OCI_automation_VM_Private_IP
 }
 
 output "CD3_Automation_VM_Public_IP" {
   description = "CD3 Automation Toolkit WorkVM's Public IP"
-  value = module.instance.OCI_automation_VM_Public_IP
+  value       = module.instance.OCI_automation_VM_Public_IP
 }
 
 output "automation_toolkit_setup_details" {

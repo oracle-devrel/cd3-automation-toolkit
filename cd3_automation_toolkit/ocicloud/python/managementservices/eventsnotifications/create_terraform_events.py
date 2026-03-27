@@ -172,6 +172,8 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
                 tempdict = {'event_is_enabled': event_is_enabled}
             if columnname == "Additional Data" or columnname == "AdditionalData":
                 data = columnvalue
+                if not data:
+                    data = "{}"
 
             if columnname == "Service Name": 
                 service_name = columnvalue.strip()

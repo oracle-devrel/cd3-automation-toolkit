@@ -25,9 +25,9 @@ resource "oci_identity_user_capabilities_management" "user_capabilities_manageme
   depends_on = [oci_identity_user.user]
   user_id    = oci_identity_user.user.id
 
-  can_use_api_keys             = contains(var.enabled_capabilities, "api_keys") ? true :false
-  can_use_auth_tokens          = contains(var.enabled_capabilities, "auth_tokens") ? true :false
-  can_use_console_password     = contains(var.enabled_capabilities, "console_password") ? true :false
-  can_use_customer_secret_keys = contains(var.enabled_capabilities, "customer_secret_keys") ? true :false
-  can_use_smtp_credentials     = contains(var.enabled_capabilities, "smtp_credentials") ? true :false
+  can_use_api_keys             = contains(var.enabled_capabilities, "api_keys") ? true : false
+  can_use_auth_tokens          = contains(var.enabled_capabilities, "auth_tokens") ? true : false
+  can_use_console_password     = contains(var.enabled_capabilities, "console_password") ? true : false
+  can_use_customer_secret_keys = contains(var.enabled_capabilities, "customer_secret_keys") ? true : false
+  can_use_smtp_credentials     = contains(var.enabled_capabilities, "smtp_credentials") ? true : false
 }

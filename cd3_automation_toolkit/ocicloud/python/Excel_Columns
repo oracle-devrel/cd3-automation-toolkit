@@ -209,6 +209,15 @@
         "Allocate storage for local backups" : "is_local_backup_enabled",
         "Hostname Prefix" : "hostname"
     },
+	"EXA-DBHomes" :
+	{
+    },
+    	"EXA-CDBs" :
+	{
+    },
+    	"EXA-PDBs" :
+	{
+    },
     "Events" :
     {
         "Event Name" : "display_name",

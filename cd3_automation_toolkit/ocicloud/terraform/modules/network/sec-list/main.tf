@@ -8,7 +8,7 @@
 
 resource "oci_core_security_list" "security_list" {
 
-count = var.default_seclist ==true ? 0 : 1
+  count = var.default_seclist == true ? 0 : 1
   #Required
   compartment_id = var.compartment_id
   vcn_id         = var.vcn_id
@@ -162,7 +162,7 @@ count = var.default_seclist ==true ? 0 : 1
 }
 
 resource "oci_core_default_security_list" "default_security_list" {
-count = var.default_seclist ==true ? 1 : 0
+  count = var.default_seclist == true ? 1 : 0
 
 
   #Required

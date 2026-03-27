@@ -47,8 +47,8 @@ variable "defined_tags" {
 }
 
 variable "kms_key_id" {
-description = "The OCID of a master encryption key used to call the Key Management service to generate a data encryption key or to encrypt or decrypt a data #encryption key."
-type        = string
+  description = "The OCID of a master encryption key used to call the Key Management service to generate a data encryption key or to encrypt or decrypt a data #encryption key."
+  type        = string
 }
 
 #variable "metadata" {

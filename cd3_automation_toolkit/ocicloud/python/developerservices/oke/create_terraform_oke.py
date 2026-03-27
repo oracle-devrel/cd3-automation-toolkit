@@ -7,11 +7,14 @@
 # Author: Divya Das
 # Oracle Consulting
 #
-import os, sys
+import os, sys, re
 import json
 import pandas as pd
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
+
+from pandas.io.sas.sas_constants import col_count_p1_multiplier
+
 sys.path.append(os.getcwd() + "../")
 from common.python.commonTools import *
 import ocicloud.python.ociCommonTools as ociCommonTools
@@ -118,19 +121,16 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
             else:
                 nodepool_type = 'managed'
 
-            if str(df.loc[i, 'Worker Node Network Details']).lower() == 'nan' or \
-                str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan':
-                print("\nCompartmentName@Node Pool Name:Node Pool Type, Worker Node Network Details and Availability Domain(AD1|AD2|AD3) fields are mandatory. \n\nPlease fix it for row : {} and try again.".format(i+3))
+            if str(df.loc[i, 'Node Placement Configs']).lower() == 'nan':
+                print("\nNode Placement Configs field is mandatory. \n\nPlease fix it for row : {} and try again.".format(i+3))
                 print("\n** Exiting **")
                 exit(1)
             if (nodepool_type == "managed"):
                 if  str(df.loc[i, 'Nodepool Kubernetes Version']).lower() == 'nan' or \
                     str(df.loc[i, 'Shape']).lower() == 'nan' or \
                     str(df.loc[i, 'Source Details']).lower() == 'nan' or \
-                    str(df.loc[i, 'Number of Nodes']).lower() == 'nan' or \
-                    str(df.loc[i, 'Worker Node Network Details']).lower() == 'nan' or \
-                    str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan':
-                    print("\nCompartmentName@Node Pool Name:Node Pool Type, Nodepool Kubernetes Version, Shape, Source Details, Number of Nodes, Worker Node Network Details and Availability Domain(AD1|AD2|AD3) fields are mandatory. \n\nPlease fix it for row : {} and try again.".format(i+3))
+                    str(df.loc[i, 'Number of Nodes']).lower() == 'nan':
+                    print("\nCompartmentName@Node Pool Name:Node Pool Type, Nodepool Kubernetes Version, Shape, Source Details, Number of Nodes) fields are mandatory. \n\nPlease fix it for row : {} and try again.".format(i+3))
                     print("\n** Exiting **")
                     exit(1)
 
@@ -179,21 +179,54 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
             if columnname.lower() in ociCommonTools.tagColumns:
                 tempdict = ociCommonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            if columnname == 'Availability Domain(AD1|AD2|AD3)':
-                columnname = 'availability_domain'
-                if columnvalue != "":
-                    AD = columnvalue.upper()
-                    ad = ADS.index(AD)
-                    columnvalue = str(ad)
-                    availability_domain = columnvalue
-                else:
-                    availability_domain = ""
-                tempdict = {'availability_domain': availability_domain}
+            if columnname == 'Node Placement Configs':
+                if columnvalue.lower() != 'nan' and columnvalue.lower() != '':
+                    configs=columnvalue.split(";")
+                    j=0
+                    placement_configs = {}
+                    for config in configs:
+                        if config == "":
+                            break
+                        j=j+1
+                        #split on : and preserve ::
+                        config_data = re.split(r'(?<!:):(?!:)', config)
 
-            if columnname == "Fault Domains":
-                if columnvalue != "":
-                    columnvalue =  ','.join(['"' + x.upper() + '"' for x in columnvalue.split(',')])
+                        network_details = config_data[0]
+                        if ("ocid1.subnet.oc" in network_details):
+                            network_compartment_id = "root"
+                            vcn_name = ""
+                            subnet_id = network_details
+                        else:
+                            if len(network_details.split("@")) == 2:
+                                network_details = network_details.split("@")
+                                network_compartment_id = commonTools.check_tf_variable(network_details[0].strip())
+                                vcn_subnet_name = network_details[1].strip()
+                            else:
+                                network_compartment_id = commonTools.check_tf_variable(str(df.loc[i, 'Compartment Name']).strip())
+                                vcn_subnet_name = network_details
+                            if ("::" not in vcn_subnet_name):
+                                print("Invalid Network Details format specified for column "+columnname + " in row " + str(i + 3) + ". Exiting!!!")
+                                exit(1)
+                            else:
+                                vcn_name = vcn_subnet_name.split("::")[0].strip()
+                                subnet_id = vcn_subnet_name.split("::")[1].strip()
 
+                        AD = config_data[1].upper()
+                        ad = str(ADS.index(AD))
+                        FD = str(config_data[2]).lower()
+                        if FD!='none':
+                            fd=','.join(['"' + x.upper() + '"' for x in FD.split(',')])
+                        else:
+                            fd=""
+                        cr=""
+                        if (len(config_data)==4):
+                            cr = str(config_data[3]).lower()
+                            if cr =='none':
+                                cr=""
+
+                        placement_configs["node_"+str(j)]=[network_compartment_id, vcn_name, subnet_id, ad, fd,cr]
+                        tempdict = {'placement_configs' : placement_configs}
+                        tempStr.update(tempdict)
             if columnname == "Compartment Name":
                 columnname = "compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
@@ -318,28 +351,6 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                         subnet_id = vcn_subnet_name.split("::")[1].strip()
                 tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,
                             'api_endpoint_subnet': subnet_id}
-
-            if columnname == 'Worker Node Network Details':
-                columnvalue = columnvalue.strip()
-                if ("ocid1.subnet.oc" in columnvalue):
-                    subnet_id = columnvalue
-                    tempdict = {'worker_node_subnet': subnet_id}
-                elif columnvalue.lower() != 'nan' and columnvalue.lower() != '':
-                    if len(columnvalue.split("@")) == 2:
-                        network_compartment_id = commonTools.check_tf_variable(columnvalue.split("@")[0].strip())
-                        vcn_subnet_name = columnvalue.split("@")[1].strip()
-                    else:
-                        network_compartment_id = commonTools.check_tf_variable(
-                            str(df.loc[i, 'Compartment Name']).strip())
-                        vcn_subnet_name = columnvalue
-                    if ("::" not in vcn_subnet_name):
-                        print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
-                        exit(1)
-                    else:
-                        vcn_name = vcn_subnet_name.split("::")[0].strip()
-                        subnet_id = vcn_subnet_name.split("::")[1].strip()
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,
-                            'worker_node_subnet': subnet_id}
 
             if columnname == 'Pod Communication Network Details':
                 columnvalue = columnvalue.strip()

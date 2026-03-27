@@ -1,12 +1,23 @@
 #cloud-config
 runcmd:
   - |
-    echo "Waiting for network..."
+    echo "Waiting for network + DNS..."
+    # 1. Basic network (L3)
     until ping -c1 8.8.8.8 >/dev/null 2>&1; do 
-      echo "Network not ready, retrying in 10 seconds..."
-      sleep 10
+      echo "Network not ready..."
+      sleep 5
     done
-    echo "Network ready, starting..."
+    # 2. Wait for OCI DNS resolver to be configured
+    until grep -q "169.254.169.254" /etc/resolv.conf 2>/dev/null; do
+      echo "DNS resolver not ready..."
+      sleep 3
+    done
+    # 3. Wait for DNS resolution to actually work
+    until getent hosts yum.oracle.com >/dev/null 2>&1; do
+      echo "DNS not resolving..."
+      sleep 5
+    done
+    echo "Network + DNS ready, starting..."
     username=cd3user
     logfile="/$username/mount_path/installToolkit.log"
     toolkit_dir="/tmp/githubCode"

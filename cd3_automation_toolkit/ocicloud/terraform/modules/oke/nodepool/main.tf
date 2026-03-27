@@ -20,11 +20,15 @@ resource "oci_containerengine_node_pool" "nodepool" {
   }
 
   node_config_details {
-    placement_configs {
-      #Required
-      availability_domain = data.oci_identity_availability_domains.ads.availability_domains[var.availability_domain].name
-      subnet_id           = var.subnet_id
-      fault_domains       = var.fault_domains
+    dynamic "placement_configs" {
+      for_each = var.placement_configs != null ? { for k, v in var.placement_configs : k => v } : {}
+      content {
+        #Required
+        availability_domain     = data.oci_identity_availability_domains.ads.availability_domains[placement_configs.value.availability_domain].name
+        subnet_id               = placement_configs.value.subnet_id
+        fault_domains           = placement_configs.value.fault_domains
+        capacity_reservation_id = placement_configs.value.capacity_reservation_id
+      }
     }
     node_pool_pod_network_option_details {
       #Required
@@ -33,7 +37,7 @@ resource "oci_containerengine_node_pool" "nodepool" {
       #Optional
       max_pods_per_node = var.max_pods_per_node
       pod_nsg_ids       = var.pod_nsg_ids != null ? (local.pod_nsg_ids == [] ? ["INVALID POD NSG Name"] : local.pod_nsg_ids) : null
-      pod_subnet_ids   = var.pod_subnet_ids != null ? [var.pod_subnet_ids] : null
+      pod_subnet_ids    = var.pod_subnet_ids != null ? [var.pod_subnet_ids] : null
     }
     size                                = var.size
     nsg_ids                             = var.worker_nsg_ids != null ? (local.nodepool_nsg_ids == [] ? ["INVALID WORKER NSG Name"] : local.nodepool_nsg_ids) : null
@@ -50,10 +54,10 @@ resource "oci_containerengine_node_pool" "nodepool" {
   }
 
 
-   node_metadata = {
-  #   user_data = var.cloudinit_nodepool_common == "" && lookup(var.cloudinit_nodepool, each.key, null) == null ? data.cloudinit_config.worker.rendered : lookup(var.cloudinit_nodepool, each.key, null) != null ? filebase64(lookup(var.cloudinit_nodepool, each.key, null)) : filebase64(var.cloudinit_nodepool_common)
-  user_data = var.init_script_path != null? base64encode(file(var.init_script_path)): null
-   }
+  node_metadata = {
+    #   user_data = var.cloudinit_nodepool_common == "" && lookup(var.cloudinit_nodepool, each.key, null) == null ? data.cloudinit_config.worker.rendered : lookup(var.cloudinit_nodepool, each.key, null) != null ? filebase64(lookup(var.cloudinit_nodepool, each.key, null)) : filebase64(var.cloudinit_nodepool_common)
+    user_data = var.init_script_path != null ? base64encode(file(var.init_script_path)) : null
+  }
 
   node_shape_config {
     ocpus         = var.ocpus
@@ -63,6 +67,6 @@ resource "oci_containerengine_node_pool" "nodepool" {
 
   # do not destroy the node pool if the kubernetes version has changed as part of the upgrade
   lifecycle {
-    ignore_changes = [node_config_details[0].placement_configs, kubernetes_version, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], node_config_details[0].defined_tags["Oracle-Tags.CreatedOn"], node_config_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
+    ignore_changes = [kubernetes_version, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], node_config_details[0].defined_tags["Oracle-Tags.CreatedOn"], node_config_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
   }
 }

@@ -125,7 +125,7 @@ updated_paths = []
 import_scripts = []
 # Opt-in to IMDS lookup
 exec_start_time = datetime.datetime.now()
-parser = argparse.ArgumentParser(description='Sets Up OCI via TF')
+parser = argparse.ArgumentParser(description='Sets Up Azure via TF')
 parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpAzure.properties")
 #parser.add_argument('--main_options', default="")
 #parser.add_argument('--sub_options', default="")

@@ -67,9 +67,12 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
     if (i ==0 or i == 1) and tf_resource not in state["resources"]:
         importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(nftn_info.topic_id)}'
 
-    tf_resource = f'module.notifications[\\"{tf_name_nftn}\\"].oci_ons_subscription.subscription'
-    if(i!=0) and tf_resource not in state["resources"]:
-        importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}[{i-1}]" {str(sbpn.id)}'
+    if sbpn is not None:
+        tf_resource = f'module.notifications[\\"{tf_name_nftn}\\"].oci_ons_subscription.subscription[\\"{sbpn.endpoint}_{sbpn.protocol}\\"]'
+        # tf_resource = f'module.notifications[\\"{tf_name_nftn}\\"].oci_ons_subscription.subscription'
+        if (i != 0) and tf_resource not in state["resources"]:
+            importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}" {str(sbpn.id)}'
+            # importCommands[region.lower()] += f'\n{tf_or_tofu} import "{tf_resource}[{i-1}]" {str(sbpn.id)}'
 
 
 def print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun,state):

@@ -25,10 +25,10 @@ resource "oci_containerengine_cluster" "cluster" {
   dynamic "image_policy_config" {
     for_each = var.policy_kms_key_id != null ? [1] : []
     content {
-    is_policy_enabled = true
-    key_details {
-    kms_key_id = var.policy_kms_key_id
-    }
+      is_policy_enabled = true
+      key_details {
+        kms_key_id = var.policy_kms_key_id
+      }
     }
   }
 
@@ -48,17 +48,17 @@ resource "oci_containerengine_cluster" "cluster" {
     }
     service_lb_subnet_ids = flatten(tolist([for subnet in var.service_lb_subnet_ids : (length(regexall("ocid1.subnet.oc*", subnet)) > 0 ? [subnet] : data.oci_core_subnets.oci_subnets_cluster_lbs[subnet].subnets[*].id)]))
     persistent_volume_config {
-     #Optional
-     defined_tags = var.volume_defined_tags
-     freeform_tags = var.volume_freeform_tags
+      #Optional
+      defined_tags  = var.volume_defined_tags
+      freeform_tags = var.volume_freeform_tags
     }
     service_lb_config {
-     #Optional
-     defined_tags = var.lb_defined_tags
-     freeform_tags = var.lb_freeform_tags
-   }
- }
- lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"],timeouts]
+      #Optional
+      defined_tags  = var.lb_defined_tags
+      freeform_tags = var.lb_freeform_tags
+    }
+  }
+  lifecycle {
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], timeouts]
   }
 }

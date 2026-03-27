@@ -15,37 +15,37 @@
 resource "oci_identity_domains_group" "group" {
   count = (var.matching_rule == "" || var.matching_rule == null) ? 1 : 0
   #Required
-  display_name  = var.group_name
+  display_name   = var.group_name
   attribute_sets = ["all"]
-  attributes = "members"
-  idcs_endpoint = var.identity_domain.url
-  schemas       = [
+  attributes     = "members"
+  idcs_endpoint  = var.identity_domain.url
+  schemas = [
     "urn:ietf:params:scim:schemas:core:2.0:Group",
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:group:Group",
   ]
   timeouts {}
   dynamic "urnietfparamsscimschemasoracleidcsextensiongroup_group" {
-    for_each = var.group_description != null ? [1]:[]
+    for_each = var.group_description != null ? [1] : []
     content {
       description = var.group_description
     }
   }
 
   dynamic "members" {
-    for_each = {for k in var.members: k=>k}
+    for_each = { for k in var.members : k => k }
     content {
       type  = "User"
       value = var.domain_users[members.value]
     }
   }
   dynamic "urnietfparamsscimschemasoracleidcsextensionrequestable_group" {
-   for_each = var.user_can_request_access == false ?[1]:[]
+    for_each = var.user_can_request_access == false ? [1] : []
     content {
-    #Optional
-    requestable = var.user_can_request_access
+      #Optional
+      requestable = var.user_can_request_access
     }
-}
+  }
   urnietfparamsscimschemasoracleidcsextension_oci_tags {
 
     # Optional
@@ -72,7 +72,7 @@ resource "oci_identity_domains_group" "group" {
       schemas,
       urnietfparamsscimschemasoracleidcsextension_oci_tags["defined_tags.CreatedOn"],
       urnietfparamsscimschemasoracleidcsextension_oci_tags["defined_tags.CreatedBy"],
-#      attribute_sets,attributes,members
+      #      attribute_sets,attributes,members
     ]
   }
 }
@@ -86,16 +86,16 @@ resource "oci_identity_domains_dynamic_resource_group" "dynamic_group" {
   count = (var.matching_rule != "" && var.matching_rule != null) ? 1 : 0
 
   #Required
-  display_name  = var.group_name
+  display_name   = var.group_name
   attribute_sets = ["all"]
-  attributes = "matching_rule"
-  idcs_endpoint = var.identity_domain.url
-  matching_rule = var.matching_rule
-  schemas       = [
+  attributes     = "matching_rule"
+  idcs_endpoint  = var.identity_domain.url
+  matching_rule  = var.matching_rule
+  schemas = [
     "urn:ietf:params:scim:schemas:oracle:idcs:DynamicResourceGroup",
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
   ]
-  description   = var.group_description
+  description = var.group_description
   timeouts {}
 
   urnietfparamsscimschemasoracleidcsextension_oci_tags {

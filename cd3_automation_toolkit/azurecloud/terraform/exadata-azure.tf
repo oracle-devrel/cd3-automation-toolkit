@@ -1,7 +1,6 @@
-#data "azurerm_resource_group" "resource_group" {
-# for_each       = var.azurerm_oci_adb != null ? var.azurerm_oci_adb : {}
-#  name = each.value.resource_group_name
-#}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 
 data "azurerm_virtual_network" "exa_vmc_virtual_networks" {
   #depends_on = [module.avm_network]
@@ -19,33 +18,39 @@ data "azurerm_subnet" "exa_vmc_subnets" {
 }
 
 data "azurerm_oracle_exadata_infrastructure" "exa_infras" {
-depends_on = [ module.exa-infra-azure ]
+  depends_on = [module.exa-infra-azure]
   #depends_on = [module.avm_network]
-  for_each             = var.az_oci_exa_vmclusters != null ? var.az_oci_exa_vmclusters : {}
-  name                 = each.value.exadata_infrastructure_name
-  resource_group_name  = each.value.resource_group_name
+  for_each            = var.az_oci_exa_vmclusters != null ? var.az_oci_exa_vmclusters : {}
+  name                = each.value.exadata_infrastructure_name
+  resource_group_name = each.value.resource_group_name
 }
 
 data "azurerm_oracle_db_servers" "this" {
-  depends_on = [ module.exa-infra-azure]
-  for_each             = var.az_oci_exa_vmclusters != null ? var.az_oci_exa_vmclusters : {}
+  depends_on                        = [module.exa-infra-azure]
+  for_each                          = var.az_oci_exa_vmclusters != null ? var.az_oci_exa_vmclusters : {}
   resource_group_name               = each.value.resource_group_name
   cloud_exadata_infrastructure_name = each.value.exadata_infrastructure_name
 }
 
-# AzureRM - Exadata Infrastructure
+##################################
+# Module Block - Exa @Azure
+# Create Exa Infra and VM Cluster
+##################################
+
+# AzureRM - Exadata Infra
 module "exa-infra-azure" {
   for_each = var.az_oci_exa_infra != null ? var.az_oci_exa_infra : {}
   source   = "./modules/azurerm-oci-exa-infra"
-  # depends_on = [ module.azure-resource-grp ]
 
   # Mandatory
-  location            = each.value.az_region
-  zone                = each.value.az_zone
-  resource_group_name = each.value.resource_group_name
-  name                = each.value.display_name
-  compute_count       = each.value.compute_count
-  storage_count       = each.value.storage_count
+  location             = each.value.az_region
+  zones                = each.value.az_zones
+  resource_group_name  = each.value.resource_group_name
+  name                 = each.value.display_name
+  compute_count        = each.value.compute_count
+  storage_count        = each.value.storage_count
+  database_server_type = each.value.database_server_type
+  storage_server_type  = each.value.storage_server_type
 
   # Optional
   shape              = each.value.shape
@@ -56,13 +61,6 @@ module "exa-infra-azure" {
 }
 
 
-
-# Known Issue - https://docs.oracle.com/en-us/iaas/odexa/odexa-troubleshooting-and-known-issues-exadata-services.html
-#resource "time_sleep" "wait_after_deletion" {
-#  destroy_duration = var.destroy_duration
-#  depends_on = [module.azurerm_exadata_infra]
-#}
-
 # AzureRM - Exadata VM Cluster
 module "exa-vmcluster-azure" {
 
@@ -70,21 +68,21 @@ module "exa-vmcluster-azure" {
   source   = "./modules/azurerm-oci-exa-vmcluster"
 
   # VM Cluster details
-  resource_group_name               = each.value.resource_group_name
-    display_name                      = each.value.display_name
+  resource_group_name = each.value.resource_group_name
+  display_name        = each.value.display_name
 
-  exadata_infrastructure_id         = data.azurerm_oracle_exadata_infrastructure.exa_infras[each.key].id
-  exadata_infrastructure_name       = each.value.exadata_infrastructure_name
-  db_servers = [for obj in data.azurerm_oracle_db_servers.this[each.key].db_servers : obj.ocid]
+  exadata_infrastructure_id   = data.azurerm_oracle_exadata_infrastructure.exa_infras[each.key].id
+  exadata_infrastructure_name = each.value.exadata_infrastructure_name
+  db_servers                  = [for obj in data.azurerm_oracle_db_servers.this[each.key].db_servers : obj.ocid]
 
-  location                          = each.value.az_region
-  cluster_name                      = each.value.cluster_name
-  hostname                          = each.value.hostname
-  time_zone                         = each.value.time_zone
-  license_model                     = each.value.license_model
-  gi_version                        = each.value.gi_version
-  system_version                    = each.value.system_version
-  ssh_public_keys                   = each.value.ssh_public_keys
+  location        = each.value.az_region
+  cluster_name    = each.value.cluster_name
+  hostname        = each.value.hostname
+  time_zone       = each.value.time_zone
+  license_model   = each.value.license_model
+  gi_version      = each.value.gi_version
+  system_version  = each.value.system_version
+  ssh_public_keys = each.value.ssh_public_keys
 
   # Networking
   vnet_id            = data.azurerm_virtual_network.exa_vmc_virtual_networks[each.key].id
@@ -110,12 +108,12 @@ module "exa-vmcluster-azure" {
   is_incident_logs_enabled     = each.value.incident_logs_enabled
 
   # Ports
-  scan_listener_port_tcp       = each.value.scan_listener_port_tcp
-  scan_listener_port_tcp_ssl   = each.value.scan_listener_port_tcp_ssl
+  scan_listener_port_tcp     = each.value.scan_listener_port_tcp
+  scan_listener_port_tcp_ssl = each.value.scan_listener_port_tcp_ssl
 
   # File System Config
-  mount_point                  = each.value.mount_point
-  size_in_gb                   = each.value.size_in_gb
+  mount_point = each.value.mount_point
+  size_in_gb  = each.value.size_in_gb
 
 
   tags = each.value.common_tags

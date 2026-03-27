@@ -68,9 +68,9 @@ variable "is_policy_enabled" {
 }
 
 variable "policy_kms_key_id" {
-  type    = string
+  type        = string
   description = "The OCIDs of the KMS key that will be used to verify whether the images are signed by an approved source"
-  default = null
+  default     = null
 }
 
 variable "is_kubernetes_dashboard_enabled" {
@@ -124,7 +124,7 @@ variable "freeform_tags" {
 }
 
 variable "volume_defined_tags" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
@@ -134,7 +134,7 @@ variable "volume_freeform_tags" {
 }
 
 variable "lb_defined_tags" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 

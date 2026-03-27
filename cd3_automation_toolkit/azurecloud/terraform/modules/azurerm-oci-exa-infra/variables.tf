@@ -1,10 +1,10 @@
 # Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-#####################################
+############################################
 ## Variables Block - Oracle ExaInfra @Azure
 ## Create Oracle ExaInfra @Azure
-#####################################
+############################################
 
 # Mandatory
 variable "location" {
@@ -24,9 +24,9 @@ variable "resource_group_name" {
   default     = "rg-oradb"
 }
 
-variable "zone" {
+variable "zones" {
   description = "The availablty zone of the Exadata Infrastructure in Azure"
-  type        = string
+  type        = list(string)
 }
 
 variable "compute_count" {
@@ -46,7 +46,7 @@ variable "shape" {
   type        = string
   default     = "Exadata.X9M"
 }
-/*
+
 variable "database_server_type" {
   description = "Database Server Type"
   type        = string
@@ -58,29 +58,29 @@ variable "storage_server_type" {
   type        = string
   default     = "X11M-HC"
 }
-*/
+
 
 # Optional
 variable "customer_contacts" {
-    description = "The email address used by Oracle to send notifications regarding databases and infrastructure. Provide up to 10 unique maintenance contact email addresses."
-    type = list(string)
-    default = []
+  description = "The email address used by Oracle to send notifications regarding databases and infrastructure. Provide up to 10 unique maintenance contact email addresses."
+  type        = list(string)
+  default     = []
 }
 
 variable "maintenance_window" {
   description = "maintenanceWindow properties"
   type = object({
-      patching_mode = string
-      preference = string
-      lead_time_in_weeks = optional(number)
-      months = optional(list(number))
-      weeks_of_month = optional(list(number))
-      days_of_week =optional(list(number))
-      hours_of_day = optional(list(number))
+    patching_mode      = string
+    preference         = string
+    lead_time_in_weeks = optional(number)
+    months             = optional(list(string))
+    weeks_of_month     = optional(list(number))
+    days_of_week       = optional(list(string))
+    hours_of_day       = optional(list(number))
   })
   default = {
     patching_mode = "Rolling"
-    preference = "NoPreference"
+    preference    = "NoPreference"
   }
 }
 

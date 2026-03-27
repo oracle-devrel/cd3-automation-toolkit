@@ -3,17 +3,21 @@
 #
 # This script will help in initializing the docker container; creates config and variables files.
 #
-# Author: Shruthi Subramanian
+# Author: Suruchi Bansal
+# Oracle Consulting
 #
-
+import sys
 import argparse
 import logging
 import os
 import shutil
 import datetime
 import configparser
-from azure.identity import ClientSecretCredential
 from azure.core.exceptions import ClientAuthenticationError
+sys.path.append(os.getcwd())
+sys.path.append(os.getcwd()+"/..")
+from azurecloud.python import *
+
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -28,7 +32,7 @@ def paginate(operation, *args, **kwargs):
 
 # Execution of code begins here
 parser = argparse.ArgumentParser(description="Connects the Container to Azure Subscription")
-parser.add_argument("propsfile", help="Full Path of properties file. eg createtenancyAzure.properties")
+parser.add_argument("propsfile", help="Full Path of properties file. eg connectAzure.properties")
 args = parser.parse_args()
 config = configparser.RawConfigParser()
 config.read(args.propsfile)
@@ -39,10 +43,8 @@ cloud="Azure"
 # Initialize Toolkit Variables
 user_dir = "/cd3user/"+cloud.lower()+"/"
 toolkit_dir = os.path.dirname(os.path.abspath(__file__))+"/.."
-tf_modules_dir = toolkit_dir + "/azurecloud/terraform"
-
-setupcloud_props_toolkit_file_path = toolkit_dir + "/setUpAzure.properties"
-
+tf_modules_dir = toolkit_dir + "/"+cloud.lower()+"cloud/terraform"
+setupcloud_props_toolkit_file_path = toolkit_dir + "/setUp"+cloud+".properties"
 
 
 prefix = config.get('Default', 'prefix').strip()
@@ -62,14 +64,12 @@ if os.path.exists(safe_file):
 
 if prefixes !=[]:
     if prefix in prefixes:
-        print("WARNING!!! Container has already been successfuly connected to the Azure with same prefix. Please proceed only if you re-running the script for new project subscription")
+        print("WARNING!!! Container has already been successfuly connected to "+cloud+" with same prefix. Please proceed only if you re-running the script for new subscription")
         inp = input("\nDo you want to proceed (y/n):")
         if inp.lower()=="n":
             exit(1)
 
-
 # Initialize Tenancy Variables
-
 prefix_dir = user_dir +"/" + prefix
 config_files= prefix_dir +"/.config_files"
 
@@ -78,7 +78,6 @@ az_provider_file = terraform_files + "/provider.tf"
 setupcloud_props_file_path = prefix_dir + "/"+prefix+"_setUp"+cloud+".properties"
 
 connected = 1
-
 # Read Config file Variables
 try:
     subscription_id=''
@@ -109,31 +108,32 @@ if not os.path.exists(config_files):
     os.makedirs(config_files)
 
 
-# Copy input properties file to customer_tenancy_dir
-shutil.copy(args.propsfile,config_files+"/"+prefix+"_connectAzure.properties")
+# 1. Copy input properties file
+shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
+
+# 2. Authenticate and Get Projects
 
 if connected == 1:
+    ct = azrCommonTools()
+    credentials = ct.authenticate(args.propsfile)
     try:
-        credential = ClientSecretCredential(
-            tenant_id=tenant_id,
-            client_id=client_id,
-            client_secret=client_secret)
-        token = credential.get_token("https://management.azure.com/.default")
-        print("\nAzure credentials are valid. Proceeding...")
+        token = credentials[0].get_token("https://management.azure.com/.default")
     except ClientAuthenticationError as e:
-        print(f"\nAzure credentials are invalid. Exiting!!!")
+        print(f"\nAzure credentials are invalid. Exiting!!!\n")
         exit(1)
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-
+        exit(1)
+    print("\nAzure credentials are valid. Proceeding...\n")
 
 # 3. Generate setUpCloud.properties file
-print("Creating Azure specific setUpAzure.properties.................")
+print("Creating "+cloud+" specific setUp"+cloud+".properties.................")
 with open(setupcloud_props_toolkit_file_path, 'r+') as setUpCloud_file:
     setupcloud_props_toolkit_file_data = setUpCloud_file.read().rstrip()
 
 setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("outdir=", "outdir="+terraform_files)
 setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("prefix=", "prefix="+prefix)
+
 if connected == 1:
     setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("subscription_id=", "subscription_id=" + subscription_id)
     setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("tenant_id=", "tenant_id="+tenant_id)
@@ -144,7 +144,6 @@ f = open(setupcloud_props_file_path, "w+")
 f.write(setupcloud_props_toolkit_file_data)
 f.close()
 
-
 # Copy modules dir to terraform_files folder
 try:
     shutil.copytree(tf_modules_dir, terraform_files )
@@ -152,7 +151,6 @@ except FileExistsError as fe:
     print(fe)
 
 
-# 6. Read variables.tf from examples folder and copy the variables as string
 
 if connected == 1:
     print("Creating subscription specific terraform provider file................")
@@ -167,13 +165,13 @@ if connected == 1:
     f = open(az_provider_file, "w+")
     f.write(az_provider_file_data)
     f.close()
-    
+
+# Logging information
 outfile = prefix_dir+'/'+os.path.basename(__file__).rstrip("py")+"out"
 logging.basicConfig(filename=outfile, format='%(message)s', filemode='w', level=logging.INFO)
 
 print("==================================================================================================================================")
 print("\nThe toolkit has been setup successfully. !!!\n")
-
 f = open(safe_file, "a")
 data=prefix + "\t" + "SUCCESS\t"+current_time+"\n"
 f.write(data)
@@ -184,9 +182,9 @@ logging.info("Prefix Specific Working Directory Path: "+prefix_dir+"\n")
 logging.info("\n######################################")
 logging.info("Next Steps for using toolkit via CLI")
 logging.info("######################################")
-logging.info("Modify "+prefix_dir + "/" +prefix+"_setUpAzure.properties with input values for cd3file and workflow_type")
+logging.info("Modify "+prefix_dir + "/" +prefix+"_setUp"+cloud+".properties with input values for cd3file and workflow_type")
 logging.info("cd /cd3user/oci_tools/cd3_automation_toolkit")
-logging.info("python setUpCloud.py azure "+prefix_dir + "/" +prefix+"_setUpAzure.properties")
+logging.info("python setUpCloud.py azure "+prefix_dir + "/" +prefix+"_setUp"+cloud+".properties")
 
 with open(outfile, 'r') as log_file:
     data = log_file.read().rstrip()

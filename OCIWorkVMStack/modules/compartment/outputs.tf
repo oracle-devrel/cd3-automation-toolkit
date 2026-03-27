@@ -7,5 +7,5 @@
 
 output "compartment_tf_id" {
   description = "Compartment ocid"
-  value = oci_identity_compartment.compartment.id
+  value       = oci_identity_compartment.compartment.id
 }

@@ -19,8 +19,8 @@ variable "user_id" {
 }
 
 variable "domain_users" {
-description = "all users in the domain"
-default = {}
+  description = "all users in the domain"
+  default     = {}
 }
 
 variable "members" {
@@ -30,7 +30,7 @@ variable "members" {
 
 
 variable "identity_domain" {
-default = {}
+  default = {}
 }
 
 
@@ -53,19 +53,19 @@ variable "group_description" {
 }
 
 variable "matching_rule" {
-  type    = string
+  type        = string
   description = "The matching rule associated with the dynamic group"
-  default = ""
+  default     = ""
 }
 
 variable "defined_tags" {
   description = "Defined tags for the group"
-  type        = list(object({
+  type = list(object({
     key       = string
     namespace = string
     value     = string
   }))
-  default     = []
+  default = []
 }
 
 variable "freeform_tags_key" {
@@ -79,8 +79,8 @@ variable "freeform_tags_value" {
 }
 
 variable "user_can_request_access" {
-  type    = bool
+  type        = bool
   description = "Specifies whether user can request access to the group"
-  default = false
+  default     = false
 
 }

@@ -6,8 +6,8 @@
 # Create VCNs
 ############################
 locals {
-  is_ipv6enabled = var.is_ipv6enabled == null ?(length(var.byoipv6cidr_details) > 0 ||
-    length(var.ipv6private_cidr_blocks) > 0 || var.is_oracle_gua_allocation_enabled) : var.is_ipv6enabled
+  is_ipv6enabled = var.is_ipv6enabled == null ? (length(var.byoipv6cidr_details) > 0 ||
+  length(var.ipv6private_cidr_blocks) > 0 || var.is_oracle_gua_allocation_enabled) : var.is_ipv6enabled
 }
 resource "oci_core_vcn" "vcn" {
 
@@ -24,12 +24,12 @@ resource "oci_core_vcn" "vcn" {
     }
   }
   #Optional
-  cidr_blocks                      = var.cidr_blocks
-  defined_tags                     = var.defined_tags
-  display_name                     = var.display_name
-  dns_label                        = var.dns_label
-  freeform_tags                    = var.freeform_tags
-  is_ipv6enabled                   = local.is_ipv6enabled
+  cidr_blocks    = var.cidr_blocks
+  defined_tags   = var.defined_tags
+  display_name   = var.display_name
+  dns_label      = var.dns_label
+  freeform_tags  = var.freeform_tags
+  is_ipv6enabled = local.is_ipv6enabled
   #is_ipv6enabled = false
   #is_ipv6enabled                   = var.is_ipv6enabled
   ipv6private_cidr_blocks          = var.ipv6private_cidr_blocks

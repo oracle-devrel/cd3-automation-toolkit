@@ -109,7 +109,7 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
                 if str(require_ps_port_1).lower() == NaNstr.lower():
                     require_ps_port_1 = "false"
                 elif str(require_ps_port_1).lower() == "true" or require_ps_port_1 == "TRUE" or str(
-                        df.loc[i, 'Require PS Port (true|false)']) == 1.0:
+                        df.loc[i, 'Require PS Port (true|false)']) == '1.0':
                     require_ps_port_1 = "true"
                 else:
                     require_ps_port_1 = "false"
@@ -117,7 +117,7 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
                 if str(is_anonymous_access_allowed_1).lower() == NaNstr.lower():
                     is_anonymous_access_allowed_1 = "false"
                 elif str(is_anonymous_access_allowed_1).lower() == "true" or is_anonymous_access_allowed_1 == "TRUE" or str(
-                        df.loc[i, 'Is Anonymous Access Allowed']) == 1.0:
+                        df.loc[i, 'Is Anonymous Access Allowed']) == '1.0':
                     is_anonymous_access_allowed_1 = "true"
                 else:
                     is_anonymous_access_allowed_1 = "false"
@@ -331,7 +331,7 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
 
             if columnname == "Is Anonymous Access Allowed":
                 columnname = "Is Anonymous Access Allowed"
-                if str(columnvalue).lower() == "true" or str(columnvalue) == 1.0:
+                if str(columnvalue).lower() == "true" or str(columnvalue) == '1.0':
                     columnvalue = "true"
                 elif str(columnvalue).lower() == "nan" or str(columnvalue) == "" or str(columnvalue).lower() == "false":
                     columnvalue = "false"
@@ -456,7 +456,7 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
         if (region!='nan' and fss_name.strip()!='' and fss_name.strip() not in FSS_names[region]):
             FSS_names[region].append(fss_name.strip())
             tempStr_fss[region] = tempStr_fss[region] + fss.render(tempStr)
-        if region != 'nan' and replication != '' and replication_name.strip() not in FSS_Replication_names[region]:
+        if region != 'nan'  and replication_name.strip() not in FSS_Replication_names[region]:
             tmp_rep_dict = {}
             tmp_rep_dict['fss_tf_name'] = tempStr['fss_tf_name']
             tmp_rep_dict['compartment_tf_name'] = tempStr['compartment_tf_name']

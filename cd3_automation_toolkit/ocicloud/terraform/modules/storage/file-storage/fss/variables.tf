@@ -49,6 +49,6 @@ variable "filesystem_snapshot_policy_id" {
 }
 
 variable "policy_compartment_id" {
-  type = string
+  type    = string
   default = null
 }

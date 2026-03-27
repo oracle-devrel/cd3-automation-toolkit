@@ -30,13 +30,13 @@ data "oci_core_vcns" "oci_exacs_vcns" {
 }
 
 module "exa-infra" {
-  source              = "./modules/database/exa-infra"
-  for_each            = var.exa_infra != null ? var.exa_infra : {}
-  availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  display_name        = each.value.display_name
-  shape               = each.value.shape
-  compute_count       = each.value.compute_count
+  source               = "./modules/database/exa-infra"
+  for_each             = var.exa_infra != null ? var.exa_infra : {}
+  availability_domain  = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
+  compartment_id       = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  display_name         = each.value.display_name
+  shape                = each.value.shape
+  compute_count        = each.value.compute_count
   database_server_type = each.value.database_server_type
   storage_server_type  = each.value.storage_server_type
   #   customer_contacts_email = each.value.customer_contacts_email
@@ -71,8 +71,8 @@ module "exa-vmclusters" {
   compartment_id            = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   gi_version                = each.value.gi_version
   hostname                  = each.value.hostname
-  #ssh_public_keys          = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
-  ssh_public_keys = lookup(var.exacs_ssh_keys, each.value.ssh_public_keys, var.exacs_ssh_keys["ssh_public_key"])
+  ssh_public_keys           = each.value.ssh_public_keys != null ? (length(regexall("ssh-rsa*", each.value.ssh_public_keys)) > 0 ? [each.value.ssh_public_keys] : lookup(var.exacs_ssh_keys, each.value.ssh_public_keys, var.exacs_ssh_keys["ssh_public_key"])) : null
+
   //  cluster_subnet_id           = length(regexall("ocid1.subnet.oc*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
   network_compartment_id      = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   vcn_names                   = [each.value.vcn_name]
