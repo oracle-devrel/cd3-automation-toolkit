@@ -216,8 +216,7 @@ As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove
     ![image](../images/events_tfplan.png)
 
 **13.**
-
-**Terraform Forces Resource Replacement – OCI CDB with Database Management Enabled** <br>
+**Terraform Forces Resource Replacement for OCI CDB with Database Management Enabled** <br>
 <br>
 **Issue Description**
 While managing OCI Container Databases (CDB) using Terraform (oci_database_database), databases with Database Management enabled are marked for replacement after being imported into Terraform.<br>
@@ -270,10 +269,6 @@ While managing OCI Container Databases (CDB) using Terraform (oci_database_datab
 ```
 <br>
 
-**Root Cause**
-The issue is caused by a mismatch between Terraform configuration and the OCI API response when Database Management is enabled. OCI returns additional metadata, which Terraform interprets as changes in the database {} block. 
-Since key attributes in this block are marked as new, Terraform plans a resource replacement even though no actual change was intended.
-<br>
 
 **Workaround**
 To prevent unintended replacement, add “database” to the ignore_changes block in the lifecycle configuration of the oci_database_database resource in the main.tf file. 
