@@ -149,7 +149,7 @@ docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
 
 * Run  
 ```
-docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_local_system>:8443 -d -v <directory_created_in_step1>:/cd3user/tenancies <image_name>:<image_tag>
+docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_local_system>:8443 -d -v <directory_created_in_step1>:/cd3user <image_name>:<image_tag>
 ```
   
 === "Example for Mac"
@@ -159,7 +159,7 @@ docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_loca
 
 === "Example for Windows "
       ```
-      docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2025.2.0
+      docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user cd3toolkit:v2025.2.0
       ```
   
 !!! Danger "Ensure Secure Access!"
