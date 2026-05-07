@@ -28,14 +28,14 @@ resource "oci_database_database" "database_database" {
           dbrs_policy_id = database.value["dbrs_policy_id"] != null ? (length(regexall("ocid1.recoveryservicepolicy.*", database.value["dbrs_policy_id"])) > 0 ? database.value["dbrs_policy_id"] : data.oci_recovery_protection_policies.protection_policies[database.value.db_name].protection_policy_collection[0].items[0].id) : null
         }
         */
-          dynamic "backup_destination_details" {
-    for_each = database.value["auto_backup_enabled"] ? [1] : []
-    content {
-      id   = database.value["backup_dest_id"]
-      type = database.value["backup_dest_type"]
-      dbrs_policy_id = database.value["dbrs_policy_id"] != null ? (length(regexall("ocid1.recoveryservicepolicy.*", database.value["dbrs_policy_id"])) > 0 ? database.value["dbrs_policy_id"] : data.oci_recovery_protection_policies.protection_policies[database.value.db_name].protection_policy_collection[0].items[0].id) : null
-    }
+        dynamic "backup_destination_details" {
+          for_each = database.value["auto_backup_enabled"] ? [1] : []
+          content {
+            id             = database.value["backup_dest_id"]
+            type           = database.value["backup_dest_type"]
+            dbrs_policy_id = database.value["dbrs_policy_id"] != null ? (length(regexall("ocid1.recoveryservicepolicy.*", database.value["dbrs_policy_id"])) > 0 ? database.value["dbrs_policy_id"] : data.oci_recovery_protection_policies.protection_policies[database.value.db_name].protection_policy_collection[0].items[0].id) : null
           }
+        }
         recovery_window_in_days = database.value["recovery_window_in_days"]
       }
       db_unique_name      = database.value["db_unique_name"]
@@ -53,7 +53,7 @@ resource "oci_database_database" "database_database" {
 
 
   lifecycle {
-    ignore_changes= [source,database[0].defined_tags["Oracle-Tags.CreatedOn"],database[0].defined_tags["Oracle-Tags.CreatedBy"],database[0].db_backup_config[0].backup_destination_details[0].vpc_user]
+    ignore_changes = [source, database[0].defined_tags["Oracle-Tags.CreatedOn"], database[0].defined_tags["Oracle-Tags.CreatedBy"], database[0].db_backup_config[0].backup_destination_details[0].vpc_user]
   }
 
 }

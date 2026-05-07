@@ -26,7 +26,7 @@ resource "azurerm_oracle_cloud_vm_cluster" "vm_cluster" {
   db_servers      = var.db_servers
 
   # Networking
-  virtual_network_id = var.vnet_id
+  virtual_network_id = var.virtual_network_id
   subnet_id          = var.subnet_id
   backup_subnet_cidr = var.backup_subnet_cidr
   domain             = var.domain != "" ? var.domain : null
@@ -54,12 +54,21 @@ resource "azurerm_oracle_cloud_vm_cluster" "vm_cluster" {
   scan_listener_port_tcp     = var.scan_listener_port_tcp
   scan_listener_port_tcp_ssl = var.scan_listener_port_tcp_ssl
 
-  file_system_configuration {
-    mount_point = var.mount_point
-    size_in_gb  = var.size_in_gb
+  dynamic "file_system_configuration" {
+    for_each = var.file_system_configurations != null ? var.file_system_configurations : {}
+    content {
+      mount_point = file_system_configuration.value.mount_point
+      size_in_gb  = file_system_configuration.value.size_in_gb
+    }
   }
 
   tags = var.tags
+
+  timeouts {
+    create = "12h"
+    update = "2h"
+    delete = "8h"
+  }
 
   lifecycle {
     ignore_changes = [

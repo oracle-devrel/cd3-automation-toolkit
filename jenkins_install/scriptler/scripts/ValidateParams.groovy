@@ -10,7 +10,7 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
     "DNS Management":["Add/Modify/Delete DNS Views/Zones/Records", "Add/Modify/Delete DNS Resolvers"],
     "Compute":["Add/Modify/Delete Dedicated VM Hosts", "Add/Modify/Delete Instances/Boot Backup Policy"],
     "Storage":["Add/Modify/Delete Block Volumes/Block Backup Policy", "Add/Modify/Delete File Systems", "Add/Modify/Delete Object Storage Buckets"],
-    "Database":["Add/Modify/Delete Virtual Machine or Bare Metal DB Systems", "Add/Modify/Delete EXA Infra and EXA VM Clusters", "Add/Modify/Delete ADBs", "Add/Modify/Delete MySQL DBs"],
+    "Database":["Add/Modify/Delete Virtual Machine or Bare Metal DB Systems", "Add/Modify/Delete EXA Infra and EXA VM Clusters", "Add/Modify/Delete Exa DB Homes", "Add/Modify/Delete Exa Databases(CDBs)", "Add/Modify/Delete Exa PDBs", "Add/Modify/Delete ADBs", "Add/Modify/Delete MySQL DBs"],
     "Load Balancers":["Add/Modify/Delete Load Balancers", "Add/Modify/Delete Network Load Balancers"],
     "Management Services":["Add/Modify/Delete Notifications", "Add/Modify/Delete Events", "Add/Modify/Delete Alarms", "Add/Modify/Delete ServiceConnectors"],
     "Developer Services":["Upload current terraform files/state to Resource Manager", "Add/Modify/Delete OKE Cluster and Nodepools"],

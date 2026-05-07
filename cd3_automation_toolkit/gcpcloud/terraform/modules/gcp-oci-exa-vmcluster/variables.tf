@@ -23,6 +23,24 @@ variable "exadata_infrastructure_id" {
   default     = null
 }
 
+variable "odb_network_id" {
+  description = "ODB Network ID"
+  type        = string
+  default     = null
+}
+
+variable "odb_client_subnet_id" {
+  description = "ODB Client Subnet ID"
+  type        = string
+  default     = null
+}
+
+variable "odb_backup_subnet_id" {
+  description = "ODB Backup Subnet ID"
+  type        = string
+  default     = null
+}
+
 variable "cluster_config" {
   type = object({
     # MANDATORY

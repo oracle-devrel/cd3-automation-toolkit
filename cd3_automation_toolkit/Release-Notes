@@ -1,4 +1,13 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2026.1.1
+May 8th, 2026
+-------------------------------------
+1. Support for export of resources from all child compartments of a parent without specifying them separately in command line.
+2. Deprecate python script createTenancyConfig.py. Instead use connectCloud.py
+3. Fixed ordering issue for views for export of DNS resolvers.
+4. Minor internal bug fixes.
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2026.1.0
 Mar 27th, 2026
 -------------------------------------

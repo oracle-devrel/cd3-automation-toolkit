@@ -96,9 +96,9 @@ data "oci_database_cloud_vm_clusters" "pdb_cloud_vm_clusters" {
     k => v
     if v.vm_cluster_id != null && length(regexall("ocid1.cloudvmcluster.", v.vm_cluster_id)) == 0
   }
-  compartment_id = (length(regexall("ocid1.compartment.", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id] )
-  display_name = each.value.vm_cluster_id
-  state        = "AVAILABLE"
+  compartment_id = (length(regexall("ocid1.compartment.", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id])
+  display_name   = each.value.vm_cluster_id
+  state          = "AVAILABLE"
 }
 
 data "oci_database_db_homes" "pdb_db_homes" {
@@ -106,7 +106,7 @@ data "oci_database_db_homes" "pdb_db_homes" {
   compartment_id = length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]
   display_name   = each.value.db_home_id
   state          = "AVAILABLE"
-  vm_cluster_id = (each.value.vm_cluster_id == null ? null : (length(regexall("ocid1.cloudvmcluster.", each.value.vm_cluster_id)) > 0 ? each.value.vm_cluster_id : data.oci_database_cloud_vm_clusters.pdb_cloud_vm_clusters[each.key].cloud_vm_clusters[0].id))
+  vm_cluster_id  = (each.value.vm_cluster_id == null ? null : (length(regexall("ocid1.cloudvmcluster.", each.value.vm_cluster_id)) > 0 ? each.value.vm_cluster_id : data.oci_database_cloud_vm_clusters.pdb_cloud_vm_clusters[each.key].cloud_vm_clusters[0].id))
 }
 
 
@@ -116,8 +116,8 @@ data "oci_database_databases" "existing_cdb_dbs" {
   #db_home_id     = each.value.db_home_id != null ? (length(regexall("ocid1.dbhome.oc*", each.value.db_home_id)) > 0 ? each.value.db_home_id : try(merge(module.db-homes.*...)[each.value.db_home_id]["db_home_tf_id"], data.oci_database_db_homes.oci_db_homes[each.value.database_id].db_homes[0].db_home_id)) : null
   #db_home_id      = each.value.db_home_id != null ? (length(regexall("ocid1.dbhome.oc*", each.value.db_home_id)) > 0 ? each.value.db_home_id : data.oci_database_db_homes.oci_db_homes[each.value.db_home_id].db_homes[0].db_home_id) : null
   db_home_id = (length(regexall("ocid1.dbhome.oc*", each.value.db_home_id)) > 0 ? each.value.db_home_id : data.oci_database_db_homes.pdb_db_homes[each.key].db_homes[0].db_home_id)
-  db_name = each.value.database_id
-  state   = "Available"
+  db_name    = each.value.database_id
+  state      = "Available"
 }
 
 /*

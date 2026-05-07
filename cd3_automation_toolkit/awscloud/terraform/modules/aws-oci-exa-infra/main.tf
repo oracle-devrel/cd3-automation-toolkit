@@ -1,11 +1,7 @@
-# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
-##########################################
-## Resource Block - Oracle ExaInfra @AWS
-## Create Oracle ExaInfra @AWS
-##########################################
-
+# ========================================
+# Module: exadata_infrastructure
+# main.tf — Resource definitions
+# ========================================
 
 resource "aws_odb_cloud_exadata_infrastructure" "exadata_infrastructure" {
   # Required Arguments
@@ -63,4 +59,3 @@ data "aws_odb_db_servers" "exadata_infrastructure" {
   cloud_exadata_infrastructure_id = aws_odb_cloud_exadata_infrastructure.exadata_infrastructure.id
   depends_on                      = [aws_odb_cloud_exadata_infrastructure.exadata_infrastructure]
 }
-

@@ -15,12 +15,17 @@
 
 variable "az_oci_adb" {
   type = map(object({
-    display_name                     = string
-    az_region                        = string
-    resource_group_name              = string
-    network_resource_group_name      = string
-    virtual_network_id               = string
-    subnet_id                        = string
+    display_name                    = string
+    az_region                       = string
+    resource_group_name             = string
+    network_resource_group_name     = string
+    virtual_network_name            = string
+    delegated_subnet_name           = string
+    create_odb_network              = bool
+    network_az_region               = optional(string)
+    virtual_network_address_space   = optional(string)
+    delegated_subnet_address_prefix = optional(string)
+
     db_workload                      = string
     mtls_connection_required         = bool
     backup_retention_period_in_days  = number
@@ -62,9 +67,9 @@ variable "az_oci_exa_infra" {
       patching_mode      = string
       preference         = string
       lead_time_in_weeks = optional(number)
-      months             = optional(list(number))
+      months             = optional(list(string))
       weeks_of_month     = optional(list(number))
-      days_of_week       = optional(list(number))
+      days_of_week       = optional(list(string))
       hours_of_day       = optional(list(number))
     })
     customer_contacts = optional(list(string))
@@ -80,38 +85,45 @@ variable "az_oci_exa_infra" {
 
 variable "az_oci_exa_vmclusters" {
   type = map(object({
-    display_name                = string
-    az_region                   = string
-    resource_group_name         = string
-    network_resource_group_name = string
-    virtual_network_id          = string
-    subnet_id                   = string
-    exadata_infrastructure_name = string
-    hostname                    = string
-    cpu_core_count              = string
-    gi_version                  = string
-    license_model               = string
-    ssh_public_keys             = list(string)
-    backup_subnet_cidr          = optional(string)
-    cluster_name                = optional(string)
-    domain                      = optional(string)
-    oci_zone_id                 = optional(string)
-    diagnostics_events_enabled  = optional(bool)
-    health_monitoring_enabled   = optional(bool)
-    incident_logs_enabled       = optional(bool)
-    data_storage_percentage     = optional(number)
-    data_storage_size_in_tbs    = optional(number)
-    db_node_storage_size_in_gbs = optional(number)
-    local_backup_enabled        = optional(bool)
-    sparse_diskgroup_enabled    = optional(bool)
-    memory_size_in_gbs          = optional(number)
-    scan_listener_port_tcp      = optional(number)
-    scan_listener_port_tcp_ssl  = optional(number)
-    system_version              = optional(string)
-    time_zone                   = optional(string)
-    mount_point                 = optional(string)
-    size_in_gb                  = optional(number)
-    common_tags                 = optional(map(string))
+    display_name = string
+    az_region    = string
+
+    resource_group_name             = string
+    network_resource_group_name     = string
+    virtual_network_name            = string
+    delegated_subnet_name           = string
+    create_odb_network              = bool
+    network_az_region               = optional(string)
+    virtual_network_address_space   = optional(string)
+    delegated_subnet_address_prefix = optional(string)
+    exadata_infrastructure_name     = string
+    hostname                        = string
+    cpu_core_count                  = string
+    gi_version                      = string
+    license_model                   = string
+    ssh_public_keys                 = list(string)
+    backup_subnet_cidr              = optional(string)
+    cluster_name                    = optional(string)
+    domain                          = optional(string)
+    oci_zone_id                     = optional(string)
+    diagnostics_events_enabled      = optional(bool)
+    health_monitoring_enabled       = optional(bool)
+    incident_logs_enabled           = optional(bool)
+    data_storage_percentage         = optional(number)
+    data_storage_size_in_tbs        = optional(number)
+    db_node_storage_size_in_gbs     = optional(number)
+    local_backup_enabled            = optional(bool)
+    sparse_diskgroup_enabled        = optional(bool)
+    memory_size_in_gbs              = optional(number)
+    scan_listener_port_tcp          = optional(number)
+    scan_listener_port_tcp_ssl      = optional(number)
+    system_version                  = optional(string)
+    time_zone                       = optional(string)
+    file_system_configurations = optional(map(object({
+      mount_point = string
+      size_in_gb  = number
+    })))
+    common_tags = optional(map(string))
 
 
   }))

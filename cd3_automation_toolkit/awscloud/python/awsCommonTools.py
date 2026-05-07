@@ -1,56 +1,40 @@
-import boto3
-from botocore.exceptions import ClientError, NoCredentialsError
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates. All rights reserved.
+#
+# Common tools for ODB @AWS CD3 scripts.
+# awscommontools.py
+#
 
-def read_aws_auth_properties(filepath):
-
-    aws_access_key_id = None
-    aws_secret_access_key = None
-
-    with open(filepath, "r") as f:
-
-        for line in f:
-            line = line.strip()
-            if line == "" or line.startswith("#") or line.startswith("["):
-                continue
-
-            if line.startswith("aws_access_key_id"):
-                aws_access_key_id = line.split("=", 1)[1].strip()
-
-            elif line.startswith("aws_secret_access_key"):
-                aws_secret_access_key = line.split("=", 1)[1].strip()
-
-
-    if not aws_access_key_id or not aws_secret_access_key:
-        print("Missing AWS authentication parameters in properties file")
-        exit(1)
-
-    return aws_access_key_id, aws_secret_access_key
+from typing import Dict, Optional
+from common.python.commonTools import *
 
 
 class awsCommonTools():
 
-    def authenticate(self, propsfile):
 
-        aws_access_key_id, aws_secret_access_key = read_aws_auth_properties(propsfile)
+    tagColumns = {'common tags', 'common_tags', 'peering tags', 'peering_tags'}
 
+    def split_tag_values(columnname, columnvalue, tempdict):
+
+        columnvalue = columnvalue.replace("\n", "")
+        if ";" in columnvalue:
+
+            columnname = commonTools.check_column_headers(columnname)
+            multivalues = columnvalue.split(";")
+            multivalues = [part.split("=") for part in multivalues if part]
+            tempdict = {columnname: multivalues}
+        else:
+            # If there is only one tag; split them only by "="; each key-value pair is stored as a list
+            columnname = commonTools.check_column_headers(columnname)
+            multivalues = columnvalue.split("=")
+            multivalues = [str(part).strip() for part in multivalues if part]
+            tempdict = {columnname: [multivalues]}
+        return tempdict
+
+    def _flatten_tags(tags: Optional[Dict[str, str]]) -> str:
+
+        if not tags:
+            return ""
         try:
-
-            session = boto3.Session(
-                aws_access_key_id=aws_access_key_id,
-                aws_secret_access_key=aws_secret_access_key,
-                region_name="us-east-1"
-            )
-
-            # validate credentials
-            sts = session.client("sts")
-            sts.get_caller_identity()
-
-            return session
-
-        except NoCredentialsError:
-            print("AWS credentials not found")
-            exit(1)
-
-        except ClientError as e:
-            print("Invalid AWS credentials:", e)
-            exit(1)
+            return ";".join([f"{k}={v}" for k, v in tags.items() if v is not None])
+        except Exception:
+            return ""

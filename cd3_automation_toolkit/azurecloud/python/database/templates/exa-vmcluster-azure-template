@@ -16,9 +16,13 @@ az_oci_exa_vmclusters = {
             az_region                = "{{ region }}"
             resource_group_name      = "{{ container_id }}"
 
-            network_resource_group_name = "{{ network_container_id }}"
-            virtual_network_id       = "{{ vnet_name }}"
-            subnet_id                = "{{ subnet_id }}"
+            network_resource_group_name = "{{ network_resource_group_name }}"
+            virtual_network_name       = "{{ vnet_name }}"
+            delegated_subnet_name                = "{{ delegated_subnet_name }}"
+            create_odb_network = {{ create_odb_network }}
+            network_az_region = "{{ network_az_region }}"
+            virtual_network_address_space = "{{ vnet_cidr }}"
+            delegated_subnet_address_prefix = "{{ subnet_cidr }}"
 
             exadata_infrastructure_name = "{{ exadata_infrastructure_name }}"
 
@@ -81,12 +85,16 @@ az_oci_exa_vmclusters = {
             {% if system_version %}
             system_version  = "{{ system_version }}"
             {% endif %}
-            {% if mount_point %}
-            mount_point = "{{ mount_point }}"
-            {% endif %}
-            {% if size_in_gb %}
-            size_in_gb = {{ size_in_gb }}
-            {% endif %}
+
+            file_system_configurations = {
+            {% for key,value in file_system_configurations.items() %}
+            {{ key }} = {
+            mount_point = "{{ value[0] }}"
+            size_in_gb = {{ value[1] }}
+            }
+            {% endfor %}
+            }
+
 
 
         {#  ##Do not modify below this line##  #}

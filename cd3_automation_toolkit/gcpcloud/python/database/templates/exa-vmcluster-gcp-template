@@ -1,0 +1,102 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+############################
+# Exa VM Cluster @GCP
+# Exa VM Cluster @GCP - tfvars
+############################
+
+gcp_oci_exa_vmclusters = {
+       ##Add New Exa-VMCluster @GCP here##
+}
+{% else %}
+
+     {{ display_tf_name }} =  {
+            location                = "{{ location.lower() }}"
+            project                 = "{{ project.lower() }}"
+            exadata_infrastructure_project = "{{ exadata_infrastructure_project.lower() }}"
+            {% if exadata_infrastructure_id %}
+            exadata_infrastructure_id   = "{{ exadata_infrastructure_id }}"
+            {% else %}
+            exadata_infrastructure_id   = "{{ exadata_infrastructure_id_from_name }}"
+            {% endif %}
+
+            odb_network_project     = "{{ odb_network_project }}"
+            vpc_network_name        = "{{ vpc_network_name }}"
+            odb_network_id          = "{{ odb_network_id }}"
+            odb_client_subnet_id    = "{{ odb_client_subnet_id }}"
+            odb_backup_subnet_id    = "{{ odb_backup_subnet_id }}"
+
+
+            create_odb_network      = {{ create_odb_network }}
+            odb_network_gcp_oracle_zone = "{{ odb_network_gcp_oracle_zone }}"
+            create_odb_network_subnets  = {{ create_odb_network_subnets }}
+            client_subnet_cidr          = "{{ client_subnet_cidr }}"
+            backup_subnet_cidr          = "{{ backup_subnet_cidr }}"
+
+            cloud_vm_cluster_id      = "{{ cloud_vm_cluster_id }}"
+            display_name             = "{{ display_name }}"
+            hostname_prefix          = "{{ hostname_prefix }}"
+            gi_version               = "{{ gi_version }}"
+            {% if cluster_name %}
+            cluster_name             = "{{ cluster_name }}"
+            {% endif %}
+
+            cpu_core_count           = {{ cpu_core_count }}
+            memory_size_gb           = {{ memory_size_gb }}
+            data_storage_size_tb     = {{ data_storage_size_tb }}
+            db_node_storage_size_gb  = {{ db_node_storage_size_gb }}
+            ssh_public_keys          = [{{ ssh_public_keys.split(',') | map('tojson') | join(',') }}]
+
+            license_type             = "{{ license_type.upper() }}"
+            {% if time_zone %}
+            time_zone                = "{{ time_zone }}"
+            {% endif %}
+            {% if scan_listener_port_tcp %}
+            scan_listener_port_tcp   = {{ scan_listener_port_tcp }}
+            {% endif %}
+            {% if scan_listener_port_tcp_ssl %}
+            scan_listener_port_tcp_ssl  = {{ scan_listener_port_tcp_ssl }}
+            {% endif %}
+
+            {% if diagnostics_events_enabled %}
+            diagnostics_events_enabled = {{ diagnostics_events_enabled }}
+            {% endif %}
+            {% if health_monitoring_enabled %}
+            health_monitoring_enabled  = {{ health_monitoring_enabled }}
+            {% endif %}
+            {% if incident_logs_enabled %}
+            incident_logs_enabled = {{ incident_logs_enabled }}
+            {% endif %}
+
+            {% if local_backup_enabled %}
+            local_backup_enabled     = {{ local_backup_enabled }}
+            {% endif %}
+            {% if sparse_diskgroup_enabled %}
+            sparse_diskgroup_enabled = {{ sparse_diskgroup_enabled }}
+            {% endif %}
+
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Labels###  #}
+        {% if labels and labels != 'nan' and labels != '' and labels != [['nan']] %}
+          {% if labels[0] %}
+            labels = {
+            {% for label in labels  %}
+                {% if not loop.last %}
+                    "{{ label[0]  }}" = "{{ label[1] }}",
+                {% else %}
+                    "{{ label[0]  }}" = "{{ label[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+
+        {#  ###Section for adding Labels ends here###  #}
+        },
+
+{% endif %}
+

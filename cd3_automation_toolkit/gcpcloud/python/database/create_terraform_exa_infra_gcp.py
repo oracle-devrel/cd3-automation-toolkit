@@ -2,7 +2,7 @@
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # This script will produce a Terraform file that will be used to set up OCI Database
-# Database EXA
+# Database EXA Infra @GCP
 #
 # Author: Suruchi
 # Oracle Consulting
@@ -65,10 +65,12 @@ def create_terraform_exa_infra_gcp(inputfile, outdir, prefix):
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Location']).lower() == 'nan' or \
                 str(df.loc[i, 'GCP Oracle Zone']).lower() == 'nan' or \
-                str(df.loc[i, 'Location']).lower() == 'nan' or \
+                str(df.loc[i, 'Project']).lower() == 'nan' or \
                 str(df.loc[i, 'Exadata Infra Display Name']).lower() == 'nan' or \
+                str(df.loc[i, 'Database Servers']).lower() == 'nan' or \
+                str(df.loc[i, 'Storage Servers']).lower() == 'nan' or \
                 str(df.loc[i, 'Shape']).lower() == 'nan':
-            print("\nAll fields except Maintenane Window, Maintenance Contact and Labels are mandatory. Please enter a value and try again !!")
+            print("\nAll fields except Maintenance Window, Email and Labels are mandatory. Please enter a value and try again !!")
 
             exit(1)
 

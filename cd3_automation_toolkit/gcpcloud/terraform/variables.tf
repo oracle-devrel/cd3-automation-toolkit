@@ -7,7 +7,9 @@
 # GCP OCI
 #
 ############################
-
+variable "gcp_oci_adb" {
+  default = {}
+}
 
 ###############################
 # Oracle ExaInfra @GCP ########
@@ -43,7 +45,7 @@ variable "gcp_oci_exa_infra" {
     # labels
     labels = optional(map(string), {})
   }))
-  default     = {}
+  default = {}
 }
 
 ###############################
@@ -54,8 +56,9 @@ variable "gcp_oci_exa_vmclusters" {
   description = "Map of GCP VM Cluster configurations"
   type = map(object({
     # MANDATORY
-    location = string
-    project  = string
+    location                       = string
+    project                        = string
+    exadata_infrastructure_project = string
 
     exadata_infrastructure_id   = string
     odb_network_project         = string
@@ -69,34 +72,35 @@ variable "gcp_oci_exa_vmclusters" {
     odb_client_subnet_id        = string
     odb_backup_subnet_id        = string
 
-    display_name            = string
-    cloud_vm_cluster_id     = string
-    cluster_name            = optional(string)
-    gi_version              = string
-    hostname_prefix         = string
+    display_name        = string
+    cloud_vm_cluster_id = string
+    cluster_name        = optional(string)
+    gi_version          = string
+    hostname_prefix     = string
 
     cpu_core_count          = number
     memory_size_gb          = number
     data_storage_size_tb    = number
     db_node_storage_size_gb = number
 
-    node_count              = optional(number)
-    ocpu_count              = optional(number)
-    disk_redundancy         = optional(string)
-    ssh_public_keys         = list(string)
+    node_count      = optional(number)
+    ocpu_count      = optional(number)
+    disk_redundancy = optional(string)
+    ssh_public_keys = list(string)
 
     # OPTIONAL
-    license_type           = string
-    time_zone              = string
-    scan_listener_port_tcp = number
-    diagnostics_data_collection_options = object({
+    license_type               = string
+    time_zone                  = optional(string)
+    scan_listener_port_tcp     = optional(number)
+    scan_listener_port_tcp_ssl = optional(number)
+    diagnostics_data_collection_options = optional(object({
       diagnostics_events_enabled = bool
       health_monitoring_enabled  = bool
       incident_logs_enabled      = bool
-    })
-    timeout_create = string
-    timeout_update = string
-    timeout_delete = string
+    }))
+    timeout_create = optional(string)
+    timeout_update = optional(string)
+    timeout_delete = optional(string)
 
     # IMMUTABLE
     local_backup_enabled     = bool
@@ -105,5 +109,5 @@ variable "gcp_oci_exa_vmclusters" {
     # TAGS
     labels = map(string)
   }))
-  default     = {}
+  default = {}
 }

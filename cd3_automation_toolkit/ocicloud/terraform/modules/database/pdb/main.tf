@@ -11,9 +11,9 @@
 
 resource "oci_database_pluggable_database" "pluggable_database" {
   container_database_id = var.container_database_id
-  pdb_admin_password      =    var.pdb_admin_password
+  pdb_admin_password    = var.pdb_admin_password
   pdb_name              = var.pdb_name
-  tde_wallet_password   = var.tde_wallet_password  #TDE wallet password is not required when Database is configured to use customer-managed (Vault service) key
+  tde_wallet_password   = var.tde_wallet_password #TDE wallet password is not required when Database is configured to use customer-managed (Vault service) key
   defined_tags          = var.defined_tags
   freeform_tags         = var.freeform_tags
 

@@ -6,67 +6,18 @@
 ## Create Oracle ExaVM Cluster @GCP
 ################################################
 
-resource "google_compute_network" "vpc_network" {
 
-  count                   = var.cluster_config.create_odb_network ? 1 : 0
-  name                    = var.cluster_config.vpc_network_name
-  project                 = var.cluster_config.odb_network_project
-  auto_create_subnetworks = false # Sets the VPC to "Custom" mode
-  mtu                     = 1460
-}
-
-
-# Create ODB Network
-resource "google_oracle_database_odb_network" "odb_network" {
-
-  count           = var.cluster_config.create_odb_network ? 1 : 0
-  odb_network_id  = var.cluster_config.odb_network_id
-  location        = var.cluster_config.location
-  project         = var.cluster_config.odb_network_project
-  network         = google_compute_network.vpc_network[0].id
-  gcp_oracle_zone = var.cluster_config.odb_network_gcp_oracle_zone
-  labels          = var.labels
-  #deletion_protection = "false"
-}
-
-# Create ODB Network Subnets
-resource "google_oracle_database_odb_subnet" "odb_client_subnet" {
-
- # To_do: analyse count variable usage
-  count         = var.cluster_config.create_odb_network_subnets ? 1 : 0
-  odb_subnet_id = var.cluster_config.odb_client_subnet_id
-  location      = var.cluster_config.location
-  project       = var.cluster_config.odb_network_project
-  odbnetwork    = var.cluster_config.create_odb_network ==true ? google_oracle_database_odb_network.odb_network[0].odb_network_id : "${var.cluster_config.odb_network_id}"
-  cidr_range    = var.cluster_config.client_subnet_cidr
-  purpose       = "CLIENT_SUBNET"
-  labels        = var.labels
-  #deletion_protection = "false"
-}
-resource "google_oracle_database_odb_subnet" "odb_backup_subnet" {
-
-  count         = var.cluster_config.create_odb_network_subnets ? 1 : 0
-  odb_subnet_id = var.cluster_config.odb_backup_subnet_id
-  location      = var.cluster_config.location
-  project       = var.cluster_config.odb_network_project
-  odbnetwork    = var.cluster_config.create_odb_network ==true ? google_oracle_database_odb_network.odb_network[0].odb_network_id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
-  cidr_range    = var.cluster_config.backup_subnet_cidr
-  purpose       = "BACKUP_SUBNET"
-  labels        = var.labels
-  #deletion_protection = "false"
-}
 
 # Create Exadata VM Cluster
 resource "google_oracle_database_cloud_vm_cluster" "vm_cluster" {
-
   location               = var.cluster_config.location
   project                = var.cluster_config.project
   exadata_infrastructure = var.exadata_infrastructure_id
   display_name           = var.cluster_config.display_name
   cloud_vm_cluster_id    = var.cluster_config.cloud_vm_cluster_id
-  odb_network            = var.cluster_config.create_odb_network == true ? google_oracle_database_odb_network.odb_network[0].id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
-  odb_subnet             = var.cluster_config.create_odb_network_subnets == true ? google_oracle_database_odb_subnet.odb_client_subnet[0].id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}/odbSubnets/${var.cluster_config.odb_client_subnet_id}"
-  backup_odb_subnet      = var.cluster_config.create_odb_network_subnets == true ? google_oracle_database_odb_subnet.odb_backup_subnet[0].id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}/odbSubnets/${var.cluster_config.odb_backup_subnet_id}"
+  odb_network            = var.odb_network_id
+  odb_subnet             = var.odb_client_subnet_id
+  backup_odb_subnet      = var.odb_backup_subnet_id
   properties {
     gi_version               = var.cluster_config.gi_version
     db_server_ocids          = var.db_server_ocids
@@ -84,16 +35,23 @@ resource "google_oracle_database_cloud_vm_cluster" "vm_cluster" {
     ssh_public_keys          = var.cluster_config.ssh_public_keys
     license_type             = var.cluster_config.license_type
     diagnostics_data_collection_options {
-      diagnostics_events_enabled = var.cluster_config.diagnostics_data_collection_options.diagnostics_events_enabled
-      health_monitoring_enabled  = var.cluster_config.diagnostics_data_collection_options.health_monitoring_enabled
-      incident_logs_enabled      = var.cluster_config.diagnostics_data_collection_options.incident_logs_enabled
+      diagnostics_events_enabled = var.cluster_config.diagnostics_data_collection_options != null ? var.cluster_config.diagnostics_data_collection_options.diagnostics_events_enabled : true
+      health_monitoring_enabled  = var.cluster_config.diagnostics_data_collection_options != null ? var.cluster_config.diagnostics_data_collection_options.health_monitoring_enabled : true
+      incident_logs_enabled      = var.cluster_config.diagnostics_data_collection_options != null ? var.cluster_config.diagnostics_data_collection_options.incident_logs_enabled : true
     }
     time_zone {
       id = var.cluster_config.time_zone
     }
     #scan_listener_port_tcp = var.cluster_config.scan_listener_port_tcp
   }
+  # Labels are not getting applied to oracle resources
   labels = var.labels
+
+  timeouts {
+    create = "12h"
+    update = "2h"
+    delete = "8h"
+  }
 
   #deletion_protection = "false"
   lifecycle {
@@ -104,7 +62,8 @@ resource "google_oracle_database_cloud_vm_cluster" "vm_cluster" {
       properties[0].db_node_storage_size_gb,
       properties[0].data_storage_size_tb,
       properties[0].local_backup_enabled,
-      properties[0].sparse_diskgroup_enabled
+      properties[0].sparse_diskgroup_enabled,
+      properties[0].ssh_public_keys
     ]
   }
 }

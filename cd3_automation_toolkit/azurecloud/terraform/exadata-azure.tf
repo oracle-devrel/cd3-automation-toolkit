@@ -3,23 +3,22 @@
 #
 
 data "azurerm_virtual_network" "exa_vmc_virtual_networks" {
-  #depends_on = [module.avm_network]
+  depends_on          = [module.avm_network]
   for_each            = var.az_oci_exa_vmclusters != null ? var.az_oci_exa_vmclusters : {}
-  name                = each.value.virtual_network_id
+  name                = each.value.virtual_network_name
   resource_group_name = each.value.network_resource_group_name
 }
 
 data "azurerm_subnet" "exa_vmc_subnets" {
-  #depends_on = [module.avm_network]
+  depends_on           = [module.avm_network]
   for_each             = var.az_oci_exa_vmclusters != null ? var.az_oci_exa_vmclusters : {}
-  name                 = each.value.subnet_id
-  virtual_network_name = each.value.virtual_network_id
+  name                 = each.value.delegated_subnet_name
+  virtual_network_name = each.value.virtual_network_name
   resource_group_name  = each.value.network_resource_group_name
 }
 
 data "azurerm_oracle_exadata_infrastructure" "exa_infras" {
-  depends_on = [module.exa-infra-azure]
-  #depends_on = [module.avm_network]
+  depends_on          = [module.exa-infra-azure]
   for_each            = var.az_oci_exa_vmclusters != null ? var.az_oci_exa_vmclusters : {}
   name                = each.value.exadata_infrastructure_name
   resource_group_name = each.value.resource_group_name
@@ -85,7 +84,7 @@ module "exa-vmcluster-azure" {
   ssh_public_keys = each.value.ssh_public_keys
 
   # Networking
-  vnet_id            = data.azurerm_virtual_network.exa_vmc_virtual_networks[each.key].id
+  virtual_network_id = data.azurerm_virtual_network.exa_vmc_virtual_networks[each.key].id
   subnet_id          = data.azurerm_subnet.exa_vmc_subnets[each.key].id
   backup_subnet_cidr = each.value.backup_subnet_cidr
   domain             = each.value.domain
@@ -112,9 +111,7 @@ module "exa-vmcluster-azure" {
   scan_listener_port_tcp_ssl = each.value.scan_listener_port_tcp_ssl
 
   # File System Config
-  mount_point = each.value.mount_point
-  size_in_gb  = each.value.size_in_gb
-
+  file_system_configurations = each.value.file_system_configurations
 
   tags = each.value.common_tags
   #depends_on = [time_sleep.wait_after_deletion]

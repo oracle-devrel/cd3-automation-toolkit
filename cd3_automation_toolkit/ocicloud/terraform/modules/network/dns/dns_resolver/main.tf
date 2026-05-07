@@ -11,7 +11,7 @@ resource "oci_dns_resolver" "resolver" {
 
   #Optional
   dynamic "attached_views" {
-    for_each = var.views != null ? var.views : null
+    for_each = var.views
     #Required
     content {
       view_id = attached_views.value.view_id

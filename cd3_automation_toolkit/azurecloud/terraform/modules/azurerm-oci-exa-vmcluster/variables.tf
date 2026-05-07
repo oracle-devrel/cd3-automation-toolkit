@@ -74,7 +74,7 @@ variable "tags" {
   default     = null
 }
 
-variable "vnet_id" {
+variable "virtual_network_id" {
   description = "The ID of the Virtual Network associated with the Cloud VM Cluster."
   type        = string
 }
@@ -153,18 +153,6 @@ variable "zone_id" {
   default     = ""
 }
 
-variable "mount_point" {
-  description = "file mount path"
-  type        = string
-  default     = ""
-}
-
-variable "size_in_gb" {
-  description = "file mount path size in gb"
-  type        = string
-  default     = ""
-}
-
 variable "scan_listener_port_tcp" {
   description = "listener port"
   type        = number
@@ -175,4 +163,10 @@ variable "scan_listener_port_tcp_ssl" {
   description = "listener port ssl"
   type        = number
   default     = 2484
+}
+
+variable "file_system_configurations" {
+  description = "file system configurations"
+  type        = map(any)
+  default     = {}
 }

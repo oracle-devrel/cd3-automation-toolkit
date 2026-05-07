@@ -762,7 +762,7 @@ variable "resolvers" {
     network_compartment_id = string
     vcn_name               = string
     display_name           = optional(string)
-    views = optional(map(object({
+    views = optional(list(object({
       view_id             = optional(string)
       view_compartment_id = optional(string)
     })))

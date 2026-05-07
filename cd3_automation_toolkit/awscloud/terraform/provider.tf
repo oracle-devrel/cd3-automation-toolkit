@@ -1,6 +1,3 @@
-# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
 # AWS Terraform Provider
 terraform {
   required_version = ">= 1.5.0"
@@ -8,7 +5,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">=6.15.0"
+      version = "6.34.0"
     }
   }
 
