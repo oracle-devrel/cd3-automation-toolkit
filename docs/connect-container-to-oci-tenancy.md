@@ -35,50 +35,6 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 <span style="color: teal; font-weight: bold;">3 - Edit properties file</span>
 
 
-<details class="highlight-note">
-<style>
-  details.highlight-note > summary {
-      background-color: #c72e0bff !important;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      list-style: none; 
-  }
-  details.highlight-note {
-      border: 1px solid #ebe70dff !important;  
-      border-radius: 5px !important;
-  }
-  details.highlight-note > summary:hover {
-      background-color: #db3826ff !important;
-      border: 2px solid #d8d65eff;
-  }
-  details.highlight-note > summary::before {
-      background-color: #ffffff !important;  
-  }
-</style>
-
-<summary> ⚠️ Important Deprecation Notice ⚠️</summary>
-
-<br>
-
-<b>The old properties file and path:</b>
-
-    ```bash
-    /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties
-    ```
-<b>will be deprecated from the next release v2025.3.0</b>
-  
-<br>
-    <b>The new file name and path will be:</b>
-
-    ```bash
-    /cd3user/oci_tools/cd3_automation_toolkit/connectOCI.properties
-    ```
-
-</details>
-
 
 
 
@@ -218,52 +174,11 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
     - Review Advanced Parameters Section for CI/CD setup. **The toolkit can be used either with CLI or with Jenkins.** If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI. Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
 
  
-
+<br>
 <span style="color: teal; font-weight: bold;">4 - Initialise the environment</span>
 
 * Initialise your environment to use the Automation Toolkit.
 
-<details class="highlight-note">
-<style>
-  details.highlight-note > summary {
-      background-color: #c72e0bff !important;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      list-style: none; 
-  }
-  details.highlight-note {
-      border: 1px solid #ebe70dff !important;  
-      border-radius: 5px !important;
-  }
-  details.highlight-note > summary:hover {
-      background-color: #db3826ff !important;
-      border: 2px solid #d8d65eff;
-  }
-  details.highlight-note > summary::before {
-      background-color: #ffffff !important;  
-  }
-</style>
-
-
-<summary>⚠️ Important Deprecation Notice ⚠️</summary>
-
-<br>
-
-<b>Below old command will be deprecated starting from the next major release v2025.3.0</b>
-
-    ```bash
-    python createTenancyConfig.py tenancyconfig.properties
-    ```
-<b>Instead use this command:</b>
-  
-    ```bash
-    python connectCloud.py oci  connectOCI.properties
-    ```
-
-</details>
 
 
 ```

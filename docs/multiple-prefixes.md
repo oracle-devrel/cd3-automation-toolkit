@@ -1,52 +1,82 @@
 # **Connect container to OCI Tenancy - Multiple Prefixes**
 ---
 
-The toolkit allows independent management of multiple environments using the same container. This enables better resource control and custom configurations for each environment. 
+<span style="color: teal; font-weight: bold;"> Overview</span>
 
+The CD3 toolkit supports <b>managing multiple OCI environments</b> (such as Production, Development or QA) within a single container by using <b>prefix-based configurations</b>.
 
-!!! note "Multi-prefix with Jenkins"
+Each prefix represents an independent environment, enabling you to isolate resources and outputs, maintain separate configuration files, and run deployments without interference.
 
-    * Starting from v2024.4.1, `connectCloud.py` can be executed with different prefix values per container when using Jenkins.
+<br>
+
+<span style="color: teal; font-weight: bold;"> 📌 Use Cases</span>
+
+This is particularly useful when:
+
+   - Managing Prod and Non-Prod environments within the same container
+   - Maintaining separate Terraform outputs for each environment
+   - Running parallel or independent deployments
 
 <br>
 
+<span style="color: teal; font-weight: bold;"> 🛠️ Configuration Steps</span>
 
-<span style="color: teal; font-weight: bold;"> 📌 Use Case</span>
+<b>1. Prepare the properties file:</b>
 
-* Managing Multiple Environments (Prod, Non-Prod etc.,) as separate entities within a single container.
+   &nbsp;&nbsp;&nbsp;Update the <b>connectOCI.properties</b> file as described in <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI</u></a>. <br>
+
+   - Assign a unique prefix for each environment. <br>
+      <i>Example:</i> <br>`demo_nonprod`<br> `demo_prod`
+
+
+<b>2. Customize Environment-Specific Parameters</b>
+
+&nbsp;&nbsp;&nbsp;Each prefix can have its own configuration, such as:
+
+- Different outdir structures
+- Separate tenancy details etc., 
+
+
+<b>3. (Recommended) Use Separate properties Files</b>
+
+ &nbsp;&nbsp;&nbsp;Instead of modifying the same file repeatedly, create environment-specific copies:<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`connectOCI_demo_prod.properties`<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`connectOCI_demo_nonprod.properties` <br>
+ 
+ &nbsp;&nbsp;&nbsp;This helps preserve configuration history and simplify repeated executions.
 
 
 
+<b>4. Execute the Script</b>
 
-<span style="color: teal; font-weight: bold;"> 🛠️ Steps</span>
-
-* Edit the **connectOCI.properties** file according to <a href="../connect-container-to-oci-tenancy"><u>Connect CD3 Container to OCI</u></a>. Use a unique prefix that differs from the ones used previously. *Eg:  demo_prod,  demo_nonprod.*
-
-!!! tip
-    You can copy connectOCI.properties file as connectOCI_<prefix\>.properties and edit this file instead of directly editing connectOCI.properties.<br>
-    This will help retain the input properties files used for different executions of the connectCloud.py
-
-* Different values can be specified for other parameters as well. For instance, one prefix can be configured to have **multiple outdir structure** for the generated terraform files, while another prefix can be set with a **single outdir structure**.
-* Execute **connectCloud.py** with modified **connectOCI.properties** or **connectOCI_<prefix\>.properties**.
-* After executing **connectCloud.py**, the following screenshots show how the environment specific out directories look like when using the toolkit with CLI and with Jenkins.
+  - Run connectCloud.py using the appropriate properties file for each prefix.<br>
+   <i>Example:</i> <br>
+   `python connectCloud.py oci connectOCI_demo_prod.properties` <br>
+   `python connectCloud.py oci  connectOCI_demo_nonprod.properties`
 
 <br>
+
 
 
 <span style="color: teal; font-weight: bold;"> Multi Prefix with CLI</span>
 
-In the container, folders named after the specified prefix values will be created under the **/cd3user/tenancies** directory. Each environment specific folder is created with its own unique configuration specified in above steps.
+- The container creates out directories under: `/cd3user/tenancies/`
+- Each prefix has its own isolated folder containing Configuration, Generated Terraform files and Environment-specific outputs <br>
 
-![CLI](../images/multiple-prefixes-cli.jpg)
+    ![CLI](../images/multiple-prefixes-cli.jpg)
 
 <br>
 
 
 <span style="color: teal; font-weight: bold;"> Multi Prefix with Jenkins</span>
 
-The Jenkins dashboard appears as follows when configured with two prefixes.
+- The Jenkins dashboard appears as follows when configured with two prefixes.
 
-![jenkins](../images/multiple-prefixes-jenkins.jpg)
+    ![jenkins](../images/multiple-prefixes-jenkins.jpg)
 
 
-Check <a href=../cd3-jenkins#bootstrapping-of-jenkins-in-the-toolkit> <u>the first Note block</u></a> to enable jenkins for multiple prefixes.
+
+!!! info "Jenkins configuration for new prefix"
+      - If connectCloud.py has been run again for a new prefix, then first kill the existing jenkins process and start new after that.
+      - Command to get Jenkins process id -  ```ps -ef | grep jenkins```
+      - Command to kill - ```kill -9 <process_id>```
+      - Start Jenkins using - ```/usr/share/jenkins/jenkins.sh &```
