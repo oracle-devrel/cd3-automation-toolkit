@@ -38,6 +38,8 @@ firewalls = {
         {% endif %}
         {% if must_enable_private_nat %}
         must_enable_private_nat= "{{ must_enable_private_nat }}"
+        {% else %}
+        must_enable_private_nat = "false"
         {% endif %}
   {#  ##Do not modify below this line##  #}
     {#                                     #}

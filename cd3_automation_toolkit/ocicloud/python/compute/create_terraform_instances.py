@@ -218,10 +218,7 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "SSH Key Var Name":
                 if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
-                    if "ssh-rsa" in columnvalue.strip():
-                        ssh_key_var_name = columnvalue.strip()
-                    else:
-                        ssh_key_var_name = columnvalue.strip()
+                    ssh_key_var_name = columnvalue.strip()
                     tempdict = {'ssh_key_var_name': ssh_key_var_name}
 
             if columnname == "Source Details":

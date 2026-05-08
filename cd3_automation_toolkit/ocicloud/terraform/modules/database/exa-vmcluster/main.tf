@@ -39,4 +39,9 @@ resource "oci_database_cloud_vm_cluster" "exa_vmcluster" {
   defined_tags  = var.defined_tags
   freeform_tags = var.freeform_tags
 
+  timeouts {
+    create = "12h"
+    update = "2h"
+    delete = "8h"
+  }
 }

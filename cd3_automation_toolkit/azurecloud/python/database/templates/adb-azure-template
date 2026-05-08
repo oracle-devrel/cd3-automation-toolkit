@@ -21,9 +21,14 @@ az_oci_adb = {
             license_model            = "{{ license_model.split('_')|map('capitalize')|join }}"
             admin_password           = "{{ admin_password }}"
 
-            network_resource_group_name = "{{ network_container_id }}"
-            virtual_network_id       = "{{ vnet_name }}"
-            subnet_id                = "{{ subnet_id }}"
+            network_resource_group_name = "{{ network_resource_group_name }}"
+            virtual_network_name       = "{{ vnet_name }}"
+            delegated_subnet_name                = "{{ delegated_subnet_name }}"
+            create_odb_network = {{ create_odb_network }}
+            network_az_region = "{{ network_az_region }}"
+            virtual_network_address_space = "{{ vnet_cidr }}"
+            delegated_subnet_address_prefix = "{{ subnet_cidr }}"
+
             {% if data_storage_size_in_tbs != "" and data_storage_size_in_tbs != "nan" %}
             data_storage_size_in_tbs = {{ data_storage_size_in_tbs }}
             {% endif %}

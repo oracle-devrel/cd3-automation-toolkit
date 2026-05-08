@@ -15,7 +15,7 @@ def main():
     argument = sys.argv[2]
 
     if cloud_provider == 'oci':
-        script_name = 'user-scripts/createTenancyConfig.py'
+        script_name = 'user-scripts/connectOCI.py'
     elif cloud_provider == 'azure':
         script_name = 'user-scripts/connectAzure.py'
     elif cloud_provider == 'gcp':

@@ -8,27 +8,27 @@
 ################################
 
 variable "container_database_id" {
-  type = string
+  type    = string
   default = null
 }
 variable "pdb_admin_password" {
-  type = string
+  type    = string
   default = null
 }
 variable "pdb_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "tde_wallet_password" {
-  type = string
+  type    = string
   default = null
 }
 variable "defined_tags" {
-  type = map(string)
+  type    = map(string)
   default = null
 }
 variable "freeform_tags" {
-  type = map(string)
+  type    = map(string)
   default = null
 }
 

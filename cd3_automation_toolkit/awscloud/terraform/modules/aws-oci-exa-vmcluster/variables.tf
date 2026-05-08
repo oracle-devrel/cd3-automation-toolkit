@@ -1,28 +1,38 @@
-# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
-#################################################
-## Variables Block - Oracle ExaVM Cluster @AWS
-## Create Oracle ExaVM Cluster @AWS
-#################################################
+# ========================================
+# Module: aws-oci-exa-vmcluster / variables.tf
+# ========================================
 
 variable "cluster_key" {
-  type = string
+  description = "Cluster map key"
+  type        = string
 }
 
 variable "tags" {
-  description = "A mapping of tags which should be assigned to the Cloud VM Cluster."
+  description = "Tags for the VM Cluster"
   type        = map(string)
+  default     = null
+}
+
+variable "create_odb_network" {
+  description = "true = use created_odb_network_id | false = look up existing network by display_name"
+  type        = bool
+}
+
+variable "created_odb_network_id" {
+  description = "ID of the newly created ODB network. Passed from root when create_odb_network = true. Null when create_odb_network = false."
+  type        = string
   default     = null
 }
 
 variable "cluster_config" {
   type = object({
-    # MANDATORY
-    environment                 = string
+    # Network control
+    create_odb_network = bool   # true = create new | false = use existing
+    odb_network_name   = string # Always the network display_name
+
+    # Mandatory
     region                      = string
     exadata_infrastructure_name = string
-    odb_network_name            = string
     display_name                = string
     cluster_name                = string
     gi_version                  = string
@@ -33,7 +43,7 @@ variable "cluster_config" {
     db_node_storage_size_in_gbs = number
     ssh_public_keys             = list(string)
 
-    # OPTIONAL
+    # Optional
     license_model          = string
     timezone               = string
     scan_listener_port_tcp = number
@@ -46,11 +56,10 @@ variable "cluster_config" {
     timeout_update = string
     timeout_delete = string
 
-    # IMMUTABLE
+    # Immutable
     is_local_backup_enabled     = bool
     is_sparse_diskgroup_enabled = bool
 
-    # TAGS
     tags = optional(map(string), {})
   })
 }

@@ -54,7 +54,7 @@
 52:I-NLSP
 53:SWIPE
 54:NARP
-55:MOBILE
+55:Min-IPv4
 56:TLSP
 57:SKIP
 58:IPv6-ICMP
@@ -145,7 +145,9 @@
 143:Ethernet
 144:AGGFRAG
 145:NSH
-146-252:Unassigned
+146:Homa
+147:BIT-EMU
+148-252:Unassigned
 253:Use for experimentation and testing
 254:Use for experimentation and testing
 255:Reserved

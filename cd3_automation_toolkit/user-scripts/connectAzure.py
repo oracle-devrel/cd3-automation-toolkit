@@ -107,6 +107,8 @@ if not os.path.exists(prefix_dir):
 if not os.path.exists(config_files):
     os.makedirs(config_files)
 
+excel_name="CD3-"+cloud.lower().capitalize()+"-template.xlsx"
+shutil.copy(os.path.join(toolkit_dir, 'example', excel_name), os.path.join(prefix_dir, excel_name))
 
 # 1. Copy input properties file
 shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
@@ -133,6 +135,7 @@ with open(setupcloud_props_toolkit_file_path, 'r+') as setUpCloud_file:
 
 setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("outdir=", "outdir="+terraform_files)
 setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("prefix=", "prefix="+prefix)
+setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("cd3file=","cd3file=" + os.path.join(prefix_dir,excel_name))
 
 if connected == 1:
     setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("subscription_id=", "subscription_id=" + subscription_id)

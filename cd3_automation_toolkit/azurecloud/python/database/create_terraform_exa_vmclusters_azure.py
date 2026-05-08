@@ -2,12 +2,11 @@
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # This script will produce a Terraform file that will be used to set up OCI Database
-# Database EXA
+# Database EXA VM Cluster @Azure
 #
-# Author: Kartikey Rajput
+# Author: Suruchi
 # Oracle Consulting
-# Modified (TF Upgrade): Kartikey Rajput
-#
+
 import os
 import sys
 from jinja2 import Environment, FileSystemLoader
@@ -72,8 +71,8 @@ def create_terraform_exa_vmclusters_azure(inputfile, outdir, prefix):
                 str(df.loc[i, 'Compartment Name']).lower() == 'nan' or \
                 str(df.loc[i, 'Exadata Infra Display Name']).lower() == 'nan' or \
                 str(df.loc[i, 'VM Cluster Display Name']).lower() == 'nan' or \
-                str(df.loc[i, 'Client Network Details']).lower() == 'nan' or \
-                str(df.loc[i, 'Backup Network Details']).lower() == 'nan' or \
+                str(df.loc[i, 'ODB Network Details']).lower() == 'nan' or \
+                str(df.loc[i, 'ODB Network Subnet Details']).lower() == 'nan' or \
                 str(df.loc[i, 'CPU Core Count']).lower() == 'nan' or \
                 str(df.loc[i, 'SSH Key Var Name']).lower() == 'nan' or \
                 str(df.loc[i, 'Hostname Prefix']).lower() == 'nan' or \
@@ -103,23 +102,38 @@ def create_terraform_exa_vmclusters_azure(inputfile, outdir, prefix):
                 display_tf_name = commonTools.check_tf_variable(display_name)
                 tempdict = {'display_tf_name': display_tf_name, 'display_name': display_name}
 
-            if columnname == "Network Details":
-                if len(columnvalue.split("@")) == 2:
-                    network_container_id = columnvalue.split("@")[0].strip()
-                    vcn_subnet_name = columnvalue.split("@")[1].strip()
+            if columnname == "ODB Network Details":
+                values = columnvalue.split("::")
+                if values[0].strip().upper() == "CREATE":
+                    if len(values) != 5:
+                        print("Invalid Value for ODB Network Details. Exiting!!")
+                        exit(1)
+                    create_odb_network = "true"
+                    network_resource_group_name = values[1].strip()
+                    vnet_name = values[2].strip()
+                    vnet_cidr = values[4].strip()
+                    network_az_region = values[3].strip()
+
                 else:
-                    network_container_id = container_id
-                    vcn_subnet_name = columnvalue
+                    create_odb_network = "false"
+                    network_resource_group_name = values[0].strip()
+                    vnet_name = values[1].strip()
+                    vnet_cidr = ""
+                    network_az_region = ""
 
-                if ("::" not in vcn_subnet_name):
-                    print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
-                    exit(1)
+                tempdict = {'create_odb_network': create_odb_network,
+                            'network_resource_group_name': network_resource_group_name,
+                            'vnet_name': vnet_name, 'vnet_cidr': vnet_cidr,
+                            'network_az_region': network_az_region}
+            if columnname == "ODB Network Subnet Details":
+                values = columnvalue.split("::")
+                delegated_subnet_name = values[0].strip()
+                if len(values) == 2:
+                    subnet_cidr = values[1].strip()
                 else:
-                    vcn_name = vcn_subnet_name.split("::")[0].strip()
-                    subnet_id = vcn_subnet_name.split("::")[1].strip()
+                    subnet_cidr = ""
 
-                tempdict = {'network_container_id': network_container_id, 'vnet_name': vcn_name,'subnet_id': subnet_id}
-
+                tempdict = {'delegated_subnet_name': delegated_subnet_name, 'subnet_cidr': subnet_cidr}
 
             # Process Defined and Freeform Tags
             if columnname.lower() in azrCommonTools.tagColumns:
@@ -129,6 +143,22 @@ def create_terraform_exa_vmclusters_azure(inputfile, outdir, prefix):
             if columnname == "Exadata Infra Display Name":
                 exadata_infrastructure_name = columnvalue.strip()
                 tempdict = {'exadata_infrastructure_name': exadata_infrastructure_name}
+
+            if columnname == "File System Configurations":
+                if columnvalue.lower()!="nan" and columnvalue.lower()!='':
+                    values=columnvalue.split(";")
+                    j = 0
+                    file_system_configurations = {}
+                    for value in values:
+                        if value == "":
+                            break
+                        j=j+1
+
+                        mount_point= value.split("::")[0].strip()
+                        size_in_gb = value.split("::")[1].strip()
+                        file_system_configurations["file" + str(j)] = [mount_point, size_in_gb]
+                        tempdict = {'file_system_configurations': file_system_configurations}
+                        tempStr.update(tempdict)
 
 
             columnname = commonTools.check_column_headers(columnname)

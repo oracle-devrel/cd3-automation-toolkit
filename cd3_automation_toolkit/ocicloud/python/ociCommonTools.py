@@ -380,7 +380,7 @@ class ociCommonTools():
                                  "Tagging Objects"]:
                 input_compartment_names = None
             elif resource_name == "Clone Firewall Policy":
-                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be cloned: "
+                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) or <Compartment_Name>::* (to process all sub compartments under <Compartment_Name>) of the Firewall Policy to be cloned: "
                 if self.fwl_clone_comp == "null":
                     compartments = None
                 else:
@@ -389,7 +389,7 @@ class ociCommonTools():
                 input_compartment_names = list(
                     map(lambda x: x.strip(), compartments.split(','))) if compartments else None
             elif resource_name == "Delete Firewall Policy":
-                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be deleted: "
+                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) or <Compartment_Name>::* (to process all sub compartments under <Compartment_Name>) of the Firewall Policy to be deleted: "
                 if self.fwl_del_comp == "null":
                     compartments = None
                 else:
@@ -399,7 +399,7 @@ class ociCommonTools():
                     map(lambda x: x.strip(), compartments.split(','))) if compartments else None
 
             elif resource_name == "VizOCI":
-                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) for which you want to run {};\nPress 'Enter' to run for all the Compartments: "
+                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) or <Compartment_Name>::* (to process all sub compartments under <Compartment_Name>) for which you want to run {};\nPress 'Enter' to run for all the Compartments: "
                 if self.vizoci_comp_filter == "null":
                     compartments = None
                 else:
@@ -409,7 +409,7 @@ class ociCommonTools():
                     map(lambda x: x.strip(), compartments.split(','))) if compartments else None
 
             else:
-                compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple) for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
+                compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple) or <Compartment_Name>::* (to process all sub compartments under <Compartment_Name>) for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
                 if self.comp_filter == "null":
                     compartments = None
                 else:
@@ -421,17 +421,75 @@ class ociCommonTools():
             comp_list_fetch = []
             print("\n")
 
+            def expand_subcompartments(parent_name: str):
+                """
+                Expand 'parent_name::*' using only data from var_ocids / ntk_compartment_ids.
+
+                Rules:
+                - Include parent_name itself if present in ntk_compartment_ids.
+                - Include any 'full_root' that ends with '::parent_name' (e.g. 'kmcgowanOrg::blohumi')
+                  and then:
+                    - include that root
+                    - include all entries starting with 'full_root::'.
+                - Also include any entry that directly starts with 'parent_name::' (for trees that do not
+                  have a higher-level prefix).
+                """
+                comp_ocids = []
+                temp_comps = []
+
+                # 1) Add the parent itself if we know it
+                if parent_name in self.ntk_compartment_ids and parent_name not in temp_comps:
+                    temp_comps.append(parent_name)
+
+                # 2) Find all "root paths" that end with ::parent_name
+                roots = set()
+                for full_name in self.ntk_compartment_ids.keys():
+                    parts = full_name.split("::")
+                    if parts[-1] == parent_name:
+                        roots.add(full_name)
+
+                # Always consider parent_name itself as a root for child paths like "parent_name::child"
+                roots.add(parent_name)
+
+
+                # 3) For each root, include the root and everything that starts with root + '::'
+                for root in roots:
+
+                    # include the root (if not already)
+                    if root in self.ntk_compartment_ids and root not in temp_comps:
+                        temp_comps.append(root)
+
+                    prefix = root + "::"
+                    for full_name in self.ntk_compartment_ids.keys():
+                        if full_name.startswith(prefix):
+                            if full_name not in temp_comps:
+                                temp_comps.append(full_name)
+
+                for c in temp_comps:
+                    if self.ntk_compartment_ids[c] not in comp_ocids:
+                        comp_ocids.append(self.ntk_compartment_ids[c])
+                        comp_list_fetch.append(c)
+
+
             if input_compartment_names is not None:
                 for comp_name in input_compartment_names:
-                    var_comp_name = comp_name.replace('::', '--')
+                    input_comps = comp_name.split("::")
 
-                    if var_comp_name not in var_ocids.keys():
-                        print(
-                            "Please check if " + comp_name + " exists in OCI.\nIf yes then Please make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option first and re-run this")
-                        exit(1)
+                    if input_comps[-1].lower() == "*":
+                        # e.g. "blohumi::*" -> parent_name = "blohumi"
+                        parent_name = "::".join(input_comps[:-1])
+                        print(f'Getting all the child compartments of {parent_name}')
+                        expand_subcompartments(parent_name)
                     else:
-                        # self.ntk_compartment_ids[comp_name] = var_ocids[var_comp_name]
-                        comp_list_fetch.append(comp_name)
+                        var_comp_name = comp_name.replace('::', '--')
+
+                        if var_comp_name not in var_ocids.keys():
+                            print(
+                                "Please check if " + comp_name + " exists in OCI.\nIf yes then Please make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option first and re-run this")
+                            exit(1)
+                        else:
+                            # self.ntk_compartment_ids[comp_name] = var_ocids[var_comp_name]
+                            comp_list_fetch.append(comp_name)
 
                 print("Fetching " + resource_name + " for Compartments " + str(comp_list_fetch))
             else:

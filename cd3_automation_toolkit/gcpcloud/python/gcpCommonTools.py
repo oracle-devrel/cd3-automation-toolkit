@@ -8,8 +8,14 @@ class gcpCommonTools():
     tagColumns = {'labels'}
 
     def authenticate(self,config_file):
-        # Azure credential & client
-        credentials = service_account.Credentials.from_service_account_file(config_file)
+        # GCP credential & client
+        try:
+            credentials = service_account.Credentials.from_service_account_file(config_file)
+        except Exception as e:
+            print("\n")
+            print(str(e))
+            print(f"\nError reading credentials file. Exiting!!!\n")
+            exit(1)
         return credentials
 
     def split_tag_values(columnname, columnvalue, tempdict):

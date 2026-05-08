@@ -24,7 +24,7 @@ class cd3Services():
                 exit(1)
 
         if ("OCSWorkVM" in os.getcwd() or 'user-scripts' in os.getcwd()):
-            os.chdir("../")
+            os.chdir("../ocicloud/python")
 
         tempStr = '#Region:Region_Key\n'
         reg_dict = {}
@@ -61,7 +61,7 @@ class cd3Services():
             line = cd3key + ":" + name
             tempStr = tempStr + line + '\n'
 
-        with open('OCI_Regions', 'w+') as f:
+        with open('/cd3user/oci_tools/cd3_automation_toolkit/ocicloud/python/OCI_Regions', 'w+') as f:
             f.write(tempStr)
         f.close()
         print("Updated OCI_Regions file !!!\n")
@@ -86,7 +86,7 @@ class cd3Services():
     def write_protocols_file(source: str, destination: str) -> datetime:
         root = cd3Services.parse_xml(source)
         updated = cd3Services.parse_date(root)
-        destination = str(pathlib.Path.cwd())+"/"+destination
+        destination = str(pathlib.Path.cwd())+"/ocicloud/python/"+destination
         with open(destination,"w+") as dst:
             dst.write("#protocol number:protocol name\n")
             for r in root.iter("record"):

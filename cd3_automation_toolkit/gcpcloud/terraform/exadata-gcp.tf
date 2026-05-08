@@ -17,48 +17,83 @@ module "exa-infra-gcp" {
 
 
 data "google_oracle_database_db_servers" "this" {
-  depends_on = [module.exa-infra-gcp]
+  depends_on                   = [module.exa-infra-gcp]
   for_each                     = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
   location                     = each.value.location
-  project                      = each.value.project
+  project                      = each.value.exadata_infrastructure_project
   cloud_exadata_infrastructure = each.value.exadata_infrastructure_id
-  #location                     = "us-east4"
-  #cloud_exadata_infrastructure = "exadev"
-}
-
-data "google_oracle_database_cloud_exadata_infrastructure" "exa_infra" {
-  depends_on = [module.exa-infra-gcp]
-  for_each                        = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
-  location                        = each.value.location
-  project                         = each.value.project
-  cloud_exadata_infrastructure_id = each.value.exadata_infrastructure_id
-  #location                        = "us-east4"
-  #cloud_exadata_infrastructure_id = "exadev"
 }
 
 output "db_servers" {
   description = "DB Servers"
-  value       = {for k,v in var.gcp_oci_exa_vmclusters : k => data.google_oracle_database_db_servers.this[k].db_servers[*].properties.0.ocid}
- #value = ""
+  value       = { for k, v in var.gcp_oci_exa_vmclusters : k => data.google_oracle_database_db_servers.this[k].db_servers[*].properties.0.ocid }
 }
 
+
+/*
+data "google_oracle_database_cloud_exadata_infrastructure" "exa_infra" {
+  depends_on                      = [module.exa-infra-gcp]
+  for_each                        = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
+  location                        = each.value.location
+  project                         = each.value.project
+  cloud_exadata_infrastructure_id = each.value.exadata_infrastructure_id
+}
 output "exa_infra_id" {
   description = "DB Servers"
-  value       = {for k,v in var.gcp_oci_exa_vmclusters : k =>data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[k].id}
- #value = ""
+  value       = { for k, v in var.gcp_oci_exa_vmclusters : k => data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[k].id }
 }
 
 
+
+
+data "google_oracle_database_odb_network" "gcp_odb_network" {
+  depends_on = [module.gcp_network]
+  for_each                          = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
+  location = each.value.location
+  odb_network_id = each.value.odb_network_id
+}
+
+data "google_oracle_database_odb_subnet" "gcp_client_subnet" {
+
+  depends_on = [module.gcp_network]
+  for_each                          = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
+  location = each.value.location
+  odb_network_id = each.value.odb_network_id
+  odb_subnet_id = each.value.odb_client_subnet_id
+}
+
+data "google_oracle_database_odb_subnet" "gcp_backup_subnet" {
+
+  depends_on = [module.gcp_network]
+  for_each                          = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
+  location = each.value.location
+  odb_network_id = each.value.odb_network_id
+  odb_subnet_id = each.value.odb_backup_subnet_id
+}
+*/
 
 
 module "exa-vmcluster-gcp" {
-  source   = "./modules/gcp-oci-exa-vmcluster"
-  for_each = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
 
-  cluster_config            = each.value
-  db_server_ocids           = data.google_oracle_database_db_servers.this[each.key].db_servers[*].properties.0.ocid
-  exadata_infrastructure_id = data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[each.key].id
-  labels                    = each.value.labels
+  depends_on = [module.gcp_network, module.exa-infra-gcp]
+  source     = "./modules/gcp-oci-exa-vmcluster"
+  for_each   = var.gcp_oci_exa_vmclusters != null ? var.gcp_oci_exa_vmclusters : {}
+
+  cluster_config  = each.value
+  db_server_ocids = data.google_oracle_database_db_servers.this[each.key].db_servers[*].properties.0.ocid
+  #exadata_infrastructure_id = data.google_oracle_database_cloud_exadata_infrastructure.exa_infra[each.key].id
+  exadata_infrastructure_id = "projects/${each.value.exadata_infrastructure_project}/locations/${each.value.location}/cloudExadataInfrastructures/${each.value.exadata_infrastructure_id}"
+  odb_network_id            = "projects/${each.value.odb_network_project}/locations/${each.value.location}/odbNetworks/${each.value.odb_network_id}"
+  odb_client_subnet_id      = "projects/${each.value.odb_network_project}/locations/${each.value.location}/odbNetworks/${each.value.odb_network_id}/odbSubnets/${each.value.odb_client_subnet_id}"
+  odb_backup_subnet_id      = "projects/${each.value.odb_network_project}/locations/${each.value.location}/odbNetworks/${each.value.odb_network_id}/odbSubnets/${each.value.odb_backup_subnet_id}"
+
+  /*
+  odb_network_id            = each.value.create_odb_network == true ? data.google_oracle_database_odb_network.gcp_odb_network[each.key].id : "projects/${var.cluster_config.odb_network_project}/locations/${var.cluster_config.location}/odbNetworks/${var.cluster_config.odb_network_id}"
+  odb_client_subnet_id = each.value.create_odb_network_subnets == true ? data.google_oracle_database_odb_subnet.gcp_client_subnet[each.key].id
+  odb_backup_subnet_id =
+  */
+
+  labels = each.value.labels
 }
 
 /*

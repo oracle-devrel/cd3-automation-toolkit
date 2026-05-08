@@ -1,10 +1,7 @@
-# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
-############################################
-## Variables Block - Oracle ExaInfra @Azure
-## Create Oracle ExaInfra @Azure
-############################################
+# ========================================
+# Module: exadata_infrastructure
+# variables.tf — Input variable declarations
+# ========================================
 
 variable "infra_key" {
   description = "Infrastructure key/name from the map"
@@ -21,9 +18,8 @@ variable "infra_config" {
   description = "Exadata Infrastructure configuration object"
   type = object({
     # General
-    environment          = string
     region               = string
-    availability_zone    = string
+    availability_zone    = optional(string, null) # Optional — availability_zone_id is sufficient
     availability_zone_id = string
 
     # Infrastructure Details
@@ -53,4 +49,4 @@ variable "infra_config" {
     # Tags
     tags = optional(map(string), {})
   })
-}}
+}

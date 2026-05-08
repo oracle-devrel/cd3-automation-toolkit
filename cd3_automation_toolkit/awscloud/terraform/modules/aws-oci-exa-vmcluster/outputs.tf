@@ -1,10 +1,6 @@
-# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
-###############################################
-## Outputs Block - Oracle ExaVM Cluster @AWS
-## Create Oracle ExaVM Cluster @AWS
-###############################################
+# ========================================
+# Child Module - modules/aws-oci-exa-vmcluster/outputs.tf
+# ========================================
 
 output "vm_cluster_id" {
   value = aws_odb_cloud_vm_cluster.vm_cluster.id

@@ -17,6 +17,8 @@ pip install --user oci-cli==3.76.2
 pip install --user azure.identity
 pip install --user azure.mgmt.compute
 pip install --user azure.mgmt.oracledatabase
+pip install --user google-auth
+pip install --user google-cloud-resource-manager
 pip install --user pycryptodomex==3.10.1
 pip install --user regex==2022.10.31
 pip install --user numpy==1.26.4

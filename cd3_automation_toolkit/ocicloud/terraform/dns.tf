@@ -96,20 +96,42 @@ data "oci_dns_views" "all_views_data" {
   state        = "ACTIVE"
 }
 
+locals {
+  resolvers_with_ordered_lists = {
+    for resolver_name, resolver in var.resolvers : resolver_name => merge(resolver, {
+      views_indexed = resolver.views != null ? {
+        for idx in range(length(resolver.views)) :
+        slice(flatten([
+          for prefix in [
+            for i in range(ceil(length(resolver.views) / 10)) :
+            join("", [for _ in range(i) : "9"])
+          ] : [
+            for digit in range(10) : "${prefix}${digit}"
+          ]
+        ]), 0, length(resolver.views))[idx] => resolver.views[idx]
+      } : {}
+    })
+  }
+}
+
 
 ### Module ###
 module "dns-resolvers" {
   source                = "./modules/network/dns/dns_resolver"
-  for_each              = var.resolvers != null ? var.resolvers : {}
+  for_each              = local.resolvers_with_ordered_lists != null ? local.resolvers_with_ordered_lists : {}
   target_resolver_id    = data.oci_core_vcn_dns_resolver_association.resolver_vcn_dns_resolver_association[each.key].*.dns_resolver_id[0]
   resolver_scope        = "PRIVATE"
   resolver_display_name = each.value.display_name != null ? each.value.display_name : null
-  views = each.value.views != null ? {
-    for v_key, view in each.value.views : v_key => {
-      view_id = length(regexall("ocid1.dnsview.oc*", view.view_id)) > 0 ? view.view_id : try(data.oci_dns_views.all_views_data[view.view_id].views.*.id[0], module.dns-views[view.view_id].views.*.id[0])
-      #view_id = length(regexall("ocid1.dnsview.oc*", view.view_id)) > 0 ? view.view_id : merge(data.oci_dns_views.all_views_data[view.view_id], module.dns-views[view.view_id]).views.*.id[0]
+  views = each.value.views_indexed != null ? [
+    for k in sort(keys(each.value.views_indexed)) : {
+      view_id = startswith(each.value.views_indexed[k].view_id, "ocid1.dnsview.oc") ? (
+        each.value.views_indexed[k].view_id
+      ) : try(
+        data.oci_dns_views.all_views_data[each.value.views_indexed[k].view_id].views[0].id,
+        module.dns-views[each.value.views_indexed[k].view_id].views[0].id
+      )
     }
-  } : null
+  ] : []
 
   resolver_rules         = each.value.resolver_rules != null ? each.value.resolver_rules : null
   resolver_defined_tags  = try(each.value.defined_tags, null)

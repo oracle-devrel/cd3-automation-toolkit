@@ -9,15 +9,15 @@
 
 
 resource "oci_database_db_home" "database_db_home" {
-  db_version                 = var.db_version
-  defined_tags               = var.defined_tags
-  display_name               = var.display_name
-  freeform_tags              = var.freeform_tags
-  source                     = var.db_source
-  vm_cluster_id              = var.vm_cluster_id
+  db_version    = var.db_version
+  defined_tags  = var.defined_tags
+  display_name  = var.display_name
+  freeform_tags = var.freeform_tags
+  source        = var.db_source
+  vm_cluster_id = var.vm_cluster_id
 
 
-    lifecycle {
+  lifecycle {
     ignore_changes = [source]
   }
   timeouts {}

@@ -25,6 +25,7 @@ runcmd:
     sudo mkdir -p /$mount_dir/tenancies
     sudo mkdir -p /$mount_dir/oci_tools
 
+
     tenancyconfig_properties="/$mount_dir/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
     connectOCI_properties="/$mount_dir/oci_tools/cd3_automation_toolkit/connectOCI.properties"
     start=$(date +%s.%N)

@@ -11,7 +11,6 @@ import argparse
 import configparser
 import datetime
 import shutil
-import distutils
 import os,sys,logging
 sys.path.append(os.getcwd())
 sys.path.append(os.getcwd()+"/..")
@@ -75,6 +74,8 @@ try:
     config_file = config.get('Default', 'config_file').strip()
     if config_file == "" or config_file == "\n":
         config_file = auto_keys_dir +"/gcp_api_private.json"
+    if not os.path.exists(config_file):
+        connected=0
 
 except Exception as e:
     print(e)
@@ -87,6 +88,8 @@ if not os.path.exists(prefix_dir):
 if not os.path.exists(config_files):
     os.makedirs(config_files)
 
+excel_name="CD3-"+cloud.upper()+"-template.xlsx"
+shutil.copy(os.path.join(toolkit_dir, 'example', excel_name), os.path.join(prefix_dir, excel_name))
 
 # 1. Copy input properties file
 shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
@@ -102,18 +105,22 @@ if connected == 1:
     shutil.copy(config_file, _config_file)
     os.chmod(_config_file,0o600)
     credentials = gct.authenticate(config_file)
-    project_id=credentials.project_id
+    try:
+        project_id=credentials.project_id
+        client = resourcemanager_v3.ProjectsClient(credentials=credentials)
 
-    client = resourcemanager_v3.ProjectsClient(credentials=credentials)
+        # Request project details using the project ID
+        # The name parameter must follow the format: projects/{project_id}
+        request = resourcemanager_v3.GetProjectRequest(name=f"projects/{project_id}")
+        project = client.get_project(request=request)
 
-    # Request project details using the project ID
-    # The name parameter must follow the format: projects/{project_id}
-    request = resourcemanager_v3.GetProjectRequest(name=f"projects/{project_id}")
-    project = client.get_project(request=request)
-
-    # 'display_name' contains the human-readable Project Name
-    project_name = project.display_name
-
+        # 'display_name' contains the human-readable Project Name
+        project_name = project.display_name
+    except Exception as e:
+        print("\n")
+        print(str(e))
+        print(f"\nGCP credentials are invalid. Exiting!!!\n")
+        exit(1)
 
 # 3. Generate setUpCloud.properties file
 print("Creating "+cloud+" specific setUp"+cloud+".properties.................")
@@ -122,6 +129,8 @@ with open(setupcloud_props_toolkit_file_path, 'r+') as setUpCloud_file:
 
 setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("outdir=", "outdir="+terraform_files)
 setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("prefix=", "prefix="+prefix)
+setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("cd3file=","cd3file=" + os.path.join(prefix_dir,excel_name))
+
 
 if connected ==1:
     setupcloud_props_toolkit_file_data = setupcloud_props_toolkit_file_data.replace("config_file=", "config_file="+_config_file)

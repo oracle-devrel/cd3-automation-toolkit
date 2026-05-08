@@ -85,7 +85,7 @@ def execute_options(options, *args, **kwargs):
 
 def create_exa_gcp():
     create_terraform_exa_infra_gcp(inputfile, outdir, prefix)
-    #create_terraform_exa_vmclusters_azure(inputfile, outdir, prefix)
+    create_terraform_exa_vmclusters_gcp(inputfile, outdir, prefix)
 
 
 def create_db_at_gcp(execute_all=False):

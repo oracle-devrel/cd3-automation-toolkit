@@ -45,7 +45,7 @@ variable "database" {
     auto_full_backup_day      = optional(string)
     run_immediate_full_backup = optional(string)
     backup_deletion_policy    = optional(string)
-     auto_full_backup_window = optional(string)
+    auto_full_backup_window   = optional(string)
     defined_tags              = optional(map(string), {})
     freeform_tags             = optional(map(string), {})
     tde_wallet_password       = optional(string)

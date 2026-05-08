@@ -60,7 +60,8 @@ def create_terraform_adb_azure(inputfile, outdir, prefix):
         # All columns ar mandatory except customer contacts and tags
         if (str(df.loc[i, 'Region']).lower() == 'nan' or \
             str(df.loc[i, 'Resource Group Name']).lower() == 'nan' or \
-            str(df.loc[i, 'Network Details']).lower() == 'nan' or \
+            str(df.loc[i, 'ODB Network Details']).lower() == 'nan' or \
+            str(df.loc[i, 'ODB Network Subnet Details']).lower() == 'nan' or \
             str(df.loc[i, 'DB Version']).lower() == 'nan'):
             print("\nAll fields except Customer Contacts and Common Tags are mandatory. Please enter a value and try again !!")
             print("\n** Exiting **")
@@ -96,23 +97,38 @@ def create_terraform_adb_azure(inputfile, outdir, prefix):
                 autonomous_value = columnvalue.strip().lower()
                 tempdict = {'autonomous_value': autonomous_value}
 
-            if columnname == "Network Details":
-                if len(columnvalue.split("@")) == 2:
-                    network_container_id = columnvalue.split("@")[0].strip()
-                    vcn_subnet_name = columnvalue.split("@")[1].strip()
+            if columnname == "ODB Network Details":
+                values = columnvalue.split("::")
+                if values[0].strip().upper()=="CREATE":
+                    if len(values) !=5 :
+                        print("Invalid Value for ODB Network Details. Exiting!!")
+                        exit(1)
+                    create_odb_network="true"
+                    network_resource_group_name = values[1].strip()
+                    vnet_name = values[2].strip()
+                    vnet_cidr = values[4].strip()
+                    network_az_region = values[3].strip()
+
                 else:
-                    network_container_id = container_id
-                    vcn_subnet_name = columnvalue
+                    create_odb_network = "false"
+                    network_resource_group_name = values[0].strip()
+                    vnet_name = values[1].strip()
+                    vnet_cidr = ""
+                    network_az_region=""
 
-                if ("::" not in vcn_subnet_name):
-                    print("Invalid Network Details format specified for row " + str(i + 3) + ". Exiting!!!")
-                    exit(1)
+                tempdict = {'create_odb_network': create_odb_network, 'network_resource_group_name': network_resource_group_name,
+                            'vnet_name': vnet_name, 'vnet_cidr': vnet_cidr,
+                            'network_az_region': network_az_region}
+            if columnname == "ODB Network Subnet Details":
+                values = columnvalue.split("::")
+                delegated_subnet_name = values[0].strip()
+                if len(values)==2:
+                    subnet_cidr = values[1].strip()
                 else:
-                    vcn_name = vcn_subnet_name.split("::")[0].strip()
-                    subnet_id = vcn_subnet_name.split("::")[1].strip()
+                    subnet_cidr=""
 
-                tempdict = {'network_container_id': network_container_id, 'vnet_name': vcn_name,'subnet_id': subnet_id}
 
+                tempdict = {'delegated_subnet_name': delegated_subnet_name, 'subnet_cidr': subnet_cidr}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()

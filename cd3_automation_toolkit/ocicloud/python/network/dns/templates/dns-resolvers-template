@@ -26,14 +26,14 @@ resolvers = {
             {% endif %}
             display_name = "{{ res_display_name }}"
 
-			views = {
+			views = [
                 {% for view in res_views %}
-                "{{ res_vcn_name | replace("\ ","_") }}_order{{ loop.index }}" = {
+                {
                     view_id = "{{ view.view_id }}"
                     view_compartment_id = "{{ view.compartment_id }}"
-                }
+                },
                 {% endfor %}
-			}
+			]
 
 
 			endpoint_names = {

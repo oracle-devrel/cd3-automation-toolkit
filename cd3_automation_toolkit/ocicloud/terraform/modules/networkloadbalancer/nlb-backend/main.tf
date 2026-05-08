@@ -21,4 +21,5 @@ resource "oci_network_load_balancer_backend" "backend" {
   name       = length(regexall("IP:", var.ip_address)) > 0 ? join(":", [split("IP:", var.ip_address)[1], var.port]) : join(":", [merge(local.nlb_private_ip_ocid.private_ocids.*...)[merge(local.nlb_instance_vnic_ocid.vnic_ocids.*...)[merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", var.ip_address)[1]][0]][0]][0], var.port])
   target_id  = length(regexall("IP:*", var.ip_address)) == 0 ? merge(local.nlb_private_ip_ocid.private_ocids.*...)[merge(local.nlb_instance_vnic_ocid.vnic_ocids.*...)[merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", var.ip_address)[1]][0]][0]][0] : null
   weight     = var.weight
+
 }

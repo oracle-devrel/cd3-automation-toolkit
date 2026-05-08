@@ -34,6 +34,8 @@ resource "google_oracle_database_cloud_exadata_infrastructure" "exadata_infrastr
     }
     total_storage_size_gb = var.infra_config.total_storage_size_gb
   }
+
+  # Labels are not getting applied to oracle resources
   labels = var.labels
 
 
@@ -46,10 +48,3 @@ resource "google_oracle_database_cloud_exadata_infrastructure" "exadata_infrastr
   }
 }
 
-
-#data "google_oracle_database_db_servers" "exadata_infrastructure" {
-#  location                     = "us-central1"
-#  project                      = "xxxxxxxxxxxx" # Replace with your Google Cloud Project
-#  cloud_exadata_infrastructure = google_oracle_database_cloud_exadata_infrastructure.exadata_infrastructure.cloud_exadata_infrastructure_id
-#  depends_on                   = [google_oracle_database_cloud_exadata_infrastructure.exadata_infrastructure]
-#}

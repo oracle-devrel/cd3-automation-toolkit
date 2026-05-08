@@ -14,8 +14,8 @@ variable "resolver_scope" {
   default = "PRIVATE"
 }
 variable "views" {
-  type    = map(any)
-  default = {}
+  type    = list(any)
+  default = []
 }
 variable "resolver_display_name" {
   type    = string
