@@ -130,7 +130,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 bv_rep_ad_region = bv_rep_ads.split('-')[0]+"-"+bv_rep_ads.split('-')[1]+"-"+bv_rep_ads.split('-')[2]
                 with open('/cd3user/oci_tools/cd3_automation_toolkit/ocicloud/python/OCI_Regions', 'r') as f:
                     for line in f:
-                        if bv_rep_ad_region in line:
+                        if bv_rep_ad_region.lower() in line.lower():
                             contents = line.split(":")
                             bv_rep_ad_region = contents[0].strip()
                             break
