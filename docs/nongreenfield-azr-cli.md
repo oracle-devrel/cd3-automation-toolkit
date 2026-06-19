@@ -7,9 +7,17 @@
 
 
 <span style="color: teal; font-weight: bold;">Step 1:</span>
-<br>Choose the Azure CD3 Excel sheet template from <a href="../az̄r-excel-templates"><u>Excel Templates</u></a>
+<br>Choose the Azure CD3 Excel sheet template from <a href="../azr-excel-templates"><u>Excel Templates</u></a>
  and copy at _/cd3user/azure/<prefix\>/_<br><br>
 
+<b>Copy CD3 Excel File</b><br>
+
+* While using the container launched using <a href="../launch-from-rmstack"><u>RM Stack</u></a>, local path `/cd3user/mount_path` on the VM is mapped to `/cd3user/` inside the container. So the Excel template can be copied at `/cd3user/mount_path/azure/<prefix>/` on the VM. Below is the sample command to copy the Excel template from local system to container:
+```
+scp -i <private key pushed to VM while creating stack> <path to excel file on local> cd3user@<Public/Private IP of the VM>:/cd3user/mount_path/azure/<prefix>
+``` 
+
+* Note that the user `cd3user` can be used to connect to the VM because same key is pushed for `opc` as well as `cd3user`.
  
 <span style="color: teal; font-weight: bold;">Step 2:</span>
 <br>Modify ```/cd3user/azure/<prefix>/<prefix>_setUpAzure.properties``` 
@@ -41,7 +49,7 @@ cd3file=
 
 #specify create_resources to create new resources in Azure(greenfield workflow)
 #specify export_resources to export resources from Azure(non-greenfield workflow)
-workflow_type=create_resources
+workflow_type=export_resources
 ```
   
 <br>
@@ -68,7 +76,7 @@ python setUpCloud.py azure /cd3user/azure/<prefix>/<prefix>_setUpAure.properties
 
     Choose appropriate option from below :
 
-    1. Export DB @Azure
+    1. Export DB@Azure
     <br>q. Press q to quit
     
     Enter your choice (specify comma separated to choose multiple choices):

@@ -7,9 +7,18 @@
 Choose the excel sheet template from <a href="../azr-excel-templates"><u>Excel Templates</u></a>.
 Fill the Excel with appropriate values and copy at `/cd3user/azure/<prefix>`<br>
 
+<b>Copy CD3 Excel File</b><br>
+
+* While using the container launched using <a href="../launch-from-rmstack"><u>RM Stack</u></a>, local path `/cd3user/mount_path` on the VM is mapped to `/cd3user/` inside the container. So the Excel template can be copied at `/cd3user/mount_path/azure/<prefix>/` on the VM. Below is the sample command to copy the Excel template from local system to container:
+```
+scp -i <private key pushed to VM while creating stack> <path to excel file on local> cd3user@<Public/Private IP of the VM>:/cd3user/mount_path/azure/<prefix>
+``` 
+
+* Note that the user `cd3user` can be used to connect to the VM because same key is pushed for `opc` as well as `cd3user`.
+
 <span style="color: teal; font-weight: bold;">Step 2:</span>
 
-Modify ```/cd3user/azure /<prefix>/<prefix>_setUpAzure.properties```.
+Modify ```/cd3user/azure/<prefix>/<prefix>_setUpAzure.properties```.
 <br>Update parameters: **cd3file** parameter to the location of CD3 excel file and  **workflow_type**  to **create_resources** as shown below.
 <br> The other parameters are already updated with correct values.
 ```ini
@@ -79,15 +88,15 @@ The tfvars files for the selected services will be generated at the following pa
 
 <span style="color: teal; font-weight: bold;">Step 4:</span>
 
-Change the directory to  ```/cd3user/axure/<prefix>/terraform_files/``` .
+Change the directory to  ```/cd3user/azure/<prefix>/terraform_files/``` .
 
   - Execute:
 
 
-    ```terraform init```  - *To initialize and prepare the working/out directory so Terraform can run the configuration.*<br>
+    ```terraform init```  - *To initialize and prepare the working/out directory so Terraform can run the configuration*<br>
 
-    ```terraform plan```  - *To preview any changes before applying them. *
+    ```terraform plan```  - *To preview any changes before applying them*<br>
 
-    ```terraform apply``` - *To make the changes defined by Terraform configuration to create, update, or destroy resources in Azure.*
+    ```terraform apply``` - *To make the changes defined by Terraform configuration to create, update, or destroy resources in Azure*
 
-   S
+   

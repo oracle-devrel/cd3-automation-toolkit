@@ -1241,4 +1241,37 @@ Upon executing setUpCloud.py, choose `Create DB @Azure` from the main menu and `
 <code>&lt;outdir&gt;/backup_adb-azure/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
 
 
+## ADB-AWS
+
+The ADB-AWS tab in CD3-AWS-template.xlsx can be used to create ADB@AWS in the AWS account.
+This will automatically provision ADB in the linked OCI tenancy.
+
+Upon executing setUpCloud.py, choose `Create DB @AWS` from the main menu and `Add/Modify/Delete ADB @AWS` from its sub-options to create ADB@AWS.
+
+<span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<prefix>_adb-aws.auto.tfvars``` 
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<code>&lt;outdir&gt;/backup_adb-aws/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
+
+## ADB-GCP
+
+The ADB-GCP tab in CD3-GCP-template.xlsx can be used to create ADB@GCP in the GCP account
+This will automatically provision ADB in the linked OCI tenancy.
+
+Upon executing setUpCloud.py, choose `Create DB @GCP` from the main menu and `Add/Modify/Delete ADB @GCP` from its sub-options to create ADB@GCP.
+
+<span style="color: teal; font-weight: bold;">Output File:</span>  ```<outdir>/<prefix>_adb-gcp.auto.tfvars``` 
+
+
+<span style="color: teal; font-weight: bold;">
+  Backup Path for previous outputs:
+</span>
+<code>&lt;outdir&gt;/backup_adb-gcp/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
+
+
 

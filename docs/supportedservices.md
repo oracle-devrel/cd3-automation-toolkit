@@ -223,7 +223,7 @@
 </body>
 
 
-<h2>Azure</h2>
+<!-- <h2>Azure</h2>
         <div class="service-card">
             <div class="card-title">
                 <h3>OracleDB@Azure</h3>
@@ -231,8 +231,48 @@
             </div>
             <p><a href="../cd3exceltabs#oracledb@azure"><b>ADB @Azure</b></a></p>
             </div>
-        </div>         
+        </div>         -->
 
+<h2>Oracle DB@Multicloud</h2>
+
+<p>
+CD3 supports Oracle Database@Multicloud deployments across Azure, AWS, and Google Cloud.
+</p>
+
+<div class="grid-container">
+    <div class="service-card">
+        <div class="card-title">
+            <h3>Azure</h3>
+            <img src="../images/database.png" alt="OracleDB@Azure">
+        </div>
+        <p><a href="../cd3exceltabs#oracledb-azure"><b>Oracle Database@Azure</b></a></p>
+        <div class="description">
+            <p><i>Oracle Database services on Microsoft Azure.</i></p>
+        </div>
+    </div>
+
+    <div class="service-card">
+        <div class="card-title">
+            <h3>AWS</h3>
+            <img src="../images/database.png" alt="OracleDB@AWS">
+        </div>
+        <p><a href="../cd3exceltabs#oracledb-aws"><b>Oracle Database@AWS</b></a></p>
+        <div class="description">
+            <p><i>Oracle Database services on Amazon Web Services.</i></p>
+        </div>
+    </div>
+
+    <div class="service-card">
+        <div class="card-title">
+            <h3>GCP</h3>
+            <img src="../images/database.png" alt="OracleDB@GCP">
+        </div>
+        <p><a href="../cd3exceltabs#oracledb-gcp"><b>Oracle Database@GCP</b></a></p>
+        <div class="description">
+            <p><i>Oracle Database services on Google Cloud Platform.</i></p>
+        </div>
+    </div>
+</div>
 </html>
 
 

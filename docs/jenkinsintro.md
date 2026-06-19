@@ -63,6 +63,7 @@ The pipelines are either triggered automatically from setupoci pipeline or they 
 | Checkout SCM | Checks out the latest terraform_files <br> folder from DevOps GIT repo develop branch| |
 | Set Environment Variables | Sets the environment variables for region and service name |
 | Plan | Runs plan against the <br> checked out code and saves it in tfplan.out | Pipeline stops further execution if the plan shows no changes. <br> Displays Failed if any issue while executing the plan |
+| AI Terraform Plan Analysis | Optional AI-assisted analysis to review Terraform plans | |
 | OPA | Runs the above generated plan against <br> Open Policies and displays the violations if any | Displays Unstable if any OPA rule is violated |
 | Get Approval | Approval Stage for reviewing the plan. <br> There is 24 hours timeout for this stage. | Proceed - goes ahead with **Apply** stage. <br> Abort - pipeline is aborted and stops further execution |
 |Apply | Applies the terraform configurations | Displays Failed if any issue <br> while executing apply |
@@ -79,6 +80,7 @@ The pipelines are either triggered automatically from setupoci pipeline or they 
 | Checkout SCM | Checks out the latest terraform_files <br> folder from DevOps GIT repo develop branch | |
 | Set Environment Variables | Sets the environment variables for region and service name |
 | Plan | Runs `terraform plan -destroy` against the checked out code | Displays Failed if any issue in plan output |
+| AI Terraform Plan Analysis | Optional AI-assisted analysis to review Terraform plans | |
 | Get Approval | Approval Stage for reviewing the plan. <br> There is 24 hours timeout for this stage. | Proceed - goes ahead with  Destroy stage. <br> Abort - pipeline is aborted and stops furter execution |
 |Destroy | Destroys the terraform configurations | Displays Failed if any issue <br> while executing destroy |
 |Git Commit to main | Removes tfvars from respective directory in main branch of repo | Stage is skipped if any issue while executing apply |

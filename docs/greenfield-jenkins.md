@@ -82,7 +82,7 @@ Stages of the terraform pipeline for apply are shown below:
 
 <span style="color: teal; font-weight: bold;">Step 3:</span>
 
-Review Logs for Plan and OPA stages by clicking on the stage and then 'Logs'. 
+Review Logs for Plan, AI Terraform plan Analysis and OPA stages by clicking on the stage and then 'Logs'. 
 
 <img width="1503" alt="Screenshot 2024-01-17 at 12 13 57 PM" src="../images/jenkinsGF-7.jpg"><br>
 

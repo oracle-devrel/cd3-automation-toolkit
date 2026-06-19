@@ -1,7 +1,7 @@
 # **Manage DB@Azure using CD3 Automation Toolkit**
 ---
 
-**CD3** now extends its support to **Oracle DB@Azure**, making it easier to manage Oracle Databases on Azure.
+**CD3** extends its support to **Oracle DB@Azure**, making it easier to manage Oracle Databases on Azure.
 
 With CD3, users can currently create and manage **ADB@Azure**. 
 
@@ -14,6 +14,7 @@ Once the CD3 container is successfully connected to Azure subscription, the Tool
 
 At present, CD3 for DB@Azure supports only CLI-based operations. Follow the instructions below to get started. 
 
-1.  <a href = "../cd3-azr-cli"><u>Manage DB@Azure with CLI</u></a> 
+1.  <a href = "../greenfield-azr-cli"><u>Create DB@Azure with CLI</u></a> 
+2. <a href = "../nongreenfield-azr-cli"><u>Export DB@Azure with CLI</u></a> 
 
 

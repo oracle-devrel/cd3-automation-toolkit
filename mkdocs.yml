@@ -12,8 +12,10 @@ nav:
     - Services Supported: supportedservices.md
     - Excel Templates: 
       - excel-templates.md
-      - For OCI: oci-excel-templates.md
-      - For Azure: azr-excel-templates.md
+      - OCI: oci-excel-templates.md
+      - Azure: azr-excel-templates.md
+      - AWS: aws-excel-templates.md
+      - GCP: gcp-excel-templates.md
     - "<span>AI Analysis <span class='new-badge'>New!</span></span>": terraform-ai-analysis.md
       
   - Install CD3 :
@@ -33,6 +35,8 @@ nav:
       - Multiple Prefixes(optional): multiple-prefixes.md
       - Delete Prefix(optional): delete-prefix.md
     - Connect to Azure: connect-container-to-azure-subscription.md
+    - Connect to AWS: connect-container-to-aws-account.md
+    - Connect to GCP: connect-container-to-gcp-account.md
 
   - Manage OCI :
     - setUpOCI.md
@@ -60,20 +64,35 @@ nav:
       - Manage Compute : manage-compute.md
       - Manage OCI Network Firewall : manage-firewall.md
   
-  - Manage DB@Azure :
-    - setUpAzure.md
-    - Manage DB@Azure with CLI:
-      - cd3-azr-cli.md
-      - Create in Azure  : 
-        - greenfield-azr-cli.md
-      - Export from Azure : 
-        - nongreenfield-azr-cli.md
-  # - Read More for OCI :
-  #   - must-read-prerequisites.md
-  #   - Manage Network : manage-network.md
-  #   - Manage Compute : manage-compute.md
-  #   - Manage OCI Network Firewall : manage-firewall.md
+  # - Manage DB@Azure :
+  #   - setUpAzure.md
+  #   - Manage DB@Azure with CLI:
+  #     - cd3-azr-cli.md
+  #     - Create in Azure  : 
+  #       - greenfield-azr-cli.md
+  #     - Export from Azure : 
+  #       - nongreenfield-azr-cli.md
 
+  - Manage DB@Multicloud :
+    - dbmulticloud.md
+    - Manage DB@Azure with CLI: 
+      - setUpAzure.md
+      - Create in Azure : greenfield-azr-cli.md
+      - Export from Azure : nongreenfield-azr-cli.md
+    - Manage DB@AWS with CLI:
+      - setUpAWS.md
+      - Create in AWS : greenfield-aws-cli.md
+      - Export from AWS : nongreenfield-aws-cli.md
+    - Manage DB@GCP with CLI:
+      - setUpGCP.md
+      - Create in GCP : greenfield-gcp-cli.md
+      - Export from GCP : nongreenfield-gcp-cli.md
+
+
+  - Quick Start:
+    - quickstart.md
+    - Create and Export OCI Resources using CLI: quickstart_cli.md
+    - Create and Export OCI Resources using Jenkins: quickstart_jenkins.md
 
   - Additional Features:
     - group-tf-files.md
@@ -129,6 +148,7 @@ theme:
       example: fontawesome/solid/flask
       quote: fontawesome/solid/quote-left  
   language: en
+
   # palette:
   #   - media: "(prefers-color-scheme)"
   #     toggle:

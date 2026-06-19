@@ -103,27 +103,66 @@ git clone https://github.com/oracle-devrel/cd3-automation-toolkit.git .
 
 <span style="color: teal; font-weight: bold;">3. Build an image</span>
 
-* If you are using mac, Edit **Dockerfile** to update uid for <i>cd3user</I> to match with uid of the user on local host to avoid permission issues. This step is needed if you plan to use toolkit with Jenkins or OCI DevOps GIT repo.
-``` 
+Before building the image, review the optional Dockerfile settings. Update only the settings that apply to your setup.
+
+<b>Optional Dockerfile settings:</b>
+
+Open the Dockerfile:
+
+```bash
 vi Dockerfile
 ```
 
-     Search for the line ```ARG USER_UID=1001``` and replace ```1001``` with uid of the user on local host eg 503 for Mac users.
+| Requirement | Dockerfile setting | Action |
+|---|---|---|
+| Use CD3 with Jenkins on macOS | `ARG USER_UID=1001` | Replace `1001` with your local user UID, for example `503`, to avoid permission issues. |
+| Skip Jenkins installation | `ARG USE_DEVOPS=YES` | Replace `YES` with `NO` if you do not want Jenkins installed during the image build. |
 
-* <b>Optional:</b>  If you do not want to use CD3 toolkit with Jenkins, you can skip the installation of Jenkins during image build.
-``` 
-vi Dockerfile
-```
-     Search for the line ```ARG USE_DEVOPS=YES``` and replace ```YES``` with ```NO```.
+<b>Build the Image:</b>
 
-* Run 
-```
+To build the image, execute:
+
+```bash
 docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
 ```
 
 !!! Note "Important"
+    Replace `${image_tag}` with a suitable tag as per your requirements or standards, for example `v2024.4.1`.
+
+    The period (`.`) at the end of the `docker build` command is required.
+
+<!-- Before building the image, review the optional Dockerfile settings based on your requirements:
+
+<b>Optional Dockerfile settings:</b>
+
+   <b>1. To use CD3 with Jenkins:</b> 
+      If you are building the image on a Mac and plan to use CD3 with Jenkins, update the `cd3user` UID to match your local user UID to avoid permission issues.<br>
+      Open Dockerfile:
+      ``` 
+      vi Dockerfile
+      ```
+
+   Search for the line ```ARG USER_UID=1001``` and replace ```1001``` with uid of the user on local host eg 503 for Mac users.
+
+
+   <b>2. Skip Jenkins Installation:</b> 
+      If you do not want to use CD3 toolkit with Jenkins, you can skip the installation of Jenkins during image build<br>
+      Open Dockerfile:
+      ``` 
+      vi Dockerfile
+      ```
+
+   Search for the line ```ARG USE_DEVOPS=YES``` and replace ```YES``` with ```NO```.
+
+  <b>Build the Image:</b>
+      To build the image, execute: 
+      ```
+      docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
+      ```
+
+!!! Note "Important"
 	${image_tag} should be replaced with suitable tag as per your requirements/standards. eg v2024.4.1
-	The period (.) at the end of the docker build command is required.
+	The period (.) at the end of the docker build command is required. -->
 
 <br>
 <span style="color: teal; font-weight: bold;">4. Save the image (Optional)</span>

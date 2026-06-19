@@ -16,7 +16,7 @@ The toolkit integrates with OCI DevOps Git service and Jenkins pipelines, enabli
 <br>
 
 
-**CD3 in a nutshell** 
+**CD3 in a Nutshell** 
 
 <div style="max-width: 800px">
   <iframe 
