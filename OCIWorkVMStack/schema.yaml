@@ -64,7 +64,6 @@ variableGroups:
   - nsg_id
   - tenancy_ocid
   - cloud_init_script
-  - marketplace_source_images
   - mp_subscription_enabled
   - mp_listing_id
   - mp_listing_resource_id
@@ -116,7 +115,6 @@ variables:
     default: null
     required: true
   instance_name:
-    visible:
     title: Enter display name/hostname for CD3 Automation Toolkit WorkVM
     description: CD3 Automation Toolkit WorkVM display name/hostname
     type: string
@@ -126,7 +124,6 @@ variables:
     maxLength: 62
     required: true
   instance_os_version:
-    visible:
     title: Select Instance Image
     description: Oracle Linux image OCID for VM provisioning
     type: enum
@@ -148,7 +145,6 @@ variables:
     required: true
     default: "VM.Standard3.Flex"
   instance_ocpus:
-    visible:
     type: integer
     title: Enter Instance OCPUs
     description: The total number of OCPUs assigned to the instance
@@ -158,7 +154,6 @@ variables:
     multipleOf: 1
     required: true
   instance_ram:
-    visible:
     type: integer
     title: Enter Instance Memory In GBs
     description: The total amount of memory available to an instance (GB)
@@ -168,7 +163,6 @@ variables:
     multipleOf: 1
     required: true
   boot_volume_size:
-    visible:
     type: integer
     title: Boot volume size in GBs
     description: Boot volume size in GBs. Default is 50 GB and value should be multiple of 1.
@@ -195,7 +189,6 @@ variables:
       compartmentId: ${instance_compartment_ocid}
       availabilityDomainName: ${instance_ad}
   ssh_public_key:
-    visible:
     title: "Enter SSH Public Key"
     description: "Use the corresponding private key to access the CD3 Automation Toolkit WorkVM instance"
     type: oci:core:ssh:publickey
@@ -433,10 +426,8 @@ variables:
     type: string
   cloud_init_script:
     type: string
-  marketplace_source_images:
-    type: map
   mp_subscription_enabled:
-    type: bool
+    type: boolean
   mp_listing_id:
     type: string
   mp_listing_resource_id:
