@@ -72,8 +72,7 @@ Evaluate Terraform plans to identify potential security risks, misconfigurations
     <td>CIS Compliance Report</td> 
   </tr>
 </table>
-</tr>
-</body>
+
 
 📌 The Toolkit also extends its support to <b>ADB@Azure</b>
 
