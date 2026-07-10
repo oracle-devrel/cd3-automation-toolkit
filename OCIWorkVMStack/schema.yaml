@@ -64,7 +64,6 @@ variableGroups:
   - nsg_id
   - tenancy_ocid
   - cloud_init_script
-  - marketplace_source_images
   - mp_subscription_enabled
   - mp_listing_id
   - mp_listing_resource_id
@@ -427,8 +426,6 @@ variables:
     type: string
   cloud_init_script:
     type: string
-  marketplace_source_images:
-    type: map
   mp_subscription_enabled:
     type: boolean
   mp_listing_id:
