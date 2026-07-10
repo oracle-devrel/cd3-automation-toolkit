@@ -436,7 +436,7 @@ variables:
   marketplace_source_images:
     type: map
   mp_subscription_enabled:
-    type: bool
+    type: boolean
   mp_listing_id:
     type: string
   mp_listing_resource_id:
