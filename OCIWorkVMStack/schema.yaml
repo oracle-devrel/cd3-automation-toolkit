@@ -112,7 +112,7 @@ variables:
     title: Enter New Compartment name for CD3 Automation Toolkit WorkVM components - VM, VCN etc
     description: New Compartment name for CD3 Automation Toolkit WorkVM components - VM, VCN etc
     type: string
-    default: null
+    default: "cd3-temp-cmp"
     required: true
   instance_name:
     title: Enter display name/hostname for CD3 Automation Toolkit WorkVM
@@ -264,10 +264,7 @@ variables:
     title: Assign existing NSG to instance ?
     description: Assign existing NSG to instance ?
   existing_nsg_id:
-    visible:
-      eq:
-      - assign_existing_nsg
-      - true
+    visible: assign_existing_nsg
     type: oci:core:nsg:id
     dependsOn:
       compartmentId: ${vcn_compartment_ocid}
@@ -275,13 +272,11 @@ variables:
     required: true
     title: Select existing NSG
     description: Select existing NSG to assign to WorkVM instance if any
-    default: false
   vcn_name:
     visible:
-      and:
-        - eq:
-          - vcn_strategy
-          - "Create New VCN"
+      eq:
+      - vcn_strategy
+      - "Create New VCN"
     type: string
     title: Enter VCN Name
     description: The name of the new OCI VCN to be created
@@ -314,10 +309,9 @@ variables:
 
   subnet_name:
     visible:
-      and:
-        - eq:
-          - vcn_strategy
-          - "Create New VCN"
+      eq:
+      - vcn_strategy
+      - "Create New VCN"
     type: string
     title: Enter Subnet Name
     description: The name of the new Subnet to create for this service.
@@ -350,10 +344,9 @@ variables:
 
   subnet_type:
     visible:
-      and:
-        - eq:
-          - vcn_strategy
-          - "Create New VCN"
+      eq:
+      - vcn_strategy
+      - "Create New VCN"
     type: enum
     title: Select Subnet Type
     description: Type of Subnet to create. Private or Public.
@@ -380,10 +373,9 @@ variables:
 
   drg_attachment:
     visible:
-      and:
-        - eq:
-          - vcn_strategy
-          - "Create New VCN"
+      eq:
+      - vcn_strategy
+      - "Create New VCN"
     type: boolean
     title: Attach new VCN to already existing DRG ?
     description: Attach new VCN to already existing DRG ?
@@ -395,9 +387,7 @@ variables:
        - eq:
          - vcn_strategy
          - "Create New VCN"
-       - eq:
-         - drg_attachment
-         - true
+       - drg_attachment
     type: string
     pattern: '^ocid1\.([a-z0-9_-]{1,32})\.([a-z0-9_-]{1,15})\.([a-z0-9_-]{0,24})\.([a-z0-9]{60})$'
     required: true
