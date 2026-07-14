@@ -1,0 +1,40 @@
+# Copyright (c) 2026, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/.
+
+# This configuration enables Dependabot version updates.
+# https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/about-dependabot-version-updates
+
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: /
+  schedule:
+    interval: weekly
+  commit-message:
+    prefix: chore
+    prefix-development: chore
+    include: scope
+  open-pull-requests-limit: 5
+  target-branch: main
+
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: weekly
+  commit-message:
+    prefix: chore
+    prefix-development: chore
+    include: scope
+  open-pull-requests-limit: 5
+  target-branch: main
+
+- package-ecosystem: docker
+  directory: /
+  schedule:
+    interval: weekly
+  commit-message:
+    prefix: chore
+    prefix-development: chore
+    include: scope
+  open-pull-requests-limit: 5
+  target-branch: main
