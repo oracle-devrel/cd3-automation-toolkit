@@ -1,4 +1,4 @@
-FROM oraclelinux:9-slim
+FROM oraclelinux:10-slim
 LABEL maintainer="Team at Oracle"
 LABEL description="OCI format to generate CD3 image"
 
