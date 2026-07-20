@@ -94,13 +94,13 @@ adb = {
         db_version = "{{ db_version.strip() }}"
         {% endif %}
 
-        {% if autonomous_value == 'adw' %}
+        {% if autonomous_value.lower() == 'adw' %}
         db_workload              = "DW"
-        {% elif autonomous_value == 'atp' %}
+        {% elif autonomous_value.lower() == 'atp' %}
         db_workload              = "OLTP"
-        {% elif autonomous_value == 'json' %}
+        {% elif autonomous_value.lower() == 'json' %}
         db_workload              = "AJD"
-        {% elif autonomous_value == 'apex' %}
+        {% elif autonomous_value.lower() == 'apex' %}
         db_workload              = "APEX"
         {% else %}
         db_workload              = "{{ autonomous_value }}"

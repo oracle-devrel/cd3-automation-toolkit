@@ -97,12 +97,6 @@ def create_db_at_azure(execute_all=False):
     if not execute_all:
         execute_options(options)
 
-'''
-def export_az_adb():
-    export_az_oci_adb(inputfile, outdir, credentials)
-'''
-def export_az_oci_exa():
-    export_az_oci_adb(inputfile, outdir, credentials)
 
 def export_db_at_azure(execute_all=False):
     options = [
@@ -132,8 +126,8 @@ parser.add_argument('propsfile', help="Full Path of properties file containing i
 #parser.add_argument('--add_filter', default=None)
 #parser.add_argument('--devops', default=False)
 args = parser.parse_args()
-setUpAz_props = configparser.RawConfigParser()
-setUpAz_props.read(args.propsfile)
+setUp_props = configparser.RawConfigParser()
+setUp_props.read(args.propsfile)
 #devops = args.devops
 #main_options = args.main_options.split(",")
 #sub_options = args.sub_options.split(",")
@@ -141,16 +135,16 @@ setUpAz_props.read(args.propsfile)
 
 #Read Config file Variables
 try:
-    workflow_type = setUpAz_props.get('Default', 'workflow_type').strip().lower()
+    workflow_type = setUp_props.get('Default', 'workflow_type').strip().lower()
 
     if (workflow_type == 'export_resources'):
         non_gf_tenancy = True
     else:
         non_gf_tenancy = False
 
-    inputfile = setUpAz_props.get('Default','cd3file').strip()
-    outdir = setUpAz_props.get('Default', 'outdir').strip()
-    prefix = setUpAz_props.get('Default', 'prefix').strip()
+    inputfile = setUp_props.get('Default','cd3file').strip()
+    outdir = setUp_props.get('Default', 'outdir').strip()
+    prefix = setUp_props.get('Default', 'prefix').strip()
     tf_or_tofu = "terraform"
 
     if not outdir:

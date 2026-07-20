@@ -1,4 +1,15 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2026.2.0
+Release date: TBD
+-------------------------------------
+1. Added multi-cloud Database Service support for Azure and GCP, including creation of ADB and Exadata resources, ADB export, and offline tfvars generation. Exadata export is not included in this release.
+2. Added support for multiple secondary VNICs for OCI instances.
+3. Added support for preemptible node pool configuration for OKE.
+4. Updated the CIS compliance report to version 3.2.1.
+5. Added identity output separation and fixed RPC deduplication and user export behavior.
+6. Included bug fixes for ADB, NSG rules, buckets, the OCI Resource Manager stack, and other minor issues.
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2026.1.2
 Jul 10th, 2026
 -------------------------------------
@@ -9,7 +20,7 @@ CD3 Automation Toolkit Tag v2026.1.1
 May 8th, 2026
 -------------------------------------
 1. Support for export of resources from all child compartments of a parent without specifying them separately in command line.
-2. Deprecate python script createTenancyConfig.py. Instead use connectCloud.py
+2. Deprecate python scripts createTenancyConfig.py and setUpOCI.py. Instead use connectCloud.py and setUpCloud.py
 3. Fixed ordering issue for views for export of DNS resolvers.
 4. Minor internal bug fixes.
 

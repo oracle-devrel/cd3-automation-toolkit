@@ -15,7 +15,6 @@ enforce_container_engine_config {
 
     container.is_private_cluster
     container.is_encryption_enabled
-    container.is_pod_security_policy_enabled
 }
 
 #To enforce secure configuration for container instances

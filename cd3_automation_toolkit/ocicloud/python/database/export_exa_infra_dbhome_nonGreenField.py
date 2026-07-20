@@ -99,12 +99,16 @@ def export_exa_dbhome(inputfile, outdir, service_dir, config, signer, ct, export
         region = reg.capitalize()
 
         db_client = oci.database.DatabaseClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
-
         for ntk_compartment_name in export_compartments:
             exa_dbhomes = oci.pagination.list_call_get_all_results(db_client.list_db_homes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
             for exa_dbhome in exa_dbhomes.data:
                 if exa_dbhome.vm_cluster_id:
-                    vm_cluster = db_client.get_cloud_vm_cluster(cloud_vm_cluster_id=exa_dbhome.vm_cluster_id)
+                    print(exa_dbhome.display_name)
+                    try:
+                        vm_cluster = db_client.get_cloud_vm_cluster(cloud_vm_cluster_id=exa_dbhome.vm_cluster_id)
+                    except Exception as e:
+                        print("error with db home "+exa_dbhome.display_name)
+
                     exadata_infrastructure = db_client.get_cloud_exadata_infrastructure(cloud_exadata_infrastructure_id=vm_cluster.data.cloud_exadata_infrastructure_id)
                     #print("exa_data",exadata_infrastructure.data)
                     #print("comp_data",ct.ntk_compartment_ids)

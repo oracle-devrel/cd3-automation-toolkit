@@ -57,8 +57,18 @@ nodepools = {
             {% if value[4]  %}
             fault_domains = [{{ value[4] }}]
             {% endif %}
-            {% if value[5]  %}
-            capacity_reservation_id = {{ value[5] }}
+            {% if value[6] == "ON_DEMAND" %}
+            capacity_reservation_id = ""
+            {% elif value[6] == "CAPACITY_RESERVATION" %}
+            capacity_reservation_id = "{{ value[5] }}"
+            {% endif %}
+            {% if value[6] and value[6] == "PREEMPTIBLE" %}
+            preemptible_node_config = {
+                preemption_action = {
+                    type = "TERMINATE"
+                    is_preserve_boot_volume = {{ value[7] }}
+                }
+            }
             {% endif %}
             }
         {% endfor %}

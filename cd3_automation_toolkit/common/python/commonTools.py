@@ -120,7 +120,11 @@ class commonTools():
 
 
         #rows_len=len(rows)
-        rows_len = len(values_for_column["Region"])
+        try:
+            rows_len = len(values_for_column["Region"])
+        except KeyError as e:
+            rows_len = len(values_for_column["Location"])
+
         sheet_max_rows = sheet.max_row
         #If no rows exported from OCI, remove the sample data as well
         if(rows_len == 0) :

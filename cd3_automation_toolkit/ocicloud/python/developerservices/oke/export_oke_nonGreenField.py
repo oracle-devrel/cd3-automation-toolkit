@@ -21,6 +21,32 @@ import ocicloud.python.ociCommonTools as ociCommonTools
 sys.path.append(os.getcwd() + "/..")
 
 
+def _is_preemptible_config(config):
+    return getattr(config, "preemptible_node_config", None) is not None
+
+
+def _preserve_boot_volume_on_preemption(config):
+    preemptible_config = getattr(config, "preemptible_node_config", None)
+    preemption_action = getattr(preemptible_config, "preemption_action", None)
+    return str(getattr(preemption_action, "is_preserve_boot_volume", False)).lower()
+
+
+def _node_capacity_config_cell_value(configs):
+    values = []
+    for config in configs or []:
+        if _is_preemptible_config(config):
+            values.append("PREEMPTIBLE:" + _preserve_boot_volume_on_preemption(config))
+        elif getattr(config, "capacity_reservation_id", None):
+            values.append("CAPACITY_RESERVATION:" + config.capacity_reservation_id)
+        else:
+            values.append("ON_DEMAND")
+    if not values:
+        return None
+    if len(set(values)) == 1:
+        return values[0]
+    return ";".join(values)
+
+
 def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nodepool,nodepool_count, nodepool_info,cluster_info,network,nodepool_type,ct):
     image_policy_config = cluster_info.image_policy_config
     for col_header in values_for_column_oke.keys():
@@ -58,12 +84,6 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
                     values_for_column_oke[col_header].append("FLANNEL_OVERLAY")
             else:
                     values_for_column_oke[col_header].append(None)
-        elif col_header == 'Pod Security Policies Enforced':
-            if nodepool_count <= 1:
-                values_for_column_oke[col_header].append(
-                cluster_info.options.admission_controller_options.is_pod_security_policy_enabled)
-            else:
-                values_for_column_oke[col_header].append(None)
         elif col_header == 'Load Balancer Network Details':
             if nodepool_count <=1:
                 subnets = []
@@ -212,7 +232,7 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
 
         elif (col_header == "Node Placement Configs"):
             if (nodepool_info != None):
-                excel_data = ""
+                placement_values = []
                 if (nodepool_type=='managed'):
                     configs = nodepool_info.node_config_details.placement_configs
                 elif (nodepool_type == 'virtual'):
@@ -239,22 +259,27 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
                     ad = AD(okead)
                     if (nodepool_type == 'managed'):
                         fd=config.fault_domains
-                        cr = config.capacity_reservation_id
-                        if cr == None:
-                            cr="None"
                     elif (nodepool_type == 'virtual'):
                         fd = config.fault_domain
-                        cr="None"
 
+                    if fd==[]:
+                        fd=None
                     if fd != None:
                         fd_s = ','.join(str(x) for x in fd)
                         okefd = fd_s
                     else:
                         okefd = "None"
-                    excel_data=excel_data+nw+":"+str(ad)+":"+okefd+":"+cr+";"
+                    placement_values.append(nw+":"+str(ad)+":"+okefd)
 
-                values_for_column_oke[col_header].append(excel_data)
+                values_for_column_oke[col_header].append(";".join(placement_values))
 
+            else:
+                values_for_column_oke[col_header].append(None)
+
+        elif (col_header == "Node Capacity Type"):
+            if (nodepool_info != None and nodepool_type == 'managed'):
+                configs = nodepool_info.node_config_details.placement_configs or []
+                values_for_column_oke[col_header].append(_node_capacity_config_cell_value(configs))
             else:
                 values_for_column_oke[col_header].append(None)
 
@@ -656,4 +681,3 @@ def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compart
 
     commonTools.write_to_cd3(values_for_column_oke, cd3file, "OKE")
     print("{0} OKE clusters exported into CD3.\n".format(total_resources))
-

@@ -317,6 +317,13 @@ variable "vnic_freeform_tags" {
   default = {}
 }
 
+
+variable "secondary_vnics" {
+  type        = map(any)
+  description = "Secondary VNIC attachments for the instance"
+  default     = {}
+}
+
 variable "ssh_private_key_file_path" {
   type    = string
   default = null

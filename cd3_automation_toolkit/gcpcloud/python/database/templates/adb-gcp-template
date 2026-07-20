@@ -1,0 +1,119 @@
+{% if count == 0 %}
+# Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+############################
+# ADB @GCP
+# ADB @GCP - tfvars
+############################
+
+gcp_oci_adb = {
+       ##Add New ADB @GCP here##
+}
+{% else %}
+   {{ location }}_{{ project }}_{{ autonomous_database_id }} =  {
+        location                     = "{{ location }}"
+        project                      = "{{ project }}"
+        autonomous_database_id       = "{{ autonomous_database_id }}"
+        database                     = "{{ database_name }}"
+        display_name                 = "{{ display_name }}"
+        admin_password               = "{{ admin_password }}"
+
+        {% if create_odb_network %}
+        create_odb_network           = {{ create_odb_network }}
+        {% endif %}
+        {% if create_odb_network_subnets %}
+        create_odb_network_subnets   = {{ create_odb_network_subnets }}
+        {% endif %}
+        {% if odb_network_project %}
+        odb_network_project          = "{{ odb_network_project }}"
+        {% endif %}
+        {% if vpc_network_name %}
+        vpc_network_name             = "{{ vpc_network_name }}"
+        {% endif %}
+        {% if odb_network_gcp_oracle_zone %}
+        odb_network_gcp_oracle_zone  = "{{ odb_network_gcp_oracle_zone }}"
+        {% endif %}
+        {% if client_subnet_cidr  %}
+        client_subnet_cidr           = "{{ client_subnet_cidr }}"
+        {% endif %}
+        {% if odb_network_id %}
+        odb_network_id               = "{{ odb_network_id }}"
+        {% endif %}
+        {% if odb_client_subnet_id %}
+        odb_client_subnet_id         = "{{ odb_client_subnet_id }}"
+        {% endif %}
+        {% if private_endpoint_ip %}
+        private_endpoint_ip          = "{{ private_endpoint_ip }}"
+        {% endif %}
+        {% if private_endpoint_label  %}
+        private_endpoint_label       = "{{ private_endpoint_label }}"
+        {% endif %}
+
+        compute_count                = {{ compute_count }}
+        {% if data_storage_size_tb  %}
+        data_storage_size_tb         = {{ data_storage_size_tb }}
+        {% endif %}
+        {% if data_storage_size_gb  %}
+        data_storage_size_gb         = {{ data_storage_size_gb }}
+        {% endif %}
+        db_version                   = "{{ db_version }}"
+        {% if db_workload.lower() == 'lakehouse' %}
+        db_workload                  = "DW"
+        {% elif db_workload.lower() == 'atp' %}
+        db_workload                  = "OLTP"
+        {% elif db_workload.lower() == 'json' %}
+        db_workload                  = "AJD"
+        {% elif db_workload.lower() == 'apex' %}
+        db_workload                  = "APEX"
+        {% else %}
+        db_workload                  = "{{ db_workload }}"
+        {% endif %}
+        db_edition                   = "{{ db_edition }}"
+        {% if character_set != "" and character_set != "nan" %}
+        character_set                = "{{ character_set }}"
+        {% endif %}
+        {% if ncharacter_set != "" and ncharacter_set != "nan" %}
+        n_character_set              = "{{ ncharacter_set }}"
+        {% endif %}
+        license_type                 = "{{ license_type }}"
+
+        {% if is_auto_scaling_enabled %}
+        is_auto_scaling_enabled         = {{ is_auto_scaling_enabled }}
+        {% endif %}
+        {% if is_storage_auto_scaling_enabled %}
+        is_storage_auto_scaling_enabled = {{ is_storage_auto_scaling_enabled }}
+        {% endif %}
+
+        {% if maintenance_schedule_type != "" and maintenance_schedule_type != "nan" %}
+        maintenance_schedule_type       = "{{ maintenance_schedule_type }}"
+        {% endif %}
+        {% if mtls_connection_required != "" and mtls_connection_required != "nan" %}
+        mtls_connection_required        = "{{ mtls_connection_required }}"
+        {% endif %}
+        {% if backup_retention_period_days != null %}
+        backup_retention_period_days    = {{ backup_retention_period_days }}
+        {% endif %}
+        email                           = "{{ email }}"
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Labels###  #}
+        {% if labels and labels != 'nan' and labels != '' and labels != [['nan']] %}
+          {% if labels[0] %}
+            labels = {
+            {% for label in labels  %}
+                {% if not loop.last %}
+                    "{{ label[0]  }}" = "{{ label[1] }}",
+                {% else %}
+                    "{{ label[0]  }}" = "{{ label[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+
+        {#  ###Section for adding Labels ends here###  #}
+     },
+
+{% endif %}
