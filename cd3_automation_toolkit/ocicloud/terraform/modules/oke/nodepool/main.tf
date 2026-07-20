@@ -28,6 +28,15 @@ resource "oci_containerengine_node_pool" "nodepool" {
         subnet_id               = placement_configs.value.subnet_id
         fault_domains           = placement_configs.value.fault_domains
         capacity_reservation_id = placement_configs.value.capacity_reservation_id
+        dynamic "preemptible_node_config" {
+          for_each = try(placement_configs.value.preemptible_node_config, null) != null ? [placement_configs.value.preemptible_node_config] : []
+          content {
+            preemption_action {
+              type                    = preemptible_node_config.value.preemption_action.type
+              is_preserve_boot_volume = try(preemptible_node_config.value.preemption_action.is_preserve_boot_volume, false)
+            }
+          }
+        }
       }
     }
     node_pool_pod_network_option_details {

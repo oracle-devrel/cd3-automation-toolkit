@@ -1,13 +1,14 @@
 def buildstatus = ""
+
 def git_status = 0
 def prefix = "${env.JOB_NAME}".split('/')[0]
 def exportNetworkRules(stage_name) {
     return {
         stage("${stage_name}") {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                labelledShell( label: 'Executing setUpOCI python script', script: """
+                labelledShell( label: 'Executing setUpCloud python script', script: """
                     cd /cd3user/oci_tools/cd3_automation_toolkit
-                    python setUpOCI.py --devops True --main_options "Network" --sub_options "Security Rules,Route Rules,DRG Route Rules" --sub_child_options "Export Security Rules (From OCI into SecRulesinOCI sheet),Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet),Export Route Rules (From OCI into RouteRulesinOCI sheet),Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet),Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet),Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)" --add_filter "comp_filter=,[],@," ${env.prop_file}
+                    python setUpCloud.py oci --devops True --main_options "Network" --sub_options "Security Rules,Route Rules,DRG Route Rules" --sub_child_options "Export Security Rules (From OCI into SecRulesinOCI sheet),Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet),Export Route Rules (From OCI into RouteRulesinOCI sheet),Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet),Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet),Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)" --add_filter "comp_filter=,[],@," ${env.prop_file}
                 """)
                 script {
                     git_status = labelledShell( label: 'Check git status', script: 'cd ${prefix_dir}/terraform_files; git status --porcelain | wc -l', returnStdout: true).trim()
@@ -18,7 +19,7 @@ def exportNetworkRules(stage_name) {
                             cd ${prefix_dir}/terraform_files
                             echo "-----start timestamp-----"
                             time_stamp="$(date +%m-%d-%Y-%H-%M-%S)"
-                            commit_msg="commit for setUpOCI build ${BUILD_NUMBER}"
+                            commit_msg="commit for setUpCloud build ${BUILD_NUMBER}"
                             git add -A .
                             git commit -m "${commit_msg}"
                             git push origin develop
@@ -166,7 +167,7 @@ pipeline {
     parameters {
         stashedFile (
             name: 'Excel_Template',
-            description: "Upload input Excel file.\nPreviously uploaded file will be used if left empty."
+            description: "Upload input Excel file.\nPreviously uploaded file/Blank template (for first run) will be used if left empty"
             )
     }
     stages {
@@ -257,7 +258,7 @@ pipeline {
             }
         }
         }
-        stage('Execute setUpOCI') {
+        stage('Execute setUpCloud') {
             when{
                 allOf {
                 expression {return ParametersValidation == "Passed" }
@@ -268,10 +269,10 @@ pipeline {
 
 			steps {
 			    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    labelledShell( label: 'Executing setUpOCI python script', script: '''
+                    labelledShell( label: 'Executing setUpCloud python script', script: '''
                         set +x
                         cd /cd3user/oci_tools/cd3_automation_toolkit
-                        python setUpOCI.py --devops True --main_options "${MainOptions}" --sub_options "${SubOptions}" --sub_child_options "${SubChildOptions}" --add_filter "${AdditionalFilters}" $prop_file
+                        python setUpCloud.py oci --devops True --main_options "${MainOptions}" --sub_options "${SubOptions}" --sub_child_options "${SubChildOptions}" --add_filter "${AdditionalFilters}" $prop_file
                         cd -
                         rm -rf *.*
                         # Check for cis_reports, show_oci  and vizoci directories
@@ -397,7 +398,7 @@ pipeline {
                             cd ${prefix_dir}/terraform_files
                             echo "-----start timestamp-----"
                             time_stamp="$(date +%m-%d-%Y-%H-%M-%S)"
-                            commit_msg="commit for setUpOCI build ${BUILD_NUMBER}"
+                            commit_msg="commit for setUpCloud build ${BUILD_NUMBER}"
                             git add -A .
                             git commit -m "${commit_msg}"
                             git push origin develop

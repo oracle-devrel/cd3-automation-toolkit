@@ -45,6 +45,7 @@ RUN  sudo dnf install -y oraclelinux-release-el9 && \
 sudo chown -R $USERNAME:$USERNAME /cd3user/ && \
 sudo sed -i -e 's/\r$//' /cd3user/oci_tools/cd3_automation_toolkit/shell_script.sh && \
 bash /cd3user/oci_tools/cd3_automation_toolkit/shell_script.sh && \
+sudo microdnf install git-2.39.3 -y && \
 sudo dnf clean all && \
 sudo rm -rf /var/cache/dnf && \
 sudo chmod -R 740 /cd3user/ && \
@@ -95,7 +96,6 @@ COPY --chown=cd3user:cd3user jenkins_install/plugins.txt ${REF}/plugins.txt
 RUN if [ "$USE_DEVOPS" == "YES" ]; then \
     sudo microdnf install -y java-21-openjdk && \
     sudo microdnf install -y java-21-openjdk-devel && \
-    sudo microdnf install git-2.39.3 -y && \
     sudo mkdir -p ${REF}/init.groovy.d && \
     sudo chown -R cd3user:cd3user ${JENKINS_INSTALL} && \
     sudo curl -fsSL http://updates.jenkins-ci.org/download/war/${JENKINS_VERSION}/jenkins.war -o ${JENKINS_INSTALL}/jenkins.war && \

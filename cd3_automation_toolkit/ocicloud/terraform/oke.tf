@@ -32,6 +32,7 @@ locals {
       availability_domain     = vv.availability_domain
       fault_domains           = vv.fault_domains
       capacity_reservation_id = vv.capacity_reservation_id
+      preemptible_node_config = try(vv.preemptible_node_config, null)
     }
     }
   }
@@ -151,7 +152,6 @@ module "clusters" {
   is_public_ip_enabled            = each.value.is_public_ip_enabled
   nsg_ids                         = each.value.nsg_ids
   endpoint_subnet_id              = length(regexall("ocid1.subnet.oc*", each.value.endpoint_subnet_id)) > 0 ? each.value.endpoint_subnet_id : data.oci_core_subnets.oci_subnets_endpoint[each.key].subnets.*.id[0]
-  is_pod_security_policy_enabled  = each.value.is_pod_security_policy_enabled
   pods_cidr                       = each.value.pods_cidr
   services_cidr                   = each.value.services_cidr
   service_lb_subnet_ids           = each.value.service_lb_subnet_ids

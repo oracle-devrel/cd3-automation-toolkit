@@ -20,6 +20,139 @@ import ocicloud.python.ociCommonTools as ociCommonTools
 from jinja2 import Environment, FileSystemLoader
 
 
+
+
+def _secondary_vnic_column_key(columnname):
+    return commonTools.check_column_headers(str(columnname))
+
+
+def _get_secondary_vnic_column(values, columnname):
+    return values.get(commonTools.check_column_headers(columnname), "")
+
+def _split_secondary_vnic_values(columnvalue):
+    if columnvalue == "" or str(columnvalue).strip().lower() == "nan":
+        return []
+    return [str(value).strip() for value in str(columnvalue).split(";")]
+
+
+def _parse_network_details(value, default_compartment_name, row_num, column_label):
+    if "ocid1.subnet.oc" in value:
+        return {
+            "network_compartment_id": "root",
+            "vcn_name": "",
+            "subnet_id": value,
+        }
+    if len(value.split("@")) == 2:
+        network_compartment_id = commonTools.check_tf_variable(value.split("@")[0].strip())
+        vcn_subnet_name = value.split("@")[1].strip()
+    else:
+        network_compartment_id = commonTools.check_tf_variable(default_compartment_name)
+        vcn_subnet_name = value
+    if "::" not in vcn_subnet_name:
+        print("Invalid " + column_label + " format specified for row " + str(row_num) + ". Exiting!!!")
+        exit(1)
+    return {
+        "network_compartment_id": network_compartment_id,
+        "vcn_name": vcn_subnet_name.split("::")[0].strip(),
+        "subnet_id": vcn_subnet_name.split("::")[1].strip(),
+    }
+
+
+def _parse_secondary_vnic_network_details(columnvalue, default_network_details, default_compartment_name, count, row_num):
+    values = _split_secondary_vnic_values(columnvalue)
+    network_details = []
+    for index in range(count):
+        value = values[index] if index < len(values) else ""
+        if value == "":
+            value = default_network_details
+        network_details.append(_parse_network_details(value, default_compartment_name, row_num, "Secondary VNIC Network Details"))
+    return network_details
+
+
+def _parse_secondary_vnic_nsgs(columnvalue):
+    nsg_values = []
+    for value in _split_secondary_vnic_values(columnvalue):
+        if value == "":
+            nsg_values.append([])
+        else:
+            nsg_values.append([nsg.strip() for nsg in value.split(",") if nsg.strip() != ""])
+    return nsg_values
+
+
+def _parse_secondary_vnic_tags(columnvalue):
+    tag_values = []
+    for value in _split_secondary_vnic_values(columnvalue):
+        if value == "":
+            tag_values.append([])
+            continue
+        tags = []
+        for tag_value in value.split(","):
+            if "=" in tag_value:
+                tags.append([tag_value.split("=", 1)[0].strip(), tag_value.split("=", 1)[1].strip()])
+        tag_values.append(tags)
+    return tag_values
+
+
+def _get_secondary_vnic_value(values, index, default=""):
+    return values[index] if index < len(values) else default
+
+
+def _build_secondary_vnics(df, row_index, dfcolumns, row_num):
+    secondary_vnic_columns = [column for column in dfcolumns if _secondary_vnic_column_key(column).startswith("secondary_vnic_")]
+    if len(secondary_vnic_columns) == 0:
+        return {}
+
+    values = {}
+    max_count = 0
+    for columnname in secondary_vnic_columns:
+        columnvalue = commonTools.check_columnvalue(str(df[columnname][row_index]).strip())
+        values[_secondary_vnic_column_key(columnname)] = columnvalue
+        max_count = max(max_count, len(_split_secondary_vnic_values(columnvalue)))
+
+    if max_count == 0:
+        return {}
+
+    default_compartment_name = str(df.loc[row_index, 'Compartment Name']).strip()
+    default_network_details = str(df.loc[row_index, 'Network Details']).strip()
+    networks = _parse_secondary_vnic_network_details(
+        _get_secondary_vnic_column(values, "Secondary VNIC Network Details"),
+        default_network_details,
+        default_compartment_name,
+        max_count,
+        row_num
+    )
+    secondary_vnics = {}
+
+    value_lists = {
+        "private_ip": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC IP Addresses")),
+        "nsg_ids": _parse_secondary_vnic_nsgs(_get_secondary_vnic_column(values, "Secondary VNIC NSGs")),
+        "skip_source_dest_check": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Skip Source Dest Check")),
+        "assign_public_ip": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Pub Address")),
+        "display_name": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Display Names")),
+        "hostname_label": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Hostname Labels")),
+        "assign_private_dns_record": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Private DNS")),
+        "physical_nic_index": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Physical NIC Index")),
+        "defined_tags": _parse_secondary_vnic_tags(_get_secondary_vnic_column(values, "Secondary VNIC Defined Tags")),
+        "freeform_tags": _parse_secondary_vnic_tags(_get_secondary_vnic_column(values, "Secondary VNIC Freeform Tags")),
+    }
+
+    for index, network in enumerate(networks):
+        vnic = dict(network)
+        vnic["display_name"] = _get_secondary_vnic_value(value_lists["display_name"], index)
+        vnic["private_ip"] = _get_secondary_vnic_value(value_lists["private_ip"], index)
+        vnic["nsg_ids"] = _get_secondary_vnic_value(value_lists["nsg_ids"], index, [])
+        vnic["skip_source_dest_check"] = _get_secondary_vnic_value(value_lists["skip_source_dest_check"], index)
+        vnic["assign_public_ip"] = _get_secondary_vnic_value(value_lists["assign_public_ip"], index)
+        vnic["hostname_label"] = _get_secondary_vnic_value(value_lists["hostname_label"], index)
+        vnic["assign_private_dns_record"] = _get_secondary_vnic_value(value_lists["assign_private_dns_record"], index)
+        vnic["physical_nic_index"] = _get_secondary_vnic_value(value_lists["physical_nic_index"], index)
+        vnic["defined_tags"] = _get_secondary_vnic_value(value_lists["defined_tags"], index, [])
+        vnic["freeform_tags"] = _get_secondary_vnic_value(value_lists["freeform_tags"], index, [])
+        secondary_vnics["vnic_" + str(index + 1)] = vnic
+
+    return secondary_vnics
+
+
 # If input is CD3 excel file
 # Execution of the code begins here
 def create_terraform_instances(inputfile, outdir, service_dir, prefix, ct):
@@ -87,6 +220,9 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, ct):
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
+        secondary_vnics = _build_secondary_vnics(df, i, dfcolumns, i + 3)
+        if secondary_vnics != {}:
+            tempStr.update({'secondary_vnics': secondary_vnics})
 
         # Check if values are entered for mandatory fields
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Display Name']).lower() == 'nan' or str(
@@ -104,6 +240,8 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, ct):
 
         source_details=[]
         for columnname in dfcolumns:
+            if _secondary_vnic_column_key(columnname).startswith("secondary_vnic_"):
+                continue
 
             # Column value
             columnvalue = str(df[columnname][i]).strip()

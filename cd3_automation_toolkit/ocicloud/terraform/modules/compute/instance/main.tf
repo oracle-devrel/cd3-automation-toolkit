@@ -133,6 +133,27 @@ resource "oci_core_instance" "instance" {
 }
 
 
+resource "oci_core_vnic_attachment" "secondary_vnic_attachment" {
+  for_each    = var.secondary_vnics
+  instance_id = oci_core_instance.instance.id
+
+  create_vnic_details {
+    assign_private_dns_record = try(each.value.assign_private_dns_record, null)
+    assign_public_ip          = try(each.value.assign_public_ip, false)
+    defined_tags              = try(each.value.defined_tags, {})
+    display_name              = try(each.value.display_name, "") != "" ? each.value.display_name : "${var.display_name}-${each.key}"
+    freeform_tags             = try(each.value.freeform_tags, {})
+    hostname_label            = try(each.value.hostname_label, null)
+    nsg_ids                   = try(each.value.nsg_ids, []) != [] ? local.secondary_vnic_nsg_ids[each.key] : null
+    private_ip                = try(each.value.private_ip, null)
+    skip_source_dest_check    = try(each.value.skip_source_dest_check, false)
+    subnet_id                 = length(regexall("ocid1.subnet.oc*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.secondary_vnic_subnets[each.key].subnets.*.id[0]
+  }
+
+  nic_index = try(each.value.physical_nic_index, null)
+}
+
+
 resource "null_resource" "ansible-remote-exec" {
   count = var.remote_execute == null ? 0 : ((length(regexall(".yaml", local.remote_execute_script)) > 0) || (length(regexall(".yml", local.remote_execute_script)) > 0) ? 1 : 0)
 

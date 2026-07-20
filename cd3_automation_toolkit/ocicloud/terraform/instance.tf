@@ -79,4 +79,9 @@ module "instances" {
   vnic_defined_tags  = each.value.vnic_defined_tags
   vnic_freeform_tags = each.value.vnic_freeform_tags
   vnic_display_name  = each.value.vnic_display_name
+  secondary_vnics = each.value.secondary_vnics != null ? {
+    for vnic_key, vnic in each.value.secondary_vnics : vnic_key => merge(vnic, {
+      network_compartment_id = try(vnic.network_compartment_id, null) != null ? (length(regexall("ocid1.compartment.oc*", vnic.network_compartment_id)) > 0 ? vnic.network_compartment_id : var.compartment_ocids[vnic.network_compartment_id]) : null
+    })
+  } : {}
 }

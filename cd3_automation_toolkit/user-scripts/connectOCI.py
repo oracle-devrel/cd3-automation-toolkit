@@ -1168,7 +1168,7 @@ for region in ct.all_regions:
             if service_dir=="" or service_dir == "\n":
                 continue
             #if (service != 'identity' and service != 'tagging') or ((service == 'identity' or service == 'tagging') and region == home_region):
-            home_region_services = ['identity', 'tagging', 'budget','quota']
+            home_region_services = ['identity','compartment','policy','user','group','networksource', 'tagging', 'budget','quota']
             if (region != home_region) and (service in home_region_services):
                 os.remove(os.path.join(region_dir, f"{service}.tf"))
 

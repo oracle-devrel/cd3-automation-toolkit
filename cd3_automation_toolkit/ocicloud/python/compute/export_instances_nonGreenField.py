@@ -15,7 +15,7 @@ import ocicloud.python.ociCommonTools as ociCommonTools
 def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
                           bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bdet,
                           cpcn, shape_config, vnic_info, vnic_defined_tags, vnic_freeform_tags, launch_options,avail_config,ins_options,
-                          platform_config, plugin_config):
+                          platform_config, plugin_config, secondary_vnics):
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
             values_for_column_instances[col_header].append(region)
@@ -53,6 +53,29 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
         elif (col_header == "VNIC Display Name"):
             values_for_column_instances[col_header].append(vnic_info.display_name)
 
+        elif (col_header == "Secondary VNIC Network Details"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("network_details", ""))
+        elif (col_header == "Secondary VNIC IP Addresses"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("ip_addresses", ""))
+        elif (col_header == "Secondary VNIC NSGs"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("nsgs", ""))
+        elif (col_header == "Secondary VNIC Skip Source Dest Check"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("skip_source_dest_check", ""))
+        elif (col_header == "Secondary VNIC Pub Address"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("pub_address", ""))
+        elif (col_header == "Secondary VNIC Display Names"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("display_names", ""))
+        elif (col_header == "Secondary VNIC Hostname Labels"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("hostname_labels", ""))
+        elif (col_header == "Secondary VNIC Private DNS"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("private_dns", ""))
+        elif (col_header == "Secondary VNIC Physical NIC Index"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("physical_nic_index", ""))
+        elif (col_header == "Secondary VNIC Defined Tags"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("defined_tags", ""))
+        elif (col_header == "Secondary VNIC Freeform Tags"):
+            values_for_column_instances[col_header].append(secondary_vnics.get("freeform_tags", ""))
+
         elif(col_header.lower().startswith("plugin")):
             col_temp = col_header.lower().replace("plugin","")
             col_temp=col_temp.strip()
@@ -84,6 +107,11 @@ def find_vnic(ins_id, compartment_id):
                                                        instance_id=ins_id)
     if (len(net.data)):
         return net
+
+
+def _secondary_vnic_sort_key(vnic_attachment):
+    """Keep Excel and Terraform VNIC order stable across OCI API responses."""
+    return str(getattr(vnic_attachment, "time_created", "")), vnic_attachment.id
 
 
 def __get_instances_info(compartment_name, compartment_id, reg_name, display_names, ad_names, export_tags, ct,state):
@@ -200,11 +228,34 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
             # VNIC Details
             ins_vnic = find_vnic(ins_id, compartment_id)
             vnic_info=None
+            secondary_vnics = {
+                "network_details": [],
+                "ip_addresses": [],
+                "nsgs": [],
+                "skip_source_dest_check": [],
+                "pub_address": [],
+                "display_names": [],
+                "hostname_labels": [],
+                "private_dns": [],
+                "physical_nic_index": [],
+                "defined_tags": [],
+                "freeform_tags": [],
+            }
+            vnic_details = []
             for lnic in ins_vnic.data:
+                vnic_details.append((lnic, network.get_vnic(vnic_id=lnic.vnic_id).data))
+
+            primary_vnic_details = [details for details in vnic_details if details[1].is_primary]
+            secondary_vnic_details = sorted(
+                (details for details in vnic_details if not details[1].is_primary),
+                key=lambda details: _secondary_vnic_sort_key(details[0]),
+            )
+            ordered_vnic_details = secondary_vnic_details + primary_vnic_details
+            secondary_vnic_index = 0
+            for lnic, current_vnic_info in ordered_vnic_details:
                 # print(lnic)
                 subnet_id = lnic.subnet_id
-                vnic_id = lnic.vnic_id
-                vnic_info = network.get_vnic(vnic_id=vnic_id).data
+                vnic_info = current_vnic_info
 
                 # print(vnic_info)
                 vnic_defined_tags = ""
@@ -220,6 +271,43 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
 
                 #Get only primary VNIC details
                 if (vnic_info.is_primary == False):
+                    secondary_vnic_index += 1
+                    tf_resource = f'module.instances[\\"{tf_name}\\"].oci_core_vnic_attachment.secondary_vnic_attachment[\\"vnic_{secondary_vnic_index}\\"]'
+                    if tf_resource not in state["resources"]:
+                        importCommands[reg_name] += f'\n{tf_or_tofu} import "{tf_resource}" {str(lnic.id)}'
+
+                    subnet_info = network.get_subnet(subnet_id=subnet_id)
+                    subnet_name = subnet_info.data.display_name
+                    vcn_info = network.get_vcn(vcn_id=subnet_info.data.vcn_id)
+                    network_compartment_name = compartment_name
+                    for comp_name, comp_id in ct.ntk_compartment_ids.items():
+                        if comp_id == vcn_info.data.compartment_id:
+                            network_compartment_name = comp_name
+                    secondary_vnics["network_details"].append(network_compartment_name + "@" + vcn_info.data.display_name + "::" + subnet_name)
+                    secondary_vnics["ip_addresses"].append(vnic_info.private_ip or "")
+                    secondary_vnics["skip_source_dest_check"].append(str(vnic_info.skip_source_dest_check).upper() if vnic_info.skip_source_dest_check is not None else "")
+                    secondary_vnics["pub_address"].append("TRUE" if vnic_info.public_ip is not None else "FALSE")
+                    secondary_vnics["display_names"].append(vnic_info.display_name or "")
+                    secondary_vnics["hostname_labels"].append(vnic_info.hostname_label or "")
+                    secondary_vnics["private_dns"].append(str(vnic_info.is_dns_record_enabled).upper() if getattr(vnic_info, "is_dns_record_enabled", None) is not None else "")
+                    secondary_vnics["physical_nic_index"].append(str(lnic.nic_index) if getattr(lnic, "nic_index", None) is not None else "")
+
+                    secondary_nsg_names = []
+                    for nsg_id in vnic_info.nsg_ids:
+                        nsg_info = network.get_network_security_group(nsg_id)
+                        secondary_nsg_names.append(nsg_info.data.display_name)
+                    secondary_vnics["nsgs"].append(",".join(secondary_nsg_names))
+
+                    secondary_defined_tags = []
+                    for namespace, tagkey in vnic_info.defined_tags.items():
+                        for tag, value in tagkey.items():
+                            secondary_defined_tags.append(namespace + "." + tag + "=" + value)
+                    secondary_vnics["defined_tags"].append(",".join(secondary_defined_tags))
+
+                    secondary_freeform_tags = []
+                    for tag, value in vnic_info.freeform_tags.items():
+                        secondary_freeform_tags.append(tag + "=" + value)
+                    secondary_vnics["freeform_tags"].append(",".join(secondary_freeform_tags))
                     continue
                 subnet_info = network.get_subnet(subnet_id=subnet_id)
                 subnet_name = subnet_info.data.display_name
@@ -297,7 +385,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
                                   ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
                                   ins, values_for_column_instances, bdet, cpcn, shape_config, vnic_info,
                                   vnic_defined_tags, vnic_freeform_tags, launch_options,avail_config,ins_options,
-                                  platform_data, plugin_config)
+                                  platform_data, plugin_config, {key: ';'.join(value) for key, value in secondary_vnics.items()})
 
 
 # Execution of the code begins here
@@ -416,4 +504,3 @@ def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export
 
     commonTools.write_to_cd3(values_for_column_instances, cd3file, "Instances")
     print("{0} Instance Details exported into CD3.\n".format(len(values_for_column_instances["Region"])))
-
