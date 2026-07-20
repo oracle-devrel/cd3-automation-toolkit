@@ -1,0 +1,43 @@
+# Copyright (c) 2026, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/.
+
+# Run Scorecard for this repository to further check and harden software and process.
+
+name: Scorecards supply-chain security
+on:
+  branch_protection_rule:
+  schedule:
+  - cron: 27 20 * * 1
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecards analysis
+    runs-on: ubuntu-latest
+    permissions:
+      # Needed to upload the results to code-scanning dashboard.
+      security-events: write
+      actions: read
+      contents: read
+      # Needed to access OIDC token.
+      id-token: write
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
+
+    - name: Run analysis
+      uses: ossf/scorecard-action@0864cf19026789058feabb7e87baa5f140aac736 # v2.4.2
+      with:
+        results_file: results.sarif
+        results_format: sarif
+        publish_results: true
+
+    - name: Upload analysis results
+      uses: github/codeql-action/upload-sarif@45775bd8235c68ba998cffa5171334d58593da47 # v3.28.15
+      with:
+        sarif_file: results.sarif
