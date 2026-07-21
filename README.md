@@ -74,7 +74,7 @@ Evaluate Terraform plans to identify potential security risks, misconfigurations
 </table>
 
 
-📌 The Toolkit also extends its support to <b>ADB@Azure</b>
+📌 The Toolkit now support to <b>ADB@Azure</b>, <b>Exa@Azure(create only)</b>, <b>ADB@GCP</b>, <b>Exa@GCP(create only)</b>.
 
 <br>
 
