@@ -5,10 +5,10 @@ variable "marketplace_source_images" {
     compatible_shapes     = set(string)
   }))
   default = {
-    main_mktpl_image = {
+    /*main_mktpl_image = {
       ocid                  = "ocid1.image.oc1..aaaaaaaabryoy6caeki4yopmyoo23hiuzhbfziatdeei67kdf33jow6hoana"
       is_pricing_associated = false
       compatible_shapes     = []
-    }
+    }*/
   }
 }
