@@ -11,4 +11,5 @@ variable "marketplace_source_images" {
       compatible_shapes     = []
     }
   }*/
+  default = ""
 }
