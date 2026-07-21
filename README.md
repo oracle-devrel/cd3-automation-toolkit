@@ -21,7 +21,7 @@ The toolkit integrates with OCI DevOps Git service and Jenkins pipelines, enabli
 🚀 Click the below button to quickly launch CD3 toolkit container in Oracle Cloud and start managing your Infra as Code. 
 <br>
 
-[![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/main.zip)
+[![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)
 
 <br>
 
