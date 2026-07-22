@@ -90,6 +90,8 @@ The tfvars files for the selected services will be generated at the following pa
 
 Change the directory to  ```/cd3user/azure/<prefix>/terraform_files/``` .
 
+**Note** - Azure Cloud@DB Terraform execution uses the Azure Verified Module Azure/avm-res-network-virtualnetwork/azurerm version 0.17.1. This third-party module enforces its own Terraform runtime requirements. Before running terraform init, plan or apply, ensure that the Terraform executable in the selected execution environment satisfies the requirements published for the pinned AVM module version. CD3 does not override third-party module compatibility constraints. Offline Excel-to-tfvars generation is not affected.
+
   - Execute:
 
 

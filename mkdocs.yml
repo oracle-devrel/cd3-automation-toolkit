@@ -35,7 +35,7 @@ nav:
       - Multiple Prefixes(optional): multiple-prefixes.md
       - Delete Prefix(optional): delete-prefix.md
     - Connect to Azure: connect-container-to-azure-subscription.md
-    - Connect to AWS: connect-container-to-aws-account.md
+    - Connect to AWS <span class='new-badge'>Coming Soon!</span></span>: connect-container-to-aws-account.md
     - Connect to GCP: connect-container-to-gcp-account.md
 
   - Manage OCI :
@@ -75,15 +75,15 @@ nav:
 
   - Manage DB@Multicloud :
     - dbmulticloud.md
-    - Manage DB@Azure with CLI: 
+    - Manage DB@Azure: 
       - setUpAzure.md
       - Create in Azure : greenfield-azr-cli.md
       - Export from Azure : nongreenfield-azr-cli.md
-    - Manage DB@AWS with CLI:
+    - Manage DB@AWS<span class='new-badge'>Coming Soon!</span></span>:
       - setUpAWS.md
       - Create in AWS : greenfield-aws-cli.md
       - Export from AWS : nongreenfield-aws-cli.md
-    - Manage DB@GCP with CLI:
+    - Manage DB@GCP:
       - setUpGCP.md
       - Create in GCP : greenfield-gcp-cli.md
       - Export from GCP : nongreenfield-gcp-cli.md

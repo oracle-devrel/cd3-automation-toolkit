@@ -14,7 +14,7 @@ Once the CD3 container is successfully connected to Azure subscription, the Tool
 
 At present, CD3 for DB@Azure supports only CLI-based operations. Follow the instructions below to get started. 
 
-1.  <a href = "../greenfield-azr-cli"><u>Create DB@Azure with CLI</u></a> 
-2. <a href = "../nongreenfield-azr-cli"><u>Export DB@Azure with CLI</u></a> 
+1.  <a href = "../greenfield-azr-cli"><u>Create DB@Azure</u></a> 
+2. <a href = "../nongreenfield-azr-cli"><u>Export DB@Azure</u></a> 
 
 

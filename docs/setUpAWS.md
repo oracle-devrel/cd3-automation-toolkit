@@ -1,4 +1,4 @@
-# **Manage DB@AWS using CD3 Automation Toolkit**
+# **Manage DB@AWS using CD3 Automation Toolkit (COMING SOON)**
 ---
 
 **CD3** extends its support to **Oracle DB@AWS**, making it easier to manage Oracle Databases on AWS.

@@ -14,5 +14,5 @@ Once the CD3 container is successfully connected to GCP account, the Toolkit can
 
 At present, CD3 for DB@GCP supports only CLI-based operations. Follow the instructions below to get started. 
 
-1.  <a href = "../greenfield-gcp-cli"><u>Create DB@GCP with CLI</u></a> 
-2.  <a href = "../nongreenfield-gcp-cli"><u>Export DB@GCP with CLI</u></a> 
+1.  <a href = "../greenfield-gcp-cli"><u>Create DB@GCP</u></a> 
+2.  <a href = "../nongreenfield-gcp-cli"><u>Export DB@GCP</u></a> 

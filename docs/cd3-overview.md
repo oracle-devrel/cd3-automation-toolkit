@@ -11,7 +11,7 @@ The toolkit integrates with OCI DevOps Git service and Jenkins pipelines, enabli
      <b>🤖 <a href="../terraform-ai-analysis">AI Analysis </a><span class="new-badge">New!</span></b> 
          Evaluate Terraform plans to identify potential security risks, misconfigurations and get actionable recommendations with AI-assisted analysis
 
-    <b> &nbsp;&nbsp;&nbsp;<a href="../cd3-azr-cli"></b>ADB@Azure:</a> Extending DB@MultiCloud support to Azure  <br>
+    <b> &nbsp;&nbsp;&nbsp;<a href="../cd3-azr-cli"></b>DB@MultiCloud:</a> Extending DB@MultiCloud support to ADB@Azure, ADB@AWS, ADB@GCP.  <br>
     
 <br>
 

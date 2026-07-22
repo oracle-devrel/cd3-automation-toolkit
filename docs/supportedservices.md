@@ -236,7 +236,7 @@
 <h2>Oracle DB@Multicloud</h2>
 
 <p>
-CD3 supports Oracle Database@Multicloud deployments across Azure, AWS, and Google Cloud.
+CD3 supports Oracle Database@Multicloud deployments across Azure and Google Cloud.
 </p>
 
 <div class="grid-container">

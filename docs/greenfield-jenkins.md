@@ -77,7 +77,7 @@ Click on 'Logs' for Stage: ashburn/identity and click on the pipeline link.
 
 Stages of the terraform pipeline for apply are shown below:
 
-<img width="830" height="450" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="../images/jenkinsGF-6.jpg"><br>
+<img width="1503" height="450" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="../images/jenkinsGF-6.jpg"><br>
 
 
 <span style="color: teal; font-weight: bold;">Step 3:</span>
@@ -86,14 +86,16 @@ Review Logs for Plan, AI Terraform plan Analysis and OPA stages by clicking on t
 
 <img width="1503" alt="Screenshot 2024-01-17 at 12 13 57 PM" src="../images/jenkinsGF-7.jpg"><br>
 
+<img width="1503" alt="Screenshot 2024-01-17 at 12 13 57 PM" src="../images/jenkinsGF-7-1.jpg"><br>
 
+<img width="1503" alt="Screenshot 2024-01-17 at 12 13 57 PM" src="../images/jenkinsGF-7-2.jpg"><br>
 
 <span style="color: teal; font-weight: bold;">Step 4:</span>
 
 'Get Approval' stage has timeout of 24 hours, if no action is taken the pipeline will be aborted after 24 hours. Click on this stage and click 'Proceed' to proceed with apply or 'Abort' to cancel the apply.
 
 
-<img width="920" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/jenkinsGF-8.jpg"><br>
+<img width="1503" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/jenkinsGF-8.jpg"><br>
 
 
 
@@ -101,7 +103,7 @@ Review Logs for Plan, AI Terraform plan Analysis and OPA stages by clicking on t
 
 Below screenshot shows Stage View after clicking on 'Proceed'. Login to the OCI console and verify that resources got created as required.
 
-<img width="920" height="360" alt="Screenshot 2024-01-17 at 12 13 15 PM" src="../images/jenkinsGF-9.jpg"><br>
+<img width="1503" height="360" alt="Screenshot 2024-01-17 at 12 13 15 PM" src="../images/jenkinsGF-9.jpg"><br>
 
 
 <span style="color: teal; font-weight: bold;">Step 6:</span>
