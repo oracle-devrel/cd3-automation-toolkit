@@ -35,6 +35,14 @@ def _split_secondary_vnic_values(columnvalue):
     return [str(value).strip() for value in str(columnvalue).split(";")]
 
 
+def _split_secondary_vnic_boolean_values(columnvalue):
+    # CD3 exports Excel booleans as TRUE/FALSE, but Terraform requires lowercase boolean literals.
+    return [
+        value.lower() if value.lower() in ("true", "false") else value
+        for value in _split_secondary_vnic_values(columnvalue)
+    ]
+
+
 def _parse_network_details(value, default_compartment_name, row_num, column_label):
     if "ocid1.subnet.oc" in value:
         return {
@@ -126,11 +134,11 @@ def _build_secondary_vnics(df, row_index, dfcolumns, row_num):
     value_lists = {
         "private_ip": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC IP Addresses")),
         "nsg_ids": _parse_secondary_vnic_nsgs(_get_secondary_vnic_column(values, "Secondary VNIC NSGs")),
-        "skip_source_dest_check": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Skip Source Dest Check")),
-        "assign_public_ip": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Pub Address")),
+        "skip_source_dest_check": _split_secondary_vnic_boolean_values(_get_secondary_vnic_column(values, "Secondary VNIC Skip Source Dest Check")),
+        "assign_public_ip": _split_secondary_vnic_boolean_values(_get_secondary_vnic_column(values, "Secondary VNIC Pub Address")),
         "display_name": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Display Names")),
         "hostname_label": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Hostname Labels")),
-        "assign_private_dns_record": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Private DNS")),
+        "assign_private_dns_record": _split_secondary_vnic_boolean_values(_get_secondary_vnic_column(values, "Secondary VNIC Private DNS")),
         "physical_nic_index": _split_secondary_vnic_values(_get_secondary_vnic_column(values, "Secondary VNIC Physical NIC Index")),
         "defined_tags": _parse_secondary_vnic_tags(_get_secondary_vnic_column(values, "Secondary VNIC Defined Tags")),
         "freeform_tags": _parse_secondary_vnic_tags(_get_secondary_vnic_column(values, "Secondary VNIC Freeform Tags")),
