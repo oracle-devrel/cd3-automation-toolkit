@@ -631,6 +631,7 @@ def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compart
         mykeys = {}
         for keys, values in tempsshDict.items():
             reg_name = keys.split("::")[0]
+            values = values.replace("\n", "\\n")
             if (reg == reg_name):
                 key_name = "\"" + keys[len(reg_name) + 2:] + "\""
                 mykeys[key_name] = values
