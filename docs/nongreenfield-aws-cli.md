@@ -74,6 +74,7 @@ python setUpCloud.py aws /cd3user/aws/<prefix>/<prefix>_setUpAWS.properties
     
     Enter your choice (specify comma separated to choose multiple choices):
 
+
 <span style="color: teal; font-weight: bold;"><b>Expected Outputs:</b></span>
 
 a. Excel sheet with the resource details from AWS.<br> 

@@ -423,6 +423,8 @@ Format -
 
 11. While export of instances, it will fetch details for only the primary VNIC attached to the instance
 
+!!! Note 
+    Support for multiple vnics to single instance is extended
 
 On choosing **"Compute"** in the setUpCloud  menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
 

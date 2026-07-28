@@ -5,6 +5,8 @@ Connecting the CD3 container to an OCI tenancy authenticates the toolkit, allowi
 
 <br>
 
+**Prerequisite** - <a href="../install-cd3"><u>Installing CD3 Automation toolkit</u></a> 
+
 **🛠️  Steps:**
 
 

@@ -5,8 +5,11 @@
 
 With CD3, users can currently create and manage **ADB@Azure**. 
 
+**Prerequisite** - <a href="../connect-container-to-azure-subscription"><u>Connect Container to Azure Subscription</u></a> 
+
 !!! info 
-    Support will be extended to **Exadata@Azure** in future releases. 
+    Export is only supported for **ADB** at the moment
+    <br>Support will be extended to export **Exadata@Azure** in future releases.
 
 To manage ADB@Azure, users should first complete the steps to <a href="../install-cd3"><u>Install the CD3 toolkit</u></a> and then <a href="../connect-container-to-azure-subscription"><u>Connect the CD3 container to Azure subscription</u></a> 
 

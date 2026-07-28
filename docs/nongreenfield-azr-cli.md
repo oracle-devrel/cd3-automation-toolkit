@@ -81,6 +81,14 @@ python setUpCloud.py azure /cd3user/azure/<prefix>/<prefix>_setUpAure.properties
     
     Enter your choice (specify comma separated to choose multiple choices):
 
+
+    -----------------------------------------
+
+    See below image for DB @Azure export options. Only export to ADB is supported at the moment.
+
+
+    <img width="1200" height="1000" alt="CD3 Toolkit Process" src="../images/export-in-azure.png">
+
 <span style="color: teal; font-weight: bold;"><b>Expected Outputs:</b></span>
 
 a. Excel sheet with the resource details from Azure.<br> 

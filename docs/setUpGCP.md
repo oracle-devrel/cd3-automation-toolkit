@@ -5,8 +5,12 @@
 
 With CD3, users can currently create and manage **ADB@GCP**. 
 
+
+**Prerequisite** - <a href="../connect-container-to-gcp-account"><u>Connect Container to GCP Account</u></a> 
+
 !!! info 
-    Support will be extended to **Exadata@GCP** in future releases. 
+    Export is only supported for **ADB** at the moment
+    <br>Support will be extended to export **Exadata@GCP** in future releases. 
 
 To manage ADB@GCP, users should first complete the steps to <a href="../install-cd3"><u>Install the CD3 toolkit</u></a> and then <a href="../connect-container-to-gcp-account"><u>Connect the CD3 container to GCP account</u></a> 
 

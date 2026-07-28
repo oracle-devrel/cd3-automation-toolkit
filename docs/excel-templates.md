@@ -5,9 +5,8 @@
 [OCI Excel Templates](../oci-excel-templates){ .md-button }
 [Azure Excel Templates](../azr-excel-templates){ .md-button }
 
-[AWS Excel Templates](../aws-excel-templates){ .md-button }
 [GCP Excel Templates](../gcp-excel-templates){ .md-button }
-
+<!--[AWS Excel Templates](../aws-excel-templates){ .md-button } -->
 
 <b>Filling the Templates</b>
 

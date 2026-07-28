@@ -75,9 +75,13 @@ Connecting the CD3 container to an AWS account authenticates the toolkit, allowi
     - If left empty, the toolkit will not be able to run any APIs against the AWS account. <br>
     - This will mean that - <br>
        Toolkit will be able to generate just the terraform (tfvars files) without having the ability to apply it. Also export workflow will not be executed.
+
+    
+        **Benefits**
+
+        - Offline mode avoids storing Azure credentials/secrets in the CD3 container or generated files.
     
 
- 
 
 <span style="color: teal; font-weight: bold;">4 - Initialise the environment</span>
 

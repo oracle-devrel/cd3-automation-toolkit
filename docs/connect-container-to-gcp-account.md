@@ -5,6 +5,8 @@ Connecting the CD3 container to an GCP Account authenticates the toolkit, allowi
 
 <br>
 
+**Prerequisite** - <a href="../install-cd3"><u>Installing CD3 Automation toolkit</u></a> 
+
 **🛠️  Steps:**
 
 
@@ -78,10 +80,12 @@ Connecting the CD3 container to an GCP Account authenticates the toolkit, allowi
     - If left empty, the toolkit will not be able to run any APIs against the GCP account. <br>
     - This will mean that - <br>
        Toolkit will be able to generate just the terraform (tfvars files) without having the ability to apply it. Also export workflow will not be executed.
+
+        **Benefits**
+
+        - Offline mode avoids storing Azure credentials/secrets in the CD3 container or generated files.
     
-
- 
-
+    
 <span style="color: teal; font-weight: bold;">4 - Initialise the environment</span>
 
 * Initialise your environment to use the Automation Toolkit with GCP Cloud.

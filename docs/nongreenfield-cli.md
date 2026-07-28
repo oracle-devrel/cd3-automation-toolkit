@@ -54,46 +54,6 @@ Execute the setUpCloud.py script to start exporting the resources to CD3 and cre
 cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```
 
-<details class="highlight-note">
-<style>
-  details.highlight-note > summary {
-      background-color: #c72e0bff !important;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      list-style: none; 
-  }
-  details.highlight-note {
-      border: 1px solid #ebe70dff !important;  
-      border-radius: 5px !important;
-  }
-  details.highlight-note > summary:hover {
-      background-color: #db3826ff !important;
-      border: 2px solid #d8d65eff;
-  }
-  details.highlight-note > summary::before {
-      background-color: #ffffff !important;  
-  }
-</style>
-
-<summary> ⚠️ Important Deprecation Notice ⚠️</summary>
-
-<br>
-
-<b> Below old command will be deprecated starting from the next major release v2025.3.0 </b>
-
-```
-python setUpOCI.py /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
-```
-
-<b>Instead use this new command:</b>
-```
-python setUpCloud.py oci /cd3user/tenancies/<prefix>/<prefix>_setUpOCI.properties
-``` 
-
-</details>
 
 
 ```

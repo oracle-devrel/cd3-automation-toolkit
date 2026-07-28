@@ -1,9 +1,10 @@
- **CD3 Toolkit Process**
+ 
+ **CD3 Toolkit Process for OCI**
 
 <img width="1200" height="1000" alt="CD3 Toolkit Process" src="../images/CD3-Process.png">
 <br>
 
-**The CD3 toolkit supports 2 workflows:**<br>
+**The CD3 toolkit for OCI supports 2 workflows:**<br>
 
 |🛠️ Workflow | 💡 When to Use | 📌 Highlevel Steps | ✅ Output  |
 |----------|-------------|-------|--------|
@@ -18,4 +19,9 @@
 	📖 Detailed documentation and videos are provided for both options. Check the top panel for navigation.
 
 
+ **CD3 Toolkit Process for DB@MultiCloud**
 
+CD3 Automation toolkit can be used only via CLI at the moment.
+
+<img width="1200" height="1000" alt="CD3 Toolkit Process" src="../images/CD3-Multicloud-Process.png">
+<br>

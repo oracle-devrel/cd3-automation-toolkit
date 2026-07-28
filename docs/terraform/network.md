@@ -812,7 +812,7 @@ Points to Note:
           ]
           defined_tags = {
                   "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:48.895Z" ,
-                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
           }
         },
     # End of #phoenix_vcn3_subnet3-1# #
@@ -846,7 +846,7 @@ Points to Note:
           ]
           defined_tags = {
                   "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:48.895Z" ,
-                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
           }
         },
     # End of #phoenix_vcn3_subnet3-2# #
@@ -1006,7 +1006,7 @@ Points to Note:
           ]
           defined_tags = {
                   "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:48.895Z" ,
-                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
           }
         },
     # End of #phoenix_vcn3_subnet3-1# #
@@ -1040,7 +1040,7 @@ Points to Note:
           ]
           defined_tags = {
                   "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:48.895Z" ,
-                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
           }
         },
     # End of #phoenix_vcn3_subnet3-2# #

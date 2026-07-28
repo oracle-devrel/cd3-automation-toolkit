@@ -73,7 +73,14 @@ python setUpCloud.py azure /cd3user/azure/<prefix>/<prefix>_setUpAzure.propertie
 
     See example folder for sample input files
  
-    Enter your choice (specify comma separated to choose multiple choices): 
+    Enter your choice (specify comma separated to choose multiple choices): 1
+
+    -----------------------------------------------------------------------------
+
+    See below image for DB @Azure create options. You could select either of the options or choose to create ADB and Exa together.
+
+
+    <img width="1200" height="1000" alt="CD3 Toolkit Process" src="../images/create-in-azure.jpg">
 
 
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.<br>

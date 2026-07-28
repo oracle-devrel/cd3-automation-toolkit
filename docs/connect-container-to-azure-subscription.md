@@ -4,6 +4,7 @@
 Connecting the CD3 container to an Azure Subscription authenticates the toolkit, allowing it to create, update, or export resources from the azure portal.
 
 <br>
+**Prerequisite** - <a href="../install-cd3"><u>Installing CD3 Automation toolkit</u></a> 
 
 **🛠️  Steps:**
 
@@ -91,8 +92,10 @@ Connecting the CD3 container to an Azure Subscription authenticates the toolkit,
     - This will mean that - <br>
        Toolkit will be able to generate just the terraform (tfvars files) without having the ability to apply it. Also export workflow will not be executed.
     
+        **Benefits**
 
- 
+        - Offline mode avoids storing Azure credentials/secrets in the CD3 container or generated files.
+    
 
 <span style="color: teal; font-weight: bold;">4 - Initialise the environment</span>
 

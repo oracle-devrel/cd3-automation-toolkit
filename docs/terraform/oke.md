@@ -22,7 +22,6 @@ These are the syntax and sample format for providing inputs to the modules via <
         is_public_ip_enabled = optional(bool)
         nsg_ids = optional(list(string))
         endpoint_subnet_id = string
-        is_pod_security_policy_enabled = optional(bool)
         pods_cidr = optional(string)
         services_cidr = optional(string)
         service_lb_subnet_ids = optional(list(string))
@@ -52,7 +51,6 @@ These are the syntax and sample format for providing inputs to the modules via <
         is_public_ip_enabled = false
         nsg_ids = ["app-network-nsg-cp","app-network-nsg-lb"]
         endpoint_subnet_id = "endpoint-sn"
-        is_pod_security_policy_enabled = true
         pods_cidr = "10.24.0.0/16"
         services_cidr = "10.10.0.0/16"
         service_lb_subnet_ids = ["loadbalancer-sn"]
@@ -93,7 +91,6 @@ These are the syntax and sample format for providing inputs to the modules via <
             vcn_name = string
             subnet_id = string
             fault_domains = list
-            capacity_reservation_id = string
             }
         }
 
@@ -158,7 +155,7 @@ These are the syntax and sample format for providing inputs to the modules via <
         boot_volume_size_in_gbs = 64
         nodepool_defined_tags = {
                 "Oracle-Tags.CreatedOn"= "2023-01-10T04:29:33.383Z" ,
-                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
         }
     },  ##Add New nodepool for phoenix here##
   }

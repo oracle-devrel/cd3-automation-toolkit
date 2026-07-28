@@ -589,7 +589,7 @@ Comments preceed with <b>##</b>.
             retention_duration  = 30
             defined_tags = {
                 "Oracle-Tags.CreatedOn"= "2024-03-14T06:18:47.503Z" ,
-                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+                "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
             }
         },
         OCI-FWL_trafficlog-log  = {

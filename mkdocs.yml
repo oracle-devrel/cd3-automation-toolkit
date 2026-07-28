@@ -14,7 +14,7 @@ nav:
       - excel-templates.md
       - OCI: oci-excel-templates.md
       - Azure: azr-excel-templates.md
-      - AWS: aws-excel-templates.md
+      #- AWS: aws-excel-templates.md
       - GCP: gcp-excel-templates.md
     - "<span>AI Analysis <span class='new-badge'>New!</span></span>": terraform-ai-analysis.md
       
@@ -35,8 +35,9 @@ nav:
       - Multiple Prefixes(optional): multiple-prefixes.md
       - Delete Prefix(optional): delete-prefix.md
     - Connect to Azure: connect-container-to-azure-subscription.md
-    - Connect to AWS <span class='new-badge'>Coming Soon!</span></span>: connect-container-to-aws-account.md
     - Connect to GCP: connect-container-to-gcp-account.md
+    #- Connect to AWS <span class='new-badge'>Coming Soon!</span></span>: connect-container-to-aws-account.md
+
 
   - Manage OCI :
     - setUpOCI.md
@@ -79,14 +80,16 @@ nav:
       - setUpAzure.md
       - Create in Azure : greenfield-azr-cli.md
       - Export from Azure : nongreenfield-azr-cli.md
-    - Manage DB@AWS<span class='new-badge'>Coming Soon!</span></span>:
-      - setUpAWS.md
-      - Create in AWS : greenfield-aws-cli.md
-      - Export from AWS : nongreenfield-aws-cli.md
     - Manage DB@GCP:
       - setUpGCP.md
       - Create in GCP : greenfield-gcp-cli.md
       - Export from GCP : nongreenfield-gcp-cli.md
+    - Manage DB@AWS<span class='new-badge'>Coming Soon!</span></span>:
+      - coming-soon-notice.md
+      #- setUpAWS.md
+      #- Create in AWS : greenfield-aws-cli.md
+      #- Export from AWS : nongreenfield-aws-cli.md
+
 
 
   - Quick Start:
