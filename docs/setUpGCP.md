@@ -3,18 +3,20 @@
 
 **CD3** extends its support to **Oracle DB@GCP**, making it easier to manage Oracle Databases on GCP.
 
-With CD3, users can currently create and manage **ADB@GCP**. 
+With CD3, users can currently create and manage **ADB@GCP** and **Exadata@GCP**. 
 
-
-**Prerequisite** - <a href="../connect-container-to-gcp-account"><u>Connect Container to GCP Account</u></a> 
 
 !!! info 
-    Export is only supported for **ADB** at the moment
-    <br>Support will be extended to export **Exadata@GCP** in future releases. 
+    Export is only supported for **ADB@GCP** at the moment.
+    <br>Support to Export **Exadata@GCP** will be extended in future releases. 
 
-To manage ADB@GCP, users should first complete the steps to <a href="../install-cd3"><u>Install the CD3 toolkit</u></a> and then <a href="../connect-container-to-gcp-account"><u>Connect the CD3 container to GCP account</u></a> 
+**Prerequisite**
 
-Once the CD3 container is successfully connected to GCP account, the Toolkit can be used to execute Create/Export workflows for ADB@GCP.
+1. Make sure the onboarding of <a href="https://docs.oracle.com/en-us/iaas/Content/database-at-gcp/onboard.htm"><u>Oracle AI Database@GCP</u></a>  is completed. 
+
+2. To manage ADB@GCP, users should first complete the steps to <a href="../install-cd3"><u>Install the CD3 toolkit</u></a> and then <a href="../connect-container-to-gcp-account"><u>Connect the CD3 container to GCP account</u></a> 
+
+Once the onboarding is completed and CD3 container is successfully connected to GCP account, the Toolkit can be used to execute Create/Export workflows for ADB@GCP and Create workflow for Exadata@GCP.
 
 At present, CD3 for DB@GCP supports only CLI-based operations. Follow the instructions below to get started. 
 

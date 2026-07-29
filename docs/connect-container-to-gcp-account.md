@@ -83,7 +83,7 @@ Connecting the CD3 container to an GCP Account authenticates the toolkit, allowi
 
         **Benefits**
 
-        - Offline mode avoids storing Azure credentials/secrets in the CD3 container or generated files.
+        - Offline mode avoids storing GCP credentials/secrets in the CD3 container or generated files.
     
     
 <span style="color: teal; font-weight: bold;">4 - Initialise the environment</span>
