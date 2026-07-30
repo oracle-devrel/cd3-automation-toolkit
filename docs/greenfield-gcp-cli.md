@@ -63,18 +63,6 @@ python setUpCloud.py gcp /cd3user/gcp/<prefix>/<prefix>_setUpGCP.properties
          
 !!! example "Example Execution"
 
-    [cd3user@dc6dac212f79 cd3_automation_toolkit]$ python setUpCloud.py gcp /cd3user/gcp/gcp_demo/gcp_demo_setUpGCP.properties 
-
-    Choose appropriate option from below :
-
-    1. Create DB@GCP
-    <br>q. Press q to quit
-
-    See example folder for sample input files
- 
-    Enter your choice (specify comma separated to choose multiple choices): 1
-
-    -------------------------------
 
     See below image for DB@GCP options. Could select either of the options or choose to create ADB and Exa together.
 

@@ -84,7 +84,7 @@ nav:
       - setUpGCP.md
       - Create in GCP : greenfield-gcp-cli.md
       - Export from GCP : nongreenfield-gcp-cli.md
-    - Manage DB@AWS<span class='new-badge'>Coming Soon!</span></span>:
+    - Manage DB@AWS<br> <span class='new-badge'>  Coming Soon!</span></span>:
       - coming-soon-notice.md
       #- setUpAWS.md
       #- Create in AWS : greenfield-aws-cli.md

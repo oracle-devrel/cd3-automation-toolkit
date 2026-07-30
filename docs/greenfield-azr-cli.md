@@ -64,20 +64,8 @@ python setUpCloud.py azure /cd3user/azure/<prefix>/<prefix>_setUpAzure.propertie
          
 !!! example "Example Execution"
 
-    [cd3user@dc6dac212f79 cd3_automation_toolkit]$ python setUpCloud.py azure /cd3user/azure/az_demo/az_demo_setUpAzure.properties 
 
-    Choose appropriate option from below :
-
-    1. Create DB @Azure
-    <br>q. Press q to quit
-
-    See example folder for sample input files
- 
-    Enter your choice (specify comma separated to choose multiple choices): 1
-
-    -----------------------------------------------------------------------------
-
-    See below image for DB @Azure create options. You could select either of the options or choose to create ADB and Exa together.
+    See below image for DB @Azure create options. You could select either of the options or choose to create ADB and ExaData together.
 
 
     <img width="1200" height="1000" alt="CD3 Toolkit Process" src="../images/create-in-azure.jpg">

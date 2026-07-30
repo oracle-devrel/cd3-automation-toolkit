@@ -69,20 +69,6 @@ python setUpCloud.py gcp /cd3user/gcp/<prefix>/<prefix>_setUpGCP.properties
 
 !!! example  "Example Execution"
 
-    [cd3user@dc6dac212f79 cd3_automation_toolkit]$ python setUpCloud.py gcp /cd3user/gcp/gcp_demo/gcp_demo_setUpGCP.properties 
-
-    workflow_type set to export_resources. Export existing GCP objects and Synch with TF state
-    We recommend to not have any existing tfvars/tfstate files for export out directory
-
-    Choose appropriate option from below :
-
-    1. Export DB@GCP
-    <br>q. Press q to quit
-    
-    Enter your choice (specify comma separated to choose multiple choices):
-
-    -----------------------------------------
-
     See below image for DB @GCP export options. Only export to ADB is supported at the moment.
 
 
