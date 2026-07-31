@@ -80,8 +80,8 @@ def execute_options(options, *args, **kwargs):
                     option.callback(*args, **kwargs)
 
 
-#def create_adb_azure():
-#    create_terraform_adb_azure(inputfile, outdir, prefix)
+def create_adb_gcp():
+    create_terraform_adb_gcp(inputfile, outdir, prefix)
 
 def create_exa_gcp():
     create_terraform_exa_infra_gcp(inputfile, outdir, prefix)
@@ -90,31 +90,34 @@ def create_exa_gcp():
 
 def create_db_at_gcp(execute_all=False):
     options = [
-        #Option('Add/Modify/Delete ADB @Azure', create_adb_azure, 'Processing ADB-Azure Tab'),
+        Option('Add/Modify/Delete ADB @GCP', create_adb_gcp, 'Processing ADB-GCP Tab'),
         Option('Add/Modify/Delete Exa @GCP', create_exa_gcp, 'Processing Exa-GCP Tabs')
     ]
     options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
         execute_options(options)
 
-'''
-def export_az_adb():
-    export_az_oci_adb(inputfile, outdir, credentials)
 
-def export_az_oci_exa():
-    export_az_oci_adb(inputfile, outdir, credentials)
+def export_adb_at_gcp(inputfile, outdir, credentials, active_projects,regions):
+    export_adb_gcp(inputfile, outdir, credentials, active_projects,regions)
+    create_terraform_adb_gcp(inputfile, outdir, prefix)
 
-def export_db_at_azure(execute_all=False):
+def export_exa_infra_at_gcp(inputfile, outdir, credentials, active_projects,regions):
+    export_exa_infra_gcp(inputfile, outdir, credentials, active_projects,regions)
+    create_terraform_exa_infra_gcp(inputfile, outdir, prefix)
+    create_terraform_exa_vmclusters_gcp(inputfile, outdir, prefix)
+
+def export_db_at_gcp(execute_all=False):
     options = [
-        Option('Export ADB @Azure', export_adb_azure, 'Exporting ADB-Azure'),
-        # Option('Export Exa @Azure', export_az_oci_exa, 'Processing Exa-Azure')
+        Option('Export ADB @GCP', export_adb_at_gcp, 'Exporting ADB-GCP'),
+        #Option('Export Exa @GCP', export_exa_infra_at_gcp, 'Exporting Exa-Infra-GCP')
     ]
     options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
-        execute_options(options,inputfile, outdir, credentials)
+        execute_options(options,inputfile, outdir, credentials, active_projects,regions)
 
-    create_terraform_adb_azure(inputfile, outdir, prefix)
-'''
+
+
 
 #Execution starts here
 global devops
@@ -132,8 +135,8 @@ parser.add_argument('propsfile', help="Full Path of properties file containing i
 #parser.add_argument('--add_filter', default=None)
 #parser.add_argument('--devops', default=False)
 args = parser.parse_args()
-setUpAz_props = configparser.RawConfigParser()
-setUpAz_props.read(args.propsfile)
+setUp_props = configparser.RawConfigParser()
+setUp_props.read(args.propsfile)
 #devops = args.devops
 #main_options = args.main_options.split(",")
 #sub_options = args.sub_options.split(",")
@@ -141,16 +144,17 @@ setUpAz_props.read(args.propsfile)
 
 #Read Config file Variables
 try:
-    workflow_type = setUpAz_props.get('Default', 'workflow_type').strip().lower()
+    workflow_type = setUp_props.get('Default', 'workflow_type').strip().lower()
 
     if (workflow_type == 'export_resources'):
         non_gf_tenancy = True
     else:
         non_gf_tenancy = False
 
-    inputfile = setUpAz_props.get('Default','cd3file').strip()
-    outdir = setUpAz_props.get('Default', 'outdir').strip()
-    prefix = setUpAz_props.get('Default', 'prefix').strip()
+    inputfile = setUp_props.get('Default','cd3file').strip()
+    outdir = setUp_props.get('Default', 'outdir').strip()
+    prefix = setUp_props.get('Default', 'prefix').strip()
+    config_file = setUp_props.get('Default', 'config_file').strip()
     tf_or_tofu = "terraform"
 
     if not outdir:
@@ -183,7 +187,7 @@ if not os.path.exists(outdir):
 if non_gf_tenancy:
 
     ct = gcpCommonTools()
-    credentials = ct.authenticate(args.propsfile)
+    credentials,active_projects,regions = ct.authenticate(config_file)
 
     # verify_outdir_is_empty()
     print("\nworkflow_type set to export_resources. Export existing GCP objects and Synch with TF state")
@@ -193,7 +197,7 @@ if non_gf_tenancy:
     #export_tags_list = get_tags_list()
 
     inputs = [
-        #Option("Export DB @Azure", export_db_at_azure, "Export DB @Azure"),
+        Option("Export DB @GCP", export_db_at_gcp, "Export DB @GCP"),
 
     ]
 

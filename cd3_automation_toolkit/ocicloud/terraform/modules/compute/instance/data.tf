@@ -9,6 +9,31 @@
 locals {
   nsg_ids = var.nsg_ids != null ? flatten(tolist([for nsg in var.nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups[nsg].network_security_groups[*].id)])) : null
 
+  secondary_vnic_vcns = {
+    for vnic_key, vnic in var.secondary_vnics : vnic_key => {
+      network_compartment_id = try(vnic.network_compartment_id, null)
+      vcn_name               = try(vnic.vcn_name, "")
+    } if try(vnic.vcn_name, "") != ""
+  }
+
+  secondary_vnic_nsg_keys = flatten([
+    for vnic_key, vnic in var.secondary_vnics : [
+      for nsg in coalesce(try(vnic.nsg_ids, []), []) : {
+        key                    = "${vnic_key}::${nsg}"
+        vnic_key               = vnic_key
+        nsg                    = nsg
+        network_compartment_id = try(vnic.network_compartment_id, null)
+        vcn_name               = try(vnic.vcn_name, "")
+      }
+    ]
+  ])
+
+  secondary_vnic_nsg_ids = {
+    for vnic_key, vnic in var.secondary_vnics : vnic_key => flatten([
+      for nsg in coalesce(try(vnic.nsg_ids, []), []) : length(regexall("ocid1.networksecuritygroup.oc*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.secondary_vnic_network_security_groups["${vnic_key}::${nsg}"].network_security_groups[*].id
+    ])
+  }
+
   ADs = [
     for ad in data.oci_identity_availability_domains.ads.availability_domains : ad.name
   ]
@@ -64,6 +89,27 @@ data "oci_core_network_security_groups" "network_security_groups" {
   compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
   display_name   = each.value
   vcn_id         = data.oci_core_vcns.oci_vcns_instances[var.vcn_names[0]].virtual_networks.*.id[0]
+}
+
+
+data "oci_core_vcns" "secondary_vnic_vcns" {
+  for_each       = local.secondary_vnic_vcns
+  compartment_id = try(length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0, false) ? each.value.network_compartment_id : var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
+  display_name   = each.value.vcn_name
+}
+
+data "oci_core_subnets" "secondary_vnic_subnets" {
+  for_each       = { for vnic_key, vnic in var.secondary_vnics : vnic_key => vnic if length(regexall("ocid1.subnet.oc*", vnic.subnet_id)) == 0 }
+  compartment_id = try(length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0, false) ? each.value.network_compartment_id : var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
+  display_name   = each.value.subnet_id
+  vcn_id         = try(each.value.vcn_name, "") != "" ? data.oci_core_vcns.secondary_vnic_vcns[each.key].virtual_networks.*.id[0] : null
+}
+
+data "oci_core_network_security_groups" "secondary_vnic_network_security_groups" {
+  for_each       = { for item in local.secondary_vnic_nsg_keys : item.key => item if length(regexall("ocid1.networksecuritygroup.oc*", item.nsg)) == 0 }
+  compartment_id = try(length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0, false) ? each.value.network_compartment_id : var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
+  display_name   = each.value.nsg
+  vcn_id         = each.value.vcn_name != "" ? data.oci_core_vcns.secondary_vnic_vcns[each.value.vnic_key].virtual_networks.*.id[0] : data.oci_core_vcns.oci_vcns_instances[var.vcn_names[0]].virtual_networks.*.id[0]
 }
 
 #data "oci_core_boot_volumes" "all_boot_volumes" {

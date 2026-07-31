@@ -133,13 +133,9 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == 'Database Workload':
                 columnvalue = columnvalue.strip()
-                autonomous_value = commonTools.check_tf_variable(columnvalue).lower()
+                autonomous_value = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'autonomous_value': autonomous_value}
 
-            if columnname == 'Database Workload':
-                columnvalue = columnvalue.strip()
-                autonomous_value = commonTools.check_tf_variable(columnvalue).lower()
-                tempdict = {'autonomous_value': autonomous_value}
 
             if columnname == 'Customer Contacts':
                 columnvalue = columnvalue.strip().split(",")

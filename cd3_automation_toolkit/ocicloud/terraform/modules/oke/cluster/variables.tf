@@ -83,11 +83,6 @@ variable "is_tiller_enabled" {
   description = "Whether tiller is ebabled"
 }
 
-variable "is_pod_security_policy_enabled" {
-  type        = bool
-  description = "Whether a pod security needs to be enabled for the nodepool"
-}
-
 variable "pods_cidr" {
   type        = string
   description = "The pod CIDR value"
@@ -142,4 +137,3 @@ variable "lb_freeform_tags" {
   type    = map(any)
   default = {}
 }
-

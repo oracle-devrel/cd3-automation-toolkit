@@ -132,18 +132,21 @@ def export_users(inputfile, outdir, service_dir, config, signer, ct,export_domai
 
                 if defined_tags_info is not None:
                     defined_tags = defined_tags_info.defined_tags
-                    for tag in defined_tags:
-                        namespace = tag.namespace
-                        key = tag.key
-                        value = tag.value
-                        if namespace is not None and key is not None and value is not None:
-                            user_defined_tags.append(f"{namespace}.{key}={value}")
+                    if defined_tags is not None:
+                        for tag in defined_tags:
+                            namespace = tag.namespace
+                            key = tag.key
+                            value = tag.value
+                            if namespace is not None and key is not None and value is not None:
+                                user_defined_tags.append(f"{namespace}.{key}={value}")
 
                 user_defined_tags = ";".join(user_defined_tags) if user_defined_tags else ""
 
                 user_info = user
                 #if user_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user != "True" and user_info.active !="False":
                 if (user_info.active != "False" and (user_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user is None or user_info.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user != "True")):
+                    if not user_info.name:
+                        continue
                     username = user_info.user_name
                     family_name = user_info.name.family_name
                     given_name  = user_info.name.given_name

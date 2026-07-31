@@ -16,10 +16,10 @@ module "gcp_network" {
   odb_network_id              = each.value.odb_network_id
   odb_network_gcp_oracle_zone = each.value.odb_network_gcp_oracle_zone
   odb_client_subnet_id        = each.value.odb_client_subnet_id
-  odb_backup_subnet_id        = each.value.odb_backup_subnet_id
+  odb_backup_subnet_id        = try(each.value.odb_backup_subnet_id,null)
   create_odb_network          = each.value.create_odb_network
   create_odb_network_subnets  = each.value.create_odb_network_subnets
   client_subnet_cidr          = each.value.client_subnet_cidr
-  backup_subnet_cidr          = each.value.backup_subnet_cidr
+  backup_subnet_cidr          = try(each.value.backup_subnet_cidr, null)
 
 }

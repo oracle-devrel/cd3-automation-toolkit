@@ -36,12 +36,6 @@ clusters = {
         nsg_ids = [{{ api_endpoint_nsgs }}]
         {% endif %}
         endpoint_subnet_id = "{{ api_endpoint_subnet }}"
-        {% if pod_security_policies_enforced == 'true' %}
-        is_pod_security_policy_enabled = "true"
-        {% else %}
-        is_pod_security_policy_enabled = "false"
-        {% endif %}
-
         {% if is_policy_enabled == 'true' %}
         is_policy_enabled = "true"
         {% endif %}

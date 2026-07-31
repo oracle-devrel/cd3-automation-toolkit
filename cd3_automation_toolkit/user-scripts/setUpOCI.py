@@ -5,9 +5,12 @@ from collections import namedtuple
 import requests
 import subprocess
 import glob
+import sys,os
+sys.path.append(os.getcwd())
+sys.path.append(os.getcwd()+"/..")
 from ocicloud.python import *
 from common.python import *
-    
+
 def show_firewall_options(options, quit=False, menu=False, extra=None, index=0):
     # Just add whitespace between number and option. It just makes it look better
     number_offset = len(str(len(options))) + 1
@@ -238,7 +241,7 @@ def fetch_compartments(outdir, outdir_struct, ct):
     ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
     ct.all_regions.append('global')
     print("\nWriting to variables files...")
-    home_region_services = ['identity', 'tagging', 'budget', 'quota']
+    home_region_services = ['identity', 'compartment', 'policy', 'user', 'group', 'networksource', 'tagging', 'budget','quota']
     for region in ct.all_regions:
         # for global directory
         if region == 'global':
@@ -374,12 +377,12 @@ def export_identityOptions(prim_options=[]):
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, config, signer, ct)
     # Update modified path list
-    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_user,service_dir_compartment,service_dir_group,service_dir_networksource])
 
 
 def export_compartments(inputfile, outdir,config, signer, ct):
     resource = 'Compartments'
-    export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct)
+    export_identity(inputfile, outdir, service_dir_compartment,resource, config, signer, ct)
     options = [Option(None, create_compartments, 'Processing Compartments Tab'), ]
     execute_options(options)
     print("\n\nExecute import_commands_compartments.sh script created under home region directory to synch TF with OCI Identity Compartments\n")
@@ -387,7 +390,7 @@ def export_compartments(inputfile, outdir,config, signer, ct):
 def export_policies(inputfile, outdir,config, signer, ct):
     resource = 'IAM Policies'
     #compartments = ct.get_compartment_map(var_file, resource)
-    export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_compartments=compartments)
+    export_identity(inputfile, outdir, service_dir_policy,resource, config, signer, ct, export_compartments=compartments)
     options = [Option(None, create_policies, 'Processing Policies Tab'), ]
     execute_options(options)
     print("\n\nExecute import_commands_policies.sh script created under home region directory to synch TF with OCI " +resource +"\n")
@@ -395,7 +398,7 @@ def export_policies(inputfile, outdir,config, signer, ct):
 def export_groups(inputfile, outdir,config, signer, ct):
     resource = 'IAM Groups'
     selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
-    export_identity(inputfile, outdir, service_dir_identity,resource, config, signer, ct, export_domains=selected_domains_data)
+    export_identity(inputfile, outdir, service_dir_group,resource, config, signer, ct, export_domains=selected_domains_data)
     options = [Option(None, create_groups, 'Processing Groups Tab'), ]
     execute_options(options)
     print("\n\nExecute import_commands_groups.sh script created under home region directory to synch TF with OCI " +resource +"\n")
@@ -405,17 +408,17 @@ def export_users(inputfile, outdir,config,signer, ct):
     resource = 'IAM Users'
     # check if tenancy is identity_domain enabled
     selected_domains_data = ct.get_identity_domain_data(config, signer, resource,var_file)
-    identity.export_users(inputfile, outdir, service_dir_identity, config, signer, ct,export_domains=selected_domains_data)
+    identity.export_users(inputfile, outdir, service_dir_user, config, signer, ct,export_domains=selected_domains_data)
     options = [Option(None, create_terraform_users, 'Processing Users Tab'), ]
-    execute_options(options,inputfile, outdir,service_dir_identity, prefix, ct)
+    execute_options(options,inputfile, outdir,service_dir_user, prefix, ct)
     print("\n\nExecute import_commands_users.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 
 def export_networkSources(inputfile, outdir, config, signer, ct):
     resource = 'Network Sources'
-    identity.export_networkSources(inputfile, outdir, service_dir_identity, config, signer, ct)
+    identity.export_networkSources(inputfile, outdir, service_dir_networksource, config, signer, ct)
     options = [Option(None, create_terraform_networkSources, 'Processing NetworkSources Tab'), ]
-    execute_options(options, inputfile, outdir, service_dir_identity, prefix, ct)
+    execute_options(options, inputfile, outdir, service_dir_networksource, prefix, ct)
     print("\n\nExecute import_commands_networkSources.sh script created under home region directory to synch TF with OCI " +resource +"\n")
 
 def export_governance(prim_options=[]):
@@ -1010,9 +1013,9 @@ def create_compartments():
         choices = [Option("Validate Compartments", None, None)]
         errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
     if errors == False:
-        create_terraform_compartments(inputfile, outdir, service_dir_identity, prefix, ct)
+        create_terraform_compartments(inputfile, outdir, service_dir_compartment, prefix, ct)
         # Update modified path list
-        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_compartment])
     else:
         print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
         exit(1)
@@ -1023,9 +1026,9 @@ def create_groups():
         choices = [Option("Validate Groups", None, None)]
         errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
     if errors == False:
-        create_terraform_groups(inputfile, outdir, service_dir_identity, prefix, ct)
+        create_terraform_groups(inputfile, outdir, service_dir_group, prefix, ct)
         # Update modified path list
-        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_group])
     else:
         print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
         exit(1)
@@ -1037,23 +1040,23 @@ def create_policies():
         errors = cd3Validator.validate_cd3(choices, inputfile, var_file, prefix, outdir, ct)
 
     if errors == False:
-        create_terraform_policies(inputfile, outdir, service_dir_identity, prefix, ct)
+        create_terraform_policies(inputfile, outdir, service_dir_policy, prefix, ct)
         # Update modified path list
-        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+        update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_policy])
     else:
         print("Please correct the errors in CD3 Sheet and try again. Exiting!!!")
         exit(1)
 
 def create_users():
-    create_terraform_users(inputfile, outdir, service_dir_identity, prefix, ct)
+    create_terraform_users(inputfile, outdir, service_dir_user, prefix, ct)
     # Update modified path list
-    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_user])
 
 
 def create_networksources():
-    create_terraform_networkSources(inputfile, outdir, service_dir_identity, prefix, ct)
+    create_terraform_networkSources(inputfile, outdir, service_dir_networksource, prefix, ct)
     # Update modified path list
-    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
+    update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_networksource])
 
 
 def create_identity(prim_options=[]):
@@ -1667,10 +1670,11 @@ def initiate_cis_scan(outdir, prefix, config_file,sub_options=[]):
 
 def start_cis_download(outdir, prefix, config_file):
     current_dir=os.path.dirname(os.path.abspath(__file__))
-    print("Downloading the script file as 'cis_reports.py' at location "+current_dir+"/../othertools/")
+    file_path=current_dir+"/../../othertools/"
+    print("Downloading the script file as 'cis_reports.py' at location "+file_path)
     resp = requests.get("https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py")
     resp_contents = resp.text
-    with open(current_dir+"/../othertools/cis_reports.py", "w", encoding="utf-8") as fd:
+    with open(file_path+"/cis_reports.py", "w", encoding="utf-8") as fd:
         fd.write(resp_contents)
 
     #cmdpath = os.path.dirname(os.path.abspath(__file__)) + "/../"
@@ -1678,7 +1682,7 @@ def start_cis_download(outdir, prefix, config_file):
     print("Download complete!!")
 
 def start_cis_scan(outdir, prefix, config_file):
-    cmdpath =  os.path.dirname(os.path.abspath(__file__))+ "/../othertools/"
+    cmdpath =  os.path.dirname(os.path.abspath(__file__))+ "/../../othertools/"
     cmd = "python "+cmdpath+"cis_reports.py"
 
     if auth_mechanism == "instance_principal":
@@ -1714,9 +1718,10 @@ def start_cis_scan(outdir, prefix, config_file):
 
 def get_latest_showoci(outdir, prefix,config_file):
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    print("Getting latest showoci report script at location "+current_dir+"/../othertools/")
+    file_path=current_dir+"/../../othertools/"
+    print("Getting latest showoci report script at location "+file_path)
 
-    cmdpath=os.path.dirname(os.path.abspath(__file__)) + "/../othertools/"
+    cmdpath=file_path
     tag= "oci-python-sdk"
 
     if (os.path.isdir(cmdpath+tag)):
@@ -1729,7 +1734,7 @@ def get_latest_showoci(outdir, prefix,config_file):
 
 
 def execute_showoci(outdir, prefix, config_file_path):
-    cmdpath = os.path.dirname(os.path.abspath(__file__)) + "/../othertools/"
+    cmdpath = os.path.dirname(os.path.abspath(__file__)) + "/../../othertools/"
     tag = "oci-python-sdk"
     if not os.path.isfile(cmdpath+tag+"/examples/showoci/showoci.py"):
         get_latest_showoci(outdir, prefix, config_file=config_file_path)
@@ -1776,7 +1781,7 @@ def run_showoci(outdir, prefix, config_file,sub_options=[]):
     execute_options(options, outdir, prefix, config_file)
 
 def run_vizoci(outdir, prefix, config_file,sub_options=[]):
-    cmdpath = os.path.dirname(os.path.abspath(__file__)) + "/../othertools/"
+    cmdpath = os.path.dirname(os.path.abspath(__file__)) + "/../../othertools/"
     tag = "vizoci"
     cwd= os.getcwd()
     os.chdir(cmdpath + tag)
@@ -1869,7 +1874,7 @@ def export_update_dr_plan(outdir, prefix, config_file_path,option=''):
         input1 = "Please enter excel file name from where DR plan will be updated; Leave blank to read file with name '$prefix_" + tag + "-plan.xlsx': "
         input2 = "Please enter sheet name in the excel from where DR plan will be updated(without spaces); Leave blank to read sheet with name 'FSDR-Plan': "
 
-    cmdpath = os.path.dirname(os.path.abspath(__file__))+"/../othertools/"+tag+"/"+c+"_drplan.py"
+    cmdpath = os.path.dirname(os.path.abspath(__file__))+"/../../othertools/"+tag+"/"+c+"_drplan.py"
 
     if not os.path.isfile(cmdpath):
         print(cmdpath+" doesnt exist. Exiitng!!!")
@@ -2253,7 +2258,7 @@ else:
         exec(varname + "= value",globals())
 
 #print("Reading varfile for compartments....\n")
-var_file = (f'{outdir}/{home_region}/{service_dir_identity}/variables_{home_region}.tf').replace('//','/')
+var_file = (f'{outdir}/{home_region}/{service_dir_compartment}/variables_{home_region}.tf').replace('//','/')
 
 try:
     # read variables file

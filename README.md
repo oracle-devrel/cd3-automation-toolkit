@@ -7,7 +7,7 @@
 
 <br>
  
-  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2026.1.2) &nbsp;•&nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/excel-templates/) &nbsp;•&nbsp;[CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/cd3-overview/)&nbsp;•&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;•&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/tutorials/) &nbsp;•&nbsp;[Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724) &nbsp;•&nbsp;[Slack Channel](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/queries) 
+  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2026.2.0) &nbsp;•&nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/excel-templates/) &nbsp;•&nbsp;[CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/cd3-overview/)&nbsp;•&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;•&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/tutorials/) &nbsp;•&nbsp;[Livelabs](https://apexapps.oracle.com/pls/f?p=133:180:112501098061930::::wid:3724) &nbsp;•&nbsp;[Slack Channel](https://oracle-devrel.github.io/cd3-automation-toolkit/latest/queries)
   
 <br>
 
@@ -74,7 +74,7 @@ Evaluate Terraform plans to identify potential security risks, misconfigurations
 </table>
 
 
-📌 The Toolkit also extends its support to <b>ADB@Azure</b>
+📌 The Toolkit now support to <b>ADB@Azure</b>, <b>Exa@Azure(create only)</b>, <b>ADB@GCP</b>, <b>Exa@GCP(create only)</b>.
 
 <br>
 

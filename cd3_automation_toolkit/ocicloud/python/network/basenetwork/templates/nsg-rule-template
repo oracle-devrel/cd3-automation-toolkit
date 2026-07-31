@@ -84,7 +84,7 @@ EOF
                 {% endif %}
             }]
             {% else %}
-            tcp = []
+            tcp = [{}]
             {% endif %}
 
             {% elif protocol.lower() == 'udp' %}

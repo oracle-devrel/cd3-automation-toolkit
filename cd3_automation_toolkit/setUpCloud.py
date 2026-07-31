@@ -3,7 +3,7 @@ import subprocess
 
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3:
         print("Usage: python setUpCloud.py <cloud_provider> <properties_file_path>")
         print("Example: python setUpCloud.py azure setUpAzure.properties")
         print("Example: python setUpCloud.py oci setUpOCI.properties")
@@ -11,10 +11,10 @@ def main():
         return
 
     cloud_provider = sys.argv[1].lower()
-    argument = sys.argv[2]
+    #argument = sys.argv[2]
 
     if cloud_provider == 'oci':
-        script_name = 'setUpOCI.py'
+        script_name = 'user-scripts/setUpOCI.py'
     elif cloud_provider == 'azure':
         script_name = 'user-scripts/setUpAzure.py'
     elif cloud_provider == 'gcp':
@@ -24,7 +24,7 @@ def main():
         return
 
     try:
-        subprocess.run([sys.executable, script_name, argument], check=True)
+        subprocess.run([sys.executable, script_name, *sys.argv[2:]], check=True)
     except subprocess.CalledProcessError as e:
         pass
 

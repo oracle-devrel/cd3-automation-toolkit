@@ -1,5 +1,5 @@
 variable "marketplace_source_images" {
-  type = map(object({
+  /*type = map(object({
     ocid                  = string
     is_pricing_associated = bool
     compatible_shapes     = set(string)
@@ -10,5 +10,6 @@ variable "marketplace_source_images" {
       is_pricing_associated = false
       compatible_shapes     = []
     }
-  }
+  }*/
+  default = ""
 }

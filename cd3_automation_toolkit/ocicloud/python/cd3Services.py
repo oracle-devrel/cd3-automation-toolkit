@@ -9,8 +9,9 @@ import urllib
 import shutil
 import sys
 class cd3Services():
-
+    global current_path
     #Get OCI Cloud Regions
+    current_path = os.path.dirname(os.path.abspath(__file__))
     regions_list = ""
     def fetch_regions(self,config,signer):
         #config = oci.config.from_file(file_location=configFileName)
@@ -61,7 +62,7 @@ class cd3Services():
             line = cd3key + ":" + name
             tempStr = tempStr + line + '\n'
 
-        with open('/cd3user/oci_tools/cd3_automation_toolkit/ocicloud/python/OCI_Regions', 'w+') as f:
+        with open(current_path+'/OCI_Regions', 'w+') as f:
             f.write(tempStr)
         f.close()
         print("Updated OCI_Regions file !!!\n")

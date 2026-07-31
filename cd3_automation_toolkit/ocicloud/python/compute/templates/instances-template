@@ -344,6 +344,57 @@ instances = {
             vnic_display_name = "{{ vnic_display_name }}"
             {% endif %}
 
+
+            {% if secondary_vnics %}
+            secondary_vnics = {
+            {% for vnic_name, vnic in secondary_vnics.items() %}
+              {{ vnic_name }} = {
+                network_compartment_id = "{{ vnic.network_compartment_id }}"
+                vcn_name               = "{{ vnic.vcn_name }}"
+                subnet_id              = "{{ vnic.subnet_id }}"
+                {% if vnic.display_name %}
+                display_name           = "{{ vnic.display_name }}"
+                {% endif %}
+                {% if vnic.private_ip %}
+                private_ip             = "{{ vnic.private_ip }}"
+                {% endif %}
+                {% if vnic.assign_public_ip %}
+                assign_public_ip       = {{ vnic.assign_public_ip }}
+                {% endif %}
+                {% if vnic.hostname_label %}
+                hostname_label         = "{{ vnic.hostname_label }}"
+                {% endif %}
+                {% if vnic.assign_private_dns_record %}
+                assign_private_dns_record = {{ vnic.assign_private_dns_record }}
+                {% endif %}
+                {% if vnic.skip_source_dest_check %}
+                skip_source_dest_check = {{ vnic.skip_source_dest_check }}
+                {% endif %}
+                {% if vnic.physical_nic_index %}
+                physical_nic_index     = {{ vnic.physical_nic_index }}
+                {% endif %}
+                {% if vnic.nsg_ids %}
+                nsg_ids                = [{% for nsg in vnic.nsg_ids %}"{{ nsg }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+                {% endif %}
+                {% if vnic.defined_tags %}
+                defined_tags = {
+                {% for tags in vnic.defined_tags %}
+                  "{{ tags[0] }}" = "{{ tags[1] }}"
+                {% endfor %}
+                }
+                {% endif %}
+                {% if vnic.freeform_tags %}
+                freeform_tags = {
+                {% for tags in vnic.freeform_tags %}
+                  "{{ tags[0] }}" = "{{ tags[1] }}"
+                {% endfor %}
+                }
+                {% endif %}
+              }
+            {% endfor %}
+            }
+            {% endif %}
+
             ## Section for adding VNIC Defined and Freeform Tags
             {% if vnic_defined_tags and vnic_defined_tags != 'nan' and vnic_defined_tags != '' %}
             {% if vnic_defined_tags[0] %}

@@ -21,6 +21,112 @@ import ocicloud.python.ociCommonTools as ociCommonTools
 from jinja2 import Environment, FileSystemLoader
 
 
+def _normalize_node_capacity_type(value, row_num):
+    value = str(value or "").strip()
+    value_l = value.lower()
+    if value_l in ("", "nan", "none", "on-demand", "on_demand", "on demand", "ondemand"):
+        return "ON_DEMAND"
+    if value_l in ("preemptible", "preemptible_capacity", "preemptible capacity"):
+        return "PREEMPTIBLE"
+    if value_l in ("capacity_reservation", "capacity reservation", "capacityreservation"):
+        return "CAPACITY_RESERVATION"
+    print(
+        "\nNode Capacity Type must be ON_DEMAND, PREEMPTIBLE, or CAPACITY_RESERVATION. "
+        "Please fix it for row : {} and try again.".format(row_num)
+    )
+    print("\n** Exiting **")
+    exit(1)
+
+
+def _normalize_preemptible_preserve_boot_volume(value, row_num):
+    value = str(value or "").strip().lower()
+    if value in ("", "nan", "none", "false", "f", "no", "n", "0"):
+        return "false"
+    if value in ("true", "t", "yes", "y", "1"):
+        return "true"
+    print(
+        "\nPreserve_Boot_Volume in Node Capacity Type must be TRUE or FALSE. "
+        "Please fix it for row : {} and try again.".format(row_num)
+    )
+    print("\n** Exiting **")
+    exit(1)
+
+
+def _parse_node_capacity_config(value, row_num):
+    value = str(value or "").strip()
+    if value.lower() in ("", "nan", "none"):
+        return "ON_DEMAND", "false", ""
+
+    parts = [part.strip() for part in value.split(":")]
+    if len(parts) > 2:
+        print(
+            "\nNode Capacity Type format must be ON_DEMAND, PREEMPTIBLE:<Preserve_Boot_Volume>, "
+            "or CAPACITY_RESERVATION:<OCID>. Please fix it for row : {} and try again.".format(row_num)
+        )
+        print("\n** Exiting **")
+        exit(1)
+
+    node_capacity_type = _normalize_node_capacity_type(parts[0], row_num)
+    preserve_boot_volume = "false"
+    capacity_reservation_id = ""
+    if len(parts) == 2:
+        if node_capacity_type == "PREEMPTIBLE":
+            preserve_boot_volume = _normalize_preemptible_preserve_boot_volume(parts[1], row_num)
+        elif node_capacity_type == "CAPACITY_RESERVATION":
+            capacity_reservation_id = parts[1]
+            if not capacity_reservation_id.lower().startswith("ocid1.capacityreservation."):
+                print(
+                    "\nCAPACITY_RESERVATION in Node Capacity Type requires a valid capacity reservation OCID. "
+                    "Please fix it for row : {} and try again.".format(row_num)
+                )
+                print("\n** Exiting **")
+                exit(1)
+        else:
+            print(
+                "\nON_DEMAND does not accept an additional value in Node Capacity Type. "
+                "Please fix it for row : {} and try again.".format(row_num)
+            )
+            print("\n** Exiting **")
+            exit(1)
+    elif node_capacity_type == "CAPACITY_RESERVATION":
+        print(
+            "\nCAPACITY_RESERVATION in Node Capacity Type requires a capacity reservation OCID. "
+            "Please fix it for row : {} and try again.".format(row_num)
+        )
+        print("\n** Exiting **")
+        exit(1)
+
+    return node_capacity_type, preserve_boot_volume, capacity_reservation_id
+
+
+def _get_node_capacity_configs(value, placement_count, row_num):
+    """Return one normalized capacity configuration for each placement."""
+    value = str(value or "").strip()
+    if value.lower() in ("", "nan", "none"):
+        configs = [""]
+    else:
+        configs = [config.strip() for config in value.split(";")]
+        if any(not config for config in configs):
+            print(
+                "\nNode Capacity Type contains an empty semicolon-separated value. "
+                "Please fix it for row : {} and try again.".format(row_num)
+            )
+            print("\n** Exiting **")
+            exit(1)
+
+    if len(configs) == 1:
+        configs *= placement_count
+    elif len(configs) != placement_count:
+        print(
+            "\nNode Capacity Type must contain one value or the same number of semicolon-separated "
+            "values as Node Placement Configs. Please fix it for row : {} and try again.".format(row_num)
+        )
+        print("\n** Exiting **")
+        exit(1)
+
+    return [_parse_node_capacity_config(config, row_num) for config in configs]
+
+
 ######
 # Required Inputs-CD3 excel file, Config file AND outdir
 ######
@@ -48,15 +154,16 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+    # Kubernetes PodSecurityPolicy is deprecated and intentionally removed from OKE generation.
     # fill the empty values with that in previous row.
     dffill = df[
-        ['Region', 'Compartment Name', 'Cluster Name', 'Cluster Kubernetes Version','Network Type', 'Pod Security Policies Enforced',
+        ['Region', 'Compartment Name', 'Cluster Name', 'Cluster Kubernetes Version','Network Type',
          'Load Balancer Network Details', 'API Endpoint Network Details']]
-    dffill = dffill.fillna(method='ffill')
+    dffill = dffill.ffill()
 
     #Drop unnecessary columns
     dfdrop = df[
-        ['Region', 'Compartment Name', 'Cluster Name', 'Cluster Kubernetes Version','Network Type', 'Pod Security Policies Enforced',
+        ['Region', 'Compartment Name', 'Cluster Name', 'Cluster Kubernetes Version','Network Type',
          'Load Balancer Network Details', 'API Endpoint Network Details']]
     dfdrop = df.drop(dfdrop, axis=1)
     df = pd.concat([dffill, dfdrop], axis=1)
@@ -105,11 +212,10 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                 str(df.loc[i, 'Cluster Name']).lower() == 'nan' or \
                 str(df.loc[i, 'Network Type']).lower() == 'nan' or \
                 str(df.loc[i, 'Cluster Kubernetes Version']).lower() == 'nan' or \
-                str(df.loc[i, 'Pod Security Policies Enforced']).lower() == 'nan' or \
                 str(df.loc[i, 'Load Balancer Network Details']).lower() == 'nan' or \
                 str(df.loc[i, 'API Endpoint Network Details']).lower() == 'nan':
             print(
-                "\nRegion, Compartment Name, Cluster Name, Network Type, Cluster Kubernetes Version, Pod Security Policies, Load Balancer Network Details, API Endpoint Network Details fields are mandatory. Please enter a value and try again !!\n\nPlease fix it for row : {}".format(
+                "\nRegion, Compartment Name, Cluster Name, Network Type, Cluster Kubernetes Version, Load Balancer Network Details, API Endpoint Network Details fields are mandatory. Please enter a value and try again !!\n\nPlease fix it for row : {}".format(
                     i + 3))
             print("\n** Exiting **")
             exit(1)
@@ -181,15 +287,29 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == 'Node Placement Configs':
                 if columnvalue.lower() != 'nan' and columnvalue.lower() != '':
-                    configs=columnvalue.split(";")
+                    row_node_capacity_config = df.loc[i, 'Node Capacity Type'] if 'Node Capacity Type' in dfcolumns else ''
+                    configs = [config.strip() for config in columnvalue.split(";")]
+                    if any(not config for config in configs):
+                        print(
+                            "Node Placement Configs contains an empty semicolon-separated value in row "
+                            + str(i + 3) + ". Exiting!!!"
+                        )
+                        exit(1)
+                    capacity_configs = _get_node_capacity_configs(
+                        row_node_capacity_config, len(configs), i + 3
+                    )
                     j=0
                     placement_configs = {}
                     for config in configs:
-                        if config == "":
-                            break
                         j=j+1
                         #split on : and preserve ::
                         config_data = re.split(r'(?<!:):(?!:)', config)
+                        if len(config_data) != 3:
+                            print(
+                                "Node Placement Configs must use <Network_Details>:<Availability_Domain>:"
+                                "<Fault_Domains> in row " + str(i + 3) + ". Exiting!!!"
+                            )
+                            exit(1)
 
                         network_details = config_data[0]
                         if ("ocid1.subnet.oc" in network_details):
@@ -218,13 +338,12 @@ def create_terraform_oke(inputfile, outdir, service_dir, prefix, ct):
                             fd=','.join(['"' + x.upper() + '"' for x in FD.split(',')])
                         else:
                             fd=""
-                        cr=""
-                        if (len(config_data)==4):
-                            cr = str(config_data[3]).lower()
-                            if cr =='none':
-                                cr=""
+                        node_capacity_type, preserve_boot_volume, cr = capacity_configs[j - 1]
 
-                        placement_configs["node_"+str(j)]=[network_compartment_id, vcn_name, subnet_id, ad, fd,cr]
+                        placement_configs["node_"+str(j)] = [
+                            network_compartment_id, vcn_name, subnet_id, ad, fd, cr,
+                            node_capacity_type, preserve_boot_volume
+                        ]
                         tempdict = {'placement_configs' : placement_configs}
                         tempStr.update(tempdict)
             if columnname == "Compartment Name":

@@ -905,6 +905,21 @@ variable "instances" {
     vnic_freeform_tags                  = optional(map(any))
     defined_tags                        = optional(map(any))
     freeform_tags                       = optional(map(any))
+    secondary_vnics = optional(map(object({
+      network_compartment_id    = optional(string)
+      vcn_name                  = optional(string)
+      subnet_id                 = string
+      display_name              = optional(string)
+      private_ip                = optional(string)
+      assign_public_ip          = optional(bool)
+      hostname_label            = optional(string)
+      assign_private_dns_record = optional(bool)
+      skip_source_dest_check    = optional(bool)
+      physical_nic_index        = optional(number)
+      nsg_ids                   = optional(list(string))
+      defined_tags              = optional(map(any))
+      freeform_tags             = optional(map(any))
+    })), {})
   }))
   default = {}
 }
@@ -1822,7 +1837,6 @@ variable "clusters" {
     is_public_ip_enabled            = optional(bool)
     nsg_ids                         = optional(list(string))
     endpoint_subnet_id              = string
-    is_pod_security_policy_enabled  = optional(bool)
     pods_cidr                       = optional(string)
     services_cidr                   = optional(string)
     service_lb_subnet_ids           = optional(list(string))
@@ -1853,6 +1867,12 @@ variable "nodepools" {
       subnet_id               = string
       fault_domains           = optional(list(string))
       capacity_reservation_id = optional(string)
+      preemptible_node_config = optional(object({
+        preemption_action = object({
+          type                    = string
+          is_preserve_boot_volume = optional(bool)
+        })
+      }))
     })))
     kubernetes_version                  = string
     is_pv_encryption_in_transit_enabled = optional(bool)
@@ -2360,4 +2380,3 @@ variable "fw_logs" {
 # Add new variables here #
 ##########################
 ######################### END #########################
-

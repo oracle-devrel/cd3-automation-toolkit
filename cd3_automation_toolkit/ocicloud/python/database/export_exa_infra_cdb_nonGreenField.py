@@ -212,7 +212,11 @@ def export_exa_cdb(inputfile, outdir, service_dir, config, signer, ct, export_co
                 if exa_dbhome.vm_cluster_id:
                     exa_cdbs = oci.pagination.list_call_get_all_results(db_client.list_databases,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],db_home_id=exa_dbhome.id, lifecycle_state="AVAILABLE")
                     for exa_cdb in exa_cdbs.data:
-                        vm_cluster = db_client.get_cloud_vm_cluster(cloud_vm_cluster_id=exa_cdb.vm_cluster_id)
+                        try:
+                            vm_cluster = db_client.get_cloud_vm_cluster(cloud_vm_cluster_id=exa_cdb.vm_cluster_id)
+                        except Exception as e:
+                            print("error with db home " + exa_dbhome.display_name)
+
                         exadata_infrastructure = db_client.get_cloud_exadata_infrastructure(cloud_exadata_infrastructure_id=vm_cluster.data.cloud_exadata_infrastructure_id)
                         exa_infra_compartment_name = next((name for name, ocid in ct.ntk_compartment_ids.items() if
                                                            ocid == exadata_infrastructure.data.compartment_id), None)
@@ -233,6 +237,8 @@ def export_exa_cdb(inputfile, outdir, service_dir, config, signer, ct, export_co
                         if check == False:
                             continue
 
+                        print(exa_cdb)
+                        print("------")
                         print_exa_cdb(region,exadata_infrastructure,exa_infra_compartment_name,vm_cluster,exa_dbhome, exa_cdb,values_for_column, ntk_compartment_name,state)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)

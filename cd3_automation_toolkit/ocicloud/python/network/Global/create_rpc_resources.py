@@ -24,6 +24,23 @@ owd = os.getcwd()
 oci_regions_path = Path(__file__).resolve().parents[2] / "OCI_Regions"
 
 
+def resolve_oci_region_name(region):
+    """Return the canonical OCI region name for a CD3 region name or region ID."""
+    normalized_region = str(region).strip().lower()
+
+    with open(oci_regions_path, encoding='utf8') as regions_file:
+        for line in regions_file:
+            region_details = line.strip().split(':', 1)
+            if len(region_details) != 2:
+                continue
+
+            region_name, region_id = (value.strip() for value in region_details)
+            if normalized_region in (region_name.lower(), region_id.lower()):
+                return region_id
+
+    raise ValueError(f"Invalid OCI region '{region}'")
+
+
 def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config, signer, auth_mechanism):
     subs_region_list = []
     new_subs_region_list = []
@@ -184,7 +201,20 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, 
 
             requester_drg_name = str(df.loc[i, 'DRG Name']).strip()
             target_details = str(df.loc[i, 'Attached To'])
-            attached_to = target_details.replace(target_details.split("::")[1], target_details.split("::")[1].lower())
+            target_details_parts = target_details.split("::")
+            if len(target_details_parts) != 3:
+                print(f"\nERROR!!! Invalid Attached To value '{target_details}' in DRGs sheet. "
+                      "Expected RPC::<region>::<DRG name>..Exiting!")
+                exit(1)
+
+            try:
+                accepter_region = resolve_oci_region_name(target_details_parts[1])
+            except ValueError as error:
+                print(f"\nERROR!!! {error} in Attached To value '{target_details}' in DRGs sheet..Exiting!")
+                exit(1)
+
+            accepter_drg_name = target_details_parts[2].strip()
+            attached_to = f"RPC::{accepter_region}::{accepter_drg_name}"
             existing_line = f"{attached_to}::{requester_drg_name}"
 
             # match = re.findall(existing_line, fo)
@@ -239,20 +269,11 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, 
                             tempdict = {'requester_compartment_name': compartment_var_name}
 
                         if columnname == 'Attached To':
-                            accepter_compartment_var_name = columnvalue.strip().split("::")
-                            accepter_region = accepter_compartment_var_name[1]
-                            accepter_region = next(
-                                line.split(':')[1].strip() for line in open(oci_regions_path) if
-                                line.startswith(f"{accepter_region}:"))
-                            accepter_drg_name = accepter_compartment_var_name[2]
                             tempdict = {'accepter_region': accepter_region.lower(),
                                         'accepter_drg_name': accepter_drg_name}
 
                         if columnname == 'Region':
-                            requester_region = columnvalue.strip().lower()
-                            requester_region = next(
-                                line.split(':')[1].strip() for line in open(oci_regions_path) if
-                                line.startswith(f"{requester_region}:"))
+                            requester_region = resolve_oci_region_name(columnvalue)
 
                             tempdict = {'requester_region': requester_region}
 
