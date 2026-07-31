@@ -81,7 +81,13 @@
         - [Create Resources in Azure](greenfield-azr-cli.md)<br>
         - [Export Resources from Azure](nongreenfield-azr-cli.md)<br>
     
+-   :material-monitor-screenshot:{ .lg .middle } __Manage GCP__
 
+    ---
+    - [Manage GCP](setUpGCP.md)<br>
+    - [Manage GCP with CLI](cd3-gcp-cli.md)<br>
+        - [Create Resources in GCP](greenfield-gcp-cli.md)<br>
+        - [Export Resources from GCP](nongreenfield-gcp-cli.md)<br>
     
 <!-- 
 -   :material-lightbulb-auto:{ .lg .middle } __Read More for OCI__
