@@ -57,13 +57,13 @@ workflow_type=create_resources
         </tr>
         <tr>
             <td>auth_mechanism</td>
-            <<td> api_key of service account </td>
+            <<td>Authentication mechanism for GCP APIs</td>
             <td>api_key</td>
         </tr>
         <tr>
             <td>config_file</td>
-            <td>input credentials file for service account</td>
-            <td>/cd3user/gcp/keys/gcp_api_private.json</td>
+            <td>Path to the GCP service-account JSON credentials file; required for export</td>
+            <td>/cd3user/credentials/gcp-service-account.json</td>
         </tr>
         <tr>
             <td>cd3file</td>
