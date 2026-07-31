@@ -41,6 +41,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.2.0/cd3-gcp-cli/</loc>
+         <lastmod>2026-07-31</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/v2026.2.0/cd3-jenkins/</loc>
          <lastmod>2026-07-31</lastmod>
          <changefreq>daily</changefreq>
