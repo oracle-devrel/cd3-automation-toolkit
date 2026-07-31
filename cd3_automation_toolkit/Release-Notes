@@ -1,6 +1,6 @@
 -------------------------------------
 CD3 Automation Toolkit Tag v2026.2.0
-Release date: TBD
+Jul 31st, 2026
 -------------------------------------
 1. Added multi-cloud Database Service support for Azure and GCP, including creation of ADB and Exadata resources, ADB export, and offline tfvars generation. Exadata export is not included in this release.
 2. Added support for multiple secondary VNICs for OCI instances.
@@ -8,6 +8,7 @@ Release date: TBD
 4. Updated the CIS compliance report to version 3.2.1.
 5. Added identity output separation and fixed RPC deduplication and user export behavior.
 6. Included bug fixes for ADB, NSG rules, buckets, the OCI Resource Manager stack, and other minor issues.
+7. Upgraded Jenkins core from 2.504.1 to 2.504.3 for compatibility with the current Jenkins plugin update-center catalog.
 
 -------------------------------------
 CD3 Automation Toolkit Tag v2026.1.2
