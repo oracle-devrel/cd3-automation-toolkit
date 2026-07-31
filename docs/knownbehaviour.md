@@ -68,8 +68,10 @@ Toolkit will create TF for only those DRGs which are part of CD3 and skip Route 
 Match All criteria specified for Route Distribution Statement In DRGs sheet will show below output each time you do terraform plan:
 
   ![image](../images/knownbehaviour-5.png)
+
+  ![image](../images/knownbehaviour-5-1.png)
   
-  The service api is designed in such a way that it expects an empty list for match all. And it sends back an empty list in the response every time. Hence this behaviour from terraform side. This can be safely ignored.
+  This can be safely ignored.
 
 **6.**
 Export process for non greenfield tenancies v6.0 or higher will try to revert SGW for a VCN to point to all services if it was existing for just object storage. You will get output similiar to below when terraform plan is run (Option 3 with workflow_type set to export_resources).
