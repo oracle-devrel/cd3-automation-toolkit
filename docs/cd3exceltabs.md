@@ -271,7 +271,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
       </ul>
     </div>
 
-
+<!--
       <h3 id="oracledb@aws" style="display: flex; align-items: center; gap: 8px;">
       <img src="../images/database.png" alt="oradb@aws Icon" style="height: 30px; width: 30px;">  
       <b>OracleDB @AWS</b>
@@ -281,7 +281,7 @@ Click on the links below to know about the specifics of each tab in the Excel te
         <li><a href="../tabs#adb-aws">ADB @AWS</a></li>
       </ul>
     </div>
-
+-->
       <h3 id="oracledb@gcp" style="display: flex; align-items: center; gap: 8px;">
       <img src="../images/database.png" alt="oradb@gcp Icon" style="height: 30px; width: 30px;">  
       <b>OracleDB @GCP</b>

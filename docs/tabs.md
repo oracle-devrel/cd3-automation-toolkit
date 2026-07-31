@@ -360,8 +360,10 @@ On choosing **"Compute"** in the setUpCloud  menu and **"Add/Modify/Delete Dedic
 
 ## Instances Tab
 
+!!! Note 
+    Support for multiple vnics to single instance is extended
 
-<ins>CD3 Tab Specifications:</ins>
+**CD3 Tab Specifications:**
 
 1. "Display Name" column is case sensitive. Specified value will be the display name of Instance in OCI console.
 
@@ -421,10 +423,24 @@ Format -
 
 10. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
 
-11. While export of instances, it will fetch details for only the primary VNIC attached to the instance
+!!! Info
+    **For secondary vnic, below are the allowed columns names**
+    <br>Secondary VNIC Network Details
+    <br>Secondary VNIC IP Addresses
+    <br>Secondary VNIC NSGs
+    <br>Secondary VNIC Skip Source Dest Check
+    <br>Secondary VNIC Pub Address
+    <br>Secondary VNIC Display Names
+    <br>Secondary VNIC Hostname Labels
+    <br>Secondary VNIC Private DNS
+    <br>Secondary VNIC Physical NIC Index
+    <br>Secondary VNIC Defined Tags
+    <br>Secondary VNIC Freeform Tags
+    <br>Are Legacy Imds Endpoints Disabled<br>    
 
-!!! Note 
-    Support for multiple vnics to single instance is extended
+
+* While export of instances, it will fetch details for both the primary and secondary VNICs attached to the instance.
+
 
 On choosing **"Compute"** in the setUpCloud  menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
 
@@ -436,7 +452,7 @@ On choosing **"Compute"** in the setUpCloud  menu and **"Add/Modify/Delete Insta
 <span style="color: teal; font-weight: bold;">
   Backup Path for previous outputs:
 </span>
-<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;">(?)</a>
+<a href="#backup-info" title="When a menu option is re-run, existing .auto.tfvars files are automatically backed up to this path for easy recovery and comparison" style="text-decoration: none; color: teal; font-weight: normal;"></a>
 <code>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/backup_instances/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code>
 
 
@@ -1076,6 +1092,7 @@ Selecting `Storage` in the setUpCloud  menu and `Add/Modify/Delete Buckets` sub-
 !!! Important
     Currently the creation of buckets with indefinite retention rule is not supported, only export is supported.
   
+
 **CD3 Tab specifications:**
   
 1. The Region, Compartment Name and Bucket Name fields are mandatory.
@@ -1242,7 +1259,7 @@ Upon executing setUpCloud.py, choose `Create DB @Azure` from the main menu and `
 </span>
 <code>&lt;outdir&gt;/backup_adb-azure/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
 
-
+<!--
 ## ADB-AWS
 
 The ADB-AWS tab in CD3-AWS-template.xlsx can be used to create ADB@AWS in the AWS account.
@@ -1258,7 +1275,7 @@ Upon executing setUpCloud.py, choose `Create DB @AWS` from the main menu and `Ad
 </span>
 <code>&lt;outdir&gt;/backup_adb-aws/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</code> 
 
-
+-->
 
 ## ADB-GCP
 

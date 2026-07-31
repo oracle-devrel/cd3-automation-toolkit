@@ -144,7 +144,7 @@ Specify the compartment name along with hierarchy in the below format:
 
 10. The associated ssh public keys are placed under variables_<region\>.tf under the "instance_ssh_keys" variable.  <br>
 
-11. While export of instances, it will fetch details for only the primary VNIC attached to the instance. <br>
+11. While export of instances, it will fetch details for both the primary and secondaru VNICs attached to the instance. <br>
 
 12. Execute the .sh file (*sh import_commands_instances.sh*) to generate terraform state file. <br>  **This will be automatically executed while using the toolkit with Jenkins.**
 

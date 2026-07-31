@@ -5,7 +5,7 @@
 
 |Excel Sheet  | Purpose                                                                                                                    | 
 |-----------|----------------------------------------------------------------------------------------------------------------------------|
-| [CD3-GCP-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-GCP-template.xlsx)   | 	Use this template to create ADB @ GCP|
+| [CD3-GCP-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-GCP-template.xlsx)   | 	1. Use this template to create/export of  ADB @ GCP, create of ExaData @ GCP. <br> 2. Offline .tfvars creation for ADB and Exadata @ GCP|
 
 
 

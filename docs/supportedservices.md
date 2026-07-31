@@ -250,7 +250,7 @@ CD3 supports Oracle Database@Multicloud deployments across Azure and Google Clou
             <p><i>Oracle Database services on Microsoft Azure.</i></p>
         </div>
     </div>
-
+ <!--
     <div class="service-card">
         <div class="card-title">
             <h3>AWS</h3>
@@ -261,7 +261,7 @@ CD3 supports Oracle Database@Multicloud deployments across Azure and Google Clou
             <p><i>Oracle Database services on Amazon Web Services.</i></p>
         </div>
     </div>
-
+-->
     <div class="service-card">
         <div class="card-title">
             <h3>GCP</h3>

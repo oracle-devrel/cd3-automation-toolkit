@@ -5,9 +5,7 @@
 
 |Excel Sheet  | Purpose                                                                                                                    | 
 |-----------|----------------------------------------------------------------------------------------------------------------------------|
-| [CD3-Azure-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Azure-template.xlsx)   | 	Use this template to create ADB @ Azure|
-
-
+| [CD3-Azure-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Azure-template.xlsx)   | 	1. Use this template to create/export of  ADB @ Azure, create of ExaData @ Azure. <br> 2. Offline .tfvars creation for ADB and Exadata @ Azure|
 
 
 !!! info "Location of Templates inside the container"

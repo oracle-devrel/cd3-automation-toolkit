@@ -64,7 +64,7 @@ cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```
 
 ```
-python setUpCloud.py azure /cd3user/azure/<prefix>/<prefix>_setUpAure.properties
+python setUpCloud.py azure /cd3user/azure/<prefix>/<prefix>_setUpAzure.properties
 ```
 
 !!! example  "Example Execution"
