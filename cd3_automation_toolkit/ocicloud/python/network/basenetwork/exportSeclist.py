@@ -152,7 +152,7 @@ def print_secrules(seclists,region,vcn_name,comp_name,export_tags,state):
 
             #Any Other protocol
             else:
-                protocol=commonTools().protocol_dict[rule.protocol].lower()
+                protocol=ociCommonTools.protocol_dict[rule.protocol].lower()
                 insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'egress', protocol, '', '','', '', '', '')
 
             if not tf_import_cmd:
@@ -232,7 +232,7 @@ def print_secrules(seclists,region,vcn_name,comp_name,export_tags,state):
                 insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', 'all','', '', '', '','', '')
             #Any Other protocol
             else:
-                protocol=commonTools().protocol_dict[rule.protocol].lower()
+                protocol=ociCommonTools.protocol_dict[rule.protocol].lower()
                 insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', protocol, '', '', '','', '', '')
 
             if not tf_import_cmd:

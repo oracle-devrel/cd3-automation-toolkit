@@ -25,6 +25,9 @@ runcmd:
     sudo mkdir -p /$mount_dir/tenancies
     sudo mkdir -p /$mount_dir/oci_tools
 
+    sudo growpart /dev/sda 3
+    sudo lvextend -l +100%FREE /dev/mapper/ocivolume-root
+    sudo xfs_growfs /
 
     tenancyconfig_properties="/$mount_dir/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties"
     connectOCI_properties="/$mount_dir/oci_tools/cd3_automation_toolkit/connectOCI.properties"

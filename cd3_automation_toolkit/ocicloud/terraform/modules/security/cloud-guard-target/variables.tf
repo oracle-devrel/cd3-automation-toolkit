@@ -65,3 +65,22 @@ variable "target_responder_recipes" {}
 
 variable "target_detector_recipes" {}
 
+variable "detector_recipe_rule_overrides" {
+  description = "Detector-rule overrides keyed by Oracle detector recipe display name, then rule ID. An empty map preserves the cloned Oracle recipe rules."
+  type = map(map(object({
+    detector_rule_id = string
+    is_enabled       = bool
+    risk_level       = string
+    labels           = optional(list(string), [])
+  })))
+  default = {}
+}
+
+variable "responder_recipe_rule_overrides" {
+  description = "Responder-rule overrides keyed by Oracle responder recipe display name, then rule ID. An empty map preserves the cloned Oracle recipe rules."
+  type = map(map(object({
+    responder_rule_id = string
+    is_enabled        = bool
+  })))
+  default = {}
+}

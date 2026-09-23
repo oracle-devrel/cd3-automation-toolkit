@@ -26,6 +26,7 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
     env = Environment(loader=file_loader, keep_trailing_newline=True)
     nlb = env.get_template('nlb-template')
     reserved_ips_template = env.get_template('nlb-reserved-ips-template')
+    reserved_private_ips_template = env.get_template('nlb-reserved-private-ips-template')
     nlb_listener = env.get_template('nlb-listener-template')
 
     sheetName = "NLB-Listeners"
@@ -35,6 +36,7 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
 
     nlb_str = {}
     reserved_ips_str = {}
+    reserved_private_ips_str = {}
     nlb_listener_str = {}
     nlb_tf_name = ''
     nlb_name = ''
@@ -49,6 +51,7 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
     for reg in ct.all_regions:
         nlb_str[reg] = ''
         reserved_ips_str[reg] = ''
+        reserved_private_ips_str[reg] = ''
         nlb_listener_str[reg] = ''
         nlb_names[reg] = []
         resource = sheetName.lower()
@@ -103,7 +106,6 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
 
         # Fetch data; loop through columns
         for columnname in dfcolumns:
-
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
@@ -121,14 +123,33 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
                 columnname = "compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 
-            if columnname == "Reserved IP(Y|N|OCID)":
-                columnname = "reserved_ips_id"
-                if columnvalue != "":
-                    if "," in columnvalue:
-                        columnvalue = columnvalue.split(",")
-
             if columnname == "Is Private(True|False)":
                 columnname = 'is_private'
+            #print(tempStr)
+            if columnname == "Reserved IP(Y|N|OCID)":
+                columnname = "reserved_ips_id"
+                reserved_ip_parts = str(columnvalue).strip().split("::", 1)  
+                if columnvalue != "":
+                    #if "," in columnvalue:
+                        #columnvalue = columnvalue.split(",")   
+                    if reserved_ip_parts[0].lower() == 'y':
+                    # Templates retain their existing ``reserved_ips_id == 'y'`` check.
+                        tempStr['reserved_ips_id'] = 'y'
+                    is_private = str(tempStr.get('is_private', '')).lower() in (
+                        'y', 'yes', 'true'
+                    )
+                    if is_private and reserved_ip_parts[0].lower() == 'y':
+                        tempStr['hostname_label'] = (
+                        reserved_ip_parts[1] if len(reserved_ip_parts) > 1 else str(tempStr.get('nlb_tf_name', ''))
+                        )
+                        tempStr['reserved_private_ip'] = str(tempStr.get('ip_address', ''))
+                        tempStr['ip_address'] = ''
+                        reserved_private_ips_str[region] += reserved_private_ips_template.render(tempStr)
+                    else:
+                         tempStr['reserved_ip_address'] = ''
+                         reserved_ips_str[region] += reserved_ips_template.render(tempStr)
+                if reserved_ip_parts[0].strip().lower() == "y":
+                    columnvalue = "Y"
 
             if columnname == "NLB Name":
                 if columnvalue != '' and columnvalue != 'nan':
@@ -209,9 +230,6 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
         else:
             nlb_listener_str[prevreg] = nlb_listener_str[prevreg] + nlb_listener.render(tempStr)
 
-        if tempStr['reserved_ips_id'].lower() == 'y':
-            reserved_ips_str[region] = reserved_ips_str[region] + reserved_ips_template.render(tempStr)
-
     for reg in ct.all_regions:
         if nlb_str[reg] != '':
             # Generate Final String
@@ -228,7 +246,12 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
             src = "##Add New Network Load Balancer Reserved IPs for "+ reg.lower() +" here##"
             reserved_ips_str[reg] = reserved_ips_template.render(skeleton=True, count = 0, region=reg).replace(src, reserved_ips_str[reg]+"\n"+src)
 
-        finalstring =  nlb_str[reg] + nlb_listener_str[reg] + reserved_ips_str[reg]
+        if reserved_private_ips_str[reg] != '':
+            # Generate Final String
+            src = "##Add New Network Load Balancer Reserved Private IPs for " + reg.lower() + " here##"
+            reserved_private_ips_str[reg] = reserved_private_ips_template.render(skeleton=True, count=0, region=reg).replace(src, reserved_private_ips_str[reg] + "\n" + src)
+
+        finalstring =  nlb_str[reg] + nlb_listener_str[reg] + reserved_ips_str[reg] + reserved_private_ips_str[reg]
         finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
 
         if finalstring != "":

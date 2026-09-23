@@ -38,7 +38,8 @@ module "network-load-balancers" {
   vcn_name                       = each.value.vcn_name
   defined_tags                   = each.value.defined_tags
   freeform_tags                  = each.value.freeform_tags
-  reserved_ips_id                = each.value.reserved_ips_id != "" && lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.publicip.oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.nlb-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []
+  #reserved_ips_id                = each.value.reserved_ips_id != "" && lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.publicip.oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.nlb-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []
+  reserved_ips_id                = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.(publicip|privateip).oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : try([merge(module.nlb-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id], [merge(module.nlb-reserved-private-ips.*...)[join("-", [each.key, "reserved", "ip"])].private_ip_tf_id])) : []) : []
 }
 
 module "nlb-listeners" {
@@ -125,3 +126,29 @@ module "nlb-reserved-ips" {
   #public_ip_pool_id    = each.value.public_ip_pool_id != "" ? (length(regexall("ocid1.publicippool.oc*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
 }
 
+############################################
+# Module Block - Reserved Private IPs for NLBs
+# Create Reserved Private IPs for NLBs
+# Allowed Values:
+# Lifetime Values can be one of EPHEMERAL or RESERVED
+############################################
+
+module "nlb-reserved-private-ips" {
+  source   = "../../modules/ip/reserved-private-ip"
+  for_each = var.nlb_reserved_private_ips != null && var.nlb_reserved_private_ips != {} ? var.nlb_reserved_private_ips : {}
+
+  #Required
+  network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
+  vcn_name               = each.value.vcn_name
+  subnet_id              = each.value.subnet_id
+  lifetime               = each.value.lifetime
+
+  #Optional
+  defined_tags   = each.value.defined_tags
+  display_name   = each.value.display_name
+  freeform_tags  = each.value.freeform_tags
+  hostname_label = each.value.hostname_label
+  ip_address     = each.value.ip_address
+  vlan_id        = each.value.vlan_id
+  vnic_id        = each.value.vnic_id
+}

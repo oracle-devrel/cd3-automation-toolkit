@@ -224,17 +224,22 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
         if(nsg_detail!=""):
             nsg_detail = nsg_detail[:-1]
 
-        # Fetch reserved IP address
-        reserved_ip = ""
-        is_public=False
-        if eachnlb.ip_addresses != []:
-            for ips in eachnlb.ip_addresses:
-                if(ips.is_public == True):
-                    is_public=ips.is_public
-                    if str(ips.reserved_ip) == "null" or str(ips.reserved_ip) == "None":
-                        reserved_ip = "N"
-                    else:
-                        reserved_ip = ips.reserved_ip.id
+        # Fetch the reserved IP OCID and the NLB private IP address.
+        reserved_ip = "N"
+        private_ip_address = ""
+        is_private = bool(eachnlb.is_private)
+
+        for ips in (eachnlb.ip_addresses or []):
+          # Always capture the private IP address.
+          if not ips.is_public:
+            ip_address = ips.ip_address
+
+          # Private NLB  -> select private reserved-IP OCID.
+          # Public NLB   -> select public reserved-IP OCID.
+          is_public = not is_private
+          if bool(ips.is_public) == is_public:
+             if ips.reserved_ip and ips.reserved_ip.id:
+                reserved_ip = ips.reserved_ip.id
 
         # Loop through listeners
         for listeners, values in eachnlb.__getattribute__('listeners').items():

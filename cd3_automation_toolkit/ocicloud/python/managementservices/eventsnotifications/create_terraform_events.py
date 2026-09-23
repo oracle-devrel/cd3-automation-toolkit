@@ -143,22 +143,29 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
                 tempStr.update(tempdict)
             
             if columnname == "Topic":
-               topic_name = columnvalue.strip()
-               if ( action_type.lower() in "faas"):
-                topic_id = topic_name.split("::")
-                topic_id = topic_id[1]
-                tempdict = {'action_id': topic_id}
-                tempStr.update(tempdict)
-                name = "function_id"
-                tempdict = {'label' : name}
-                tempStr.update(tempdict)
-               if ( action_type.lower() == "ons"):
-                topic_id = topic_name
-                tempdict = {'action_id': topic_id}
-                tempStr.update(tempdict)
-                name = "topic_id"
-                tempdict = {'label' : name}
-                tempStr.update(tempdict)
+                topic_name = columnvalue.strip()
+                if ( action_type.lower() in "faas"):
+                    topic_id = topic_name.split("::")
+                    topic_id = topic_id[1]
+                    tempdict = {'action_id': topic_id}
+                    tempStr.update(tempdict)
+                    name = "function_id"
+                    tempdict = {'label' : name}
+                    tempStr.update(tempdict)
+                elif ( action_type.lower() == "ons"):
+                    topic_id = topic_name
+                    tempdict = {'action_id': topic_id}
+                    tempStr.update(tempdict)
+                    name = "topic_id"
+                    tempdict = {'label' : name}
+                    tempStr.update(tempdict)
+                elif (action_type.lower() == "oss"):
+                    topic_id = topic_name
+                    tempdict = {'action_id': topic_id}
+                    tempStr.update(tempdict)
+                    name = "stream_id"
+                    tempdict = {'label': name}
+                    tempStr.update(tempdict)
 
             if columnname == "Action is Enabled":
                 columnvalue = columnvalue.strip()

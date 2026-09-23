@@ -1648,9 +1648,11 @@ def run_utility(prim_options=[]):
 
 def enable_cis_cloudguard():
     if not devops:
-        region = input("Enter Reporting Region for Cloud Guard eg london: ")
+        region = input("Enter Reporting Region for Cloud Guard eg london(Defaults to Home Region if left empty): ")
     else:
         region = ct.cg_region
+    if region=='' or region== 'nan':
+        region=ct.home_region
     region = region.lower()
     security.enable_cis_cloudguard(outdir, service_dir_cloud_guard, prefix, ct, region)
     # Update modified path list

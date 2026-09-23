@@ -33,6 +33,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
     certficate = env.get_template('certificate-template')
     ciphersuite =  env.get_template('cipher-suite-template')
     reserved_ips_template = env.get_template('lbr-reserved-ips-template')
+    reserved_private_ips_template = env.get_template('lbr-reserved-private-ips-template')
     sheetName = "LB-Hostname-Certs"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
@@ -40,6 +41,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
 
     lbr_str = {}
     reserved_ips_str = {}
+    reserved_private_ips_str = {}
     hostname_str = {}
     hostname_str_02 = {}
     certificate_str = {}
@@ -74,6 +76,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
         lbr_str[reg] = ''
         hostname_str[reg] = ''
         reserved_ips_str[reg] = ''
+        reserved_private_ips_str[reg] = ''
         certificate_str[reg] = ''
         cipher_suites[reg] = ''
         hostname_str_02[reg] = ''
@@ -256,6 +259,27 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
 
             if columnname == "Reserved IP (Y|N|OCID)":
                 columnname = "reserved_ips_id"
+                # A private reserved IP can be specified as one of:
+                # Y, Y::IP_ADDRESS, or Y::IP_ADDRESS::HOSTNAME_LABEL.
+                reserved_ip_parts = str(columnvalue).strip().split("::", 2)     
+                if reserved_ip_parts[0].lower() == 'y':
+                # Templates retain their existing ``reserved_ips_id == 'y'`` check.
+                    tempStr['reserved_ips_id'] = 'y'
+                    is_private = str(tempStr.get('is_private', '')).lower() in (
+                        'y', 'yes', 'true'
+                    )
+                    if is_private:
+                        tempStr['ip_address'] = (
+                        reserved_ip_parts[1] if len(reserved_ip_parts) > 1 else ''
+                        )
+                        tempStr['hostname_label'] = (
+                        reserved_ip_parts[2] if len(reserved_ip_parts) > 2 else str(tempStr.get('lbr_tf_name', ''))
+                        )
+                        reserved_private_ips_str[region] += reserved_private_ips_template.render(tempStr)
+                    else:
+                         reserved_ips_str[region] += reserved_ips_template.render(tempStr)
+                if reserved_ip_parts[0].strip().lower() == "y":
+                    columnvalue = "Y"
 
             lbr_subnets_list = []
             network_compartment_id = ''
@@ -283,7 +307,8 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
                             subnet_id = vcn_subnet_name.split("::")[1].strip()
 
                     lbr_subnets_list.append(subnet_id)
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
+                    ip_subnet_id = subnet_id
+                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list), 'private_ip_subnet_id': ip_subnet_id}
                 elif len(lbr_subnets) == 2:
                     for subnet in lbr_subnets:
                         columnvalue=subnet
@@ -305,7 +330,8 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
                                 vcn_name = vcn_subnet_name.split("::")[0].strip()
                                 subnet_id = vcn_subnet_name.split("::")[1].strip()
                         lbr_subnets_list.append(subnet_id)
-                        tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
+                        ip_subnet_id = subnet_id
+                        tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list), 'private_ip_subnet_id': ip_subnet_id}
 
             if columnname == "NSGs":
                 if columnvalue != '':
@@ -376,8 +402,6 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
 
         lbr_str[region] = lbr_str[region] + lbr.render(tempStr)
         hostname_str_02[region] = hostname_str_02[region] + hostname_str[region]
-        if tempStr['reserved_ips_id'].lower() == 'y':
-            reserved_ips_str[region] = reserved_ips_str[region] + reserved_ips_template.render(tempStr)
 
     for reg in ct.all_regions:
         if lbr_str[reg] != '':
@@ -405,7 +429,13 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
             src = "##Add New Load Balancer Reserved IPs for "+ reg.lower() +" here##"
             reserved_ips_str[reg] = reserved_ips_template.render(skeleton=True, count = 0, region=reg).replace(src, reserved_ips_str[reg]+"\n"+src)
 
-        finalstring =  lbr_str[reg] + hostname_str_02[reg] + certificate_str[reg] + cipher_suites[reg] + reserved_ips_str[reg]
+        if reserved_private_ips_str[reg] != '':
+            # Generate Final String
+            src = "##Add New Load Balancer Reserved Private IPs for " + reg.lower() + " here##"
+            reserved_private_ips_str[reg] = reserved_private_ips_template.render(skeleton=True, count=0, region=reg).replace(src, reserved_private_ips_str[reg] + "\n" + src)
+        
+
+        finalstring =  lbr_str[reg] + hostname_str_02[reg] + certificate_str[reg] + cipher_suites[reg] + reserved_ips_str[reg] + reserved_private_ips_str[reg]
         finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
 
         if finalstring != "":

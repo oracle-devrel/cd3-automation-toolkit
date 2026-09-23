@@ -63,7 +63,8 @@ module "load-balancers" {
   network_security_group_ids = each.value.nsg_ids
   key_name                   = each.key
   load_balancers             = var.load_balancers
-  reserved_ips_id            = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.publicip.oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []) : []
+  #reserved_ips_id            = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.publicip.oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []) : []
+  reserved_ips_id            = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.(publicip|privateip).oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : try([merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id],[merge(module.lbr-reserved-private-ips.*...)[join("-", [each.key, "reserved", "ip"])].private_ip_tf_id])) : []) : []
 }
 
 /*
@@ -350,3 +351,31 @@ module "lbr-reserved-ips" {
   #private_ip_id        = each.value.private_ip_id != null ? (length(regexall("ocid1.privateip.oc*", each.value.private_ip_id)) > 0 ? each.value.private_ip_id : (length(regexall("\\.", each.value.private_ip_id)) == 3 ? local.private_ip_id[0][each.value.private_ip_id] : merge(module.private-ips.*...)[each.value.private_ip_id].private_ip_tf_id)) : null
   #public_ip_pool_id    = each.value.public_ip_pool_id != null ? (length(regexall("ocid1.publicippool.oc*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
 }
+
+############################################
+# Module Block - Reserved Private IPs for LBaaS
+# Create Reserved Private IPs for LBaaS
+# Allowed Values:
+# Lifetime Values can be one of EPHEMERAL or RESERVED
+############################################
+
+module "lbr-reserved-private-ips" {
+  source   = "./modules/ip/reserved-private-ip"
+  for_each = var.lbr_reserved_private_ips != null && var.lbr_reserved_private_ips != {} ? var.lbr_reserved_private_ips : {}
+
+  #Required
+  network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
+  vcn_name       = each.value.vcn_name
+  subnet_id      = each.value.subnet_id
+  lifetime       = each.value.lifetime
+
+  #Optional
+  defined_tags   = each.value.defined_tags
+  display_name   = each.value.display_name
+  freeform_tags  = each.value.freeform_tags
+  hostname_label = each.value.hostname_label
+  ip_address     = each.value.ip_address
+  vlan_id        = each.value.vlan_id
+  vnic_id        = each.value.vnic_id
+}
+

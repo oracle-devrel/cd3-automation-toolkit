@@ -1496,6 +1496,24 @@ variable "lbr_reserved_ips" {
   default = {}
 }
 
+variable "lbr_reserved_private_ips" {
+  description = "To provision Load Balancer Reserved Private IPs"
+  type = map(object({
+    network_compartment_id    = string
+    vcn_name                  = string
+    subnet_id                 = string
+    lifetime                  = string
+    display_name              = optional(string)
+    ip_address                = optional(string)
+    hostname_label            = optional(string)
+    vlan_id                   = optional(string)
+    vnic_id                   = optional(string)
+    defined_tags              = optional(map(any))
+    freeform_tags             = optional(map(any))  
+  }))
+  default = {}
+}
+
 variable "lb_routing_policies" {
   description = "To provision Load Balancer Routing Policies"
   type = map(object({
@@ -1630,6 +1648,23 @@ variable "nlb_reserved_ips" {
     display_name      = optional(string)
     private_ip_id     = optional(string)
     public_ip_pool_id = optional(string)
+  }))
+  default = {}
+}
+variable "nlb_reserved_private_ips" {
+  description = "To provision Load Balancer Reserved Private IPs"
+  type = map(object({
+    network_compartment_id = string
+    vcn_name               = string
+    subnet_id              = string
+    lifetime               = string
+    display_name           = optional(string)
+    ip_address             = optional(string)
+    hostname_label         = optional(string)
+    vlan_id                = optional(string)
+    vnic_id                = optional(string)
+    defined_tags           = optional(map(any))
+    freeform_tags          = optional(map(any))
   }))
   default = {}
 }
@@ -2116,6 +2151,7 @@ variable "cloud_guard_targets" {
     target_resource_id       = string
     target_resource_type     = string
     prefix                   = string
+    rule_mode                = optional(string, "default_rules")
     description              = optional(string)
     state                    = optional(string)
     target_detector_recipes  = optional(list(any))
@@ -2124,6 +2160,14 @@ variable "cloud_guard_targets" {
     defined_tags             = optional(map(any))
   }))
   default = {}
+
+  validation {
+    condition = alltrue([
+      for target in values(var.cloud_guard_targets) :
+      contains(["default_rules", "custom_rules"], target.rule_mode)
+    ])
+    error_message = "cloud_guard_targets.rule_mode must be either default_rules or custom_rules."
+  }
 }
 
 ####################################
