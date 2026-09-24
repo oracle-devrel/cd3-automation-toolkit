@@ -20,7 +20,7 @@ import ocicloud.python.ociCommonTools as ociCommonTools
 # Required Inputs- Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def enable_cis_cloudguard(outdir, service_dir,prefix, ct, region):
+def enable_cis_cloudguard(outdir, service_dir,prefix, ct, region,compartment_id):
 
     #home_region=ct.home_region
     region_key = ct.region_dict[region]
@@ -37,10 +37,6 @@ def enable_cis_cloudguard(outdir, service_dir,prefix, ct, region):
     configtfStr = ''
     targettfStr = ''
 
-    compartment_id = input('Enter Compartment Name to create Cloud Guard Target and Recipes(Defaults to root if left empty): ')
-    if compartment_id=='' or compartment_id=='nan':
-        compartment_id='root'
-    compartment_id = commonTools.check_tf_variable(compartment_id)
     cg_tf_name = prefix+"-cloud_guard"
     cg_target_tf_name = prefix + "-" + compartment_id +"-cloudguard-target"
     cg_target_name = prefix + "-" + compartment_id +"-cloudguard-target"

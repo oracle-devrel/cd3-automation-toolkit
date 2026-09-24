@@ -1649,12 +1649,20 @@ def run_utility(prim_options=[]):
 def enable_cis_cloudguard():
     if not devops:
         region = input("Enter Reporting Region for Cloud Guard eg london(Defaults to Home Region if left empty): ")
+        compartment_id = input(
+            'Enter Compartment Name to create Cloud Guard Target and Recipes(Defaults to root if left empty): ')
+
     else:
         region = ct.cg_region
+        compartment_id = ct.cg_compartment
+    if compartment_id=='' or compartment_id=='nan':
+        compartment_id='root'
+    compartment_id = commonTools.check_tf_variable(compartment_id)
+
     if region=='' or region== 'nan':
         region=ct.home_region
     region = region.lower()
-    security.enable_cis_cloudguard(outdir, service_dir_cloud_guard, prefix, ct, region)
+    security.enable_cis_cloudguard(outdir, service_dir_cloud_guard, prefix, ct, region,compartment_id)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_cloud_guard])
 
