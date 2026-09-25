@@ -1,7 +1,7 @@
  
  **CD3 Toolkit Process for OCI**
 
-<img width="1200" height="1000" alt="CD3 Toolkit Process" src="../images/CD3-Process.png">
+<img width="1200" height="1000" alt="CD3 Toolkit Process" src="../images/CD3_new_Process.png">
 <br>
 
 **The CD3 toolkit for OCI supports 2 workflows:**<br>
