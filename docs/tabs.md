@@ -1230,7 +1230,7 @@ Upon executing setUpCloud.py, choose `Security` from the main menu and `Enable C
 
 | File name | Description|
 |---|---|
-|cis-cloudguard.auto.tfvars | TF variables file for enabling cloud guard and creating target for root compartment. |
+|cis-cloudguard.auto.tfvars | TF variables file for enabling cloud guard and creating target for specified compartment. |
 
 <a href="../terraform/security">Click here to view sample auto.tfvars for Security components </a> 
 
