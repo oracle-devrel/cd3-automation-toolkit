@@ -134,7 +134,7 @@ module "nlb-reserved-ips" {
 ############################################
 
 module "nlb-reserved-private-ips" {
-  source   = "../../modules/ip/reserved-private-ip"
+  source   = "./modules/ip/reserved-private-ip"
   for_each = var.nlb_reserved_private_ips != null && var.nlb_reserved_private_ips != {} ? var.nlb_reserved_private_ips : {}
 
   #Required

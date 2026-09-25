@@ -47,7 +47,7 @@ def insert_values(values_for_column,oci_objs, region, comp_name, vcn_name, rulet
             values_for_column = ociCommonTools.export_extra_columns(oci_objs, col_header, sheet_dict,values_for_column)
 
 
-def print_secrules(seclists,region,vcn_name,comp_name,export_tags,state):
+def print_secrules(seclists,region,vcn_name,comp_name,export_tags,state,ct):
     for seclist in seclists.data:
         # Tags filter
         defined_tags = seclist.defined_tags
@@ -152,7 +152,8 @@ def print_secrules(seclists,region,vcn_name,comp_name,export_tags,state):
 
             #Any Other protocol
             else:
-                protocol=ociCommonTools.protocol_dict[rule.protocol].lower()
+                protocol=ct.protocol_dict[rule.protocol].lower()
+                printstr = f"{dn},egress,{protocol},{rule.is_stateless},{rule.destination},,,,,,,,{desc}"
                 insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'egress', protocol, '', '','', '', '', '')
 
             if not tf_import_cmd:
@@ -232,7 +233,8 @@ def print_secrules(seclists,region,vcn_name,comp_name,export_tags,state):
                 insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', 'all','', '', '', '','', '')
             #Any Other protocol
             else:
-                protocol=ociCommonTools.protocol_dict[rule.protocol].lower()
+                protocol=ct.protocol_dict[rule.protocol].lower()
+                printstr = f"{dn},ingress,{protocol},{rule.is_stateless},{rule.source},,,,,,,,{desc}"
                 insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', protocol, '', '', '','', '', '')
 
             if not tf_import_cmd:
@@ -321,7 +323,7 @@ def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_comp
                             continue
                     for ntk_compartment_name_again in export_compartments:
                             seclists = oci.pagination.list_call_get_all_results(vcn.list_security_lists,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
-                            print_secrules(seclists,region,vcn_name,ntk_compartment_name_again,export_tags,state)
+                            print_secrules(seclists,region,vcn_name,ntk_compartment_name_again,export_tags,state,ct)
 
     commonTools.write_to_cd3(values_for_column,cd3file,"SecRulesinOCI")
     print("SecRules exported to CD3\n")
