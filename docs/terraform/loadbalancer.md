@@ -13,7 +13,7 @@ Comments preceed with <b>##</b>.
       key = {
           # Required
           compartment_id             = string
-          vcn_id                     = string
+          vcn_nam                    = string
           shape                      = string
           subnet_ids                 = list
           network_compartment_id     = string
@@ -55,7 +55,7 @@ Comments preceed with <b>##</b>.
             compartment_id = "AppDev"
             shape = "flexible"
             network_compartment_id = "Network"
-            vcn_id = "fwl-vcn"
+            vcn_name = "fwl-vcn"
             subnet_ids =  ["fwl-pub"]
        
             # Optional
@@ -79,7 +79,7 @@ Comments preceed with <b>##</b>.
             compartment_id = "AppDev"
             shape = "100Mbps"
             network_compartment_id = "Network"
-            vcn_id = "fwl-vcn"
+            vcn_name = "fwl-vcn"
             subnet_ids =  ["fwl-pub"]
        
             # Optional
@@ -181,8 +181,60 @@ Comments preceed with <b>##</b>.
   ##Add New Load Balancer Reserved IPs for london here##
   }
 ```
+**4. Load Balancer Reserved Private IP**
 
-**4. Certificates**
+- <b>Syntax</b>
+```
+   lbr_reserved_private_ips = {
+      ## key - Is a unique value to reference the resources respectively
+     key = {
+          # Required
+          network_compartment_id   = string
+          vcn_name                 = string
+          subnet_id                = string
+          display_name             = string
+          lifetime                 = string
+         
+          ip_address               = string
+          hostname_label           = string
+          
+      }
+   }
+```
+
+- <b>Example</b>
+
+```
+  // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+  ############################
+  # Network
+  # Create Reserved Private IPs for Load Balancers
+  # Allowed Values:
+  # lifetime can be EPHEMERAL or RESERVED
+  # network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : network_compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  ########################################################
+  lbr_reserved_private_ips = {
+     ## key - Is a unique value to reference the resources respectively
+     lbr2-reserved-private-ip = {
+     
+          # Required
+          network_compartment_id = "OMCDev--OMCDev-VM"
+          vcn_name               = "fwl-vcn"
+          subnet_id              = "fwl-pri"
+          display_name           = "lbr2-reserved-private-ip"
+          lifetime               = "RESERVED"
+          hostname_label         = "lbr2"
+     
+          defined_tags = {
+               "Operations.os"= "Linux" ,
+               "Organization.department"= "Administrators" ,
+          },
+     },
+  ##Add New Load Balancer Reserved Private IPs for london here##
+  }
+```
+**5. Certificates**
 
 - <b>Syntax</b>
 ```
@@ -240,7 +292,7 @@ Comments preceed with <b>##</b>.
   }
 ```
 
-**5. Cipher Suites**
+**6. Cipher Suites**
 
 - <b>Syntax</b>
 ```
@@ -278,7 +330,7 @@ Comments preceed with <b>##</b>.
   }
 ```
 
-**6. Backend Sets**
+**7. Backend Sets**
 
 - <b>Syntax</b>
 ```
@@ -380,7 +432,7 @@ Comments preceed with <b>##</b>.
   }
 ```
 
-**7. Backends**
+**8. Backends**
 
 - <b>Syntax</b>
 ```
@@ -440,7 +492,7 @@ Comments preceed with <b>##</b>.
   }
 ```
 
-**8. Rule Sets**
+**9. Rule Sets**
 
 - <b>Syntax</b>
 ```
@@ -583,7 +635,7 @@ Comments preceed with <b>##</b>.
   }
 ```
 
-**9. Path Route Sets**
+**10. Path Route Sets**
 
 - <b>Syntax</b>
 ```
@@ -664,7 +716,7 @@ Comments preceed with <b>##</b>.
   }
 ```
 
-**10. Routing Policies**
+**11. Routing Policies**
 
 - <b>Syntax</b>
 ```
@@ -739,7 +791,7 @@ Comments preceed with <b>##</b>.
 	}
 ```
 
-**11. Listeners**
+**12. Listeners**
 
 - <b>Syntax</b>
 ```
