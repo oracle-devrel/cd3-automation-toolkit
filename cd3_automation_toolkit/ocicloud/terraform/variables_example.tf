@@ -1499,17 +1499,17 @@ variable "lbr_reserved_ips" {
 variable "lbr_reserved_private_ips" {
   description = "To provision Load Balancer Reserved Private IPs"
   type = map(object({
-    network_compartment_id    = string
-    vcn_name                  = string
-    subnet_id                 = string
-    lifetime                  = string
-    display_name              = optional(string)
-    ip_address                = optional(string)
-    hostname_label            = optional(string)
-    vlan_id                   = optional(string)
-    vnic_id                   = optional(string)
-    defined_tags              = optional(map(any))
-    freeform_tags             = optional(map(any))  
+    network_compartment_id = string
+    vcn_name               = string
+    subnet_id              = string
+    lifetime               = string
+    display_name           = optional(string)
+    ip_address             = optional(string)
+    hostname_label         = optional(string)
+    vlan_id                = optional(string)
+    vnic_id                = optional(string)
+    defined_tags           = optional(map(any))
+    freeform_tags          = optional(map(any))
   }))
   default = {}
 }

@@ -64,7 +64,7 @@ module "load-balancers" {
   key_name                   = each.key
   load_balancers             = var.load_balancers
   #reserved_ips_id            = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.publicip.oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []) : []
-  reserved_ips_id            = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.(publicip|privateip).oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : try([merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id],[merge(module.lbr-reserved-private-ips.*...)[join("-", [each.key, "reserved", "ip"])].private_ip_tf_id])) : []) : []
+  reserved_ips_id = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.(publicip|privateip).oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : try([merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id], [merge(module.lbr-reserved-private-ips.*...)[join("-", [each.key, "reserved", "ip"])].private_ip_tf_id])) : []) : []
 }
 
 /*
@@ -365,9 +365,9 @@ module "lbr-reserved-private-ips" {
 
   #Required
   network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
-  vcn_name       = each.value.vcn_name
-  subnet_id      = each.value.subnet_id
-  lifetime       = each.value.lifetime
+  vcn_name               = each.value.vcn_name
+  subnet_id              = each.value.subnet_id
+  lifetime               = each.value.lifetime
 
   #Optional
   defined_tags   = each.value.defined_tags

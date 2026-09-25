@@ -39,7 +39,7 @@ module "network-load-balancers" {
   defined_tags                   = each.value.defined_tags
   freeform_tags                  = each.value.freeform_tags
   #reserved_ips_id                = each.value.reserved_ips_id != "" && lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.publicip.oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.nlb-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []
-  reserved_ips_id                = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.(publicip|privateip).oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : try([merge(module.nlb-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id], [merge(module.nlb-reserved-private-ips.*...)[join("-", [each.key, "reserved", "ip"])].private_ip_tf_id])) : []) : []
+  reserved_ips_id = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.(publicip|privateip).oc*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : try([merge(module.nlb-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id], [merge(module.nlb-reserved-private-ips.*...)[join("-", [each.key, "reserved", "ip"])].private_ip_tf_id])) : []) : []
 }
 
 module "nlb-listeners" {
