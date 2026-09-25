@@ -1224,7 +1224,7 @@ Upon executing setUpCloud.py, choose `Security` from the main menu and `Add/Modi
 
 There is currently no tab for cloud guard in the CD3 excel sheet.
 
-Upon executing setUpCloud.py, choose `Security` from the main menu and `Enable Cloud Guard` from its sub-options will enable Cloud Guard for the tenancy from specified reporting region, clones the Oracle Managed detector and responder recipes. Creates a target for root compartment with the cloned recipes.
+Upon executing setUpCloud.py, choose `Security` from the main menu and `Enable Cloud Guard` from its sub-options will enable Cloud Guard for the tenancy from specified reporting region. It will also clone the Oracle Managed detector and responder recipes in the specified compartment and create a target for that compartment.
 
 <span style="color: teal; font-weight: bold;">Output File:</span>
 
