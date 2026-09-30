@@ -1,4 +1,13 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2026.2.1
+Sep 30th, 2026
+-------------------------------------
+1. Added support for Private Reserved IPs for LBs and NLBs.
+2. Upgraded Cloud Guard Terraform to add default or custom rules for each recipe.
+3. Added support for streams in Events Actions.
+4. Minor Bug fixes
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2026.2.0
 Jul 31st, 2026
 -------------------------------------

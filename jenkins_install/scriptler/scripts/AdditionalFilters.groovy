@@ -206,6 +206,12 @@ for (item in suboptions_list) {
     <td><select name="value">${reg_options} </select></td>
     <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
     </tr><tr></tr><tr></tr><tr></tr>
+    <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"cg_compartments=\"></td>
+     <td><label title=\"service1-label\" class=\" \">Select Compartment Name to create Cloud Guard Target and Recipes<b> (Mandatory) </b> : </label></br></td>
+         <td><select name="value">${comp_options}</select></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
+       </tr><tr></tr><tr></tr><tr></tr>
          """
    }
 

@@ -11,6 +11,18 @@ resource "oci_cloud_guard_detector_recipe" "cloned_detector_recipes" {
   compartment_id            = var.compartment_id
   display_name              = format("%s%s", var.prefix, trimprefix(each.key, "OCI"))
   source_detector_recipe_id = each.value
+
+  dynamic "detector_rules" {
+    for_each = lookup(var.detector_recipe_rule_overrides, each.key, {})
+    content {
+      detector_rule_id = detector_rules.value.detector_rule_id
+      details {
+        is_enabled = detector_rules.value.is_enabled
+        risk_level = detector_rules.value.risk_level
+        labels     = detector_rules.value.labels
+      }
+    }
+  }
 }
 
 
@@ -19,6 +31,16 @@ resource "oci_cloud_guard_responder_recipe" "cloned_responder_recipes" {
   compartment_id             = var.compartment_id
   display_name               = format("%s%s", var.prefix, trimprefix(each.key, "OCI"))
   source_responder_recipe_id = each.value
+
+  dynamic "responder_rules" {
+    for_each = lookup(var.responder_recipe_rule_overrides, each.key, {})
+    content {
+      responder_rule_id = responder_rules.value.responder_rule_id
+      details {
+        is_enabled = responder_rules.value.is_enabled
+      }
+    }
+  }
 }
 
 resource "oci_cloud_guard_target" "target" {
@@ -40,22 +62,6 @@ resource "oci_cloud_guard_target" "target" {
       #Required
       detector_recipe_id = target_detector_recipes.value.id
 
-      #Optional
-      dynamic "detector_rules" {
-        for_each = try(target_detector_recipes.value.id.value.detector_rules, [])
-        content {
-          #Required
-          details {
-            #Optional
-            condition_groups {
-              #Required
-              compartment_id = detector_rules.value.compartment_id
-              condition      = detector_rules.value.condition
-            }
-          }
-          detector_rule_id = detector_rules.value.detector_rule_id
-        }
-      }
     }
   }
   dynamic "target_responder_recipes" {
@@ -63,26 +69,6 @@ resource "oci_cloud_guard_target" "target" {
     content {
       #Required
       responder_recipe_id = target_responder_recipes.value.id
-      #Optional
-      dynamic "responder_rules" {
-        for_each = try(target_responder_recipes.value.responder_rules, [])
-        content {
-          #Required
-          details {
-
-            #Optional
-            condition = responder_rules.value.condition
-            configurations {
-              #Required
-              config_key = responder_rules.value.config_key
-              name       = responder_rules.value.name
-              value      = responder_rules.value.value
-            }
-            mode = responder_rules.value.mode
-          }
-          responder_rule_id = responder_rules.value.responder_rule_id
-        }
-      }
     }
   }
 }

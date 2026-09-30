@@ -17,7 +17,7 @@ cloud_guard_configs = {
 
     {{ cg_tf_name }} = {
             #Required
-            compartment_id = "{{ compartment_tf_name }}"
+            compartment_id = "root"
             reporting_region = "{{ region }}"
             status = "ENABLED"
 

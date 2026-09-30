@@ -20,7 +20,7 @@ import ocicloud.python.ociCommonTools as ociCommonTools
 # Required Inputs- Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def enable_cis_cloudguard(outdir, service_dir,prefix, ct, region):
+def enable_cis_cloudguard(outdir, service_dir,prefix, ct, region,compartment_id):
 
     #home_region=ct.home_region
     region_key = ct.region_dict[region]
@@ -37,12 +37,11 @@ def enable_cis_cloudguard(outdir, service_dir,prefix, ct, region):
     configtfStr = ''
     targettfStr = ''
 
-    compartment_id = 'root'
     cg_tf_name = prefix+"-cloud_guard"
     cg_target_tf_name = prefix + "-" + compartment_id +"-cloudguard-target"
     cg_target_name = prefix + "-" + compartment_id +"-cloudguard-target"
     cg_target_desc = "Cloud Guard for root compartment for "+prefix
-    cg_target_comp_tf_name='root'
+    cg_target_comp_tf_name=compartment_id
 
     tempStr['compartment_tf_name'] = str(compartment_id).strip()
     tempStr['region'] = region_key
@@ -86,4 +85,5 @@ def enable_cis_cloudguard(outdir, service_dir,prefix, ct, region):
         oname.write(finalstring)
         oname.close()
         print(outfile + " containing TF for cloud-guard has been created for region "+region)
-        print("Once you apply the Terraform, Cloud Guard will be enabled from the specified Region, cloned recipes will be created from Oracle Managed recipes and Target will be created with cloned Recipes for the root compartment")
+        print("\nModify 'rule_mode' value to 'custom_rules' in generated tfvars file for making changes to the rules in recipes\n")
+        print("Once Terraform is applied, Cloud Guard will be enabled from the specified Region, cloned recipes will be created from Oracle Managed recipes and Target will be created with cloned Recipes for the specified compartment")

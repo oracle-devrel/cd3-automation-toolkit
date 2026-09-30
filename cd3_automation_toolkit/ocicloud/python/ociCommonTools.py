@@ -67,6 +67,7 @@ class ociCommonTools():
         self.budget_amount = None
         self.budget_threshold = None
         self.cg_region = None
+        self.cg_compartment = None
         self.fwl_clone_src_region = None
         self.src_policy_str = None
         self.target_policy_str = None
@@ -186,6 +187,9 @@ class ociCommonTools():
 
             if 'cg_region' in i:
                 self.cg_region = (i.split("=")[1])[2:][:-2]
+
+            if 'cg_compartment' in i:
+                self.cg_compartment = (i.split("=")[1])[1:][:-1]
 
             if 'fwl_clone_src_region' in i:
                 self.fwl_clone_src_region = (i.split("=")[1])[1:][:-1]

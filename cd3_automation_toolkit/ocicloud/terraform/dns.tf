@@ -105,7 +105,7 @@ locals {
           for prefix in [
             for i in range(ceil(length(resolver.views) / 10)) :
             join("", [for _ in range(i) : "9"])
-          ] : [
+            ] : [
             for digit in range(10) : "${prefix}${digit}"
           ]
         ]), 0, length(resolver.views))[idx] => resolver.views[idx]
@@ -126,7 +126,7 @@ module "dns-resolvers" {
     for k in sort(keys(each.value.views_indexed)) : {
       view_id = startswith(each.value.views_indexed[k].view_id, "ocid1.dnsview.oc") ? (
         each.value.views_indexed[k].view_id
-      ) : try(
+        ) : try(
         data.oci_dns_views.all_views_data[each.value.views_indexed[k].view_id].views[0].id,
         module.dns-views[each.value.views_indexed[k].view_id].views[0].id
       )
