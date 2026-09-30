@@ -140,7 +140,7 @@ def export_exa_pdb(inputfile, outdir, service_dir, config, signer, ct, export_co
 
                                 print_exa_pdb(region,exadata_infrastructure,exa_infra_compartment_name,vm_cluster,exa_dbhome,exa_cdb,exa_pdb,values_for_column, ntk_compartment_name,state)
                         except Exception as e:
-                            print("Error fetching PDBs for CDB:  " + exa_cdb.db_name +" :"+str(e))
+                            print("Error fetching PDBs for CDB:  " + exa_cdb.db_name +" :"+str(e.message))
 
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
