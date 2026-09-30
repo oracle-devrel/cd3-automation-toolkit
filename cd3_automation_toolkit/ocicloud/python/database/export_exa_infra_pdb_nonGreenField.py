@@ -118,26 +118,30 @@ def export_exa_pdb(inputfile, outdir, service_dir, config, signer, ct, export_co
                         exadata_infrastructure = db_client.get_cloud_exadata_infrastructure(cloud_exadata_infrastructure_id=vm_cluster.data.cloud_exadata_infrastructure_id)
                         exa_infra_compartment_name = next((name for name, ocid in ct.ntk_compartment_ids.items() if
                                                            ocid == exadata_infrastructure.data.compartment_id), None)
-                        exa_pdbs = db_client.list_pluggable_databases(database_id=exa_cdb.id)
-                        for exa_pdb in exa_pdbs.data:
-                            # Tags filter
-                            defined_tags = exa_pdb.defined_tags
-                            tags_list = []
-                            if defined_tags:
-                                for tkey, tval in defined_tags.items():
-                                    for kk, vv in tval.items():
-                                        tag = tkey + "." + kk + "=" + vv
-                                        tags_list.append(tag)
+                        try:
+                            exa_pdbs = db_client.list_pluggable_databases(database_id=exa_cdb.id)
+                            for exa_pdb in exa_pdbs.data:
+                                # Tags filter
+                                defined_tags = exa_pdb.defined_tags
+                                tags_list = []
+                                if defined_tags:
+                                    for tkey, tval in defined_tags.items():
+                                        for kk, vv in tval.items():
+                                            tag = tkey + "." + kk + "=" + vv
+                                            tags_list.append(tag)
 
-                            if export_tags == []:
-                                check = True
-                            else:
-                                check = any(e in tags_list for e in export_tags)
-                            # None of Tags from export_tags exist on this instance; Dont export this instance
-                            if check == False:
-                                continue
+                                if export_tags == []:
+                                    check = True
+                                else:
+                                    check = any(e in tags_list for e in export_tags)
+                                # None of Tags from export_tags exist on this instance; Dont export this instance
+                                if check == False:
+                                    continue
 
-                            print_exa_pdb(region,exadata_infrastructure,exa_infra_compartment_name,vm_cluster,exa_dbhome,exa_cdb,exa_pdb,values_for_column, ntk_compartment_name,state)
+                                print_exa_pdb(region,exadata_infrastructure,exa_infra_compartment_name,vm_cluster,exa_dbhome,exa_cdb,exa_pdb,values_for_column, ntk_compartment_name,state)
+                        except Exception as e:
+                            print("Error fetching PDBs for CDB:  " + exa_cdb.db_name +" :"+str(e))
+
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print("{0} Exadata PDBs exported into CD3.\n".format(len(values_for_column["Region"])))
