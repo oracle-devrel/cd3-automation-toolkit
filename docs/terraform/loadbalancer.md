@@ -13,7 +13,7 @@ Comments preceed with <b>##</b>.
       key = {
           # Required
           compartment_id             = string
-          vcn_nam                    = string
+          vcn_name                   = string
           shape                      = string
           subnet_ids                 = list
           network_compartment_id     = string
