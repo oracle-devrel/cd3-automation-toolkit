@@ -215,9 +215,13 @@ As a temporary work-around, open the *<prefix\>_kms_auto.tfvars* file and remove
 
 **12.**
   - When exporting events, post executing the *import_commands_events.sh* script, the plan shows changes as below. Ignore this and proceed with *apply* as it will not change anything in the OCI console for events.
+    ![image](../images/zpr_policies_tfplan.png)
+
+**13.**
+  - When exporting ZPR Policies, post executing the *import_commands_zpr_policies.sh* script, the plan shows changes as below. Ignore this and proceed with *apply* as it will not change anything in the OCI console for ZPR Policies.
     ![image](../images/events_tfplan.png)
 
-**13.Terraform Forces Resource Replacement for OCI CDB with Database Management Enabled** <br>
+**14.Terraform Forces Resource Replacement for OCI CDB with Database Management Enabled** <br>
 <br>
 **Issue Description**
 While managing OCI Container Databases (CDB) using Terraform (oci_database_database), databases with Database Management enabled are marked for replacement after being imported into Terraform.<br>
