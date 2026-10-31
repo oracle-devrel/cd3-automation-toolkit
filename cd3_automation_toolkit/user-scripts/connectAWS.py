@@ -4,12 +4,16 @@ import sys
 from pathlib import Path
 import os
 import argparse
+import configparser
 import logging
 import shutil
 import datetime
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from awscloud.python.awsCommonTools import awsCommonTools, read_aws_auth_properties
+#sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.append(os.getcwd())
+sys.path.append(os.getcwd()+"/..")
+#from awscloud.python.awsCommonTools import awsCommonTools, read_aws_auth_properties
+from awscloud.python import *
 
 def create_region_terraform_files(regions, terraform_root, aws_access_key_id, aws_secret_access_key):
 
@@ -42,6 +46,8 @@ def create_region_terraform_files(regions, terraform_root, aws_access_key_id, aw
 parser = argparse.ArgumentParser(description="Connects Container to AWS")
 parser.add_argument("propsfile", help="Path to properties file")
 args = parser.parse_args()
+config = configparser.RawConfigParser()
+config.read(args.propsfile)
 
 
 current_time = str(datetime.datetime.now())
@@ -55,16 +61,11 @@ tf_modules_dir = toolkit_dir + "/awscloud/terraform"
 setupcloud_props_toolkit_file_path = toolkit_dir + "/setUpAWS.properties"
 
 # Read prefix
-prefix = None
-
-with open(args.propsfile, "r") as f:
-    for line in f:
-        if line.strip().startswith("prefix"):
-            prefix = line.split("=")[1].strip()
-
-if not prefix:
+prefix = config.get('Default', 'prefix').strip()
+if prefix == "" or prefix == "\n":
     print("Invalid Prefix. Please try again......Exiting !!")
     exit(1)
+
 
 # Prefix safety check
 prefixes = []
@@ -108,24 +109,40 @@ shutil.copy(args.propsfile, config_files + "/" + prefix + "_connectAWS.propertie
 
 
 # Read AWS Credentials
-aws_access_key_id, aws_secret_access_key = read_aws_auth_properties(args.propsfile)
 
-auth = awsCommonTools()
+try:
+    aws_access_key_id=''
+    aws_secret_access_key=''
 
-session = auth.authenticate(args.propsfile)
+    aws_access_key_id = config.get('Default', 'aws_access_key_id').strip()
+    aws_secret_access_key = config.get('Default', 'aws_secret_access_key').strip()
 
-ec2 = session.client("ec2")
+    if (aws_access_key_id == '' or aws_secret_access_key == ''):
+        print("\n\nCreating "+prefix_dir + " without setting up authentication\n")
+        connected=0
+except Exception as e:
+    print(e)
+    print('Check if input properties exist and try again..exiting...')
+    exit(1)
 
-response = ec2.describe_regions()
-#print(response["Regions"])
-regions = [r["RegionName"] for r in response["Regions"]]
+if connected == 1:
+    auth = awsCommonTools()
+    session = auth.authenticate(args.propsfile)
+
+    ec2 = session.client("ec2")
+
+    response = ec2.describe_regions()
+    #print(response["Regions"])
+    regions = [r["RegionName"] for r in response["Regions"]]
+
+else:
+    ##By Praseed
 
 # Copy Terraform modules
 modules_src = os.path.join(tf_modules_dir, "modules")
 modules_dest = os.path.join(terraform_files, "modules")
 
 if os.path.exists(modules_src):
-
     if not os.path.exists(modules_dest):
         shutil.copytree(modules_src, modules_dest)
 
@@ -134,6 +151,9 @@ print("terraform_files", terraform_files)
 
 create_region_terraform_files(regions,terraform_files,aws_access_key_id,aws_secret_access_key)
 
+excel_name="CD3-"+cloud.upper()+"-template.xlsx"
+shutil.copy(os.path.join(toolkit_dir, 'example', excel_name), os.path.join(prefix_dir, excel_name))
+
 # Generate setUpAWS.properties
 print("Creating setUpAWS.properties")
 with open(setupcloud_props_toolkit_file_path, 'r') as f:
@@ -141,8 +161,9 @@ with open(setupcloud_props_toolkit_file_path, 'r') as f:
 
 data = data.replace("outdir=", "outdir=" + terraform_files)
 data = data.replace("prefix=", "prefix=" + prefix)
-data = data.replace("aws_access_key_id=", "aws_access_key_id=" + aws_access_key_id)
-data = data.replace("aws_secret_access_key=", "aws_secret_access_key=" + aws_secret_access_key)
+if connected == 1:
+    data = data.replace("aws_access_key_id=", "aws_access_key_id=" + aws_access_key_id)
+    data = data.replace("aws_secret_access_key=", "aws_secret_access_key=" + aws_secret_access_key)
 
 with open(setupcloud_props_file_path, "w") as f:
     f.write(data)
