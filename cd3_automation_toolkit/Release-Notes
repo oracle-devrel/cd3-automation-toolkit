@@ -1,4 +1,10 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2026.2.2
+Oct 31st, 2026
+-------------------------------------
+1. Urgent bug fix for Jenkins plugin version issue. Upgraded jenkins version to 2.516.3 and plugin manager version to 2.15.0
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2026.2.1
 Sep 30th, 2026
 -------------------------------------

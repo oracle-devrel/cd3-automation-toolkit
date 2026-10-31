@@ -68,9 +68,9 @@ sudo rm -rf terraform-provider-null_${TF_NULL_PROVIDER}_linux_amd64.zip terrafor
 fi
 
 ##################################### START INSTALLING JENKINS ###################################
-ARG JENKINS_VERSION=2.504.3
-ARG JENKINS_SHA=ea8883431b8b5ef6b68fe0e5817c93dc0a11def380054e7de3136486796efeb0
-ARG JENKINS_PLUGIN_MANAGER_VERSION=2.12.13
+ARG JENKINS_VERSION=2.516.3
+ARG JENKINS_SHA=81b3abcc0f24cea48e74effe152f69dc5f0d880edc0c2737c61446b3c5992c00
+ARG JENKINS_PLUGIN_MANAGER_VERSION=2.15.0
 ARG PLUGIN_CLI_URL=https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/${JENKINS_PLUGIN_MANAGER_VERSION}/jenkins-plugin-manager-${JENKINS_PLUGIN_MANAGER_VERSION}.jar
 
 ARG JENKINS_HOME=/cd3user/tenancies/jenkins_home

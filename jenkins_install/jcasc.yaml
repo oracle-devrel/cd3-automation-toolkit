@@ -12,7 +12,6 @@ jenkins:
   - name: "master"
   markupFormatter: "plainText"
   mode: NORMAL
-  myViewsTabBar: "standard"
   noUsageStatistics: true
   numExecutors: 6
   primaryView:
